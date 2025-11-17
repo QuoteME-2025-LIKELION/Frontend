@@ -1,0 +1,53 @@
+/* KoPubWorld Dotum Light */
+@font-face {
+  font-family: "KoPubWorldDotum";
+  font-weight: 300; /* Light */
+  font-style: normal;
+  src: url("./KoPubWorld-Dotum-Light.woff") format("woff");
+  font-display: swap;
+}
+
+/* KoPubWorld Dotum Medium */
+@font-face {
+  font-family: "KoPubWorldDotum";
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  src: url("./KoPubWorld-Dotum-Medium.woff") format("woff");
+  font-display: swap;
+}
+
+/* KoPubWorld Dotum Bold */
+@font-face {
+  font-family: "KoPubWorldDotum";
+  font-weight: 700; /* Bold */
+  font-style: normal;
+  src: url("./KoPubWorld-Dotum-Bold.woff") format("woff");
+  font-display: swap;
+}
+
+/* KoPubWorld Batang Light */
+@font-face {
+  font-family: "KoPubWorldBatang";
+  font-weight: 300; /* Light */
+  font-style: normal;
+  src: url("./KoPubWorld-Batang-Light.woff") format("woff");
+  font-display: swap;
+}
+
+/* KoPubWorld Batang Medium */
+@font-face {
+  font-family: "KoPubWorldBatang";
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  src: url("./KoPubWorld-Batang-Medium.woff") format("woff");
+  font-display: swap;
+}
+
+/* KoPubWorld Batang Bold */
+@font-face {
+  font-family: "KoPubWorldBatang";
+  font-weight: 700; /* Bold */
+  font-style: normal;
+  src: url("./KoPubWorld-Batang-Bold.woff") format("woff");
+  font-display: swap;
+}
