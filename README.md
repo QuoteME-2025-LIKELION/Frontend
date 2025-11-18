@@ -1,73 +1,104 @@
-# React + TypeScript + Vite
+# <div align="center"> QuoteMe 프론트엔드 레포지토리 </div>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 개발 기간 : 2025.11.17. ~ 2025.12.19.
 
-Currently, two official plugins are available:
+<br/>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 개발 시작하기
+ 
+```
+git clone https://github.com/QuoteME-2025-LIKELION/Frontend.git
+cd Frontend
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+<br/>
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 프론트엔드 팀원
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+<table>
+  <thead>
+    <tr>
+      <th>
+        <a href="https://github.com/zer0p01nt">
+          <img src="https://avatars.githubusercontent.com/u/189887138?v=4" width="100" />
+        </a>
+      </th>
+      <th>
+        <a href="https://github.com/minaaa101">
+          <img src="https://avatars.githubusercontent.com/u/183453942?v=4" width="100" />
+        </a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">백민영</td>
+      <td align="center">이민아</td>
+    </tr>
+    <tr>
+      <td align="center">
+        <div>개발환경 설정, 날짜별 아카이브 조회, 알림 기능</div>
+        <div>그룹 생성 및 관리, 친구 추가</div>
+      </td>
+      <td align="center">
+        <div>로그인, 프로필 관리, 설정</div>
+        <div>긴 글/짧은 글 쓰기, 태그 요청(콕 찌르기, 수정)</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br/>
+
+## 개발 관련 참고사항
+
+- PR 전 꼭 `git pull origin develop` 으로 병합 확인 후 PR 해주세요~
+- 개발 관련 참고사항, 수정사항, 질문 등은 언제든 카톡하기~
+
+> ### 커밋 메세지 컨벤션
+- 커밋의 시작은 아래의 목록을 참고하여 gitmoji & 커밋이름 삽입
+- 커밋의 끝맺음은 "~ 기능 추가", "~ 작업", "~ 개발" 과 같이 명사로 통일
 ```
+🎉 Init: 프로젝트 세팅
+✨ Feat: 새로운 기능 추가
+🐛 Fix: 버그 수정
+💄 Design: UI 스타일/디자인 수정
+♻️ Refactor: 코드 리팩토링
+✏️ Typo: 오타 수정,타입 수정
+🚚 Rename: 폴더 구조 이동, 파일명 변경
+🍱 Assets: 이미지, 폰트 등 리소스 추가/삭제
+🔥 Del: 파일 삭제
+📝 Docs: 문서 수정, 목데이터 작업 등
+🔧 Chore: 설정파일 보완, 환경 설정
+➕ Deps: 새로운 라이브러리 설치
+➖ Deps: 불필요한 라이브러리 삭제
+🔙 : 커밋 내용 복구
+```
+예시
+```
+✨ Feat: 메인페이지 개발
+♻️ Refactor: 등록 플로우 - 글 작성 페이지 로직 정리
+```
+
+
+> ### 브랜치 전략
+|태그이름|설명|
+|--------|-------|
+|main|실제 배포용 브랜치|
+|develop|개발용 브랜치(기능 통합용)|
+|feat/이슈번호/기능이름|새로운 기능 개발 시|
+|refactor/이슈번호/기능이름|코드 리팩토링|
+|fix/이슈번호/버그이름|버그 수정|
+|design/이슈번호/요소|디자인 및 스타일 변경|
+|chore/이슈번호/내용|설정, 의존성 등 기타 작업|
+
+예시
+```
+feat/12/login-page  // 로그인 기능 개발
+refactor/34/reduce-duplicated-code  // 코드 리팩토링
+chore/56/update-eslint  // eslint 설정 수정
+```
+
+<br/>
