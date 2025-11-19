@@ -55,6 +55,7 @@ npm run dev
 ## 개발 관련 참고사항
 
 - PR 전 꼭 `git pull origin develop` 으로 병합 확인 후 PR 해주세요~
+- `theme.ts`에 색상은 물론 고정적으로 쓰이는 css 관련 값들 편하게 추가하셔도 괜찮습니다!
 - 개발 관련 참고사항, 수정사항, 질문 등은 언제든 카톡하기~
 
 > ### 커밋 메세지 컨벤션
@@ -96,9 +97,9 @@ npm run dev
 
 예시
 ```
-feat/12/login-page  // 로그인 기능 개발
-refactor/34/reduce-duplicated-code  // 코드 리팩토링
-chore/56/update-eslint  // eslint 설정 수정
+feat/#12/login-page  // 로그인 기능 개발
+refactor/#34/reduce-duplicated-code  // 코드 리팩토링
+chore/#56/update-eslint  // eslint 설정 수정
 ```
 
 <br/>
