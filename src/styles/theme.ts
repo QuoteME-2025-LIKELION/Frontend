@@ -11,16 +11,18 @@
  * `
  */
 const theme = {
-  // 추가 예정
   colors: {
     primary: "#143858",
     secondary: "#f3f3f3",
+    territory: "#959595",
   },
   // 아예 font-family 자체를 관리
   fonts: {
     dotum:
-      "font-family: 'KoPubWorldDotum', 'Noto Sans', sans-serif; line-height: 1;",
+      "font-family: 'KoPubWorldDotum', 'Noto Sans KR', sans-serif; line-height: 1;",
     batang: "font-family: 'KoPubWorldBatang', serif; line-height: 1;",
+    pretendard:
+      "font-family: 'Pretendard Variable','Noto Sans KR', sans-serif; line-height: 1;",
   },
 } as const;
 
