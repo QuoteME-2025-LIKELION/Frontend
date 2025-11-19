@@ -1,7 +1,5 @@
 // 앱 전체에서 사용되는 테마 정의
 
-import type { Theme } from "@emotion/react";
-
 /**
  * 앱 전체에서 사용되는 테마 정의. theme를 import해서 쓰시면 됩니다.
  * (import할 때 import { theme as t } 처럼 별칭을 쓰는 것도 가능합니다.)
@@ -12,7 +10,7 @@ import type { Theme } from "@emotion/react";
  *  color: ${theme.colors.primary};
  * `
  */
-const theme: Theme = {
+const theme = {
   // 추가 예정
   colors: {
     primary: "#143858",
