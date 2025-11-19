@@ -8,12 +8,21 @@ import type { Theme } from "@emotion/react";
  * @example
  * // 컴포넌트 스타일 파일 내부
  * const Container = style.div`
+ *  ${theme.fonts.dotum} // 폰트는 이렇게만 써도 됨
  *  color: ${theme.colors.primary};
  * `
  */
 const theme: Theme = {
   // 추가 예정
-  colors: {},
+  colors: {
+    primary: "#143858",
+    secondary: "#f3f3f3",
+  },
+  // 아예 font-family 자체를 관리
+  fonts: {
+    dotum: "font-family: 'KoPubWorldDotum', 'Noto Sans', sans-serif;",
+    batang: "font-family: 'KoPubWorldBatang', serif;",
+  },
 } as const;
 
 export type ThemeType = typeof theme;
