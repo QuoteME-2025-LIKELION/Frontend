@@ -18,8 +18,9 @@ const theme = {
   },
   // 아예 font-family 자체를 관리
   fonts: {
-    dotum: "font-family: 'KoPubWorldDotum', 'Noto Sans', sans-serif;",
-    batang: "font-family: 'KoPubWorldBatang', serif;",
+    dotum:
+      "font-family: 'KoPubWorldDotum', 'Noto Sans', sans-serif; line-height: 1;",
+    batang: "font-family: 'KoPubWorldBatang', serif; line-height: 1;",
   },
 } as const;
 
