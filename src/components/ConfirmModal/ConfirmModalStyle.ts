@@ -1,0 +1,102 @@
+import theme from "@/styles/theme";
+import styled from "@emotion/styled";
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: ${theme.colors.secondary};
+  border-radius: 1.875rem; /* 30px */
+  border: 1px solid ${theme.colors.territory};
+  width: 67%;
+  max-width: 16.625rem; /* 266px */
+  height: 8.875rem; /* 142px */
+`;
+
+export const Question = styled.div`
+  padding: 2.5rem 0 3.125rem; /* 40px 0 50px */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ${theme.fonts.batang}
+  color: #000;
+  font-size: 0.9375rem;
+  letter-spacing: -0.3px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  div {
+    ${theme.fonts.pretendard}
+    color: #000;
+    font-size: 0.9375rem;
+    letter-spacing: -0.3px;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 360px) {
+    font-size: 0.8125rem;
+    div {
+      font-size: 0.8125rem;
+    }
+  }
+`;
+
+export const BtnBox = styled.div`
+  height: 2.3125rem; /* 37px */
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  button:first-of-type {
+    border-bottom-left-radius: 1.875rem; /* 30px */
+  }
+
+  button:last-of-type {
+    border-bottom-right-radius: 1.875rem; /* 30px */
+  }
+`;
+
+export const Btn = styled.button`
+  width: 100%;
+  padding: 0.625rem; /* 10px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: ${theme.colors.secondary};
+  border-bottom: 1px solid ${theme.colors.territory};
+
+  ${theme.fonts.batang}
+  color: ${theme.colors.territory};
+  font-size: 0.9375rem;
+  letter-spacing: -0.3px;
+  font-weight: 500;
+
+  &:active {
+    color: #000;
+  }
+`;
+
+export const Div = styled.div`
+  background-color: rgba(0, 0, 0, 0.1);
+  width: 1px;
+  height: 100%;
+`;
