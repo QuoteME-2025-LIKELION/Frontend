@@ -41,7 +41,7 @@ export default function Header({
             >
               <path
                 d="M15 18L9 12L15 6"
-                stroke={backgroundColor === "primary" ? "#fff" : "#143858"}
+                stroke={backgroundColor === "primary" ? "#fff" : "#000"}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
