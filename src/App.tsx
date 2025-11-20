@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
+import Search from "@/components/Search/Search";
 import RootLayout from "@/layouts/RootLayout";
 import GlobalStyles from "@/styles/GlobalStyles";
 import theme from "@/styles/theme";
@@ -44,6 +45,10 @@ function App() {
                     title="입력 완료"
                     onClick={() => {}}
                     disabled={false}
+                  />
+                  <Search
+                    placeholder="검색"
+                    desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
                   />
                 </Test>
               </>
