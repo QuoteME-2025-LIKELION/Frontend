@@ -1,14 +1,15 @@
 import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
-export const Overlay = styled.div`
+export const Overlay = styled.div<{ $showOverlay: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 9998;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: ${({ $showOverlay }) =>
+    $showOverlay ? "rgba(0, 0, 0, 0.55)" : "transparent"};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,8 +82,6 @@ export const Btn = styled.button`
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: ${theme.colors.secondary};
-  border-bottom: 1px solid ${theme.colors.territory};
 
   ${theme.fonts.batang}
   color: ${theme.colors.territory};
@@ -99,4 +98,5 @@ export const Div = styled.div`
   background-color: rgba(0, 0, 0, 0.1);
   width: 1px;
   height: 100%;
+  align-self: flex-start;
 `;

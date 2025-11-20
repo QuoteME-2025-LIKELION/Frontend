@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   nickname?: string;
   nickname2?: string;
   question2?: string;
+  showOverlay?: boolean;
 }
 
 /**
@@ -19,6 +20,7 @@ interface ConfirmModalProps {
  * @param props.nickname - 텍스트 중 앞쪽에 표시될 닉네임 or 그룹명 (선택 사항)
  * @param props.nickname2 - 텍스트 중 뒤쪽에 표시될 닉네임 or 그룹명 (선택 사항)
  * @param props.question2 - nickname2가 있을 때 그 뒤에 표시될 질문 텍스트 (선택 사항)
+ * @param props.showOverlay - 오버레이 표시 여부 (기본값: true)
  * @example
  * <ConfirmModal
  *   nickname="듀듀"
@@ -36,9 +38,10 @@ export default function ConfirmModal({
   nickname,
   nickname2,
   question2,
+  showOverlay = true,
 }: ConfirmModalProps) {
   return (
-    <S.Overlay>
+    <S.Overlay $showOverlay={showOverlay}>
       <S.Container>
         <S.Question>
           {nickname && <div>{nickname}</div>}
