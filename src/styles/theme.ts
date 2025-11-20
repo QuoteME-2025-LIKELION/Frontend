@@ -15,6 +15,7 @@ const theme = {
     primary: "#143858",
     secondary: "#f3f3f3",
     territory: "#959595",
+    red: "#de1c1c",
   },
   // 아예 font-family 자체를 관리
   fonts: {
