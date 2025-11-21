@@ -2,7 +2,7 @@ import * as S from "./ConfirmModalStyle";
 
 interface ConfirmModalProps {
   question: string;
-  onCancel: () => void;
+  onClose: () => void;
   onConfirm: () => void;
   nickname?: string;
   nickname2?: string;
@@ -15,7 +15,7 @@ interface ConfirmModalProps {
  * 실제 페이지에 사용할 땐 isVisible 등의 상태로 조건부 렌더링
  * @param props
  * @param props.question - 모달에 표시될 질문 텍스트
- * @param props.onCancel - 취소 버튼 클릭 시 호출되는 함수
+ * @param props.onClose - 모달 외부 및 취소 버튼 클릭 시 호출되는 모달 닫기 함수 (setIsVisible(false) 등)
  * @param props.onConfirm - 확인 버튼 클릭 시 호출되는 함수
  * @param props.nickname - 텍스트 중 앞쪽에 표시될 닉네임 or 그룹명 (선택 사항)
  * @param props.nickname2 - 텍스트 중 뒤쪽에 표시될 닉네임 or 그룹명 (선택 사항)
@@ -27,29 +27,33 @@ interface ConfirmModalProps {
  *   question="님을"
  *   nickname2="무니니"
  *   question2="에 초대할까요?"
- *   onCancel={() => {}}
+ *   onClose={() => {}}
  *   onConfirm={() => {}}
  * />
  */
 export default function ConfirmModal({
   question,
-  onCancel,
+  onClose,
   onConfirm,
   nickname,
   nickname2,
   question2,
   showOverlay = true,
 }: ConfirmModalProps) {
+  // 모달 영역을 클릭해도 onClose가 호출되지 않도록 이벤트 버블링을 막음
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
   return (
-    <S.Overlay $showOverlay={showOverlay}>
-      <S.Container>
+    <S.Overlay $showOverlay={showOverlay} onClick={onClose}>
+      <S.Container onClick={stopPropagation}>
         <S.Question>
           {nickname && <div>{nickname}</div>}
           {question}&nbsp;{nickname2 && <div>{nickname2}</div>}
           {question2 && question2}
         </S.Question>
         <S.BtnBox>
-          <S.Btn type="button" onClick={onCancel}>
+          <S.Btn type="button" onClick={onClose}>
             취소
           </S.Btn>
           <S.Div></S.Div>
