@@ -12,6 +12,7 @@ import styled from "@emotion/styled";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import Feed from "@/components/Feed/Feed";
+import List from "@/components/List/List";
 
 // 테스트용. 추후 지울 예정
 const Test = styled.div`
@@ -21,7 +22,6 @@ const Test = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.25rem; /* 20px */
-  background-color: ${theme.colors.primary};
 `;
 
 function App() {
@@ -89,9 +89,22 @@ function App() {
                     isMyName={(name: string) => name === "듀듀"}
                     onRequest={() => {}}
                     onPoke={() => {}}
-                    isInArchive={true}
+                    isInArchive={false}
                     onArchiveClick={() => {}}
                     year={2002}
+                  />
+                  <List
+                    profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+                    username="테스트"
+                    intro="안녕하세요"
+                    isSelectable={true}
+                    isSelected={true}
+                    onSelect={() => {}}
+                    actionButton={{
+                      type: "delete",
+                      text: "삭제",
+                      onClick: () => {},
+                    }}
                   />
                 </Test>
               </>

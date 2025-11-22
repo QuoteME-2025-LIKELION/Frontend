@@ -25,7 +25,7 @@ interface FeedProps {
  * @param props
  * @param props.profileImgUrl 프로필 이미지 URL
  * @param props.username 사용자 이름
- * @param props.intro 소개글
+ * @param props.intro 자기소개
  * @param props.timestamp 작성 시간
  * @param props.text 입력한 텍스트 (빈 문자열이면 isSilenced 처리)
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
