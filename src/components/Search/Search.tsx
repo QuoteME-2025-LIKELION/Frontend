@@ -32,6 +32,16 @@ interface SearchProps {
  * @param props.maxLength - 검색창의 최대 입력 길이
  * @param props.onSearch - 검색 버튼 클릭 시 호출되는 함수
  * @param props.onClear - X 버튼 클릭 시 호출되는 함수 (setValue("") 이런 식으로 구현)
+ * @example
+ * <Search
+ *  placeholder="검색"
+ *  desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
+ *  value={text}
+ *  onChange={(e) => setText(e.target.value)}
+ *  name="text"
+ *  onSearch={() => console.log("검색됨")}
+ *  onClear={() => console.log("삭제됨")}
+ * />
  */
 export default function Search({
   placeholder,
@@ -42,7 +52,7 @@ export default function Search({
   name,
   disabled,
   readOnly,
-  required,
+  required = true,
   minLength,
   maxLength,
   onSearch,

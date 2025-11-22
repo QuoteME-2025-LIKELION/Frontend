@@ -26,6 +26,15 @@ interface InputProps {
  * @param props.required 입력창 필수 입력 여부
  * @param props.minLength 입력창의 최소 입력 길이
  * @param props.maxLength 입력창의 최대 입력 길이
+ * @example
+ * <Input
+ *  value={email}
+ *  onChange={(e) => setEmail(e.target.value)}
+ *  placeholder="이메일 입력"
+ *  type="email"
+ *  name="email"
+ *  required={true}
+ * />
  */
 export default function Input({
   value,

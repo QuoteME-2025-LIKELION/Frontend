@@ -5,8 +5,8 @@ interface HeaderProps {
   showXBtn: boolean;
   title: string;
   backgroundColor: "primary" | "secondary" | "white";
-  onClickBackBtn: () => void;
-  onClickXBtn: () => void;
+  onClickBackBtn?: () => void;
+  onClickXBtn?: () => void;
 }
 
 /**
@@ -18,6 +18,14 @@ interface HeaderProps {
  * @param props.backgroundColor 배경 색상 (primary: 남색, secondary: 연회색, white: 흰색)
  * @param props.onClickBackBtn 뒤로가기 버튼 클릭 시 호출되는 함수
  * @param props.onClickXBtn 닫기 버튼 클릭 시 호출되는 함수
+ * @example
+ * <Header
+ *  showBackBtn={true}
+ *  showXBtn={false}
+ *  title="페이지 제목"
+ *  backgroundColor="white"
+ *  onClickBackBtn={() => { console.log("뒤로가기 클릭") }}
+ * />
  */
 export default function Header({
   showBackBtn,
