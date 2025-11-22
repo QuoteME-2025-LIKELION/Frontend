@@ -21,6 +21,7 @@ const Test = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.25rem; /* 20px */
+  background-color: ${theme.colors.primary};
 `;
 
 function App() {
@@ -83,11 +84,14 @@ function App() {
                     tag={tagList}
                     isMine={false}
                     onAdd={() => {}}
-                    onLikeToggle={() => {}}
+                    onLike={() => {}}
                     onShare={() => {}}
                     isMyName={(name: string) => name === "듀듀"}
                     onRequest={() => {}}
                     onPoke={() => {}}
+                    isInArchive={true}
+                    onArchiveClick={() => {}}
+                    year={2002}
                   />
                 </Test>
               </>

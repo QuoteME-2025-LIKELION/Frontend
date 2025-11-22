@@ -1,13 +1,26 @@
 import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isInArchive?: boolean }>`
   background-color: transparent;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.75rem; /* 28px */
+  cursor: ${({ $isInArchive }) => ($isInArchive ? "pointer" : "default")};
+`;
+
+export const ArchiveContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  ${theme.fonts.batang}
+  font-weight: 700;
+  letter-spacing: -0.24px;
+  font-size: 0.75rem; /* 12px */
+  color: #fff;
 `;
 
 export const ProfileContainer = styled.div`
@@ -34,16 +47,16 @@ export const ProfileInfo = styled.div`
   width: 100%;
 `;
 
-export const Username = styled.div`
+export const Username = styled.div<{ $isInArchive?: boolean }>`
   ${theme.fonts.dotum}
-  color: #000;
+  color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
   font-weight: 700;
   font-size: 0.9375rem; /* 15px */
   letter-spacing: -0.3px;
   width: 100%;
 `;
 
-export const IntroTimeBox = styled.div`
+export const IntroTimeBox = styled.div<{ $isInArchive?: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,14 +64,18 @@ export const IntroTimeBox = styled.div`
 
   div {
     ${theme.fonts.dotum}
-    color: ${theme.colors.territory};
+    color: ${({ $isInArchive }) =>
+      $isInArchive ? "#fff" : theme.colors.territory};
     font-size: 0.875rem; /* 14px */
     font-weight: 500;
     letter-spacing: -0.28px;
   }
 `;
 
-export const TextContainer = styled.div<{ $isSilenced: boolean }>`
+export const TextContainer = styled.div<{
+  $isSilenced: boolean;
+  $isInArchive?: boolean;
+}>`
   width: 100%;
   display: flex;
   align-items: center;
@@ -68,8 +85,14 @@ export const TextContainer = styled.div<{ $isSilenced: boolean }>`
   div {
     ${theme.fonts.batang}
     font-weight: 500;
-    color: ${({ $isSilenced }) =>
-      $isSilenced ? theme.colors.territory : "#000"};
+    color: ${({ $isSilenced, $isInArchive }) =>
+      $isSilenced
+        ? $isInArchive
+          ? "#fff"
+          : theme.colors.territory
+        : $isInArchive
+          ? "#fff"
+          : "#000"};
   }
 `;
 
@@ -87,14 +110,16 @@ export const Text = styled.div`
   letter-spacing: -0.28px;
 `;
 
-export const TagContainer = styled.div`
+export const TagContainer = styled.div<{ $isInArchive?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0.375rem 0; /* 6px 0 */
-  border-top: 1px solid ${theme.colors.territory};
-  border-bottom: 1px solid ${theme.colors.territory};
+  border-top: 1px solid
+    ${({ $isInArchive }) => ($isInArchive ? "#fff" : theme.colors.territory)};
+  border-bottom: 1px solid
+    ${({ $isInArchive }) => ($isInArchive ? "#fff" : theme.colors.territory)};
   min-height: 1.875rem; /* 30px */
 `;
 
@@ -116,16 +141,18 @@ export const Tag = styled.div`
   letter-spacing: -0.24px;
 `;
 
-export const Name = styled.div<{ $isMyName: boolean }>`
+export const Name = styled.div<{ $isMyName: boolean; $isInArchive?: boolean }>`
   background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $isMyName }) => ($isMyName ? "#3679B5" : "#000")};
+  color: ${({ $isMyName, $isInArchive }) =>
+    $isInArchive ? "#fff" : $isMyName ? "#3679B5" : "#000"};
 `;
 
-export const RequestBtn = styled.button`
-  color: ${theme.colors.territory};
+export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`
+  color: ${({ $isInArchive }) =>
+    $isInArchive ? "#fff" : theme.colors.territory};
   background-color: transparent;
   display: flex;
   align-items: center;
@@ -150,5 +177,7 @@ export const BtnBox = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 1rem;
+    height: 1rem;
   }
 `;
