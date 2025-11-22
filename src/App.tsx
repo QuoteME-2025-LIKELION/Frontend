@@ -11,6 +11,7 @@ import { ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
+import Feed from "@/components/Feed/Feed";
 
 // 테스트용. 추후 지울 예정
 const Test = styled.div`
@@ -23,7 +24,8 @@ const Test = styled.div`
 `;
 
 function App() {
-  const [visible, setVisible] = useState(true);
+  // const [visible, setVisible] = useState(true);
+  const tagList = ["듀듀", "무니니", "호롤롤로", "테스트", "안녕"];
   return (
     <RootLayout>
       <ThemeProvider theme={theme}>
@@ -33,7 +35,7 @@ function App() {
             path="/"
             element={
               <>
-                {visible && (
+                {/* {visible && (
                   <ConfirmModal
                     nickname="듀듀"
                     question="님을"
@@ -43,7 +45,7 @@ function App() {
                     onConfirm={() => {}}
                     showOverlay={true}
                   />
-                )}
+                )} */}
                 {/* <ToastModal
                   text="그룹원이"
                   redText="5인을 초과"
@@ -71,6 +73,21 @@ function App() {
                   <Search
                     placeholder="검색"
                     desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
+                  />
+                  <Feed
+                    profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+                    username="테스트"
+                    intro="안녕하세요"
+                    timestamp="방금 전"
+                    text="30자이내로만쓸수있도록하겠죠아마?30자이내로만쓸수있도록"
+                    tag={tagList}
+                    isMine={false}
+                    onAdd={() => {}}
+                    onLikeToggle={() => {}}
+                    onShare={() => {}}
+                    isMyName={(name: string) => name === "듀듀"}
+                    onRequest={() => {}}
+                    onPoke={() => {}}
                   />
                 </Test>
               </>
