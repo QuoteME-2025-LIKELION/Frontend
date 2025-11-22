@@ -40,6 +40,26 @@ interface FeedProps {
  * @param props.isInArchive 아카이브 페이지에 있는지(전체 UI 흰색 됨) (기본값 false)
  * @param props.onArchiveClick 아카이브 페이지에서 피드 클릭 시 함수
  * @param props.year 사용자 생년
+ * @example
+ * <Feed
+ *  profileImgUrl="https://example.com/profile.jpg"
+ *  username="테스트"
+ *  intro="안녕하세요"
+ *  timestamp="방금 전"
+ *  text="방귀 뀐 놈이 성낸다"
+ *  tag={['듀듀', '무니니']}
+ *  isMine={true}
+ *  isLiked={false}
+ *  onLike={() => {}}
+ *  onShare={() => {}}
+ *  isMyName={(name) => name === '듀듀'}
+ *  onRequest={() => {}}
+ *  onPoke={() => {}}
+ *  onAdd={() => {}}
+ *  isInArchive={false}
+ *  onArchiveClick={() => {}}
+ *  year={2000}
+ * />
  */
 export default function Feed({
   profileImgUrl,

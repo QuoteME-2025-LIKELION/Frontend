@@ -81,6 +81,8 @@ export const TextContainer = styled.div<{
   align-items: center;
   gap: 1.125rem; /* 18px */
   height: 1rem;
+  justify-content: ${({ $isInArchive }) =>
+    $isInArchive ? "center" : "flex-start"};
 
   div {
     ${theme.fonts.batang}

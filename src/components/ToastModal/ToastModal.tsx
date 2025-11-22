@@ -16,6 +16,14 @@ interface ToastModalProps {
  * @param props.redText - 모달에 표시될 빨간색 텍스트 (선택 사항)
  * @param props.text2 - 빨간색 텍스트 옆으로 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
  * @param props.text3 - 다음 줄에 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
+ * @example
+ * <ToastModal
+ *  text="그룹원이"
+ *  redText="5인을 초과"
+ *  text2="하여"
+ *  text3="초대가 불가능합니다."
+ *  showOverlay={false}
+ * />
  */
 export default function ToastModal({
   showOverlay = true,

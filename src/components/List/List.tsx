@@ -25,6 +25,20 @@ interface ListProps {
  * @param isSelected 선택된 상태 여부
  * @param onSelect 아이템 클릭 시 실행될 함수
  * @param actionButton 우측 버튼 정보
+ * @example
+ * <List
+ *  profileImgUrl="https://example.com/profile.jpg"
+ *  username="테스트"
+ *  intro="안녕하세요"
+ *  isSelectable={true}
+ *  isSelected={false}
+ *  onSelect={() => console.log("클릭됨")}
+ *  actionButton={{
+ *    type="delete"
+ *    text="삭제"
+ *    onClick={() => alert("삭제하시겠습니까?")}
+ *  }}
+ * />
  */
 export default function List({
   profileImgUrl,
