@@ -9,12 +9,12 @@ interface FeedProps {
   tag: string[] | null;
   isMine?: boolean; // 내 피드인 경우
   isLiked?: boolean; // 좋아요를 누른 상태인지
-  onLike: () => void;
-  onShare: () => void;
-  isMyName: (name: string) => boolean;
-  onRequest: () => void;
-  onPoke: () => void;
-  onAdd: () => void;
+  onLike?: () => void;
+  onShare?: () => void;
+  isMyName?: (name: string) => boolean;
+  onRequest?: () => void;
+  onPoke?: () => void;
+  onAdd?: () => void;
   isInArchive?: boolean;
   onArchiveClick?: () => void;
   year?: number;
@@ -31,12 +31,12 @@ interface FeedProps {
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
  * @param props.isMine 내 피드인 경우 (기본값 false => true일 때만 따로 표시)
  * @param props.isLiked 좋아요를 누른 상태인지 (기본값 false => true일 때만 따로 표시)
- * @param props.onLike 좋아요 토글 함수
- * @param props.onShare 공유 함수
- * @param props.isMyName 이름이 내 이름인지 확인하는 함수
- * @param props.onRequest 태그 요청 함수
- * @param props.onPoke 콕 찌르기 함수
- * @param props.onAdd 태그 수정 함수
+ * @param props.onLike 좋아요 토글 함수 (빈 함수가 기본값)
+ * @param props.onShare 공유 함수 (빈 함수가 기본값)
+ * @param props.isMyName 태그 목록에 있는 이름이 내 이름인지 확인하는 함수 (빈 함수가 기본값)
+ * @param props.onRequest 태그 요청 함수 (빈 함수가 기본값)
+ * @param props.onPoke 콕 찌르기 함수 (빈 함수가 기본값)
+ * @param props.onAdd 태그 수정 함수 (빈 함수가 기본값)
  * @param props.isInArchive 아카이브 페이지에 있는지(전체 UI 흰색 됨) (기본값 false)
  * @param props.onArchiveClick 아카이브 페이지에서 피드 클릭 시 함수
  * @param props.year 사용자 생년
@@ -70,12 +70,12 @@ export default function Feed({
   tag,
   isMine = false,
   isLiked = false,
-  onLike,
-  onShare,
-  isMyName,
-  onRequest,
-  onPoke,
-  onAdd,
+  onLike = () => {},
+  onShare = () => {},
+  isMyName = () => false,
+  onRequest = () => {},
+  onPoke = () => {},
+  onAdd = () => {},
   isInArchive = false,
   onArchiveClick,
   year,
@@ -255,7 +255,7 @@ export default function Feed({
                   <path
                     d="M12.9735 8.63997C13.6068 7.99997 14.0002 7.1333 14.0002 6.16664C14.0002 5.23838 13.6314 4.34814 12.975 3.69176C12.3187 3.03539 11.4284 2.66664 10.5002 2.66664C9.3335 2.66664 8.30016 3.2333 7.66683 4.1133C7.34356 3.6643 6.9179 3.29885 6.42515 3.04726C5.9324 2.79566 5.38676 2.66518 4.8335 2.66664C3.90524 2.66664 3.015 3.03539 2.35862 3.69176C1.70225 4.34814 1.3335 5.23838 1.3335 6.16664C1.3335 7.1333 1.72683 7.99997 2.36016 8.63997L7.66683 13.9466L12.9735 8.63997Z"
                     fill="white"
-                    fill-opacity="0.2"
+                    fillOpacity="0.2"
                   />
                 </svg>
               ) : (
