@@ -24,6 +24,7 @@ const theme = {
     batang: "font-family: 'KoPubWorldBatang', serif; line-height: 1;",
     pretendard:
       "font-family: 'Pretendard Variable','Noto Sans KR', sans-serif; line-height: 1;",
+    chonburi: "font-family: 'Chonburi', serif; line-height: 1;",
   },
 } as const;
 
