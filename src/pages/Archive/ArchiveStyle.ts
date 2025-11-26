@@ -32,6 +32,7 @@ export const Btn = styled.button<{ $active: boolean }>`
   align-items: center;
   text-align: center;
   background-color: transparent;
+  outline: none;
 
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
