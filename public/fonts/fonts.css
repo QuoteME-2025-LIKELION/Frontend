@@ -60,3 +60,12 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Chonburi */
+@font-face {
+  font-family: "Chonburi";
+  src: url("./Chonburi-Regular.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

@@ -8,7 +8,7 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  background-color: ${theme.colors.secondary};
+  background-color: ${theme.colors.primary};
   height: 100vh;
 `;
 
@@ -19,6 +19,10 @@ export const Menu = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 340px) {
+    padding: 1.25rem 2rem 1rem;
+  }
 `;
 
 export const Btn = styled.button<{ $active: boolean }>`
@@ -28,6 +32,7 @@ export const Btn = styled.button<{ $active: boolean }>`
   align-items: center;
   text-align: center;
   background-color: transparent;
+  outline: none;
 
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
