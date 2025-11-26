@@ -10,5 +10,9 @@ export const Container = styled.div`
   gap: 1.25rem;
   background-color: ${theme.colors.primary};
   padding: 1.875rem 2.5rem;
-  height: inherit;
+  height: 100%;
+  max-height: calc(100vh - 98px);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
