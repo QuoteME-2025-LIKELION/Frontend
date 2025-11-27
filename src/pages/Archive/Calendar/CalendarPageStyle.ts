@@ -11,6 +11,7 @@ export const Container = styled.div`
   align-items: center;
 `;
 
+/* Calendar 컴포넌트 스타일 오버라이딩 */
 export const CalendarStyles = css`
   .react-calendar {
     width: 100%;
@@ -143,4 +144,15 @@ export const CalendarStyles = css`
       color: #fff !important;
     }
   }
+`;
+
+export const FeedContainer = styled.div`
+  width: 100%;
+  max-width: 393px;
+  padding: 1.875rem 2.5rem; /* 30px 40px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem; /* 20px */
 `;

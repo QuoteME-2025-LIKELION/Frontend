@@ -1,45 +1,149 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as S from "./CalendarPageStyle";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
+import Feed from "@/components/Feed/Feed";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-const isSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
+interface FeedData {
+  id: number;
+  date: string;
+  username: string;
+  year: number;
+  text: string;
+  tag: string[] | null;
+  isMine: boolean;
+}
 
-const selectedDate = new Date(2025, 10, 5);
-const markedDate = new Date(2025, 10, 7);
+const mockData: FeedData[] = [
+  {
+    id: 1,
+    date: "2025-11-05",
+    username: "이대형",
+    year: 1999,
+    text: "자유로운 우리를 봐 자유로워",
+    tag: null,
+    isMine: true,
+  },
+  {
+    id: 2,
+    date: "2025-11-07",
+    username: "김말랑",
+    year: 2005,
+    text: "말랑말랑",
+    tag: ["말랑이", "말랑"],
+    isMine: false,
+  },
+  {
+    id: 3,
+    date: "2025-11-07",
+    username: "이대형",
+    year: 1999,
+    text: "자유로운 우리를 봐 자유로워",
+    tag: null,
+    isMine: true,
+  },
+  {
+    id: 4,
+    date: "2025-11-15",
+    username: "테스트",
+    year: 2000,
+    text: "다른 날짜 피드입니다.",
+    tag: ["태그1"],
+    isMine: false,
+  },
+];
+
+// Date 객체를 'YYYY-MM-DD' 형식의 문자열로 변환하는 함수
+const formatDateToYYYYMMDD = (date: Date): string => {
+  const year = date.getFullYear();
+  // month는 0부터 시작하므로 +1 후 두 자리로 패딩
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
+  const [filteredFeeds, setFilteredFeeds] = useState<FeedData[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    let selectedDate: Date | null = null;
+
+    if (value instanceof Date) {
+      selectedDate = value;
+    } else if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      value[0] instanceof Date
+    ) {
+      selectedDate = value[0];
+    } else {
+      setFilteredFeeds([]);
+      return;
+    }
+
+    if (selectedDate) {
+      const selectedDateString = formatDateToYYYYMMDD(selectedDate);
+
+      const feeds = mockData.filter((feed) => feed.date === selectedDateString);
+      setFilteredFeeds(feeds);
+    }
+  }, [value]);
+
+  const handleArchiveClick = (date: string) => {
+    setSelectedFeedDate(date); // 날짜 저장
+    setShowModal(true); // 모달 열기
+  };
+
+  const moveToDate = (date: string) => {
+    console.log(date, "날짜로 이동");
+    // 실제 이동 로직을 추후 여기에 구현
+    setShowModal(false); // 모달 닫기
+  };
+
+  const handleConfirmMove = () => {
+    if (selectedFeedDate) {
+      moveToDate(selectedFeedDate); // 저장된 날짜로 이동 함수 호출
+    } else {
+      setShowModal(false);
+    }
+  };
 
   return (
     <S.Container>
-      {/* StyledCalendar 사용 */}
+      {showModal && (
+        <ConfirmModal
+          question="해당 날짜로 이동할까요?"
+          onClose={() => setShowModal(false)}
+          onConfirm={handleConfirmMove}
+          showOverlay={true}
+        />
+      )}
       <Global styles={S.CalendarStyles} />
       <Calendar
         onChange={onChange}
         value={value}
         showNavigation={true}
         showNeighboringMonth={true}
-        formatMonthYear={(locale, date) => {
+        formatMonthYear={(_, date) => {
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           return `${year}. ${String(month).padStart(2, "0")}`;
         }}
-        formatShortWeekday={(locale, date) => {
+        formatShortWeekday={(_, date) => {
           const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
           // 캘린더는 기본적으로 일요일부터 시작하므로 date.getDay()를 사용해 인덱싱
           return weekdays[date.getDay()];
         }}
-        formatDay={(locale, date) =>
-          date.toLocaleString("en", { day: "numeric" })
-        }
+        formatDay={(_, date) => date.toLocaleString("en", { day: "numeric" })}
         nextLabel={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,6 +179,20 @@ export default function CalendarPage() {
           </svg>
         }
       />
+      <S.FeedContainer>
+        {filteredFeeds.length > 0 &&
+          filteredFeeds.map((feed) => (
+            <Feed
+              key={feed.id}
+              username={feed.username}
+              year={feed.year}
+              text={feed.text}
+              tag={feed.tag}
+              isInArchive={true}
+              onArchiveClick={() => handleArchiveClick(feed.date)}
+            />
+          ))}
+      </S.FeedContainer>
     </S.Container>
   );
 }
