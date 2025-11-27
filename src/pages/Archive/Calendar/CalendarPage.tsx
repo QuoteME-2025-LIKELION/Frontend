@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as S from "./CalendarPageStyle";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
@@ -98,24 +98,24 @@ export default function CalendarPage() {
     }
   }, [value]);
 
-  const handleArchiveClick = (date: string) => {
+  const handleArchiveClick = useCallback((date: string) => {
     setSelectedFeedDate(date); // 날짜 저장
     setShowModal(true); // 모달 열기
-  };
+  }, []);
 
-  const moveToDate = (date: string) => {
+  const moveToDate = useCallback((date: string) => {
     console.log(date, "날짜로 이동");
     // 실제 이동 로직을 추후 여기에 구현
-    setShowModal(false); // 모달 닫기
-  };
+    setShowModal(false); // 이동 후 모달 닫기
+  }, []);
 
-  const handleConfirmMove = () => {
+  const handleConfirmMove = useCallback(() => {
     if (selectedFeedDate) {
       moveToDate(selectedFeedDate); // 저장된 날짜로 이동 함수 호출
     } else {
       setShowModal(false);
     }
-  };
+  }, [selectedFeedDate, moveToDate]);
 
   return (
     <S.Container>

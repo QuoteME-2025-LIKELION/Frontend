@@ -26,7 +26,7 @@ interface FeedProps {
  * @param props.profileImgUrl 프로필 이미지 URL
  * @param props.username 사용자 이름
  * @param props.intro 자기소개
- * @param props.timestamp 작성 시간
+ * @param props.timestamp 작성 시간 (추후 백엔드 API에 따라 헬퍼 함수 추가 예정. 그 전 퍼블리싱할 땐 "3시간 전"처럼 표시.)
  * @param props.text 입력한 텍스트 (빈 문자열이면 isSilenced 처리)
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
  * @param props.isMine 내 피드인 경우 (기본값 false => true일 때만 따로 표시)
