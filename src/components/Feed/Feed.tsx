@@ -26,7 +26,7 @@ interface FeedProps {
  * @param props.profileImgUrl 프로필 이미지 URL
  * @param props.username 사용자 이름
  * @param props.intro 자기소개
- * @param props.timestamp 작성 시간
+ * @param props.timestamp 작성 시간 (추후 백엔드 API에 따라 헬퍼 함수 추가 예정. 그 전 퍼블리싱할 땐 "3시간 전"처럼 표시.)
  * @param props.text 입력한 텍스트 (빈 문자열이면 isSilenced 처리)
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
  * @param props.isMine 내 피드인 경우 (기본값 false => true일 때만 따로 표시)
@@ -45,7 +45,7 @@ interface FeedProps {
  *  profileImgUrl="https://example.com/profile.jpg"
  *  username="테스트"
  *  intro="안녕하세요"
- *  timestamp="방금 전"
+ *  timestamp="2025-11-27 PM 08:19"
  *  text="방귀 뀐 놈이 성낸다"
  *  tag={['듀듀', '무니니']}
  *  isMine={true}
@@ -196,13 +196,14 @@ export default function Feed({
           {/* 내 피드가 아니면서 아무것도 안 올렸을 땐 콕 찌르기 */}
           {/* 내 피드가 아니면서 태그 없이 올렸을 땐 태그 요청하기  */}
           {/* 내 피드가 이면서 태그 없이 올렸을 땐 그냥 태그 추가 버튼만 보이도록 */}
+          {/* 아카이브 페이지면 콕 찌르기나 태그 요청하기 텍스트가 안 뜸 */}
           {isSilenced && !isMine && (
             <S.PokeBtn
               type="button"
               onClick={() => handleClick(onPoke)}
               $isInArchive={isInArchive}
             >
-              콕 찌르기
+              {isInArchive ? "" : "콕 찌르기"}
             </S.PokeBtn>
           )}
           {!isSilenced && isNotTagged && !isMine && (
@@ -211,7 +212,7 @@ export default function Feed({
               onClick={() => handleClick(onRequest)}
               $isInArchive={isInArchive}
             >
-              태그 요청하기
+              {isInArchive ? "" : "태그 요청하기"}
             </S.RequestBtn>
           )}
           {!isSilenced && isNotTagged && isMine && (

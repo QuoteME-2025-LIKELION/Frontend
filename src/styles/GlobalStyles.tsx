@@ -41,6 +41,10 @@ const globalStyles = () => css`
     border: none;
     background-color: transparent;
   }
+
+  svg {
+    flex-shrink: 0;
+  }
 `;
 
 export const GlobalStyles = () => <Global styles={globalStyles} />;
