@@ -4,6 +4,8 @@ import CalendarPage from "@/pages/Archive/Calendar/CalendarPage";
 import Likes from "@/pages/Archive/Likes/Likes";
 import MyQuotes from "@/pages/Archive/MyQuotes/MyQuotes";
 import Home from "@/pages/Home/Home";
+import Notification from "@/pages/Notification/Notification";
+
 import GlobalStyles from "@/styles/GlobalStyles";
 import theme from "@/styles/theme";
 import { ThemeProvider } from "@emotion/react";
@@ -22,6 +24,7 @@ function App() {
             <Route path="my-quotes" element={<MyQuotes />} />
             <Route path="likes" element={<Likes />} />
           </Route>
+          <Route path="/notification" element={<Notification />} />
         </Routes>
       </ThemeProvider>
     </RootLayout>

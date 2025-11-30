@@ -20,8 +20,8 @@ export const Menu = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  @media screen and (max-width: 340px) {
-    padding: 1.25rem 2rem 1rem;
+  @media screen and (max-width: 360px) {
+    padding: 1.25rem 1.5rem 1rem;
   }
 `;
 

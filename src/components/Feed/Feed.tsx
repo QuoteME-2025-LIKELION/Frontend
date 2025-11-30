@@ -1,3 +1,4 @@
+import { formatTimeAgo } from "@/hooks/formatTimeAgo";
 import * as S from "./FeedStyle";
 
 interface FeedProps {
@@ -26,7 +27,7 @@ interface FeedProps {
  * @param props.profileImgUrl 프로필 이미지 URL
  * @param props.username 사용자 이름
  * @param props.intro 자기소개
- * @param props.timestamp 작성 시간 (추후 백엔드 API에 따라 헬퍼 함수 추가 예정. 그 전 퍼블리싱할 땐 "3시간 전"처럼 표시.)
+ * @param props.timestamp 작성 시간
  * @param props.text 입력한 텍스트 (빈 문자열이면 isSilenced 처리)
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
  * @param props.isMine 내 피드인 경우 (기본값 false => true일 때만 따로 표시)
@@ -45,7 +46,7 @@ interface FeedProps {
  *  profileImgUrl="https://example.com/profile.jpg"
  *  username="테스트"
  *  intro="안녕하세요"
- *  timestamp="2025-11-27 PM 08:19"
+ *  timestamp="2025-11-27T08:19:00"
  *  text="방귀 뀐 놈이 성낸다"
  *  tag={['듀듀', '무니니']}
  *  isMine={true}
@@ -80,6 +81,9 @@ export default function Feed({
   onArchiveClick,
   year,
 }: FeedProps) {
+  // timestamp를 헬퍼 함수로 변환
+  const formattedTimeAgo = timestamp ? formatTimeAgo(timestamp) : "";
+
   const isSilenced = !text || text.trim() === "";
   const isNotTagged = !tag || tag.length === 0 || isSilenced;
 
@@ -99,7 +103,7 @@ export default function Feed({
             <S.Username $isInArchive={isInArchive}>{username}</S.Username>
             <S.IntroTimeBox $isInArchive={isInArchive}>
               <div>{intro}</div>
-              <div>{timestamp}</div>
+              <div>{formattedTimeAgo}</div>
             </S.IntroTimeBox>
           </S.ProfileInfo>
         </S.ProfileContainer>
@@ -288,7 +292,7 @@ export default function Feed({
                 <path
                   d="M1.49333 5.50001C1.22974 5.23817 1.02089 4.92648 0.878967 4.58311C0.737041 4.23974 0.664872 3.87155 0.666667 3.50001C0.666667 2.74857 0.965178 2.0279 1.49653 1.49654C2.02788 0.96519 2.74855 0.666679 3.5 0.666679C4.55333 0.666679 5.47333 1.24001 5.96 2.09335H6.70667C6.95408 1.65938 7.31207 1.29874 7.74419 1.04813C8.17632 0.797522 8.66713 0.665904 9.16667 0.666679C9.91811 0.666679 10.6388 0.96519 11.1701 1.49654C11.7015 2.0279 12 2.74857 12 3.50001C12 4.28001 11.6667 5.00001 11.1733 5.50001L6.33333 10.3333L1.49333 5.50001ZM11.64 5.97335C12.2733 5.33335 12.6667 4.46668 12.6667 3.50001C12.6667 2.57175 12.2979 1.68152 11.6415 1.02514C10.9852 0.368761 10.0949 1.20347e-05 9.16667 1.20347e-05C8 1.20347e-05 6.96667 0.566679 6.33333 1.44668C6.01007 0.997678 5.5844 0.632224 5.09165 0.380631C4.5989 0.129038 4.05326 -0.00144287 3.5 1.20347e-05C2.57174 1.20347e-05 1.6815 0.368761 1.02513 1.02514C0.368749 1.68152 0 2.57175 0 3.50001C0 4.46668 0.393333 5.33335 1.02667 5.97335L6.33333 11.28L11.64 5.97335Z"
                   fill="white"
-                  fill-opacity="0.2"
+                  fillOpacity="0.2"
                 />
               </svg>
             ) : (
