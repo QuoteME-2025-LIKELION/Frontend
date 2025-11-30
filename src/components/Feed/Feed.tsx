@@ -46,7 +46,7 @@ interface FeedProps {
  *  profileImgUrl="https://example.com/profile.jpg"
  *  username="테스트"
  *  intro="안녕하세요"
- *  timestamp="2025-11-27 08:19:00"
+ *  timestamp="2025-11-27T08:19:00"
  *  text="방귀 뀐 놈이 성낸다"
  *  tag={['듀듀', '무니니']}
  *  isMine={true}
