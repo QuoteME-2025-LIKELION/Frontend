@@ -72,3 +72,18 @@ export const TextName = styled.div`
     letter-spacing: -0.28px;
     margin-top: 3px;
 `;
+
+export const SaveBanner = styled.div`
+    display: flex;
+    width: 266px;
+    height: 55px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    gap: 10px;
+    border-radius: 30px;
+    border: 1px solid #959595;
+    background: #F3F3F3;
+    margin-top: 40px;
+`;

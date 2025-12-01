@@ -11,6 +11,7 @@ export default function ProfileEdit() {
     const [email, setNickname] = useState("");
     const [preview, setPreview] = useState<string | null>(null);
     const [pwd, setIntro] = useState("");    
+    const [showBanner, setShowBanner] = useState(false);
 
     const fileRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +26,12 @@ export default function ProfileEdit() {
         const url = URL.createObjectURL(file);
         setPreview(url);
     };
+    const handleSave = () => {
+        setShowBanner(true);
+
+        setTimeout(() => setShowBanner(false), 1000);
+    };
+
 
     return (
     <S.Container>
@@ -77,8 +84,8 @@ export default function ProfileEdit() {
                 required
             />
             <S.LimitText>30자 내외</S.LimitText>
-            <S.InputBtn>저장 완료</S.InputBtn>
-        </S.InputBox>
+            <S.InputBtn onClick={handleSave}>저장 완료</S.InputBtn>
+            {showBanner && <S.SaveBanner>저장되었습니다</S.SaveBanner>}        </S.InputBox>
     </S.Container>
     )
     ;
