@@ -11,6 +11,7 @@ interface InputProps {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
+  hideSpin?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ interface InputProps {
  * @param props.required 입력창 필수 입력 여부
  * @param props.minLength 입력창의 최소 입력 길이
  * @param props.maxLength 입력창의 최대 입력 길이
+ * @param props.hideSpin 숫자 input에서 기본 스핀 버튼을 숨길지 여부
  * @example
  * <Input
  *  value={email}
@@ -47,6 +49,7 @@ export default function Input({
   required,
   minLength,
   maxLength,
+  hideSpin,
 }: InputProps) {
   return (
     <S.Input
@@ -60,6 +63,7 @@ export default function Input({
       required={required}
       minLength={minLength}
       maxLength={maxLength}
+      hideSpin={hideSpin} 
     />
   );
 }
