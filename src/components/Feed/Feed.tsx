@@ -1,4 +1,4 @@
-import { formatTimeAgo } from "@/hooks/formatTimeAgo";
+import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import * as S from "./FeedStyle";
 
 interface FeedProps {
