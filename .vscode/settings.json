@@ -1,5 +1,23 @@
 {
   "typescript.preferences.importModuleSpecifier": "non-relative", // TypeScript에서 상대 경로 대신 절대 경로 사용 선호
   "javascript.preferences.importModuleSpecifier": "non-relative", // JavaScript에서 상대 경로 대신 절대 경로 사용 선호
-  "typescript.tsdk": "node_modules/typescript/lib" // node_modules 안에 있는 TypeScript 라이브러리 버전으로 강제
+  "typescript.tsdk": "node_modules/typescript/lib", // node_modules 안에 있는 TypeScript 라이브러리 버전으로 강제
+
+  "editor.tabSize": 2, // .prettierrc 파일의 tabWidth와 일치시킴
+  "editor.detectIndentation": false, // 파일 내용을 기반으로 들여쓰기 설정을 감지하는 기능 끔 (일관된 탭 크기)
+  "editor.formatOnSave": true, // 파일을 저장할 때마다 Prettier가 자동으로 코드를 포맷팅하도록 설정
+
+  // TypeScript 및 JavaScript 파일에 대해 기본 포맷터를 Prettier로 지정
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

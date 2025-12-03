@@ -1,5 +1,28 @@
 import theme from "@/styles/theme";
+import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+`;
 
 export const Overlay = styled.div<{ $showOverlay: boolean }>`
   position: fixed;
@@ -28,6 +51,9 @@ export const Container = styled.div`
   max-width: 16.625rem; /* 266px */
   height: 3.8125rem; /* 61px */
   white-space: nowrap;
+  animation:
+    ${fadeIn} 0.3s ease-out,
+    ${fadeOut} 0.3s ease-in 1s forwards;
 
   ${theme.fonts.batang}
   color: #000;
