@@ -11,6 +11,7 @@ export const Button = styled.button`
   justify-content: center;
   align-items: center;
   padding: 0.4375rem 0.625rem; /* 7px 10px */
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 
   ${theme.fonts.batang}
   color: #000;
