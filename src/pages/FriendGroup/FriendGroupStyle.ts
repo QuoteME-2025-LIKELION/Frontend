@@ -17,6 +17,14 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.25rem; /* 36px */
+  height: 100%;
+  max-height: calc(100vh - 59px);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const Section = styled.div`
@@ -71,6 +79,9 @@ export const GroupContainer = styled.div`
   gap: 1.25rem; /* 20px */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const GroupBox = styled.button`

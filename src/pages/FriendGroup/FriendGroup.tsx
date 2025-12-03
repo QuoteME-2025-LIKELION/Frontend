@@ -9,8 +9,16 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function FriendGroup() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showToastModal, setShowToastModal] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState(""); // 삭제할 친구 이름 상태
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddToast, setShowAddToast] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
+
+  // TO-DO : Search 컴포넌트 값 state로 만든 뒤, 값 있는 경우엔 유저 정보 말고 검색어로 조회한 결과로 렌더링
+  // 이때 조건부 렌더링 삼항연산자 활용
+
   const navigate = useNavigate();
 
   const handleDeleteFriend = useCallback((friendName: string) => {
@@ -20,24 +28,51 @@ export default function FriendGroup() {
 
   const handleConfirmDelete = useCallback(() => {
     setShowDeleteModal(false);
-    setShowToastModal(true);
+    setShowDeleteToast(true);
+  }, []);
+
+  const handleAddFriend = useCallback((userName: string) => {
+    setSelectedUser(userName);
+    setShowAddModal(true);
+  }, []);
+
+  const handleConfirmAdd = useCallback(() => {
+    setShowAddModal(false);
+    setShowAddToast(true);
   }, []);
 
   return (
     <S.Container>
       {showDeleteModal && (
         <ConfirmModal
-          question={`${selectedFriend}님을 삭제하시겠습니까?`}
+          nickname={selectedFriend}
+          question="님을 삭제하시겠습니까?"
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleConfirmDelete}
           showOverlay={true}
         />
       )}
-      {showToastModal && (
+      {showDeleteToast && (
         <ToastModal
           text="친구가 삭제되었습니다."
-          isVisible={showToastModal}
-          onClose={() => setShowToastModal(false)}
+          isVisible={showDeleteToast}
+          onClose={() => setShowDeleteToast(false)}
+        />
+      )}
+      {showAddModal && (
+        <ConfirmModal
+          nickname={selectedUser}
+          question="님을 추가할까요?"
+          onClose={() => setShowAddModal(false)}
+          onConfirm={handleConfirmAdd}
+          showOverlay={true}
+        />
+      )}
+      {showAddToast && (
+        <ToastModal
+          text="친구가 추가되었습니다."
+          isVisible={showAddToast}
+          onClose={() => setShowAddToast(false)}
         />
       )}
       <Header
@@ -68,7 +103,8 @@ export default function FriendGroup() {
               <S.GroupName>무니니</S.GroupName>
               <S.GroupCount>3</S.GroupCount>
             </S.GroupBox>
-            <S.GroupBox onClick={() => navigate("/group")}>
+            {/* 검색 결과 나온 그룹 리스트 => join-group url 바뀌면 같이 수정 */}
+            <S.GroupBox onClick={() => navigate("/join-group")}>
               <S.GroupName>스어 친구들</S.GroupName>
               <S.GroupCount>2</S.GroupCount>
             </S.GroupBox>
@@ -88,14 +124,45 @@ export default function FriendGroup() {
                 onClick: () => handleDeleteFriend("듀랄라"),
               }}
             />
+            {/* 검색 결과 나온 유저 리스트 */}
             <List
               profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
               username="어푸"
               intro="작심삼일의 권위자"
               actionButton={{
-                type: "delete",
-                text: "삭제",
-                onClick: () => handleDeleteFriend("어푸"),
+                type: "add",
+                text: "추가",
+                onClick: () => handleAddFriend("어푸"),
+              }}
+            />
+            <List
+              profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+              username="어푸"
+              intro="작심삼일의 권위자"
+              actionButton={{
+                type: "add",
+                text: "추가",
+                onClick: () => handleAddFriend("어푸"),
+              }}
+            />
+            <List
+              profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+              username="어푸"
+              intro="작심삼일의 권위자"
+              actionButton={{
+                type: "add",
+                text: "추가",
+                onClick: () => handleAddFriend("어푸"),
+              }}
+            />
+            <List
+              profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+              username="어푸"
+              intro="작심삼일의 권위자"
+              actionButton={{
+                type: "add",
+                text: "추가",
+                onClick: () => handleAddFriend("어푸"),
               }}
             />
           </S.FriendList>
