@@ -6,6 +6,7 @@ export const Container = styled.div<{
   $isSelected: boolean;
 }>`
   width: 100%;
+  border-bottom: 1px solid ${theme.colors.secondary};
   display: grid;
   grid-template-columns: 2.8125rem 1fr 1.4375rem;
   gap: 0.6875rem; /* 11px */
