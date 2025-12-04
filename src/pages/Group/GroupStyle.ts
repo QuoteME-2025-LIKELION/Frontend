@@ -61,7 +61,7 @@ export const Section = styled.div`
   gap: 0.9375rem; /* 15px */
 `;
 
-export const MessageBox = styled.div`
+export const MessageBox = styled.button`
   width: 100%;
   display: flex;
   justify-content: space-between;

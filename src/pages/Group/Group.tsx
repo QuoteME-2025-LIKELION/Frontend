@@ -100,7 +100,8 @@ export default function Group() {
         <S.Main>
           <S.Section>
             <S.Title>그룹 메시지</S.Title>
-            <S.MessageBox>
+            {/* group 페이지 url 수정 시 링크도 같이 수정 */}
+            <S.MessageBox onClick={() => navigate("/group/change-message")}>
               <S.Quotation>“</S.Quotation>
               <S.EmptyText>메시지를 입력하세요</S.EmptyText>
               {/* {Message.length > 0 ? (
@@ -145,6 +146,7 @@ export default function Group() {
             />
           </S.Section>
           <S.BtnBox>
+            {/* group 페이지 url 수정 시 링크도 같이 수정 */}
             <Button
               title="그룹 초대하기"
               onClick={() => navigate("/group/invite")}
