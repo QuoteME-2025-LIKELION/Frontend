@@ -62,6 +62,7 @@ export const BtnBox = styled.div`
     letter-spacing: -0.26px;
     text-align: center;
     text-decoration-line: underline;
+    text-underline-position: from-font;
 
     &:active {
       color: #000;

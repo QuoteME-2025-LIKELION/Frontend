@@ -62,6 +62,7 @@ export const BtnBox = styled.div`
     letter-spacing: -0.26px;
     text-decoration-line: underline;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    text-underline-position: from-font;
   }
 `;
 
