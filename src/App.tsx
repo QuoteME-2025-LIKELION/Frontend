@@ -17,10 +17,8 @@ import theme from "@/styles/theme";
 import { ThemeProvider } from "@emotion/react";
 import { Route, Routes } from "react-router-dom";
 import AccountSetting from "@/pages/Setting/AccountSetting";
-<<<<<<< HEAD
 import MainHome from "@/pages/Main/MainHome";
 import MainWrite from "@/pages/Main/MainWrite";
-=======
 import Notification from "@/pages/Notification/Notification";
 import FriendGroup from "@/pages/FriendGroup/FriendGroup";
 import MyGroups from "@/pages/FriendGroup/pages/MyGroups";
@@ -30,7 +28,6 @@ import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 import NotFound from "@/pages/NotFound/NotFound";
->>>>>>> 39df5fb07e9f01c7ead11b4ef550d481e6e010d5
 
 function App() {
   return (
@@ -47,19 +44,17 @@ function App() {
           </Route>
           <Route path="/notification" element={<Notification />} />
 
-<<<<<<< HEAD
-          <Route path="/start" element={<Start/>}/>
-          <Route path="/signup" element={<SignUp/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/profile" element={<Profile/>}/>
-          <Route path="/profile-centerX" element={<ProfileCenterX/>}/>
-          <Route path="/profile-centerB" element={<ProfileCenterB/>}/>
-          <Route path="/profile-edit" element={<ProfileEdit/>}/>
-          <Route path="/setting-page" element={<SettingPage/>}/>
-          <Route path="/account-setting" element={<AccountSetting/>}/>
-          <Route path="/main-home" element={<MainHome/>}/>
-          <Route path="/main-write" element={<MainWrite/>}/>
-=======
+          <Route path="/start" element={<Start />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-centerX" element={<ProfileCenterX />} />
+          <Route path="/profile-centerB" element={<ProfileCenterB />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/setting-page" element={<SettingPage />} />
+          <Route path="/account-setting" element={<AccountSetting />} />
+          <Route path="/main-home" element={<MainHome />} />
+          <Route path="/main-write" element={<MainWrite />} />
           <Route path="/start" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
@@ -86,7 +81,6 @@ function App() {
 
           {/* 정의되지 않은 모든 경로는 NotFound 페이지 렌더링 */}
           <Route path="*" element={<NotFound />} />
->>>>>>> 39df5fb07e9f01c7ead11b4ef550d481e6e010d5
         </Routes>
       </ThemeProvider>
     </RootLayout>
