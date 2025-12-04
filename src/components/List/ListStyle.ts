@@ -6,6 +6,7 @@ export const Container = styled.div<{
   $isSelected: boolean;
 }>`
   width: 100%;
+  border-bottom: 1px solid ${theme.colors.secondary};
   display: grid;
   grid-template-columns: 2.8125rem 1fr 1.4375rem;
   gap: 0.6875rem; /* 11px */
@@ -60,6 +61,7 @@ export const BtnBox = styled.div`
     font-weight: 500;
     letter-spacing: -0.26px;
     text-decoration-line: underline;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 `;
 

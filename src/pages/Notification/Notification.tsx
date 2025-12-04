@@ -3,7 +3,7 @@ import * as S from "./NotificationStyle";
 import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";
-import { formatTimeAgo } from "@/hooks/formatTimeAgo";
+import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
 type NotificationState =
   | "group-noti"

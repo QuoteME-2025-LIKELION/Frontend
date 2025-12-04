@@ -25,6 +25,7 @@ export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -55,4 +56,8 @@ export const Desc = styled.div`
   color: ${theme.colors.territory};
   letter-spacing: -0.26px;
   font-weight: 400;
+
+  @media screen and (max-width: 340px) {
+    font-size: 0.6875rem; /* 11px */
+  }
 `;

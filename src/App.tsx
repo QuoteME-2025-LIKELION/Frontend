@@ -7,7 +7,7 @@ import Home from "@/pages/Home/Home";
 import Login from "@/pages/Login/Login";
 import SignUp from "@/pages/Login/SignUp";
 import Start from "@/pages/Login/Start";
-import Profile from "@/pages/Login/Profile"
+import Profile from "@/pages/Login/Profile";
 import ProfileCenterX from "@/pages/Setting-Profile/ProfileCenter(X)";
 import ProfileCenterB from "@/pages/Setting-Profile/ProfileCenter(B)";
 import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit";
@@ -17,8 +17,20 @@ import theme from "@/styles/theme";
 import { ThemeProvider } from "@emotion/react";
 import { Route, Routes } from "react-router-dom";
 import AccountSetting from "@/pages/Setting/AccountSetting";
+<<<<<<< HEAD
 import MainHome from "@/pages/Main/MainHome";
 import MainWrite from "@/pages/Main/MainWrite";
+=======
+import Notification from "@/pages/Notification/Notification";
+import FriendGroup from "@/pages/FriendGroup/FriendGroup";
+import MyGroups from "@/pages/FriendGroup/pages/MyGroups";
+import Group from "@/pages/Group/Group";
+import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
+import Invite from "@/pages/Group/pages/Invite/Invite";
+import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
+import CreateGroup from "@/pages/CreateGroup/CreateGroup";
+import NotFound from "@/pages/NotFound/NotFound";
+>>>>>>> 39df5fb07e9f01c7ead11b4ef550d481e6e010d5
 
 function App() {
   return (
@@ -33,7 +45,9 @@ function App() {
             <Route path="my-quotes" element={<MyQuotes />} />
             <Route path="likes" element={<Likes />} />
           </Route>
+          <Route path="/notification" element={<Notification />} />
 
+<<<<<<< HEAD
           <Route path="/start" element={<Start/>}/>
           <Route path="/signup" element={<SignUp/>}/>
           <Route path="/login" element={<Login/>}/>
@@ -45,6 +59,34 @@ function App() {
           <Route path="/account-setting" element={<AccountSetting/>}/>
           <Route path="/main-home" element={<MainHome/>}/>
           <Route path="/main-write" element={<MainWrite/>}/>
+=======
+          <Route path="/start" element={<Start />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-centerX" element={<ProfileCenterX />} />
+          <Route path="/profile-centerB" element={<ProfileCenterB />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/setting-page" element={<SettingPage />} />
+          <Route path="/account-setting" element={<AccountSetting />} />
+
+          <Route path="/friend-group" element={<FriendGroup />} />
+          <Route path="/my-groups" element={<MyGroups />} />
+          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
+          {/* <Route path="/join-group/:id" element={<JoinGroup />} /> */}
+          <Route path="/join-group" element={<JoinGroup />} />
+          <Route path="/create-group" element={<CreateGroup />} />
+          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
+          {/* <Route path="/group/:id" /> */}
+          <Route path="/group">
+            <Route index element={<Group />} />
+            <Route path="invite" element={<Invite />} />
+            <Route path="change-message" element={<ChangeMessage />} />
+          </Route>
+
+          {/* 정의되지 않은 모든 경로는 NotFound 페이지 렌더링 */}
+          <Route path="*" element={<NotFound />} />
+>>>>>>> 39df5fb07e9f01c7ead11b4ef550d481e6e010d5
         </Routes>
       </ThemeProvider>
     </RootLayout>

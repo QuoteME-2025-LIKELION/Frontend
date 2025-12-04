@@ -6,12 +6,5 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  height: 100%;
-  max-height: calc(100vh - 98px);
-  overflow-y: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  height: 100vh;
 `;

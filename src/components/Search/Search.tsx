@@ -12,7 +12,6 @@ interface SearchProps {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
-  onSearch?: () => void;
   onClear?: () => void;
 }
 
@@ -30,7 +29,6 @@ interface SearchProps {
  * @param props.required - 검색창 필수 입력 여부
  * @param props.minLength - 검색창의 최소 입력 길이
  * @param props.maxLength - 검색창의 최대 입력 길이
- * @param props.onSearch - 검색 버튼 클릭 시 호출되는 함수
  * @param props.onClear - X 버튼 클릭 시 호출되는 함수 (setValue("") 이런 식으로 구현)
  * @example
  * <Search
@@ -55,29 +53,26 @@ export default function Search({
   required = true,
   minLength,
   maxLength,
-  onSearch,
   onClear,
 }: SearchProps) {
   return (
     <S.Wrapper>
       <S.Container>
-        <button onClick={onSearch}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M14 14L11.1067 11.1067M12.6667 7.33333C12.6667 10.2789 10.2789 12.6667 7.33333 12.6667C4.38781 12.6667 2 10.2789 2 7.33333C2 4.38781 4.38781 2 7.33333 2C10.2789 2 12.6667 4.38781 12.6667 7.33333Z"
-              stroke="#959595"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+        >
+          <path
+            d="M14 14L11.1067 11.1067M12.6667 7.33333C12.6667 10.2789 10.2789 12.6667 7.33333 12.6667C4.38781 12.6667 2 10.2789 2 7.33333C2 4.38781 4.38781 2 7.33333 2C10.2789 2 12.6667 4.38781 12.6667 7.33333Z"
+            stroke="#959595"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <S.SearchInput
           value={value}
           onChange={onChange}

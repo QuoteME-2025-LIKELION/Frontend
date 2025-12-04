@@ -1,5 +1,9 @@
-// 시간(Date 객체, 문자열, 숫자)을 받아서 "몇 분 전", "몇 시간 전" 등의 형식으로 반환하는 헬퍼 함수
-export function formatTimeAgo(time: Date | string | number) {
+/**
+ * 시간(Date 객체, 문자열, 숫자)을 받아서 "몇 분 전", "몇 시간 전" 등의 형식으로 반환하는 유틸리티 함수
+ * @param time 시간(Date 객체, 문자열, 숫자)
+ * @returns "몇 분 전", "몇 시간 전" 등의 형식으로 반환된 문자열
+ */
+export function formatTimeAgo(time: Date | string | number): string {
   const start = new Date(time);
   const end = new Date();
 

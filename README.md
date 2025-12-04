@@ -75,21 +75,25 @@ frontend/
 │  └─ vite.svg (추후 QuoteMe favicon 파일로 변경 예정)
 │
 ├─ src/
-│  ├─ layouts/ (레이아웃 관리)        
+│  ├─ api/ (axiosInstance 파일)
 │  │
-│  ├─ components/ (재사용되는 컴포넌트 파일 - 각 컴포넌트를 폴더로 관리)        
+│  ├─ components/ (재사용되는 컴포넌트 파일 - 각 컴포넌트를 폴더로 관리)
 │  │
-│  ├─ hooks/ (api fetch 등 재사용되는 hook 파일)               
+│  ├─ hooks/ (재사용되는 커스텀 훅 파일)  
 │  │
-│  ├─ pages/ (홈 화면 등 페이지 파일 - 각 페이지에서만 쓰이는 컴포넌트는 페이지 폴더 내부에서 관리)             
+│  ├─ layouts/ (레이아웃 관리)            
+│  │
+│  ├─ pages/ (홈 화면 등 페이지 파일 - 각 페이지에서만 쓰이는 컴포넌트는 페이지 폴더 내부에서 관리)
+│  │
+│  ├─ stores/ (zustand 전역 상태 파일)                 
 │  │
 │  ├─ styles/ (css 관련 파일)
 │  │  ├─ GlobalStyles.tsx (전역 스타일 관리)
 │  │  └─ theme.ts (css 전역 변수 관리)
 │  │
-│  ├─ stores/ (zustand 전역 상태 파일)          
+│  ├─ types/ (전역에서 쓰이는 type 정의 파일)          
 │  │
-│  ├─ types/ (전역에서 쓰이는 type 파일 관리)          
+│  ├─ utils/ (유틸리티 함수 파일)          
 │  │
 │  ├─ App.tsx         
 │  └─ main.tsx          

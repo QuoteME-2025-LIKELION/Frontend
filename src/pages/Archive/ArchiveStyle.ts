@@ -33,6 +33,7 @@ export const Btn = styled.button<{ $active: boolean }>`
   text-align: center;
   background-color: transparent;
   outline: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};

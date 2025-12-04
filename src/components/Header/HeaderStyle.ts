@@ -35,6 +35,7 @@ export const Container = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 `;
 
