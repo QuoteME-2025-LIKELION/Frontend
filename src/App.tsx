@@ -17,6 +17,8 @@ import theme from "@/styles/theme";
 import { ThemeProvider } from "@emotion/react";
 import { Route, Routes } from "react-router-dom";
 import AccountSetting from "@/pages/Setting/AccountSetting";
+import MainHome from "@/pages/Main/MainHome";
+import MainWrite from "@/pages/Main/MainWrite";
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
           <Route path="/profile-edit" element={<ProfileEdit/>}/>
           <Route path="/setting-page" element={<SettingPage/>}/>
           <Route path="/account-setting" element={<AccountSetting/>}/>
+          <Route path="/main-home" element={<MainHome/>}/>
+          <Route path="/main-write" element={<MainWrite/>}/>
         </Routes>
       </ThemeProvider>
     </RootLayout>
