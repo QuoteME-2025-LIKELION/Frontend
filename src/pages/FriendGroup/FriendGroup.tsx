@@ -90,6 +90,7 @@ export default function FriendGroup() {
           desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          onClear={() => setKeyword("")}
         />
         <S.Section>
           <S.Title>
