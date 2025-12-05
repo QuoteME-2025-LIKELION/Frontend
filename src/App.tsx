@@ -3,7 +3,6 @@ import Archive from "@/pages/Archive/Archive";
 import CalendarPage from "@/pages/Archive/Calendar/CalendarPage";
 import Likes from "@/pages/Archive/Likes/Likes";
 import MyQuotes from "@/pages/Archive/MyQuotes/MyQuotes";
-import Home from "@/pages/Home/Home";
 import Login from "@/pages/Login/Login";
 import SignUp from "@/pages/Login/SignUp";
 import Start from "@/pages/Login/Start";
@@ -36,7 +35,6 @@ function App() {
         <GlobalStyles />
         <Routes>
           {/* 루트는 앞으로 이런 식으로 추가해나가면 됩니다 */}
-          <Route path="/" element={<Home />} />
           <Route path="/archive" element={<Archive />}>
             <Route index element={<CalendarPage />} />
             <Route path="my-quotes" element={<MyQuotes />} />
@@ -44,26 +42,20 @@ function App() {
           </Route>
           <Route path="/notification" element={<Notification />} />
 
-          <Route path="/start" element={<Start />} />
+          {/* 게스트로 시작 버튼 누르면 /main-home으로 이동하도록 라우팅 수정했습니다. */}
+          <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile-centerX" element={<ProfileCenterX />} />
           <Route path="/profile-centerB" element={<ProfileCenterB />} />
           <Route path="/profile-edit" element={<ProfileEdit />} />
           <Route path="/setting-page" element={<SettingPage />} />
           <Route path="/account-setting" element={<AccountSetting />} />
+
           <Route path="/main-home" element={<MainHome />} />
           <Route path="/main-write" element={<MainWrite />} />
-          <Route path="/start" element={<Start />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile-centerX" element={<ProfileCenterX />} />
-          <Route path="/profile-centerB" element={<ProfileCenterB />} />
-          <Route path="/profile-edit" element={<ProfileEdit />} />
-          <Route path="/setting-page" element={<SettingPage />} />
-          <Route path="/account-setting" element={<AccountSetting />} />
 
           <Route path="/friend-group" element={<FriendGroup />} />
           <Route path="/my-groups" element={<MyGroups />} />
