@@ -37,9 +37,9 @@ export const InfoBox = styled.div`
 `;
 
 export const InputBtn = styled.div`
-  ${theme.fonts.chonburi};
-  border-top: 0.5px solid #959595;
-  border-bottom: 0.5px solid #959595;
+  ${theme.fonts.batang};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;
   display: flex;
   padding: 7px 10px;
@@ -67,8 +67,10 @@ export const ImgPreview = styled.div`
 `;
 
 export const ImgInput = styled.div`
-  ${() => theme.colors.territory}
+  ${theme.fonts.pretendard};
+  color: ${theme.colors.territory};
   font-size: 14px;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-position: from-font;
   cursor: pointer;

@@ -19,9 +19,9 @@ export const InputBox = styled.div`
 `;
 
 export const InputBtn = styled.div`
-  ${theme.fonts.chonburi};
-  border-top: 0.5px solid #959595;
-  border-bottom: 0.5px solid #959595;
+  ${theme.fonts.batang};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;
   display: flex;
   padding: 7px 10px;
@@ -49,14 +49,16 @@ export const ImgPreview = styled.div`
 `;
 
 export const ImgInput = styled.div`
-  color: #959595;
+  ${theme.fonts.pretendard};
+  color: ${theme.colors.territory};
   font-size: 14px;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-position: from-font;
   cursor: pointer;
 `;
 export const LimitText = styled.div`
-  color: #959595;
+  color: ${theme.colors.territory};
   font-size: 13px;
   font-style: normal;
   font-weight: 400;
@@ -65,7 +67,7 @@ export const LimitText = styled.div`
 
 export const TextName = styled.div`
   color: #000;
-  font-family: Pretendard;
+  ${theme.fonts.pretendard};
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
@@ -84,7 +86,7 @@ export const SaveBanner = styled.div`
   align-self: center;
   gap: 10px;
   border-radius: 30px;
-  border: 1px solid #959595;
-  background: #f3f3f3;
+  border: 1px solid ${theme.colors.territory};
+  background: ${theme.colors.secondary};
   margin-top: 40px;
 `;

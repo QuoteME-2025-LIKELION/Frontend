@@ -19,9 +19,9 @@ export const InputBox = styled.div`
 `;
 
 export const InputBtn = styled.div`
-  ${theme.fonts.chonburi};
-  border-top: 0.5px solid #959595;
-  border-bottom: 0.5px solid #959595;
+  ${theme.fonts.batang};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;
   display: flex;
   padding: 7px 10px;
@@ -29,10 +29,9 @@ export const InputBtn = styled.div`
   align-items: center;
   font-weight: 700;
   align-self: stretch;
-  margin-top: 77px;
+  margin-top: 81px;
   cursor: pointer;
 `;
-
 export const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -49,14 +48,16 @@ export const ImgPreview = styled.div`
 `;
 
 export const ImgInput = styled.div`
-  color: #959595;
+  ${theme.fonts.pretendard};
+  color: ${theme.colors.territory};
   font-size: 14px;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-position: from-font;
   cursor: pointer;
 `;
 export const LimitText = styled.div`
-  color: #959595;
+  color: ${theme.colors.territory};
   font-size: 13px;
   font-style: normal;
   font-weight: 400;

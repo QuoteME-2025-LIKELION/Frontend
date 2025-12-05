@@ -21,15 +21,15 @@ export const InputBox = styled.div`
 export const WarningMessage = styled.div`
   display: flex;
   justify-content: center;
-  color: #de1c1c;
+  color: ${theme.colors.red};
   font-size: 13px;
   font-weight: 400;
 `;
 
 export const InputBtn = styled.div`
-  ${theme.fonts.chonburi};
-  border-top: 0.5px solid #959595;
-  border-bottom: 0.5px solid #959595;
+  ${theme.fonts.batang};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;
   display: flex;
   padding: 7px 10px;
@@ -42,7 +42,8 @@ export const InputBtn = styled.div`
 `;
 
 export const MissingBtn = styled.button`
-  color: #959595;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
   text-align: center;
   font-size: 13px;
   font-style: normal;
