@@ -85,30 +85,32 @@ export default function Search({
           minLength={minLength}
           maxLength={maxLength}
         />
-        <button type="button" onClick={onClear}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <g clipPath="url(#clip0_636_1003)">
-              <path
-                d="M10 6L6.00004 10M6.00004 6L10 10M14.6667 8C14.6667 11.6819 11.6819 14.6667 8.00004 14.6667C4.31814 14.6667 1.33337 11.6819 1.33337 8C1.33337 4.3181 4.31814 1.33334 8.00004 1.33334C11.6819 1.33334 14.6667 4.3181 14.6667 8Z"
-                stroke="#959595"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_636_1003">
-                <rect width="16" height="16" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-        </button>
+        {value && onClear && (
+          <button type="button" onClick={onClear}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <g clipPath="url(#clip0_636_1003)">
+                <path
+                  d="M10 6L6.00004 10M6.00004 6L10 10M14.6667 8C14.6667 11.6819 11.6819 14.6667 8.00004 14.6667C4.31814 14.6667 1.33337 11.6819 1.33337 8C1.33337 4.3181 4.31814 1.33334 8.00004 1.33334C11.6819 1.33334 14.6667 4.3181 14.6667 8Z"
+                  stroke="#959595"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_636_1003">
+                  <rect width="16" height="16" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        )}
       </S.Container>
       {desc && <S.Desc>{desc}</S.Desc>}
     </S.Wrapper>

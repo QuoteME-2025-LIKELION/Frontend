@@ -62,12 +62,16 @@ export const BtnBox = styled.div`
     letter-spacing: -0.26px;
     text-decoration-line: underline;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    text-underline-position: from-font;
+
+    &:active {
+      background-color: ${theme.colors.secondary};
+    }
   }
 `;
 
-export const DeleteBtn = styled.button<{ $isSelected: boolean }>`
-  color: ${({ $isSelected }) =>
-    $isSelected ? "#000" : theme.colors.territory};
+export const DeleteBtn = styled.button`
+  color: ${theme.colors.territory};
 `;
 
 export const AddBtn = styled.button`
