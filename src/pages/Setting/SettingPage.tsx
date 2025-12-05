@@ -13,7 +13,7 @@ export default function SettingPage() {
             showXBtn={true} 
             title="환경설정"
             backgroundColor="white"
-            onClickXBtn={() => navigate("")}
+            onClickXBtn={() => navigate(-1)}
         />
         <S.SettingList>
             <S.SettingBtn>프로필</S.SettingBtn>

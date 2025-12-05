@@ -13,7 +13,7 @@ export default function ProfileCenter() {
             showXBtn={true} 
             title="프로필 관리"
             backgroundColor="white"
-            onClickXBtn={() => navigate("")}
+            onClickXBtn={() => navigate(-1)}
         />
         <S.ProfileWrapper>
             <S.ImgPreview/>
