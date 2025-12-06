@@ -11,7 +11,8 @@ export const Container = styled.div`
 `;
 
 export const InputBox = styled.div`
-  width: 315px;
+  width: 100%;
+  padding: 0 2.5rem; /* 0 40px */
   display: flex;
   flex-direction: column;
   margin-top: 26px;

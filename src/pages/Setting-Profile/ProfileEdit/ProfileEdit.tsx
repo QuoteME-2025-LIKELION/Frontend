@@ -1,8 +1,10 @@
+import Button from "@/components/Button/Button";
 import * as S from "./ProfileEditStyled";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function ProfileEdit() {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ export default function ProfileEdit() {
   const [email, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [pwd, setIntro] = useState("");
-  const [showBanner, setShowBanner] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -26,13 +28,22 @@ export default function ProfileEdit() {
     setPreview(url);
   };
   const handleSave = () => {
-    setShowBanner(true);
-
-    setTimeout(() => setShowBanner(false), 1000);
+    // 프로필 변경 저장 로직 추가
+    setShowToast(true);
+    setTimeout(() => {
+      navigate(-1);
+    }, 1500);
   };
 
   return (
     <S.Container>
+      {showToast && (
+        <ToastModal
+          text="변경된 프로필이 저장되었습니다."
+          isVisible={showToast}
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <Header
         showBackBtn={false}
         showXBtn={true}
@@ -80,8 +91,7 @@ export default function ProfileEdit() {
           required
         />
         <S.LimitText>30자 내외</S.LimitText>
-        <S.InputBtn onClick={handleSave}>저장 완료</S.InputBtn>
-        {showBanner && <S.SaveBanner>저장되었습니다</S.SaveBanner>}{" "}
+        <Button title="저장하기" onClick={handleSave} />
       </S.InputBox>
     </S.Container>
   );

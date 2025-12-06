@@ -1,3 +1,4 @@
+import Button from "@/components/Button/Button";
 import * as S from "./ProfileCenterStyled";
 import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,9 +31,7 @@ export default function ProfileCenter() {
         <S.InfoBox style={{ color: "#959595" }}>이메일</S.InfoBox>
         <S.TextName>자기소개</S.TextName>
         <S.InfoBox>안녕하세욤</S.InfoBox>
-        <S.InputBtn onClick={() => navigate("/profile-edit")}>
-          편집하기
-        </S.InputBtn>
+        <Button title="편집하기" onClick={() => navigate("/profile-edit")} />
       </S.InputBox>
     </S.Container>
   );

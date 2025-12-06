@@ -11,27 +11,28 @@ export const Container = styled.div`
 `;
 
 export const InputBox = styled.div`
-  width: 315px;
+  width: 100%;
+  padding: 0 2.5rem; /* 0 40px */
   display: flex;
   flex-direction: column;
   margin-top: 26px;
   gap: 9px;
 `;
 
-export const InputBtn = styled.div`
-  ${theme.fonts.batang};
-  border-top: 0.5px solid ${theme.colors.territory};
-  border-bottom: 0.5px solid ${theme.colors.territory};
-  background: #fff;
-  display: flex;
-  padding: 7px 10px;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  align-self: stretch;
-  margin-top: 10px;
-  cursor: pointer;
-`;
+// export const InputBtn = styled.div`
+//   ${theme.fonts.batang};
+//   border-top: 0.5px solid ${theme.colors.territory};
+//   border-bottom: 0.5px solid ${theme.colors.territory};
+//   background: #fff;
+//   display: flex;
+//   padding: 7px 10px;
+//   justify-content: center;
+//   align-items: center;
+//   font-weight: 700;
+//   align-self: stretch;
+//   margin-top: 10px;
+//   cursor: pointer;
+// `;
 
 export const ProfileWrapper = styled.div`
   display: flex;
@@ -63,6 +64,7 @@ export const LimitText = styled.div`
   font-style: normal;
   font-weight: 400;
   margin-bottom: 3px;
+  ${theme.fonts.pretendard}
 `;
 
 export const TextName = styled.div`
@@ -76,17 +78,17 @@ export const TextName = styled.div`
   margin-top: 3px;
 `;
 
-export const SaveBanner = styled.div`
-  display: flex;
-  width: 266px;
-  height: 55px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  gap: 10px;
-  border-radius: 30px;
-  border: 1px solid ${theme.colors.territory};
-  background: ${theme.colors.secondary};
-  margin-top: 40px;
-`;
+// export const SaveBanner = styled.div`
+//   display: flex;
+//   width: 266px;
+//   height: 55px;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   align-self: center;
+//   gap: 10px;
+//   border-radius: 30px;
+//   border: 1px solid ${theme.colors.territory};
+//   background: ${theme.colors.secondary};
+//   margin-top: 40px;
+// `;

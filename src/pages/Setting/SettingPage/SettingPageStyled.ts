@@ -11,7 +11,8 @@ export const Container = styled.div`
 `;
 
 export const SettingList = styled.div`
-  width: 315px;
+  width: 100%;
+  padding: 0 2rem; /* 0 32px */
   display: flex;
   flex-direction: column;
   margin-top: 15px;
@@ -56,17 +57,24 @@ export const SettingWordLine = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 522px;
+  width: 100%;
+  padding: 0 0.8125rem; /* 0 13px */
 `;
 export const SettingWord = styled.div`
   color: ${theme.colors.territory};
   font-size: 16px;
   font-weight: 500;
+  ${theme.fonts.pretendard}
 `;
 export const LogOutBtn = styled.button`
+  width: 100%;
+  padding: 0.3125rem 0.8125rem 0; /* 5px 13px 0 */
+
   text-align: start;
   color: ${theme.colors.territory};
   font-weight: 500;
   font-size: 16px;
   text-decoration-line: underline;
   text-underline-position: from-font;
+  ${theme.fonts.pretendard}
 `;
