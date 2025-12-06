@@ -4,6 +4,7 @@ import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/Button/Button";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -79,8 +80,11 @@ export default function Login() {
           <S.WarningMessage>잘못된 비밀번호입니다.</S.WarningMessage>
         )}
         <S.MissingBtn> 비밀번호를 잊었다면?</S.MissingBtn>
-        <S.InputBtn>입력 완료</S.InputBtn>
       </S.InputBox>
+      <S.BtnBox>
+        {/* 추후 onClick 이벤트 추가(handleLogin) */}
+        <Button title="입력 완료" onClick={() => {}} />
+      </S.BtnBox>
     </S.Container>
   );
 }
