@@ -39,8 +39,8 @@ export const SettingBtn = styled.button`
 
 export const InputBtn = styled.div`
   ${theme.fonts.chonburi};
-  border-top: 0.5px solid ${(props) => props.theme.colors.territory};
-  border-bottom: 0.5px solid ${(props) => props.theme.colors.territory};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;
   display: flex;
   padding: 7px 10px;
@@ -58,13 +58,13 @@ export const SettingWordLine = styled.div`
   margin-top: 522px;
 `;
 export const SettingWord = styled.div`
-  color: ${(props) => props.theme.colors.territory};
+  color: ${theme.colors.territory};
   font-size: 16px;
   font-weight: 500;
 `;
 export const LogOutBtn = styled.button`
   text-align: start;
-  color: ${(props) => props.theme.colors.territory};
+  color: ${theme.colors.territory};
   font-weight: 500;
   font-size: 16px;
   text-decoration-line: underline;

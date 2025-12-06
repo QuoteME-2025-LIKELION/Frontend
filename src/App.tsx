@@ -7,8 +7,6 @@ import Login from "@/pages/Login/Login";
 import SignUp from "@/pages/Login/SignUp";
 import Start from "@/pages/Login/Start";
 import Profile from "@/pages/Login/Profile";
-import ProfileCenterX from "@/pages/Setting-Profile/ProfileCenter(X)";
-import ProfileCenterB from "@/pages/Setting-Profile/ProfileCenter(B)";
 import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit";
 import SettingPage from "@/pages/Setting/SettingPage";
 import GlobalStyles from "@/styles/GlobalStyles";
@@ -27,6 +25,7 @@ import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 import NotFound from "@/pages/NotFound/NotFound";
+import ProfileCenter from "@/pages/Setting-Profile/ProfileCenter";
 
 function App() {
   return (
@@ -42,20 +41,19 @@ function App() {
           </Route>
           <Route path="/notification" element={<Notification />} />
 
-          {/* 게스트로 시작 버튼 누르면 /main-home으로 이동하도록 라우팅 수정했습니다. */}
+          {/* 게스트로 시작 버튼 누르면 /home으로 이동하도록 라우팅 수정했습니다. */}
           <Route path="/" element={<Start />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
 
           <Route path="/profile" element={<Profile />} />
-          <Route path="/profile-centerX" element={<ProfileCenterX />} />
-          <Route path="/profile-centerB" element={<ProfileCenterB />} />
+          <Route path="/profile-center" element={<ProfileCenter />} />
           <Route path="/profile-edit" element={<ProfileEdit />} />
           <Route path="/setting-page" element={<SettingPage />} />
           <Route path="/account-setting" element={<AccountSetting />} />
 
-          <Route path="/main-home" element={<MainHome />} />
-          <Route path="/main-write" element={<MainWrite />} />
+          <Route path="/home" element={<MainHome />} />
+          <Route path="/write" element={<MainWrite />} />
 
           <Route path="/friend-group" element={<FriendGroup />} />
           <Route path="/my-groups" element={<MyGroups />} />
