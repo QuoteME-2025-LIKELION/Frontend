@@ -9,10 +9,12 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   height: 100vh;
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const ComendList = styled.div`
-  padding: 20px 35px;
+  padding: 20px 25px;
   gap: 20px;
   width: 100%;
   display: flex;
@@ -40,13 +42,14 @@ export const Text = styled.div`
 export const Commend = styled.div<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding: 15px 0px;
-  width: 344px;
+  padding: 15px;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid #143858;
   background: #fff;
-  gap: 19px;
+  gap: 15px;
   cursor: pointer;
 
   border: ${({ $isSelected }) =>
@@ -56,20 +59,14 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
 export const FirstLine = styled.div`
   display: flex;
   gap: 18px;
-`;
-export const SelectBtn = styled.button`
-  display: flex;
-  padding: 7px 10px;
+  width: 100%;
   justify-content: center;
+  align-items: center;
+`;
+export const BtnBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   align-self: stretch;
-
-  border-top: 0.5px solid #959595;
-  border-bottom: 0.5px solid #959595;
-  background: #fff;
-
-  text-align: center;
-  ${theme.fonts.batang}
-  font-size: 16px;
-  font-weight: 700;
   margin-top: 24px;
 `;

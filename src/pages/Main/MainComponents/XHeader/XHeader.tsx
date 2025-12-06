@@ -1,4 +1,4 @@
-import * as S from "./DateHeaderStyled";
+import * as S from "../DateHeader/DateHeaderStyled";
 import { useNavigate } from "react-router-dom";
 
 export default function DateHeader() {
@@ -13,7 +13,7 @@ export default function DateHeader() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          onClick={() => navigate("/main-home")}
+          onClick={() => navigate("/home")}
           style={{ cursor: "pointer" }}
         >
           <path

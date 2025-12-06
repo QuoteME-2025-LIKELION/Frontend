@@ -15,6 +15,8 @@ export const Container = styled.div<{
   background-color: ${({ $isSelected }) =>
     $isSelected ? theme.colors.secondary : "#fff"};
   cursor: ${({ $isSelectable }) => ($isSelectable ? "pointer" : "default")};
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const ProfileImg = styled.img`

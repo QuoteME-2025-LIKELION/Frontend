@@ -11,11 +11,30 @@ export const Container = styled.div`
 `;
 
 export const InputBox = styled.div`
-  width: 315px;
+  width: 100%;
+  padding: 0 2.5rem; /* 0 40px */
   display: flex;
   flex-direction: column;
   margin-top: 26px;
   gap: 9px;
+`;
+
+export const InfoBox = styled.div`
+  width: 100%;
+  height: 2.1875rem; /* 35px */
+  padding: 0.625rem 0.9375rem; /* 10px 15px */
+  background-color: ${theme.colors.secondary};
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
+  display: flex;
+  align-items: center;
+  outline: none;
+
+  ${theme.fonts.pretendard}
+  color: #000;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  letter-spacing: -0.28px;
 `;
 
 export const InputBtn = styled.div`
@@ -29,9 +48,10 @@ export const InputBtn = styled.div`
   align-items: center;
   font-weight: 700;
   align-self: stretch;
-  margin-top: 81px;
+  margin-top: 10px;
   cursor: pointer;
 `;
+
 export const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -56,10 +76,13 @@ export const ImgInput = styled.div`
   text-underline-position: from-font;
   cursor: pointer;
 `;
-export const LimitText = styled.div`
-  color: ${theme.colors.territory};
-  font-size: 13px;
+
+export const TextName = styled.div`
+  color: #000;
+  font-family: Pretendard;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 400;
-  margin-bottom: 3px;
+  font-weight: 500;
+  line-height: 100%;
+  letter-spacing: -0.28px;
 `;
