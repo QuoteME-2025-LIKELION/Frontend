@@ -1,4 +1,4 @@
-import * as S from "@/pages/Main/MainComponents/RecommendListStyled";
+import * as S from "./RecommendListStyled";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

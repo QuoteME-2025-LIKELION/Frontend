@@ -9,6 +9,8 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   height: 100vh;
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const ComendList = styled.div`

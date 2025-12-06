@@ -1,6 +1,6 @@
-import DateHeader from "./MainComponents/DateHeader";
-import MainHomeBox from "./MainComponents/HomeBox";
-import FeedList from "./MainComponents/FeddList";
+import DateHeader from "./MainComponents/DateHeader/DateHeader";
+import HomeBox from "./MainComponents/HomeBox/HomeBox";
+import FeedList from "./MainComponents/FeedList/FeedList";
 import * as S from "@/pages/Main/MainStyled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,7 @@ export default function MainHome() {
         </S.Toggle>
       )}
 
-      <MainHomeBox />
+      <HomeBox />
       <FeedList />
     </S.Container>
   );

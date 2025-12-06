@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import theme from "@/styles/theme";
-import * as L from "./LoginStyled";
+import * as L from "@/pages/Login/LoginStyled";
 
 export const Container = styled(L.Container)``;
 

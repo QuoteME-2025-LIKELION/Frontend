@@ -1,4 +1,4 @@
-import * as S from "./DateHeaderStyled";
+import * as S from "../DateHeader/DateHeaderStyled";
 import { useNavigate } from "react-router-dom";
 
 export default function DateHeader() {

@@ -1,5 +1,5 @@
 import List from "@/components/List/List";
-import * as S from "@/pages/Main/MainComponents/NewQuoteStyled";
+import * as S from "./NewQuoteStyled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
