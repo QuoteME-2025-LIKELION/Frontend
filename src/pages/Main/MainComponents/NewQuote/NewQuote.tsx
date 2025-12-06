@@ -2,6 +2,7 @@ import List from "@/components/List/List";
 import * as S from "./NewQuoteStyled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/Button/Button";
 
 export default function NewQuote() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -89,7 +90,9 @@ export default function NewQuote() {
           ))}
         </S.TagList>
       </S.TagBox>
-      <S.SelectBtn onClick={() => navigate("/home")}>명언 남기기</S.SelectBtn>
+      <S.BtnBox>
+        <Button title="명언 남기기" onClick={() => navigate("/home")} />
+      </S.BtnBox>
     </S.Container>
   );
 }

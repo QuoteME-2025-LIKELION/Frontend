@@ -1,6 +1,7 @@
 import * as S from "./RecommendListStyled";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Button from "@/components/Button/Button";
 
 interface RecommendListProps {
   onSelectComplete: () => void;
@@ -82,7 +83,9 @@ export default function RecommendListList({
             <S.Text style={{ fontSize: 12 }}> - {q.author}</S.Text>
           </S.Commend>
         ))}
-        <S.SelectBtn onClick={onSelectComplete}>선택 완료</S.SelectBtn>
+        <S.BtnBox>
+          <Button title="선택 완료" onClick={onSelectComplete} />
+        </S.BtnBox>
       </S.ComendList>
     </S.Container>
   );
