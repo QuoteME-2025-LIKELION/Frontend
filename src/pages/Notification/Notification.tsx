@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 type NotificationState =
   | "group-noti"
@@ -94,78 +95,81 @@ export default function Notification() {
   );
 
   return (
-    <S.Container>
-      <Header
-        showBackBtn={false}
-        showXBtn={true}
-        title="알림함"
-        backgroundColor="white"
-        onClickXBtn={() => navigate(-1)}
-      />
-      <S.Menu>
-        <S.Btn
-          onClick={() =>
-            setSelectedFilter((prev) =>
-              prev === "group-noti" ? null : "group-noti"
-            )
-          }
-          $active={selectedFilter === "group-noti"}
-        >
-          그룹 알림
-        </S.Btn>
-        <S.Btn
-          onClick={() =>
-            setSelectedFilter((prev) => (prev === "poke" ? null : "poke"))
-          }
-          $active={selectedFilter === "poke"}
-        >
-          콕 찌르기
-        </S.Btn>
-        <S.Btn
-          onClick={() =>
-            setSelectedFilter((prev) =>
-              prev === "tag-request" ? null : "tag-request"
-            )
-          }
-          $active={selectedFilter === "tag-request"}
-        >
-          태그 요청
-        </S.Btn>
-      </S.Menu>
-      {selectedFilter === null ? (
-        <S.NotificationList>
-          {grouped.map(([dateKey, items]) => (
-            <S.NotificationBox key={dateKey}>
-              <S.TimeStamp>{dateKey}</S.TimeStamp>
-              <S.NotificationWrapper>
-                {items.map((item) => (
-                  <NotificationLog
-                    key={item.id}
-                    state={item.state}
-                    nickname={item.nickname}
-                    timestamp={item.timestamp}
-                    onClick={() => console.log("알림 클릭:", item.id)}
-                  />
-                ))}
-              </S.NotificationWrapper>
-            </S.NotificationBox>
-          ))}
-        </S.NotificationList>
-      ) : (
-        <S.NotificationList>
-          <S.NotificationWrapper>
-            {filtered.map((item) => (
-              <NotificationLog
-                key={item.id}
-                state={item.state}
-                nickname={item.nickname}
-                timestamp={item.timestamp}
-                onClick={() => console.log("필터된 알림 클릭:", item.id)}
-              />
+    <>
+      <PageTitle title="알림" />
+      <S.Container>
+        <Header
+          showBackBtn={false}
+          showXBtn={true}
+          title="알림함"
+          backgroundColor="white"
+          onClickXBtn={() => navigate(-1)}
+        />
+        <S.Menu>
+          <S.Btn
+            onClick={() =>
+              setSelectedFilter((prev) =>
+                prev === "group-noti" ? null : "group-noti"
+              )
+            }
+            $active={selectedFilter === "group-noti"}
+          >
+            그룹 알림
+          </S.Btn>
+          <S.Btn
+            onClick={() =>
+              setSelectedFilter((prev) => (prev === "poke" ? null : "poke"))
+            }
+            $active={selectedFilter === "poke"}
+          >
+            콕 찌르기
+          </S.Btn>
+          <S.Btn
+            onClick={() =>
+              setSelectedFilter((prev) =>
+                prev === "tag-request" ? null : "tag-request"
+              )
+            }
+            $active={selectedFilter === "tag-request"}
+          >
+            태그 요청
+          </S.Btn>
+        </S.Menu>
+        {selectedFilter === null ? (
+          <S.NotificationList>
+            {grouped.map(([dateKey, items]) => (
+              <S.NotificationBox key={dateKey}>
+                <S.TimeStamp>{dateKey}</S.TimeStamp>
+                <S.NotificationWrapper>
+                  {items.map((item) => (
+                    <NotificationLog
+                      key={item.id}
+                      state={item.state}
+                      nickname={item.nickname}
+                      timestamp={item.timestamp}
+                      onClick={() => console.log("알림 클릭:", item.id)}
+                    />
+                  ))}
+                </S.NotificationWrapper>
+              </S.NotificationBox>
             ))}
-          </S.NotificationWrapper>
-        </S.NotificationList>
-      )}
-    </S.Container>
+          </S.NotificationList>
+        ) : (
+          <S.NotificationList>
+            <S.NotificationWrapper>
+              {filtered.map((item) => (
+                <NotificationLog
+                  key={item.id}
+                  state={item.state}
+                  nickname={item.nickname}
+                  timestamp={item.timestamp}
+                  onClick={() => console.log("필터된 알림 클릭:", item.id)}
+                />
+              ))}
+            </S.NotificationWrapper>
+          </S.NotificationList>
+        )}
+      </S.Container>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 export default function Invite() {
   const navigate = useNavigate();
@@ -33,66 +34,69 @@ export default function Invite() {
     }
   }, []);
   return (
-    <S.Container>
-      {showInviteModal && (
-        <ConfirmModal
-          nickname={selectedFriend}
-          question="님을"
-          nickname2={GROUP_NAME}
-          question2="에 초대할까요?"
-          onClose={() => setShowInviteModal(false)}
-          onConfirm={handleConfirmInvite}
-          showOverlay={false}
-        />
-      )}
-      {showSuccessToast && (
-        <ToastModal
-          text="초대되었습니다."
-          isVisible={showSuccessToast}
-          onClose={() => setShowSuccessToast(false)}
-          showOverlay={false}
-        />
-      )}
-      {showErrorToast && (
-        <ToastModal
-          isVisible={showErrorToast}
-          text="그룹원이"
-          redText="5인을 초과"
-          text2="하여"
-          text3="초대가 불가능합니다."
-          showOverlay={false}
-          onClose={() => setShowErrorToast(false)}
-        />
-      )}
-      <Header
-        showBackBtn={false}
-        showXBtn={true}
-        title=""
-        backgroundColor="white"
-        onClickXBtn={() => navigate(-1)}
-      />
-      <S.Content>
-        <Search
-          placeholder="검색"
-          desc="나의 친구 중에서만 초대할 수 있어요."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onClear={() => setKeyword("")}
-        />
-        <S.FriendList>
-          <S.Title>친구</S.Title>
-          <List
-            profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-            username="듀랄라"
-            intro="Positive Thinking"
-            actionButton={{
-              type: "invite",
-              text: "초대",
-              onClick: () => handleInviteFriend("듀랄라"),
-            }}
+    <>
+      <PageTitle title="그룹 초대하기" />
+      <S.Container>
+        {showInviteModal && (
+          <ConfirmModal
+            nickname={selectedFriend}
+            question="님을"
+            nickname2={GROUP_NAME}
+            question2="에 초대할까요?"
+            onClose={() => setShowInviteModal(false)}
+            onConfirm={handleConfirmInvite}
+            showOverlay={false}
           />
-        </S.FriendList>
-      </S.Content>
-    </S.Container>
+        )}
+        {showSuccessToast && (
+          <ToastModal
+            text="초대되었습니다."
+            isVisible={showSuccessToast}
+            onClose={() => setShowSuccessToast(false)}
+            showOverlay={false}
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            text="그룹원이"
+            redText="5인을 초과"
+            text2="하여"
+            text3="초대가 불가능합니다."
+            showOverlay={false}
+            onClose={() => setShowErrorToast(false)}
+          />
+        )}
+        <Header
+          showBackBtn={false}
+          showXBtn={true}
+          title=""
+          backgroundColor="white"
+          onClickXBtn={() => navigate(-1)}
+        />
+        <S.Content>
+          <Search
+            placeholder="검색"
+            desc="나의 친구 중에서만 초대할 수 있어요."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onClear={() => setKeyword("")}
+          />
+          <S.FriendList>
+            <S.Title>친구</S.Title>
+            <List
+              profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
+              username="듀랄라"
+              intro="Positive Thinking"
+              actionButton={{
+                type: "invite",
+                text: "초대",
+                onClick: () => handleInviteFriend("듀랄라"),
+              }}
+            />
+          </S.FriendList>
+        </S.Content>
+      </S.Container>
+    </>
   );
 }
