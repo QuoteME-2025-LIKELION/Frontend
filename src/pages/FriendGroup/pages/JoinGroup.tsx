@@ -5,6 +5,7 @@ import GroupCard from "@/pages/FriendGroup/components/GroupCard";
 import { useCallback, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 export default function JoinGroup() {
   // TO-DO : useParams() 활용해 그룹 ID 받아온 뒤, 해당 그룹 정보 API로 조회해서 렌더링
@@ -19,38 +20,42 @@ export default function JoinGroup() {
   }, []);
 
   return (
-    <S.Container>
-      {showModal && (
-        <ConfirmModal
-          question="그룹 참여를 요청할까요?"
-          onClose={() => setShowModal(false)}
-          onConfirm={handleConfirm}
-          showOverlay={false}
+    <>
+      {/* 페이지 타이틀 그룹명으로 하는 것도 가능할 수도 */}
+      <PageTitle title="그룹 참여하기" />
+      <S.Container>
+        {showModal && (
+          <ConfirmModal
+            question="그룹 참여를 요청할까요?"
+            onClose={() => setShowModal(false)}
+            onConfirm={handleConfirm}
+            showOverlay={false}
+          />
+        )}
+        {showToast && (
+          <ToastModal
+            text="그룹 참여를 요청했습니다."
+            isVisible={showToast}
+            onClose={() => setShowToast(false)}
+            showOverlay={false}
+          />
+        )}
+        <Header
+          showBackBtn={true}
+          showXBtn={false}
+          title=""
+          backgroundColor="white"
+          onClickBackBtn={() => navigate(-1)}
         />
-      )}
-      {showToast && (
-        <ToastModal
-          text="그룹 참여를 요청했습니다."
-          isVisible={showToast}
-          onClose={() => setShowToast(false)}
-          showOverlay={false}
-        />
-      )}
-      <Header
-        showBackBtn={true}
-        showXBtn={false}
-        title=""
-        backgroundColor="white"
-        onClickBackBtn={() => navigate(-1)}
-      />
-      <S.Content>
-        <GroupCard
-          title="스어 친구들"
-          memberCount={3}
-          sinceYear={2025}
-          onBtnClick={() => setShowModal(true)}
-        />
-      </S.Content>
-    </S.Container>
+        <S.Content>
+          <GroupCard
+            title="스어 친구들"
+            memberCount={3}
+            sinceYear={2025}
+            onBtnClick={() => setShowModal(true)}
+          />
+        </S.Content>
+      </S.Container>
+    </>
   );
 }

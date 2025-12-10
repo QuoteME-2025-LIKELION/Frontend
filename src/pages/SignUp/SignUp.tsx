@@ -4,6 +4,7 @@ import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -24,49 +25,54 @@ export default function SignUp() {
   };
 
   return (
-    <S.Container>
-      <Header
-        showBackBtn={true}
-        showXBtn={false}
-        title="회원가입"
-        backgroundColor="white"
-        onClickBackBtn={() => navigate(-1)}
-      />
-      <S.InputBox>
-        <Input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="이메일 입력"
-          type="email"
-          name="email"
-          required
+    <>
+      <PageTitle title="회원가입" />
+      <S.Container>
+        <Header
+          showBackBtn={true}
+          showXBtn={false}
+          title="회원가입"
+          backgroundColor="white"
+          onClickBackBtn={() => navigate(-1)}
         />
-        <Input
-          value={pwd}
-          onChange={(e) => setPwd(e.target.value)}
-          placeholder="비밀번호 입력"
-          type="password"
-          name="password"
-          required
-        />
-        <Input
-          value={birth}
-          onChange={(e) => setBirth(e.target.value)}
-          placeholder="출생년도(yyyy) 입력"
-          type="text  "
-          name="birth"
-          required
-        />
-        {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
-          <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
-        )}
-        {email.length > 0 && !isValidEmail(email) && (
-          <S.WarningMessage>유효하지 않은 이메일 형식입니다.</S.WarningMessage>
-        )}
-      </S.InputBox>
-      <S.BtnBox>
-        <Button title="입력 완료" onClick={handleSignUp} />
-      </S.BtnBox>
-    </S.Container>
+        <S.InputBox>
+          <Input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="이메일 입력"
+            type="email"
+            name="email"
+            required
+          />
+          <Input
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+            placeholder="비밀번호 입력"
+            type="password"
+            name="password"
+            required
+          />
+          <Input
+            value={birth}
+            onChange={(e) => setBirth(e.target.value)}
+            placeholder="출생년도(yyyy) 입력"
+            type="text  "
+            name="birth"
+            required
+          />
+          {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
+            <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
+          )}
+          {email.length > 0 && !isValidEmail(email) && (
+            <S.WarningMessage>
+              유효하지 않은 이메일 형식입니다.
+            </S.WarningMessage>
+          )}
+        </S.InputBox>
+        <S.BtnBox>
+          <Button title="입력 완료" onClick={handleSignUp} />
+        </S.BtnBox>
+      </S.Container>
+    </>
   );
 }
