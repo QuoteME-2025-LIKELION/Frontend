@@ -3,12 +3,17 @@ import * as S from "./FriendGroupStyle";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
 import List from "@/components/List/List";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import useDebounce from "@/hooks/useDebounce";
+import api from "@/api/api";
+import type { Friend } from "@/types/friend.type";
 
 export default function FriendGroup() {
   const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebounce(keyword, 500); // 디바운스된 키워드로 사용
+  const [searchResults, setSearchResults] = useState<Friend[]>([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
@@ -18,10 +23,28 @@ export default function FriendGroup() {
   const [showAddToast, setShowAddToast] = useState(false);
   const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
 
-  // TO-DO : Search 컴포넌트 값 state로 만든 뒤, 값 있는 경우엔 유저 정보 말고 검색어로 조회한 결과로 렌더링
-  // 이때 조건부 렌더링 삼항연산자 활용
-
   const navigate = useNavigate();
+
+  // TO-DO : 그룹 검색도 추가
+  // useEffect(() => {
+  //   if (debouncedKeyword) {
+  //     // 검색어가 있을 때 실행할 로직
+  //     const fetchResults = async () => {
+  //       try {
+  //         const res = await api.get<Friend[]>(
+  //           `/api/settings/search?keyword=${debouncedKeyword}`
+  //         );
+  //         setSearchResults(res.data);
+  //       } catch (error) {
+  //         console.error("검색 오류:", error);
+  //         setSearchResults([]);
+  //       }
+  //     };
+  //     fetchResults();
+  //   } else {
+  //     setSearchResults([]); // 검색어가 없을 때는 결과 초기화
+  //   }
+  // }, [debouncedKeyword]);
 
   const handleDeleteFriend = useCallback((friendName: string) => {
     setSelectedFriend(friendName);
@@ -129,16 +152,21 @@ export default function FriendGroup() {
           {!keyword && <S.Title>친구</S.Title>}
           <S.FriendList>
             {keyword ? (
-              <List
-                profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-                username="어푸"
-                intro="작심삼일의 권위자"
-                actionButton={{
-                  type: "add",
-                  text: "추가",
-                  onClick: () => handleAddFriend("어푸"),
-                }}
-              />
+              searchResults.length > 0 ? (
+                searchResults.map((user) => (
+                  <List
+                    key={user.id}
+                    profileImgUrl={user.profileImage}
+                    username={user.nickname}
+                    intro={user.email}
+                    actionButton={{
+                      type: "add",
+                      text: "추가",
+                      onClick: () => handleAddFriend(user.nickname),
+                    }}
+                  />
+                ))
+              ) : null
             ) : (
               <List
                 profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
