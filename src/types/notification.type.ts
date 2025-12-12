@@ -5,7 +5,7 @@
  * @property {string} message - 알림 메시지
  * @property {number} targetId - 알림 대상 ID
  * - POKE: 찌른 사람의 Member ID
- * - GROUP: Group ID
+ * - GROUP: 초대된 그룹의 Group ID
  * - TAG: 태그 요청하는 Quote ID
  * - LIKE: 삭제 요청 예정
  * @property {string} senderName - 알림 발신자 이름
