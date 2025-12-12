@@ -3,35 +3,10 @@ import * as S from "./NewQuoteStyled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
+import { MOCK_FRIENDS } from "@/data/friends";
 
 export default function NewQuote() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const friends = [
-    {
-      id: 1,
-      username: "라라진",
-      intro: "Seize the day",
-      profileImgUrl: "https://picsum.photos/200",
-    },
-    {
-      id: 2,
-      username: "듀랄라",
-      intro: "Positive Thinking",
-      profileImgUrl: "https://picsum.photos/200",
-    },
-    {
-      id: 3,
-      username: "어푸",
-      intro: "작심삼일의 권위자",
-      profileImgUrl: "https://picsum.photos/200",
-    },
-    {
-      id: 4,
-      username: "스페이스",
-      intro: "hola",
-      profileImgUrl: "https://picsum.photos/200",
-    },
-  ];
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(selectedIds.filter((item) => item !== id));
@@ -77,12 +52,11 @@ export default function NewQuote() {
       <S.TagBox>
         <S.Text2>친구 태그하기</S.Text2>
         <S.TagList>
-          {friends.map((f) => (
+          {/* 나중에 'MOCK_FRIENDS' 부분만 실제 API 조회 결과로 교체하면 됩니다! */}
+          {MOCK_FRIENDS.map((f) => (
             <List
               key={f.id}
-              profileImgUrl={f.profileImgUrl}
-              username={f.username}
-              intro={f.intro}
+              friend={f}
               isSelectable={true}
               isSelected={selectedIds.includes(f.id)} // ★ 여러개 체크
               onSelect={() => toggleSelect(f.id)}

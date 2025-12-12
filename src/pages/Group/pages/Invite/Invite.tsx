@@ -7,6 +7,7 @@ import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { MOCK_FRIENDS } from "@/data/friends";
 
 export default function Invite() {
   const navigate = useNavigate();
@@ -84,16 +85,19 @@ export default function Invite() {
           />
           <S.FriendList>
             <S.Title>친구</S.Title>
-            <List
-              profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-              username="듀랄라"
-              intro="Positive Thinking"
-              actionButton={{
-                type: "invite",
-                text: "초대",
-                onClick: () => handleInviteFriend("듀랄라"),
-              }}
-            />
+            {MOCK_FRIENDS.map((friend) =>
+              friend.nickname.includes(keyword) ? (
+                <List
+                  key={friend.id}
+                  friend={friend}
+                  actionButton={{
+                    type: "invite",
+                    text: "초대",
+                    onClick: () => handleInviteFriend(friend.nickname),
+                  }}
+                />
+              ) : null
+            )}
           </S.FriendList>
         </S.Content>
       </S.Container>

@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { MOCK_FRIENDS } from "@/data/friends";
 
 export default function Group() {
   const navigate = useNavigate();
@@ -118,36 +119,17 @@ export default function Group() {
             </S.Section>
             <S.Section>
               <S.Title>그룹원</S.Title>
-              <List
-                profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-                username="듀랄라"
-                intro="Positive Thinking"
-                actionButton={{
-                  type: "delete",
-                  text: "삭제",
-                  onClick: () => handleDeleteMember("듀랄라"),
-                }}
-              />
-              <List
-                profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-                username="듀랄라"
-                intro="Positive Thinking"
-                actionButton={{
-                  type: "delete",
-                  text: "삭제",
-                  onClick: () => handleDeleteMember("듀랄라"),
-                }}
-              />
-              <List
-                profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-                username="듀랄라"
-                intro="Positive Thinking"
-                actionButton={{
-                  type: "delete",
-                  text: "삭제",
-                  onClick: () => handleDeleteMember("듀랄라"),
-                }}
-              />
+              {MOCK_FRIENDS.map((friend) => (
+                <List
+                  key={friend.id}
+                  friend={friend}
+                  actionButton={{
+                    type: "delete",
+                    text: "삭제",
+                    onClick: () => handleDeleteMember(friend.nickname),
+                  }}
+                />
+              ))}
             </S.Section>
             <S.BtnBox>
               {/* group 페이지 url 수정 시 링크도 같이 수정 */}

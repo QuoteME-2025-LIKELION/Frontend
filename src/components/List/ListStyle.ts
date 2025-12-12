@@ -26,6 +26,13 @@ export const ProfileImg = styled.img`
   object-fit: cover;
 `;
 
+export const DefaultProfileImg = styled.div`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.territory};
+`;
+
 export const UserBox = styled.div`
   display: flex;
   flex-direction: column;
