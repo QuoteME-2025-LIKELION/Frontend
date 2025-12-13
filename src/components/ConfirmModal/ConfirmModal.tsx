@@ -1,3 +1,4 @@
+import { useState } from "react";
 import * as S from "./ConfirmModalStyle";
 
 interface ConfirmModalProps {
@@ -44,20 +45,36 @@ export default function ConfirmModal({
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300); // 애니메이션 시간(0.3초)과 동일하게 설정
+  };
+
+  const handleConfirm = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onConfirm();
+    }, 300);
+  };
   return (
-    <S.Overlay $showOverlay={showOverlay} onClick={onClose}>
-      <S.Container onClick={stopPropagation}>
+    <S.Overlay $showOverlay={showOverlay} onClick={handleClose}>
+      <S.Container $isClosing={isClosing} onClick={stopPropagation}>
         <S.Question>
           {nickname && <div>{nickname}</div>}
           {question}&nbsp;{nickname2 && <div>{nickname2}</div>}
           {question2 && question2}
         </S.Question>
         <S.BtnBox>
-          <S.Btn type="button" onClick={onClose}>
+          <S.Btn type="button" onClick={handleClose}>
             취소
           </S.Btn>
           <S.Div></S.Div>
-          <S.Btn type="button" onClick={onConfirm}>
+          <S.Btn type="button" onClick={handleConfirm}>
             확인
           </S.Btn>
         </S.BtnBox>

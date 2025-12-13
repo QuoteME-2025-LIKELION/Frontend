@@ -163,6 +163,7 @@ export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`
   font-size: 0.75rem; /* 12px */
   font-weight: 500;
   letter-spacing: -0.24px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const PokeBtn = styled(RequestBtn)``;
@@ -181,5 +182,6 @@ export const BtnBox = styled.div`
     justify-content: center;
     width: 1rem;
     height: 1rem;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 `;

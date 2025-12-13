@@ -25,6 +25,9 @@ interface ListProps {
  * @param isSelected 선택된 상태 여부
  * @param onSelect 아이템 클릭 시 실행될 함수
  * @param actionButton 우측 버튼 정보
+ * @param actionButton.type 버튼 종류 (delete, add, invite)
+ * @param actionButton.text 버튼에 표시될 텍스트
+ * @param actionButton.onClick 버튼 클릭 시 실행될 함수
  * @example
  * <List
  *  profileImgUrl="https://example.com/profile.jpg"
@@ -54,6 +57,7 @@ export default function List({
   // 버튼 컴포넌트 렌더링
   const ActionBtn = () => {
     if (!actionButton) return null;
+    if (isSelectable) return null;
     const { type, text, onClick } = actionButton;
     const ButtonComponent =
       type === "delete"
@@ -62,11 +66,7 @@ export default function List({
           ? S.AddBtn
           : null;
     if (!ButtonComponent) return null;
-    return (
-      <ButtonComponent onClick={onClick} $isSelected={isSelected}>
-        {text}
-      </ButtonComponent>
-    );
+    return <ButtonComponent onClick={onClick}>{text}</ButtonComponent>;
   };
 
   return (

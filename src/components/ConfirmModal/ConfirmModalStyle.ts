@@ -1,5 +1,28 @@
 import theme from "@/styles/theme";
+import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+`;
 
 export const Overlay = styled.div<{ $showOverlay: boolean }>`
   position: fixed;
@@ -15,7 +38,7 @@ export const Overlay = styled.div<{ $showOverlay: boolean }>`
   align-items: center;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isClosing: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,6 +49,8 @@ export const Container = styled.div`
   width: 67%;
   max-width: 16.625rem; /* 266px */
   height: 8.875rem; /* 142px */
+  animation: ${({ $isClosing }) => ($isClosing ? fadeOut : fadeIn)} 0.3s
+    ease-out forwards;
 `;
 
 export const Question = styled.div`
@@ -82,6 +107,7 @@ export const Btn = styled.button`
   align-items: center;
   justify-content: center;
   text-align: center;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 
   ${theme.fonts.batang}
   color: ${theme.colors.territory};

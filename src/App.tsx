@@ -1,22 +1,37 @@
+import { ThemeProvider } from "@emotion/react";
+import { Route, Routes } from "react-router-dom";
 import RootLayout from "@/layouts/RootLayout";
+import GlobalStyles from "@/styles/GlobalStyles";
+import theme from "@/styles/theme";
+
+import Start from "@/pages/Start/Start";
+import SignUp from "@/pages/SignUp/SignUp";
+import Profile from "@/pages/SignUp/Profile/Profile";
+import Login from "@/pages/Login/Login";
+
+import MainHome from "@/pages/Main/MainHome";
+import MainWrite from "@/pages/Main/MainWrite";
+
 import Archive from "@/pages/Archive/Archive";
 import CalendarPage from "@/pages/Archive/Calendar/CalendarPage";
 import Likes from "@/pages/Archive/Likes/Likes";
 import MyQuotes from "@/pages/Archive/MyQuotes/MyQuotes";
-import Home from "@/pages/Home/Home";
-import Login from "@/pages/Login/Login";
-import SignUp from "@/pages/Login/SignUp";
-import Start from "@/pages/Login/Start";
-import Profile from "@/pages/Login/Profile"
-import ProfileCenterX from "@/pages/Setting-Profile/ProfileCenter(X)";
-import ProfileCenterB from "@/pages/Setting-Profile/ProfileCenter(B)";
-import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit";
-import SettingPage from "@/pages/Setting/SettingPage";
-import GlobalStyles from "@/styles/GlobalStyles";
-import theme from "@/styles/theme";
-import { ThemeProvider } from "@emotion/react";
-import { Route, Routes } from "react-router-dom";
-import AccountSetting from "@/pages/Setting/AccountSetting";
+import Notification from "@/pages/Notification/Notification";
+
+import ProfileCenter from "@/pages/Setting-Profile/ProfileCenter/ProfileCenter";
+import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit/ProfileEdit";
+import SettingPage from "@/pages/Setting/SettingPage/SettingPage";
+import AccountSetting from "@/pages/Setting/AccountSetting/AccountSetting";
+
+import FriendGroup from "@/pages/FriendGroup/FriendGroup";
+import MyGroups from "@/pages/FriendGroup/pages/MyGroups";
+import Group from "@/pages/Group/Group";
+import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
+import Invite from "@/pages/Group/pages/Invite/Invite";
+import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
+import CreateGroup from "@/pages/CreateGroup/CreateGroup";
+
+import NotFound from "@/pages/NotFound/NotFound";
 
 function App() {
   return (
@@ -24,23 +39,43 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Routes>
-          {/* 루트는 앞으로 이런 식으로 추가해나가면 됩니다 */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Start />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* 게스트로 시작 버튼 누르면 /home으로 이동하도록 라우팅 수정했습니다. */}
+          <Route path="/home" element={<MainHome />} />
+          <Route path="/write" element={<MainWrite />} />
+
           <Route path="/archive" element={<Archive />}>
             <Route index element={<CalendarPage />} />
             <Route path="my-quotes" element={<MyQuotes />} />
             <Route path="likes" element={<Likes />} />
           </Route>
+          <Route path="/notification" element={<Notification />} />
 
-          <Route path="/start" element={<Start/>}/>
-          <Route path="/signup" element={<SignUp/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/profile" element={<Profile/>}/>
-          <Route path="/profile-centerX" element={<ProfileCenterX/>}/>
-          <Route path="/profile-centerB" element={<ProfileCenterB/>}/>
-          <Route path="/profile-edit" element={<ProfileEdit/>}/>
-          <Route path="/setting-page" element={<SettingPage/>}/>
-          <Route path="/account-setting" element={<AccountSetting/>}/>
+          <Route path="/profile-center" element={<ProfileCenter />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/setting-page" element={<SettingPage />} />
+          <Route path="/account-setting" element={<AccountSetting />} />
+
+          <Route path="/friend-group" element={<FriendGroup />} />
+          <Route path="/my-groups" element={<MyGroups />} />
+          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
+          {/* <Route path="/join-group/:id" element={<JoinGroup />} /> */}
+          <Route path="/join-group" element={<JoinGroup />} />
+          <Route path="/create-group" element={<CreateGroup />} />
+          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
+          {/* <Route path="/group/:id" /> */}
+          <Route path="/group">
+            <Route index element={<Group />} />
+            <Route path="invite" element={<Invite />} />
+            <Route path="change-message" element={<ChangeMessage />} />
+          </Route>
+
+          {/* 정의되지 않은 모든 경로는 NotFound 페이지 렌더링 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ThemeProvider>
     </RootLayout>
