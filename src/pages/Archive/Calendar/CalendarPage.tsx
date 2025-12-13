@@ -4,59 +4,12 @@ import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import { MOCK_ARCHIVE_FEEDS } from "@/data/archiveFeeds";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-interface FeedData {
-  id: number;
-  date: string;
-  username: string;
-  year: number;
-  text: string;
-  tag: string[] | null;
-  isMine: boolean;
-}
-
-const mockData: FeedData[] = [
-  {
-    id: 1,
-    date: "2025-11-05",
-    username: "이대형",
-    year: 1999,
-    text: "자유로운 우리를 봐 자유로워",
-    tag: null,
-    isMine: true,
-  },
-  {
-    id: 2,
-    date: "2025-11-07",
-    username: "김말랑",
-    year: 2005,
-    text: "말랑말랑",
-    tag: ["말랑이", "말랑"],
-    isMine: false,
-  },
-  {
-    id: 3,
-    date: "2025-11-07",
-    username: "이대형",
-    year: 1999,
-    text: "자유로운 우리를 봐 자유로워",
-    tag: null,
-    isMine: true,
-  },
-  {
-    id: 4,
-    date: "2025-11-15",
-    username: "테스트",
-    year: 2000,
-    text: "다른 날짜 피드입니다.",
-    tag: ["태그1"],
-    isMine: false,
-  },
-];
 
 // Date 객체를 'YYYY-MM-DD' 형식의 문자열로 변환하는 함수
 const formatDateToYYYYMMDD = (date: Date): string => {
@@ -70,7 +23,7 @@ const formatDateToYYYYMMDD = (date: Date): string => {
 
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
-  const [filteredFeeds, setFilteredFeeds] = useState<FeedData[]>([]);
+  const [filteredFeeds, setFilteredFeeds] = useState<ArchiveFeed[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
 
@@ -93,7 +46,9 @@ export default function CalendarPage() {
     if (selectedDate) {
       const selectedDateString = formatDateToYYYYMMDD(selectedDate);
 
-      const feeds = mockData.filter((feed) => feed.date === selectedDateString);
+      const feeds = MOCK_ARCHIVE_FEEDS.filter((feed) =>
+        feed.createDate.startsWith(selectedDateString)
+      );
       setFilteredFeeds(feeds);
     }
   }, [value]);
@@ -184,12 +139,12 @@ export default function CalendarPage() {
           filteredFeeds.map((feed) => (
             <Feed
               key={feed.id}
-              username={feed.username}
-              year={feed.year}
-              text={feed.text}
-              tag={feed.tag}
+              username={feed.authorName}
+              year={feed.authorBirthYear}
+              text={feed.content}
+              tag={feed.taggedMemberNames}
               isInArchive={true}
-              onArchiveClick={() => handleArchiveClick(feed.date)}
+              onArchiveClick={() => handleArchiveClick(feed.createDate)}
             />
           ))}
       </S.FeedContainer>

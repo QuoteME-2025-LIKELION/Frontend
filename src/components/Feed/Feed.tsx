@@ -7,7 +7,7 @@ interface FeedProps {
   intro?: string;
   timestamp?: string;
   text: string;
-  tag: string[] | null;
+  tag?: string[];
   isMine?: boolean; // 내 피드인 경우
   isLiked?: boolean; // 좋아요를 누른 상태인지
   onLike?: () => void;
