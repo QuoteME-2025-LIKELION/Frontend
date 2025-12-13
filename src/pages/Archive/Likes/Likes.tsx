@@ -2,23 +2,7 @@ import Feed from "@/components/Feed/Feed";
 import * as S from "./LikesStyle";
 import { useCallback, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-
-const MockData = [
-  {
-    username: "이민형",
-    date: "2025-11-05",
-    year: 1999,
-    text: "자유로운 우리를 봐\n자유로워",
-    tag: ["말랑이"],
-  },
-  {
-    username: "김말랑",
-    date: "2025-11-05",
-    year: 2005,
-    text: "말랑말랑",
-    tag: ["말랑이", "몰랑이"],
-  },
-];
+import { MOCK_ARCHIVE_FEEDS } from "@/data/archiveFeeds";
 
 export default function Likes() {
   const [showModal, setShowModal] = useState(false);
@@ -53,16 +37,16 @@ export default function Likes() {
           showOverlay={true}
         />
       )}
-      {MockData.map((data, index) => (
+      {MOCK_ARCHIVE_FEEDS.map((data, index) => (
         <Feed
-          username={data.username}
-          year={data.year}
-          tag={data.tag}
-          text={data.text}
+          username={data.authorName}
+          year={data.authorBirthYear}
+          tag={data.taggedMemberNames}
+          text={data.content}
           key={index}
           isInArchive={true}
           isLiked={true}
-          onArchiveClick={() => handleArchiveClick(data.date)}
+          onArchiveClick={() => handleArchiveClick(data.createDate)}
         />
       ))}
     </S.Container>
