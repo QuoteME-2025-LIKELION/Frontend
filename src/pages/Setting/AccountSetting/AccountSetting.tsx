@@ -19,7 +19,33 @@ export default function AccountSetting() {
 
   const handleSave = () => {
     // 저장 로직 추가
-    navigate("/setting-page");
+    const payload = {
+      gender,
+      birthYear: birth,
+      email,
+    };
+
+    try {
+      // TODO: POST /api/profile/account
+      // await api.post("", payload);
+
+      navigate("/setting-page");
+    } catch (e) {
+      console.error("계정 정보 저장 실패", e);
+      // TODO: 에러 토스트 추가 가능
+    }
+  };
+
+  const handleDelete = () => {
+    try {
+      // TODO: DELETE /api/profile/account
+      // await api.delete();
+
+      // TODO: 로그아웃 처리 (토큰 삭제 등)
+      navigate("/");
+    } catch (e) {
+      console.error("계정 삭제 실패", e);
+    }
   };
 
   return (
@@ -68,7 +94,7 @@ export default function AccountSetting() {
             </S.WarningMessage>
           )}
           <Button title="저장하기" onClick={handleSave} />
-          <S.DeleteBtn>계정 삭제하기</S.DeleteBtn>
+          <S.DeleteBtn onClick={handleDelete}>계정 삭제하기</S.DeleteBtn>
         </S.InputBox>
       </S.Container>
     </>

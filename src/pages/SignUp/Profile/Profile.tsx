@@ -1,3 +1,4 @@
+import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./ProfileStyled";
 import Header from "@/components/Header/Header";
@@ -11,6 +12,7 @@ export default function Profile() {
 
   const [email, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [pwd, setIntro] = useState("");
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -23,13 +25,34 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setImageFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
 
   const handleSignUp = async () => {
     // 회원가입 및 프로필 설정 로직 추가
-    navigate("/login");
+    try {
+      const formData = new FormData();
+
+      formData.append("nickname", email);
+      formData.append("intro", pwd);
+
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      await api.post("/api/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      navigate("/login"); // 프로필 저장 후 로그인
+    } catch (error) {
+      console.error("프로필 저장 실패:", error);
+      alert("프로필 저장에 실패했습니다.");
+    }
   };
 
   return (
