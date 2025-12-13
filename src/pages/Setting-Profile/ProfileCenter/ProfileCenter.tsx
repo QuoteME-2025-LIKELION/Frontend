@@ -3,6 +3,7 @@ import * as S from "./ProfileCenterStyled";
 import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+//import { useEffect, useState } from "react";
 
 export default function ProfileCenter() {
   const navigate = useNavigate();
@@ -13,6 +14,28 @@ export default function ProfileCenter() {
   const showXBtn = fromPath === "/home";
   const showBackBtn = fromPath === "/setting-page" || fromPath === "default"; // 'default'일 때도 true
 
+  /*
+  const [profile, setProfile] = useState<{
+    nickname: string;
+    email: string;
+    intro: string;
+    imageUrl?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        // TODO: GET /api/profile
+        // const res = await api.get("/api/profile");
+        // setProfile(res.data);
+      } catch (e) {
+        console.error("프로필 조회 실패", e);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+  */
   return (
     <>
       <PageTitle title="프로필 관리" />

@@ -1,3 +1,4 @@
+import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./SignUpStyled";
 import Header from "@/components/Header/Header";
@@ -21,7 +22,25 @@ export default function SignUp() {
     // 회원가입 로직 추가
     // 정확히는 여기서 회원가입 API 호출하는 게 아니라 profile 설정까지 하고 호출해야 할 듯
     // 여기서는 입력값 저장하는 로직만 구현하면 될 것 같아용
-    navigate("/profile");
+    console.log("SIGNUP CLICKED");
+    if (!isValidEmail(email) || pwd.length === 0 || birth.length !== 4) {
+      alert("입력값을 다시 확인해주세요.");
+      return;
+    }
+
+    try {
+      await api.post("/api/auth/signup", {
+        email,
+        password: pwd,
+        birthYear: birth, // ← 명세서 필드명 확인
+      });
+
+      // STEP 1 성공 조건
+      navigate("/profile");
+    } catch (error) {
+      console.error("회원가입 실패:", error);
+      alert("회원가입에 실패했습니다.");
+    }
   };
 
   return (
