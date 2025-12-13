@@ -8,6 +8,7 @@ interface FeedProps {
   timestamp?: string;
   text: string;
   tag?: string[];
+  isSilenced?: boolean;
   isMine?: boolean; // 내 피드인 경우
   isLiked?: boolean; // 좋아요를 누른 상태인지
   onLike?: () => void;
@@ -30,6 +31,7 @@ interface FeedProps {
  * @param props.timestamp 작성 시간
  * @param props.text 입력한 텍스트 (빈 문자열이면 isSilenced 처리)
  * @param props.tag 태그된 이름들 (배열) (빈 배열이거나 null이면 !isNotTagged 처리)
+ * @param props.isSilenced 해당 날짜에 글을 안 올렸을 때 (기본값 false)
  * @param props.isMine 내 피드인 경우 (기본값 false => true일 때만 따로 표시)
  * @param props.isLiked 좋아요를 누른 상태인지 (기본값 false => true일 때만 따로 표시)
  * @param props.onLike 좋아요 토글 함수 (빈 함수가 기본값)
@@ -69,6 +71,7 @@ export default function Feed({
   timestamp,
   text,
   tag,
+  isSilenced = false,
   isMine = false,
   isLiked = false,
   onLike = () => {},
@@ -83,8 +86,6 @@ export default function Feed({
 }: FeedProps) {
   // timestamp를 헬퍼 함수로 변환
   const formattedTimeAgo = timestamp ? formatTimeAgo(timestamp) : "";
-
-  const isSilenced = !text || text.trim() === "";
   const isNotTagged = !tag || tag.length === 0 || isSilenced;
 
   // 아카이브 페이지에 있을 땐 피드 클릭 가능
@@ -199,7 +200,7 @@ export default function Feed({
           )}
           {/* 내 피드가 아니면서 아무것도 안 올렸을 땐 콕 찌르기 */}
           {/* 내 피드가 아니면서 태그 없이 올렸을 땐 태그 요청하기  */}
-          {/* 내 피드가 이면서 태그 없이 올렸을 땐 그냥 태그 추가 버튼만 보이도록 */}
+          {/* 내 피드이면서 태그 없이 올렸을 땐 그냥 태그 추가 버튼만 보이도록 */}
           {/* 아카이브 페이지면 콕 찌르기나 태그 요청하기 텍스트가 안 뜸 */}
           {isSilenced && !isMine && (
             <S.PokeBtn
