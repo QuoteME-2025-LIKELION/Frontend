@@ -8,46 +8,9 @@ import { useState } from "react";
 import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { MOCK_FRIENDS } from "@/data/friends";
 
 // 나중에 API로 받아올 친구 목록 데이터
-const MOCK_FRIENDS = [
-  {
-    id: 1,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "듀듀",
-    intro: "Seize the day",
-  },
-  {
-    id: 2,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "듀가나다",
-    intro: "due..",
-  },
-  {
-    id: 3,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "공룡",
-    intro: "아리가또",
-  },
-  {
-    id: 4,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "듀랄라",
-    intro: "due..!",
-  },
-  {
-    id: 5,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "옹",
-    intro: "onggg..",
-  },
-  {
-    id: 6,
-    profileImgUrl: "https://avatars.githubusercontent.com/u/189887138?v=4",
-    username: "신형철",
-    intro: "hi",
-  },
-];
 
 export default function CreateGroup() {
   const navigate = useNavigate();
@@ -82,7 +45,7 @@ export default function CreateGroup() {
   // 선택되지 않은 친구 목록 중 검색 키워드로 필터링
   const filteredUnselectedFriends = MOCK_FRIENDS.filter(
     (friend) =>
-      !selectedFriends.includes(friend.id) && friend.username.includes(keyword)
+      !selectedFriends.includes(friend.id) && friend.nickname.includes(keyword)
   );
 
   // 위 목록을 합쳐서 최종적으로 표시할 친구 목록 생성
@@ -180,9 +143,7 @@ export default function CreateGroup() {
                   displayedFriends.map((friend) => (
                     <List
                       key={friend.id}
-                      profileImgUrl={friend.profileImgUrl}
-                      username={friend.username}
-                      intro={friend.intro}
+                      friend={friend}
                       isSelectable={true}
                       isSelected={selectedFriends.includes(friend.id)}
                       onSelect={() => handleSelectFriend(friend.id)}

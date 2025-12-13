@@ -10,6 +10,7 @@ import useDebounce from "@/hooks/useDebounce";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { MOCK_FRIENDS } from "@/data/friends";
 
 export default function FriendGroup() {
   const [keyword, setKeyword] = useState("");
@@ -154,34 +155,31 @@ export default function FriendGroup() {
           <S.Section>
             {!keyword && <S.Title>친구</S.Title>}
             <S.FriendList>
-              {keyword ? (
-                searchResults.length > 0 ? (
-                  searchResults.map((user) => (
+              {keyword
+                ? searchResults.length > 0
+                  ? searchResults.map((user) => (
+                      <List
+                        key={user.id}
+                        friend={user}
+                        actionButton={{
+                          type: "add",
+                          text: "추가",
+                          onClick: () => handleAddFriend(user.nickname),
+                        }}
+                      />
+                    ))
+                  : null
+                : MOCK_FRIENDS.map((friend) => (
                     <List
-                      key={user.id}
-                      profileImgUrl={user.profileImage}
-                      username={user.nickname}
-                      intro={user.email}
+                      key={friend.id}
+                      friend={friend}
                       actionButton={{
-                        type: "add",
-                        text: "추가",
-                        onClick: () => handleAddFriend(user.nickname),
+                        type: "delete",
+                        text: "삭제",
+                        onClick: () => handleDeleteFriend(friend.nickname),
                       }}
                     />
-                  ))
-                ) : null
-              ) : (
-                <List
-                  profileImgUrl="https://avatars.githubusercontent.com/u/189887138?v=4"
-                  username="듀랄라"
-                  intro="Positive Thinking"
-                  actionButton={{
-                    type: "delete",
-                    text: "삭제",
-                    onClick: () => handleDeleteFriend("듀랄라"),
-                  }}
-                />
-              )}
+                  ))}
             </S.FriendList>
           </S.Section>
         </S.Content>

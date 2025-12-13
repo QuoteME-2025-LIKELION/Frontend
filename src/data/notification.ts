@@ -22,7 +22,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: 3,
     type: "GROUP",
-    message: "가나디님이 오늘의 명언을 남겼습니다.",
+    message: "가나디님이 그룹에 초대했습니다.",
     targetId: 3,
     senderName: "가나디",
     createDate: "2025-12-12T23:34:57.827965",
