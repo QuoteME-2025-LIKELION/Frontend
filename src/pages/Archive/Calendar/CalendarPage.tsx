@@ -45,8 +45,8 @@ export default function CalendarPage() {
         try {
           const res = await api.get(`/archives?date=${selectedDateString}`);
           setFilteredFeeds(res.data);
-        } catch (error) {
-          console.error("Error fetching archives:", error);
+        } catch (err) {
+          console.error(err);
           setFilteredFeeds([]);
         }
       };

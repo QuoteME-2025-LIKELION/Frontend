@@ -6,15 +6,16 @@
  * @property {number} targetId - 알림 대상 ID
  * - POKE: 찌른 사람의 Member ID
  * - GROUP: 초대된 그룹의 Group ID
- * - TAG: 태그 요청하는 Quote ID
- * - LIKE: 삭제 요청 예정
+ * - TAG: 태그된 Quote ID
+ * - LIKE: 삭제 요청 예정 - 혹시 몰라서 임시로 둠
+ * - TAG_REQUEST: 태그 요청된 Quote ID
  * @property {string} senderName - 알림 발신자 이름
  * @property {string} createDate - 알림 생성 일자
  * @property {boolean} isRead - 알림 읽음 여부
  */
 export interface Notification {
   id: number;
-  type: "POKE" | "LIKE" | "TAG" | "GROUP";
+  type: "POKE" | "LIKE" | "TAG" | "GROUP" | "TAG_REQUEST";
   message: string;
   targetId: number;
   senderName: string;
