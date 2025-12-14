@@ -7,7 +7,6 @@ export const formatCustomDate = (dateInput: string | Date): string => {
   const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
 
   const month = date.toLocaleString("en-US", { month: "short" }).toLowerCase();
-  console.log(month);
   const day = date.getDate();
   const weekday = date.toLocaleDateString("ko-KR", { weekday: "long" });
 
