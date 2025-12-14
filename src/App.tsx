@@ -44,8 +44,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
 
-          {/* 게스트로 시작 버튼 누르면 /home으로 이동하도록 라우팅 수정했습니다. */}
-          <Route path="/home" element={<MainHome />} />
+          {/* 아카이브 페이지에서 날짜로 이동하면 date 파라미터 받도록 수정 */}
+          <Route path="/home/:date?" element={<MainHome />} />
           <Route path="/write" element={<MainWrite />} />
 
           <Route path="/archive" element={<Archive />}>

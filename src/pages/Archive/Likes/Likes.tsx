@@ -1,28 +1,30 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./LikesStyle";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-
-const MockData = [
-  {
-    username: "이민형",
-    date: "2025-11-05",
-    year: 1999,
-    text: "자유로운 우리를 봐\n자유로워",
-    tag: ["말랑이"],
-  },
-  {
-    username: "김말랑",
-    date: "2025-11-05",
-    year: 2005,
-    text: "말랑말랑",
-    tag: ["말랑이", "몰랑이"],
-  },
-];
+import api from "@/api/api";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import { useNavigate } from "react-router-dom";
 
 export default function Likes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
+  const [likedFeeds, setLikedFeeds] = useState<ArchiveFeed[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLikedArchives = async () => {
+      try {
+        const res = await api.get("/api/archives/likes");
+        setLikedFeeds(res.data);
+      } catch (err) {
+        console.error(err);
+        setLikedFeeds([]);
+      }
+    };
+
+    fetchLikedArchives();
+  }, []);
 
   const handleArchiveClick = useCallback((date: string) => {
     setSelectedFeedDate(date); // 날짜 저장
@@ -30,8 +32,7 @@ export default function Likes() {
   }, []);
 
   const moveToDate = useCallback((date: string) => {
-    console.log(date, "날짜로 이동");
-    // 실제 이동 로직을 추후 여기에 구현
+    navigate(`/home/${date}`);
     setShowModal(false); // 이동 후 모달 닫기
   }, []);
 
@@ -53,16 +54,18 @@ export default function Likes() {
           showOverlay={true}
         />
       )}
-      {MockData.map((data, index) => (
+      {likedFeeds.map((data, index) => (
         <Feed
-          username={data.username}
-          year={data.year}
-          tag={data.tag}
-          text={data.text}
+          authorName={data.authorName}
+          year={data.authorBirthYear}
+          tag={data.taggedMemberNames}
+          content={data.content}
           key={index}
           isInArchive={true}
           isLiked={true}
-          onArchiveClick={() => handleArchiveClick(data.date)}
+          onArchiveClick={() =>
+            handleArchiveClick(data.createDate.slice(0, 10))
+          }
         />
       ))}
     </S.Container>

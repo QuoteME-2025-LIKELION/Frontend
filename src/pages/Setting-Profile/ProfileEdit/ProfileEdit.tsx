@@ -30,10 +30,24 @@ export default function ProfileEdit() {
   };
   const handleSave = () => {
     // 프로필 변경 저장 로직 추가
-    setShowToast(true);
-    setTimeout(() => {
-      navigate(-1);
-    }, 1500);
+
+    const payload = {
+      nickname: email,
+      intro: pwd,
+      profileImage: preview, // 나중에 multipart면 여기만 변경
+    };
+
+    try {
+      // await api.post("/api/profile", payload);
+      setShowToast(true);
+
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
+    } catch (e) {
+      console.error("프로필 저장 실패", e);
+      //에러
+    }
   };
 
   return (
@@ -52,7 +66,7 @@ export default function ProfileEdit() {
           showXBtn={true}
           title="프로필 편집"
           backgroundColor="white"
-          onClickXBtn={() => navigate("")}
+          onClickXBtn={() => navigate("/profile-center")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview

@@ -1,45 +1,40 @@
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import * as S from "./NotificationLogStyle";
+import type { Notification } from "@/types/notification.type";
 
 interface NotificationLogProps {
-  state: "group-noti" | "friend-request" | "tag-request" | "poke";
-  nickname: string;
-  timestamp: string;
+  notification: Notification;
   onClick?: () => void;
 }
 
 /**
  * 알림 로그 컴포넌트
  * @param props
- * @param props.state 알림 상태 (그룹 알림, 친구 요청, 태그 요청, 콕 찌르기)
- * @param props.nickname 사용자 닉네임
- * @param props.timestamp 알림 발생 시간 (헬퍼 함수로 포맷팅)
+ * @param props.notification 알림 객체
  * @param props.onClick 클릭 이벤트 핸들러
  * @example
  * <NotificationLog
- *  state="group-noti"
- *  nickname="듀랄라"
- *  timestamp="2025-11-27 08:19:00"
+ *  notification={notification}
+ *  onClick={handleClick}
  * />
  * @returns
  */
 export default function NotificationLog({
-  state,
-  nickname,
-  timestamp,
+  notification,
   onClick,
 }: NotificationLogProps) {
-  const formattedTimeAgo = timestamp ? formatTimeAgo(timestamp) : "";
+  const { senderName, type, createDate } = notification;
+  const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
 
   const renderMessage = () => {
-    switch (state) {
-      case "group-noti":
-        return <>님이 오늘의 명언을 남겼습니다.</>;
-      case "friend-request":
-        return <>님이 친구를 요청하였습니다.</>;
-      case "tag-request":
+    switch (type) {
+      case "GROUP":
+        return <>님이 그룹에 초대했습니다.</>;
+      case "TAG":
+        return <>님이 태그했습니다.</>;
+      case "TAG_REQUEST":
         return <>님이 태그를 요청하였습니다.</>;
-      case "poke":
+      case "POKE":
         return <>님이 콕 찔렀습니다.</>;
       default:
         return null;
@@ -48,7 +43,7 @@ export default function NotificationLog({
 
   return (
     <S.Container onClick={onClick}>
-      {state === "group-noti" || state === "friend-request" ? (
+      {type === "GROUP" || type === "TAG" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -63,7 +58,7 @@ export default function NotificationLog({
             strokeLinejoin="round"
           />
         </svg>
-      ) : state === "tag-request" ? (
+      ) : type === "TAG_REQUEST" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -110,7 +105,7 @@ export default function NotificationLog({
       )}
       <S.Wrapper>
         <S.TextBox>
-          <S.Nickname>{nickname}</S.Nickname>
+          <S.Nickname>{senderName}</S.Nickname>
           <S.Message>{renderMessage()}</S.Message>
         </S.TextBox>
         <S.Timestamp>{formattedTimeAgo}</S.Timestamp>

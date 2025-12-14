@@ -3,10 +3,11 @@ import HomeBox from "./MainComponents/HomeBox/HomeBox";
 import FeedList from "./MainComponents/FeedList/FeedList";
 import * as S from "@/pages/Main/MainStyled";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 export default function MainHome() {
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
+  const { date } = useParams();
 
   return (
     <S.Container>
@@ -32,8 +33,8 @@ export default function MainHome() {
         </S.Toggle>
       )}
 
-      <HomeBox />
-      <FeedList />
+      <HomeBox date={date} />
+      <FeedList date={date} />
     </S.Container>
   );
 }
