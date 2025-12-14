@@ -4,13 +4,33 @@ import { formatCustomDate } from "@/utils/formatDate";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import type { Feed } from "@/types/feed.type";
 
-const MOCK_MY_FEED = {
+interface MyFeed extends Feed {
+  id: number;
+  content: string;
+  createDate: string;
+  authorName: string;
+  taggedUsers?: {
+    id: number;
+    nickname: string;
+  }[];
+  isLiked: boolean;
+  year: number;
+}
+
+const MOCK_MY_FEED: MyFeed = {
+  id: 1,
+  authorId: 99,
   authorName: "손지수",
   year: 2000,
   createDate: "2025-12-12T21:52:40.724895",
   content: "오늘 못한 건 내일의 에너지로 남는다.",
-  tag: ["듀랄라", "어푸"],
+  taggedUsers: [
+    { id: 1, nickname: "듀랄라" },
+    { id: 2, nickname: "어푸" },
+  ],
+  isLiked: false,
 };
 
 export default function HomeBox({ date }: { date?: string }) {
@@ -97,7 +117,9 @@ export default function HomeBox({ date }: { date?: string }) {
                   strokeLinejoin="round"
                 />
               </svg>
-              {MOCK_MY_FEED.tag?.join(", ")}
+              {MOCK_MY_FEED.taggedUsers
+                ?.map((user) => user.nickname)
+                .join(", ")}
             </S.TagList>
           </S.Text2>
           <S.Text2>
