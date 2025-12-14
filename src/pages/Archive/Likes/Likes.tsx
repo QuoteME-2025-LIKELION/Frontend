@@ -1,12 +1,30 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./LikesStyle";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { MOCK_ARCHIVE_FEEDS } from "@/data/archiveFeeds";
+import api from "@/api/api";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import { useNavigate } from "react-router-dom";
 
 export default function Likes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
+  const [likedFeeds, setLikedFeeds] = useState<ArchiveFeed[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLikedArchives = async () => {
+      try {
+        const res = await api.get("/api/archives/likes");
+        setLikedFeeds(res.data);
+      } catch (err) {
+        console.error(err);
+        setLikedFeeds([]);
+      }
+    };
+
+    fetchLikedArchives();
+  }, []);
 
   const handleArchiveClick = useCallback((date: string) => {
     setSelectedFeedDate(date); // 날짜 저장
@@ -14,8 +32,7 @@ export default function Likes() {
   }, []);
 
   const moveToDate = useCallback((date: string) => {
-    console.log(date, "날짜로 이동");
-    // 실제 이동 로직을 추후 여기에 구현
+    navigate(`/home/${date}`);
     setShowModal(false); // 이동 후 모달 닫기
   }, []);
 
@@ -37,16 +54,18 @@ export default function Likes() {
           showOverlay={true}
         />
       )}
-      {MOCK_ARCHIVE_FEEDS.map((data, index) => (
+      {likedFeeds.map((data, index) => (
         <Feed
-          username={data.authorName}
+          authorName={data.authorName}
           year={data.authorBirthYear}
           tag={data.taggedMemberNames}
-          text={data.content}
+          content={data.content}
           key={index}
           isInArchive={true}
           isLiked={true}
-          onArchiveClick={() => handleArchiveClick(data.createDate)}
+          onArchiveClick={() =>
+            handleArchiveClick(data.createDate.slice(0, 10))
+          }
         />
       ))}
     </S.Container>

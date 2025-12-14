@@ -1,14 +1,32 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
 import * as S from "./MyQuotesStyle";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { MOCK_ARCHIVE_FEEDS } from "@/data/archiveFeeds";
+import { useNavigate } from "react-router-dom";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import api from "@/api/api";
 
 export default function MyQuotes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedQuoteDate, setSelectedQuoteDate] = useState<string | null>(
     null
   );
+  const [myQuotes, setMyQuotes] = useState<ArchiveFeed[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMyQuotes = async () => {
+      try {
+        const res = await api.get("/api/archives/me");
+        setMyQuotes(res.data);
+      } catch (err) {
+        console.error(err);
+        setMyQuotes([]);
+      }
+    };
+
+    fetchMyQuotes();
+  }, []);
 
   const handleQuoteClick = useCallback((date: string) => {
     setSelectedQuoteDate(date);
@@ -16,7 +34,7 @@ export default function MyQuotes() {
   }, []);
 
   const moveToDate = useCallback((date: string) => {
-    console.log(date, "날짜로 이동");
+    navigate(`/home/${date}`);
     // 실제 이동 로직을 추후 여기에 구현
     setShowModal(false); // 이동 후 모달 닫기
   }, []);
@@ -39,11 +57,11 @@ export default function MyQuotes() {
           showOverlay={true}
         />
       )}
-      {MOCK_ARCHIVE_FEEDS.map((feed) => (
+      {myQuotes.map((feed) => (
         <MyQuoteFeed
           key={feed.id}
           archiveFeed={feed}
-          onClick={() => handleQuoteClick(feed.createDate)}
+          onClick={() => handleQuoteClick(feed.createDate.slice(0, 10))}
         />
       ))}
     </S.Container>
