@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { formatCustomDate } from "@/utils/formatDate";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 const MOCK_MY_FEED = {
   authorName: "손지수",
@@ -16,7 +17,7 @@ export default function HomeBox({ date }: { date?: string }) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
-  const displayDate = date ? new Date(date) : new Date();
+  const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(MOCK_MY_FEED.createDate);
   const [month, day, weekday] = formattedDate.split(" ");
 
@@ -92,8 +93,8 @@ export default function HomeBox({ date }: { date?: string }) {
                 <path
                   d="M7.99984 8.66667C9.84079 8.66667 11.3332 7.17428 11.3332 5.33333C11.3332 3.49238 9.84079 2 7.99984 2C6.15889 2 4.6665 3.49238 4.6665 5.33333C4.6665 7.17428 6.15889 8.66667 7.99984 8.66667ZM7.99984 8.66667C9.41433 8.66667 10.7709 9.22857 11.7711 10.2288C12.7713 11.229 13.3332 12.5855 13.3332 14M7.99984 8.66667C6.58535 8.66667 5.2288 9.22857 4.2286 10.2288C3.22841 11.229 2.6665 12.5855 2.6665 14"
                   stroke="white"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               {MOCK_MY_FEED.tag?.join(", ")}
