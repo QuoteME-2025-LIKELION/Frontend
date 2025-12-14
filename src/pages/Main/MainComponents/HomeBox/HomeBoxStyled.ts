@@ -8,7 +8,6 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  height: 240px;
 `;
 
 export const textbox = styled.div`
@@ -54,19 +53,22 @@ export const Wrapper = styled.button`
 `;
 
 export const Line = styled.div`
-  width: 100%;
+  width: calc(100% + 65px);
   height: 1px;
   background: rgba(255, 255, 255, 0.5);
+  margin-left: -65px;
 `;
 
-export const Text = styled.div`
-  color: rgba(255, 255, 255, 0.7);
+export const Text = styled.div<{ hasFeed: boolean }>`
+  width: 100%;
+  color: ${({ hasFeed }) => (hasFeed ? "#fff" : "rgba(255, 255, 255, 0.7)")};
   text-align: center;
   ${theme.fonts.batang}
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
   padding: 9px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
 `;
 
 export const Left = styled.div`
@@ -78,7 +80,7 @@ export const Left = styled.div`
   font-weight: 400;
   line-height: 100%;
   letter-spacing: -1.5px;
-  padding: 0px 10px;
+  width: 5.3125rem; /* 85px */
 `;
 
 export const Right = styled.div`
@@ -94,11 +96,12 @@ export const Right = styled.div`
   align-items: flex-start;
   color: white;
   padding-bottom: 0px;
-  padding-left: 5px;
+  padding-left: 10px;
 `;
 
 export const bottom = styled.div`
-  width: 293.5px;
+  width: 100%;
+  padding: 16px 50px 0 50px;
 `;
 export const Text2 = styled.div`
   color: #fff;
@@ -108,14 +111,22 @@ export const Text2 = styled.div`
   font-style: normal;
   font-weight: 700;
 `;
+
+export const TagList = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3125rem; /* 5px */
+`;
 export const BottomTextBox = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 16px;
+  align-items: center;
+  width: 100%;
 `;
 export const BottomBtn = styled.div`
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  margin-top: 20px;
+  padding: 20px 0 10px;
 `;
