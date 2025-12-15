@@ -82,7 +82,7 @@ export default function Group() {
       setShowQuitToast(true);
 
       setTimeout(() => {
-        navigate("/group");
+        navigate("/friend-group");
       }, 1500);
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
