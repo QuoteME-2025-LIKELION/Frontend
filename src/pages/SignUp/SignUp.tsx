@@ -19,9 +19,6 @@ export default function SignUp() {
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const handleSignUp = async () => {
-    // 회원가입 로직 추가
-    // 정확히는 여기서 회원가입 API 호출하는 게 아니라 profile 설정까지 하고 호출해야 할 듯
-    // 여기서는 입력값 저장하는 로직만 구현하면 될 것 같아용
     console.log("SIGNUP CLICKED");
     if (!isValidEmail(email) || pwd.length === 0 || birth.length !== 4) {
       alert("입력값을 다시 확인해주세요.");

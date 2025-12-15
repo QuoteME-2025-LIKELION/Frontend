@@ -9,8 +9,8 @@ export interface Group {
         {
           id: number;
           nickname: string;
-          profileImageUrl: string;
-          bio: string;
+          profileImage: string;
+          introduction: string;
         },
       ]
     | [];
