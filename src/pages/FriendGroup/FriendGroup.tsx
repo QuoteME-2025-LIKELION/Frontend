@@ -3,70 +3,116 @@ import * as S from "./FriendGroupStyle";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
 import List from "@/components/List/List";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { MOCK_FRIENDS } from "@/data/friends";
+import type { Group } from "@/types/group.type";
 
 export default function FriendGroup() {
+  const [friendList, setFriendList] = useState<Friend[]>([]);
+  const [groupsList, setGroupsList] = useState<Group[]>([]);
+
   const [keyword, setKeyword] = useState("");
-  const debouncedKeyword = useDebounce(keyword, 500); // 디바운스된 키워드로 사용
-  const [searchResults, setSearchResults] = useState<Friend[]>([]);
+  const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
+  const [searchResultGroups, setSearchResultGroups] = useState<Group[]>([]);
+  const [searchResultMembers, setSearchResultMembers] = useState<Friend[]>([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState(""); // 삭제할 친구 이름 상태
+  const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null); // 삭제할 친구 ID 상태
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddToast, setShowAddToast] = useState(false);
   const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // 추가할 친구 ID 상태
 
   const navigate = useNavigate();
 
-  // TO-DO : 그룹 검색도 추가
-  // useEffect(() => {
-  //   if (debouncedKeyword) {
-  //     // 검색어가 있을 때 실행할 로직
-  //     const fetchResults = async () => {
-  //       try {
-  //         const res = await api.get<Friend[]>(
-  //           `/api/settings/search?keyword=${debouncedKeyword}`
-  //         );
-  //         setSearchResults(res.data);
-  //       } catch (error) {
-  //         console.error("검색 오류:", error);
-  //         setSearchResults([]);
-  //       }
-  //     };
-  //     fetchResults();
-  //   } else {
-  //     setSearchResults([]); // 검색어가 없을 때는 결과 초기화
-  //   }
-  // }, [debouncedKeyword]);
+  // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회
+  const friendIdSet = useMemo(
+    () => new Set(friendList.map((friend) => friend.id)),
+    [friendList]
+  );
 
-  const handleDeleteFriend = useCallback((friendName: string) => {
-    setSelectedFriend(friendName);
-    setShowDeleteModal(true);
+  // 친구 및 그룹 목록 초기 불러오기
+  useEffect(() => {
+    const fetchFriendsAndGroups = async () => {
+      try {
+        const friendsRes = await api.get("/api/settings/friends-list");
+        setFriendList(friendsRes.data);
+        const groupsRes = await api.get("/api/groups/me");
+        setGroupsList(groupsRes.data);
+      } catch (err) {
+        console.error("친구 및 그룹 목록 불러오기 오류:", err);
+        setFriendList([]);
+        setGroupsList([]);
+      }
+    };
+    fetchFriendsAndGroups();
   }, []);
 
-  const handleConfirmDelete = useCallback(() => {
+  // 검색어가 변경될 때마다 디바운스된 키워드로 검색 실행
+  useEffect(() => {
+    if (debouncedKeyword) {
+      // 검색어가 있을 때 실행할 로직
+      const fetchResults = async () => {
+        try {
+          const res = await api.get(
+            `/api/settings/search?keyword=${debouncedKeyword}`
+          );
+          setSearchResultGroups(res.data.groups);
+          setSearchResultMembers(res.data.members);
+        } catch (error) {
+          console.error("검색 오류:", error);
+          setSearchResultGroups([]);
+          setSearchResultMembers([]);
+        }
+      };
+      fetchResults();
+    } else {
+      setSearchResultGroups([]); // 검색어가 없을 때는 결과 초기화
+      setSearchResultMembers([]);
+    }
+  }, [debouncedKeyword]);
+
+  const handleDeleteFriend = useCallback(
+    (friendName: string, friendId: number) => {
+      setSelectedFriend(friendName);
+      setSelectedFriendId(friendId);
+      setShowDeleteModal(true);
+    },
+    []
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
+    // 친구 삭제 API 구현 후 추가
     setShowDeleteModal(false);
     setShowDeleteToast(true);
   }, []);
 
-  const handleAddFriend = useCallback((userName: string) => {
+  const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
+    setSelectedUserId(userId);
     setShowAddModal(true);
   }, []);
 
-  const handleConfirmAdd = useCallback(() => {
-    setShowAddModal(false);
-    setShowAddToast(true);
-  }, []);
+  const handleConfirmAdd = useCallback(async () => {
+    try {
+      await api.post(`/api/friends/add/${selectedUserId}`);
+
+      setShowAddModal(false);
+      setShowAddToast(true);
+    } catch (err) {
+      console.error("친구 추가 처리 중 오류:", err);
+      alert("친구 추가에 실패했습니다.");
+      return;
+    }
+  }, [selectedUserId]);
 
   return (
     <>
@@ -130,53 +176,67 @@ export default function FriendGroup() {
               </S.BtnBox>
             </S.Title>
             <S.GroupContainer>
-              {keyword ? (
-                <S.GroupBox onClick={() => navigate("/join-group")}>
-                  {/* 검색 결과 나온 그룹 리스트 => join-group url 바뀌면 같이 수정 */}
-                  <S.GroupName>스어 친구들</S.GroupName>
-                  <S.GroupCount>2</S.GroupCount>
-                </S.GroupBox>
-              ) : (
-                <>
-                  <S.GroupBox onClick={() => navigate("/group")}>
-                    {/* 가입한 그룹 배열 받아서 매핑 */}
-                    <S.GroupName>무니니</S.GroupName>
-                    <S.GroupCount>3</S.GroupCount>
-                  </S.GroupBox>
-                  <S.GroupBox onClick={() => navigate("/group")}>
-                    {/* 가입한 그룹 배열 받아서 매핑 */}
-                    <S.GroupName>무니니</S.GroupName>
-                    <S.GroupCount>3</S.GroupCount>
-                  </S.GroupBox>
-                </>
-              )}
+              {keyword
+                ? searchResultGroups.map((group) => (
+                    <S.GroupBox
+                      key={group.id}
+                      onClick={() => navigate(`/group/${group.id}`)}
+                    >
+                      <S.GroupName>{group.name}</S.GroupName>
+                      <S.GroupCount>{group.memberCount}</S.GroupCount>
+                    </S.GroupBox>
+                  ))
+                : groupsList.length > 0 &&
+                  groupsList.map((group) => (
+                    <S.GroupBox
+                      key={group.id}
+                      onClick={() => navigate(`/group/${group.id}`)}
+                    >
+                      <S.GroupName>{group.name}</S.GroupName>
+                      <S.GroupCount>{group.memberCount}</S.GroupCount>
+                    </S.GroupBox>
+                  ))}
             </S.GroupContainer>
           </S.Section>
           <S.Section>
             {!keyword && <S.Title>친구</S.Title>}
             <S.FriendList>
               {keyword
-                ? searchResults.length > 0
-                  ? searchResults.map((user) => (
-                      <List
-                        key={user.id}
-                        friend={user}
-                        actionButton={{
-                          type: "add",
-                          text: "추가",
-                          onClick: () => handleAddFriend(user.nickname),
-                        }}
-                      />
-                    ))
+                ? searchResultMembers.length > 0
+                  ? searchResultMembers.map((user) => {
+                      const isFriend = friendIdSet.has(user.id);
+                      return (
+                        <List
+                          key={user.id}
+                          friend={user}
+                          actionButton={
+                            isFriend
+                              ? {
+                                  type: "delete",
+                                  text: "삭제",
+                                  onClick: () =>
+                                    handleDeleteFriend(user.nickname, user.id),
+                                }
+                              : {
+                                  type: "add",
+                                  text: "추가",
+                                  onClick: () =>
+                                    handleAddFriend(user.nickname, user.id),
+                                }
+                          }
+                        />
+                      );
+                    })
                   : null
-                : MOCK_FRIENDS.map((friend) => (
+                : friendList.map((friend) => (
                     <List
                       key={friend.id}
                       friend={friend}
                       actionButton={{
                         type: "delete",
                         text: "삭제",
-                        onClick: () => handleDeleteFriend(friend.nickname),
+                        onClick: () =>
+                          handleDeleteFriend(friend.nickname, friend.id),
                       }}
                     />
                   ))}

@@ -6,8 +6,8 @@ import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLo
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
-import { MOCK_NOTIFICATIONS } from "@/data/notification";
 import api from "@/api/api";
+import useNotificationStore from "@/stores/useNotificationStore";
 
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
@@ -37,19 +37,24 @@ export default function Notification() {
   // 필터 null일 때는 모든 알림 api 호출한 뒤 가공 (가공 로직 추후 구현)
   // 필터가 선택됐을 땐 null일 때 데이터에서 필터해서 렌더링
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await api.get("/notifications");
-        setNotifications(res.data);
-      } catch (err) {
-        console.error(err);
-        setNotifications([]);
-      }
-    };
+  const { setHasUnread } = useNotificationStore();
 
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await api.get<Notification[]>("/notifications");
+      setNotifications(res.data);
+      // 알림을 가져온 후 전역 상태도 업데이트
+      const unreadExists = res.data.some((n) => !n.isRead);
+      setHasUnread(unreadExists);
+    } catch (err) {
+      console.error(err);
+      setNotifications([]);
+    }
+  }, [setHasUnread]);
+
+  useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [fetchNotifications]);
 
   // 필터 적용된 배열
   const filtered = useMemo(() => {
@@ -72,23 +77,28 @@ export default function Notification() {
   const handleNotificationClick = useCallback(
     async (notification: Notification) => {
       try {
-        await api.patch(`/notifications/${notification.id}/read`);
+        // 알림 읽음 처리 (아직 안 읽은 경우에만)
+        if (!notification.isRead) {
+          await api.patch(`/notifications/${notification.id}/read`);
+        }
       } catch (err) {
         console.error(err);
       }
 
       const { type } = notification;
       if (type === "GROUP") {
-        // 나중에 group 파라미터 생기면 /targetId로 수정
-        navigate("/group");
+        navigate(`/group/${notification.targetId}`);
       } else if (type === "POKE") {
         // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
         navigate("/write");
       } else if (type === "TAG" || type === "TAG_REQUEST") {
         navigate("/home");
       }
+
+      // 상태 업데이트를 위해 알림 목록 다시 불러오기
+      fetchNotifications();
     },
-    [navigate]
+    [navigate, fetchNotifications]
   );
 
   return (
