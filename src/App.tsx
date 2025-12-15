@@ -62,13 +62,11 @@ function App() {
 
           <Route path="/friend-group" element={<FriendGroup />} />
           <Route path="/my-groups" element={<MyGroups />} />
-          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
-          {/* <Route path="/join-group/:id" element={<JoinGroup />} /> */}
-          <Route path="/join-group" element={<JoinGroup />} />
           <Route path="/create-group" element={<CreateGroup />} />
-          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
-          {/* <Route path="/group/:id" /> */}
-          <Route path="/group">
+
+          <Route path="/join-group/:groupId" element={<JoinGroup />} />
+
+          <Route path="/group/:groupId">
             <Route index element={<Group />} />
             <Route path="invite" element={<Invite />} />
             <Route path="change-message" element={<ChangeMessage />} />
