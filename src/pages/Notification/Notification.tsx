@@ -6,7 +6,6 @@ import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLo
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
-import { MOCK_NOTIFICATIONS } from "@/data/notification";
 import api from "@/api/api";
 
 // 날짜별 그룹핑
@@ -72,6 +71,7 @@ export default function Notification() {
   const handleNotificationClick = useCallback(
     async (notification: Notification) => {
       try {
+        // 알림 읽음 처리
         await api.patch(`/notifications/${notification.id}/read`);
       } catch (err) {
         console.error(err);
@@ -79,8 +79,7 @@ export default function Notification() {
 
       const { type } = notification;
       if (type === "GROUP") {
-        // 나중에 group 파라미터 생기면 /targetId로 수정
-        navigate("/group");
+        navigate(`/group/${notification.targetId}`);
       } else if (type === "POKE") {
         // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
         navigate("/write");

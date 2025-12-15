@@ -33,7 +33,7 @@ export default function FriendGroup() {
 
   const navigate = useNavigate();
 
-  // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회를 위함
+  // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회
   const friendIdSet = useMemo(
     () => new Set(friendList.map((friend) => friend.id)),
     [friendList]
