@@ -4,46 +4,67 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import Search from "@/components/Search/Search";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { MOCK_FRIENDS } from "@/data/friends";
-
-// 나중에 API로 받아올 친구 목록 데이터
+import type { Friend } from "@/types/friend.type";
+import api from "@/api/api";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
+  const [friendList, setFriendList] = useState<Friend[]>([]);
+
   const [groupName, setGroupName] = useState("");
-  const [message, setMessage] = useState("");
+  const [motto, setMotto] = useState("");
+
   const [keyword, setKeyword] = useState("");
+
   const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
   const [showToast, setShowToast] = useState(false);
+
   const [isSubmitted, setIsSubmitted] = useState(false); // 그룹 생성 시도 여부 상태
 
-  // 친구 선택/해제 핸들러
-  const handleSelectFriend = (id: number) => {
-    setSelectedFriends((prev) => {
-      if (prev.includes(id)) {
-        // 이미 선택된 경우 선택 해제
-        return prev.filter((friendId) => friendId !== id);
-      } else {
-        // 새로 선택하는 경우 5명 미만일 때만 추가
-        if (prev.length < 5) {
-          return [...prev, id];
-        }
-        return prev;
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const res = await api.get("/api/settings/friends-list");
+        setFriendList(res.data);
+      } catch (err) {
+        console.error("친구 목록 불러오기 오류:", err);
+        setFriendList([]);
       }
-    });
-  };
+    };
+
+    fetchFriends();
+  }, []);
+
+  // 친구 선택/해제 핸들러
+  const handleSelectFriend = useCallback(
+    (id: number) => {
+      setSelectedFriends((prev) => {
+        if (prev.includes(id)) {
+          // 이미 선택된 경우 선택 해제
+          return prev.filter((friendId) => friendId !== id);
+        } else {
+          // 새로 선택하는 경우 4명 미만일 때만 추가 (생각해보니까 만드는 사람도 멤버 수 포함,,)
+          if (prev.length < 4) {
+            return [...prev, id];
+          }
+          return prev;
+        }
+      });
+    },
+    [selectedFriends]
+  );
 
   // 선택된 친구 객체 목록 (검색해도 항상 상단에 고정)
-  const selectedFriendObjects = MOCK_FRIENDS.filter((friend) =>
+  const selectedFriendObjects = friendList.filter((friend) =>
     selectedFriends.includes(friend.id)
   );
 
   // 선택되지 않은 친구 목록 중 검색 키워드로 필터링
-  const filteredUnselectedFriends = MOCK_FRIENDS.filter(
+  const filteredUnselectedFriends = friendList.filter(
     (friend) =>
       !selectedFriends.includes(friend.id) && friend.nickname.includes(keyword)
   );
@@ -54,23 +75,48 @@ export default function CreateGroup() {
     ...filteredUnselectedFriends,
   ];
 
-  // 친구 목록 없을 때 테스트용
-  // const displayedFriends = [];
-
   // 그룹 생성 로직
-  const handleCreateGroup = () => {
+  const handleCreateGroup = useCallback(async () => {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
 
     if (groupName.trim().length === 0) {
+      alert("그룹명을 입력해주세요.");
       return; // 그룹명이 없으면 여기서 중단
     }
 
-    // 그룹명이 있으면 토스트를 보여주고 페이지 이동
-    setShowToast(true);
-    setTimeout(() => {
-      navigate("/group");
-    }, 1500);
-  };
+    try {
+      // 그룹 생성 API 호출하고 생성된 그룹 ID를 받음
+      const createGroupRes = await api.post("/api/groups", {
+        name: groupName,
+        motto: motto,
+      });
+      const newGroupId = createGroupRes.data;
+
+      if (!newGroupId) {
+        throw new Error("그룹 ID를 받아오지 못했습니다.");
+      }
+
+      // 선택된 친구가 있으면 초대 API 호출
+      if (selectedFriends.length > 0) {
+        // 모든 초대를 병렬로 처리
+        await Promise.all(
+          selectedFriends.map((friendId) =>
+            api.post(`/api/groups/${newGroupId}/invite/${friendId}`)
+          )
+        );
+      }
+
+      // 모든 과정이 성공하면 토스트를 보여주고 페이지 이동
+      setShowToast(true);
+      setTimeout(() => {
+        // 만들어진 그룹 ID 받는다면 그 그룹 상세 페이지로 바로 이동하는 식도 고려
+        navigate("/friend-group");
+      }, 1500);
+    } catch (err) {
+      console.error("그룹 생성 또는 초대 오류:", err);
+      alert("그룹 생성 또는 친구 초대에 실패했습니다.");
+    }
+  }, [groupName, motto, selectedFriends, navigate]);
 
   return (
     <>
@@ -101,20 +147,22 @@ export default function CreateGroup() {
                   required={true}
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
+                  maxLength={10}
                 />
                 {isSubmitted && groupName.trim().length === 0 ? (
                   <S.ErrorMsg>그룹명을 입력해주세요.</S.ErrorMsg>
                 ) : (
-                  <div>10자 내외</div>
+                  <div>10자 이내</div>
                 )}
               </S.InputBox>
               <S.InputBox>
                 <Input
                   placeholder="메시지 설정"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  value={motto}
+                  onChange={(e) => setMotto(e.target.value)}
+                  maxLength={20}
                 />
-                <div>20자 내외</div>
+                <div>20자 이내</div>
               </S.InputBox>
             </S.InputContainer>
           </S.NavyBox>
@@ -122,7 +170,7 @@ export default function CreateGroup() {
             <S.TitleContainer>
               <S.TitleLine>
                 <S.Title>친구 초대하기</S.Title>
-                <S.InviteCount>{selectedFriends.length}/5</S.InviteCount>
+                <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
               </S.TitleLine>
               <S.Desc>그룹의 최대 인원은 5명입니다.</S.Desc>
             </S.TitleContainer>
@@ -171,7 +219,6 @@ export default function CreateGroup() {
                       </button>
                       <div>탭으로 이동</div>
                     </S.EmptyFriendList>
-                    {/* 만들어진 그룹 페이지로 이동 (url 수정 필요) */}
                     <Button title="그룹 만들기" onClick={handleCreateGroup} />
                   </S.EmptyFriendContainer>
                 )}
@@ -181,7 +228,6 @@ export default function CreateGroup() {
         </S.Content>
         {displayedFriends.length > 0 && (
           <S.BtnBox>
-            {/* 만들어진 그룹 페이지로 이동 (url 수정 필요) */}
             <Button title="그룹 만들기" onClick={handleCreateGroup} />
           </S.BtnBox>
         )}
