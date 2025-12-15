@@ -12,4 +12,5 @@ export interface Friend {
   nickname: string;
   profileImage?: string;
   introduction?: string;
+  groupMember?: boolean;
 }
