@@ -1,44 +1,101 @@
 import Header from "@/components/Header/Header";
 import * as S from "./GroupStyle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import List from "@/components/List/List";
 import Button from "@/components/Button/Button";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { MOCK_FRIENDS } from "@/data/friends";
+import type { Group } from "@/types/group.type";
+import api from "@/api/api";
 
 export default function Group() {
+  const { groupId } = useParams();
   const navigate = useNavigate();
+  const [groupData, setGroupData] = useState<Group | null>(null);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [selectedMember, setSelectedMember] = useState(""); // 삭제할 그룹원 이름 상태
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null); // 삭제할 그룹원 ID 상태
 
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showQuitToast, setShowQuitToast] = useState(false);
 
-  const handleDeleteMember = useCallback((userName: string) => {
+  useEffect(() => {
+    const fetchGroupData = async () => {
+      try {
+        const res = await api.get(`/api/groups/${groupId}`);
+        setGroupData(res.data);
+      } catch (err) {
+        console.error("그룹 데이터 불러오기 오류:", err);
+        setGroupData(null);
+      }
+    };
+
+    fetchGroupData();
+  }, [groupId, groupData]);
+
+  const handleDeleteMember = useCallback((userName: string, userId: number) => {
     setSelectedMember(userName);
+    setSelectedMemberId(userId);
     setShowDeleteModal(true);
   }, []);
   const handleConfirmDelete = useCallback(() => {
+    const deleteMember = async () => {
+      try {
+        await api.delete(`/api/groups/${groupId}/members/${selectedMemberId}`);
+        // 삭제 성공 시 그룹 데이터 다시 불러오기
+        const res = await api.get(`/api/groups/${groupId}`);
+        setGroupData(res.data);
+      } catch (err) {
+        console.error("그룹원 삭제 오류:", err);
+      }
+    };
+    deleteMember();
     setShowDeleteModal(false);
     setShowDeleteToast(true);
-  }, []);
+    // 그룹 페이지 새로고침
+    setTimeout(() => {
+      navigate(`/group/${groupId}`);
+    }, 1500);
+  }, [groupId, selectedMemberId]);
 
   const handleQuitGroup = useCallback(() => {
     setShowQuitModal(true);
   }, []);
   const handleConfirmQuit = useCallback(() => {
+    const getMyId = async () => {
+      try {
+        const res = await api.get("/api/profile");
+        return res.data.id;
+      } catch (err) {
+        console.error("내 정보 불러오기 오류:", err);
+        return null;
+      }
+    };
+    const quitGroup = async () => {
+      const myId = await getMyId();
+      if (myId !== null) {
+        try {
+          await api.delete(`/api/groups/${groupId}/members/${myId}`);
+        } catch (err) {
+          console.error("그룹 탈퇴 오류:", err);
+        }
+      }
+    };
+    quitGroup();
     setShowQuitModal(false);
     setShowQuitToast(true);
-  }, []);
+    // 친구 및 그룹 페이지로 이동
+    setTimeout(() => {
+      navigate("/group");
+    }, 1500);
+  }, [groupId, navigate]);
   return (
     <>
-      {/* 타이틀 그룹명으로 추후 변경 */}
-      <PageTitle title="무니니" />
+      <PageTitle title={groupData?.name || "그룹 상세"} />
       <S.Container>
         {showDeleteModal && (
           <ConfirmModal
@@ -83,59 +140,59 @@ export default function Group() {
             <S.GroupCard>
               {/* GroupCard처럼 */}
               <S.TextBox>
-                <S.Title>무니니</S.Title>
+                <S.Title>{groupData?.name}</S.Title>
                 <S.InfoBox>
                   <S.InfoLine>
                     <div>멤버</div>
-                    <div>3명</div>
+                    <div>{groupData?.memberCount}명</div>
                   </S.InfoLine>
                   <S.InfoLine>
                     <div>명언</div>
-                    <div>30개</div>
+                    <div>{groupData?.totalQuoteCount}개</div>
                   </S.InfoLine>
                   <S.InfoLine>
                     <div>since</div>
-                    <S.Chonburi>2025</S.Chonburi>
+                    <S.Chonburi>{groupData?.createdAt?.slice(0, 4)}</S.Chonburi>
                   </S.InfoLine>
                 </S.InfoBox>
               </S.TextBox>
-              <S.Count>3</S.Count>
+              <S.Count>{groupData?.memberCount}</S.Count>
             </S.GroupCard>
           </S.GrayBox>
           <S.Main>
             <S.Section>
               <S.Title>그룹 메시지</S.Title>
-              {/* group 페이지 url 수정 시 링크도 같이 수정 */}
-              <S.MessageBox onClick={() => navigate("/group/change-message")}>
+              <S.MessageBox
+                onClick={() => navigate(`/group/${groupId}/change-message`)}
+              >
                 <S.Quotation>“</S.Quotation>
-                <S.EmptyText>메시지를 입력하세요</S.EmptyText>
-                {/* {Message.length > 0 ? (
-                <S.Text>{message}</S.Text>
-              ) : (
-                <S.EmptyText>메시지를 입력하세요</S.EmptyText>
-              )} */}
+                {groupData?.motto ? (
+                  <S.Text>{groupData?.motto}</S.Text>
+                ) : (
+                  <S.EmptyText>메시지를 입력하세요</S.EmptyText>
+                )}
                 <S.Quotation>”</S.Quotation>
               </S.MessageBox>
             </S.Section>
             <S.Section>
               <S.Title>그룹원</S.Title>
-              {MOCK_FRIENDS.map((friend) => (
+              {groupData?.members?.map((friend) => (
                 <List
                   key={friend.id}
                   friend={friend}
                   actionButton={{
                     type: "delete",
                     text: "삭제",
-                    onClick: () => handleDeleteMember(friend.nickname),
+                    onClick: () =>
+                      handleDeleteMember(friend.nickname, friend.id),
                   }}
                 />
               ))}
             </S.Section>
             <S.BtnBox>
-              {/* group 페이지 url 수정 시 링크도 같이 수정 */}
               <Button
                 title="그룹 초대하기"
-                onClick={() => navigate("/group/invite")}
+                onClick={() => navigate(`/group/${groupId}/invite`)}
               />
               <S.QuitBtn onClick={handleQuitGroup}>그룹 탈퇴하기</S.QuitBtn>
             </S.BtnBox>
