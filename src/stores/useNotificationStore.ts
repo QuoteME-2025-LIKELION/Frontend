@@ -17,10 +17,15 @@ interface NotificationState {
 const useNotificationStore = create<NotificationState>((set) => ({
   hasUnread: false,
   fetchNotifications: async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.log("알림 요청: 토큰 부재로 스킵");
+      return;
+    }
     try {
-      const res = await api.get<Notification[]>("/api/notifications");
+      const res = await api.get("/api/notifications");
       const unreadExists = res.data.some(
-        (notification) => !notification.isRead
+        (notification: Notification) => !notification.isRead
       );
       set({ hasUnread: unreadExists });
     } catch (err) {
