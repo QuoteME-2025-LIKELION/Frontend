@@ -4,11 +4,23 @@ import { MOCK_FEEDS } from "@/data/feeds";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { useState } from "react";
 
-export default function FeedList({ date }: { date?: string }) {
+interface FeedListProps {
+  date?: string;
+  onTagRequest?: () => void;
+  onPoke?: () => void;
+}
+
+export default function FeedList({
+  date,
+  onTagRequest,
+  onPoke,
+}: FeedListProps) {
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [selectedFeedId, setSelectedFeedId] = useState<number | null>(null);
 
   const handleLike = () => {
     console.log("좋아요 클릭");
@@ -35,13 +47,6 @@ export default function FeedList({ date }: { date?: string }) {
     }
   };
 
-  const handleRequest = () => {
-    console.log("태그 요청하기");
-  };
-  const handlePoke = () => {
-    console.log("콕 찌르기");
-  };
-
   return (
     <S.FeedList>
       {MOCK_FEEDS.map((feed, index) => (
@@ -59,9 +64,15 @@ export default function FeedList({ date }: { date?: string }) {
           isLiked={feed.isLiked}
           onLike={handleLike}
           onShare={() => handleShare(feed.createDate, feed.authorName, index)}
-          onRequest={handleRequest}
-          onPoke={handlePoke}
           isInArchive={false}
+          onRequest={() => {
+            setSelectedFeedId(feed.id);
+            onTagRequest?.();
+          }}
+          onPoke={() => {
+            setSelectedFeedId(feed.id);
+            onPoke?.();
+          }}
         />
       ))}
     </S.FeedList>
