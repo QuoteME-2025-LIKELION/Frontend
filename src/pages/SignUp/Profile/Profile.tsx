@@ -30,25 +30,32 @@ export default function Profile() {
     setPreview(url);
   };
 
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
   const handleSignUp = async () => {
     // 회원가입 및 프로필 설정 로직 추가
     try {
-      const formData = new FormData();
-
-      formData.append("nickname", email);
-      formData.append("intro", pwd);
-
+      // 이미지 파일을 Base64로 변환
+      let imageBase64: string | null = null;
       if (imageFile) {
-        formData.append("image", imageFile);
+        imageBase64 = await toBase64(imageFile);
       }
 
-      await api.post("/api/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const profileData = {
+        nickname: email,
+        introduction: pwd,
+        profileImage: imageBase64, // Base64 문자열 또는 null
+      };
 
-      navigate("/login"); // 프로필 저장 후 로그인
+      await api.post("/api/profile", profileData);
+
+      navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
       console.error("프로필 저장 실패:", error);
       alert("프로필 저장에 실패했습니다.");
