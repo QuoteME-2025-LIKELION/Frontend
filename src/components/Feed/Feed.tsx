@@ -18,6 +18,7 @@ interface FeedProps {
   isInArchive?: boolean;
   onArchiveClick?: () => void;
   year?: number;
+  timeAgo?: string;
 }
 
 /**
@@ -40,6 +41,7 @@ interface FeedProps {
  * @param props.isInArchive 아카이브 페이지에 있는지(전체 UI 흰색 됨) (기본값 false)
  * @param props.onArchiveClick 아카이브 페이지에서 피드 클릭 시 함수
  * @param props.year 사용자 생년 (아카이브 페이지에서만 사용)
+ * @param props.timeAgo 작성 시간 (예: "2시간 전")
  * @example
  * <Feed
  *  profileImageUrl="https://example.com/profile.jpg"
@@ -78,11 +80,16 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
       isInArchive = false,
       onArchiveClick,
       year,
+      timeAgo,
     },
     ref
   ) => {
     // createDate를 헬퍼 함수로 변환
-    const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
+    const formattedTimeAgo = createDate
+      ? formatTimeAgo(createDate)
+      : timeAgo
+        ? timeAgo
+        : "";
     const isNotTagged = !tag || tag.length === 0 || isSilenced;
 
     // 아카이브 페이지에 있을 땐 피드 클릭 가능

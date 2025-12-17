@@ -79,7 +79,7 @@ export default function Notification() {
       try {
         // 알림 읽음 처리 (아직 안 읽은 경우에만)
         if (!notification.isRead) {
-          await api.patch(`/notifications/${notification.id}/read`);
+          await api.patch(`/api/notifications/${notification.id}/read`);
         }
       } catch (err) {
         console.error(err);
