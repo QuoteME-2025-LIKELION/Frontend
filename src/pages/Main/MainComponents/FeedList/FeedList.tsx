@@ -3,21 +3,7 @@ import * as S from "./FeedListStyled";
 import { useMemo, useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-<<<<<<< HEAD
 import { useState } from "react";
-
-interface FeedListProps {
-  date?: string;
-  onTagRequest?: () => void;
-  onPoke?: () => void;
-}
-
-export default function FeedList({
-  date,
-  onTagRequest,
-  onPoke,
-}: FeedListProps) {
-=======
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
@@ -26,12 +12,15 @@ export default function FeedList({
   date,
   otherQuotes,
   friendList,
+  onTagRequest,
+  onPoke,
 }: {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
+  onTagRequest?: (quoteId: number) => void;
+  onPoke?: (friendId: number) => void;
 }) {
->>>>>>> 5701e2b4f38bd041d2af33db2cffa68f7e55ba5e
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -74,6 +63,14 @@ export default function FeedList({
     });
   }, [otherQuotes, friendList]);
 
+  const handleRequest = async (quoteId: number) => {
+    try {
+      await api.post(`/api/quotes/${quoteId}/tag-request`);
+      alert("명언 요청이 전송되었습니다.");
+    } catch (err) {
+      console.error("명언 요청 실패:", err);
+    }
+  };
   const handleLike = async (quoteId: number, isLiked: boolean) => {
     if (isLiked) {
       try {
@@ -105,45 +102,6 @@ export default function FeedList({
         });
     }
   };
-
-<<<<<<< HEAD
-  return (
-    <S.FeedList>
-      {MOCK_FEEDS.map((feed, index) => (
-        <Feed
-          key={feed.id}
-          ref={(el: HTMLDivElement | null) => {
-            feedRefs.current[index] = el;
-          }}
-          profileImageUrl={feed.profileImageUrl}
-          authorName={feed.authorName}
-          bio={feed.bio}
-          createDate={feed.createDate}
-          content={feed.content}
-          tag={feed.taggedUsers?.map((user) => user.nickname)}
-          isLiked={feed.isLiked}
-          onLike={handleLike}
-          onShare={() => handleShare(feed.createDate, feed.authorName, index)}
-          isInArchive={false}
-          onRequest={() => {
-            setSelectedFeedId(feed.id);
-            onTagRequest?.();
-          }}
-          onPoke={() => {
-            setSelectedFeedId(feed.id);
-            onPoke?.();
-          }}
-        />
-      ))}
-=======
-  const handleRequest = async (quoteId: number) => {
-    try {
-      await api.post(`/api/quotes/${quoteId}/tag-request`);
-      alert("명언 요청이 전송되었습니다.");
-    } catch (err) {
-      console.error("명언 요청 실패:", err);
-    }
-  };
   const handlePoke = async (friendId: number) => {
     try {
       await api.post(`/api/pokes/${friendId}`);
@@ -171,8 +129,16 @@ export default function FeedList({
             isLiked={quote.isLiked}
             onLike={() => handleLike(quote.id, quote.isLiked)}
             onShare={() => handleShare(quote.authorNickname, index)}
-            onRequest={() => handleRequest(quote.id)}
-            onPoke={() => handlePoke(quote.friendId)}
+            onRequest={() => {
+              handleRequest(quote.id);
+              setSelectedFeedId(quote.id);
+              onTagRequest?.(quote.id);
+            }}
+            onPoke={() => {
+              handlePoke(quote.friendId);
+              setSelectedFeedId(quote.friendId);
+              onPoke?.(quote.friendId);
+            }}
             isInArchive={false}
             isSilenced={quote.isSilenced}
           />
@@ -180,7 +146,6 @@ export default function FeedList({
       ) : (
         <S.NoFeedText>명언을 나눌 친구가 없습니다.</S.NoFeedText>
       )}
->>>>>>> 5701e2b4f38bd041d2af33db2cffa68f7e55ba5e
     </S.FeedList>
   );
 }

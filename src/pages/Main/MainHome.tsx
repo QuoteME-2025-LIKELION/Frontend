@@ -16,6 +16,7 @@ export default function MainHome() {
   const { date } = useParams();
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
   const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
@@ -76,6 +77,8 @@ export default function MainHome() {
       <HomeBox date={date} myQuote={myQuote} />
       <FeedList
         date={date}
+        otherQuotes={otherQuotes}
+        friendList={friendList}
         onTagRequest={() => {
           //API
           setIsTagModalOpen(true);
