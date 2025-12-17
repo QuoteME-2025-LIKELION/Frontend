@@ -41,7 +41,7 @@ export default function Notification() {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await api.get<Notification[]>("/notifications");
+      const res = await api.get<Notification[]>("/api/notifications");
       setNotifications(res.data);
       // 알림을 가져온 후 전역 상태도 업데이트
       const unreadExists = res.data.some((n) => !n.isRead);
@@ -79,7 +79,7 @@ export default function Notification() {
       try {
         // 알림 읽음 처리 (아직 안 읽은 경우에만)
         if (!notification.isRead) {
-          await api.patch(`/notifications/${notification.id}/read`);
+          await api.patch(`/api/notifications/${notification.id}/read`);
         }
       } catch (err) {
         console.error(err);

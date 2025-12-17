@@ -21,3 +21,8 @@ export const Content = styled.div`
     display: none;
   }
 `;
+
+export const EmptyBox = styled(G.EmptyBox)`
+  padding: 0;
+  height: 100%;
+`;

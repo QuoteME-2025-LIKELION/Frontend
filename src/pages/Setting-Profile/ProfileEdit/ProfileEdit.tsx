@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+// TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
   const navigate = useNavigate();
 

@@ -6,6 +6,7 @@ import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import useAuthStore from "@/stores/useAuthStore";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -19,21 +20,33 @@ export default function SignUp() {
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const handleSignUp = async () => {
-    console.log("SIGNUP CLICKED");
-    if (!isValidEmail(email) || pwd.length === 0 || birth.length !== 4) {
+    if (!isValidEmail(email) || pwd.length < 8 || birth.length !== 4) {
       alert("입력값을 다시 확인해주세요.");
       return;
     }
 
     try {
-      await api.post("/api/auth/signup", {
+      const res = await api.post("/api/auth/signup", {
         email,
         password: pwd,
         birthYear: birth, // ← 명세서 필드명 확인
       });
 
       // STEP 1 성공 조건
-      navigate("/profile");
+      const accessToken = res.data?.data?.accessToken;
+
+      if (accessToken) {
+        // store에 accessToken 저장 (인증 상태 업데이트)
+        useAuthStore.getState().login(accessToken);
+        // 프로필 설정 페이지로 이동
+        navigate("/profile");
+      } else {
+        // 회원가입은 성공했지만, 토큰이 응답에 없는 경우
+        alert(
+          "회원가입은 완료되었으나, 인증 정보를 받지 못했습니다. 로그인 페이지로 이동합니다."
+        );
+        navigate("/login");
+      }
     } catch (error) {
       console.error("회원가입 실패:", error);
       alert("회원가입에 실패했습니다.");
@@ -67,6 +80,7 @@ export default function SignUp() {
             type="password"
             name="password"
             required
+            minLength={8}
           />
           <Input
             value={birth}
@@ -75,6 +89,8 @@ export default function SignUp() {
             type="text  "
             name="birth"
             required
+            minLength={4}
+            maxLength={4}
           />
           {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
@@ -82,6 +98,11 @@ export default function SignUp() {
           {email.length > 0 && !isValidEmail(email) && (
             <S.WarningMessage>
               유효하지 않은 이메일 형식입니다.
+            </S.WarningMessage>
+          )}
+          {pwd.length > 0 && pwd.length < 8 && (
+            <S.WarningMessage>
+              비밀번호는 최소 8자 이상이어야 합니다.
             </S.WarningMessage>
           )}
         </S.InputBox>

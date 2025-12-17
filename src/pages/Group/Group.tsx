@@ -15,6 +15,7 @@ export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const [groupData, setGroupData] = useState<Group | null>(null);
+  const [myNickName, setMyNickName] = useState<string>("");
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
@@ -23,6 +24,23 @@ export default function Group() {
 
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showQuitToast, setShowQuitToast] = useState(false);
+
+  const [showGroupDeleteModal, setShowGroupDeleteModal] = useState(false);
+  const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
+
+  useEffect(() => {
+    const fetchMyData = async () => {
+      try {
+        const res = await api.get("/api/profile");
+        const myNickName = res.data.nickname;
+        setMyNickName(myNickName);
+      } catch (err) {
+        console.error("내 프로필 불러오기 오류:", err);
+      }
+    };
+
+    fetchMyData();
+  }, []);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -90,6 +108,25 @@ export default function Group() {
       alert("그룹 탈퇴에 실패했습니다.");
     }
   }, [groupId, navigate]);
+
+  const handleDeleteGroup = useCallback(() => {
+    setShowGroupDeleteModal(true);
+  }, []);
+  const handleConfirmDeleteGroup = useCallback(async () => {
+    try {
+      await api.delete(`/api/groups/${groupId}`);
+      setShowGroupDeleteModal(false);
+      setShowGroupDeleteToast(true);
+
+      setTimeout(() => {
+        navigate("/friend-group");
+      }, 1500);
+    } catch (err) {
+      console.error("그룹 삭제 처리 중 오류:", err);
+      setShowGroupDeleteModal(false);
+      alert("그룹 삭제에 실패했습니다.");
+    }
+  }, [groupId, navigate]);
   return (
     <>
       <PageTitle title={groupData?.name || "그룹 상세"} />
@@ -122,6 +159,20 @@ export default function Group() {
             text="그룹을 탈퇴하였습니다."
             isVisible={showQuitToast}
             onClose={() => setShowQuitToast(false)}
+          />
+        )}
+        {showGroupDeleteModal && (
+          <ConfirmModal
+            question="그룹을 삭제하시겠습니까?"
+            onClose={() => setShowGroupDeleteModal(false)}
+            onConfirm={handleConfirmDeleteGroup}
+          />
+        )}
+        {showGroupDeleteToast && (
+          <ToastModal
+            text="그룹이 삭제되었습니다."
+            isVisible={showGroupDeleteToast}
+            onClose={() => setShowGroupDeleteToast(false)}
           />
         )}
         <Header
@@ -202,7 +253,11 @@ export default function Group() {
                   })
                 }
               />
-              <S.QuitBtn onClick={handleQuitGroup}>그룹 탈퇴하기</S.QuitBtn>
+              {groupData?.leaderNickname === myNickName ? (
+                <S.QuitBtn onClick={handleDeleteGroup}>그룹 삭제하기</S.QuitBtn>
+              ) : (
+                <S.QuitBtn onClick={handleQuitGroup}>그룹 탈퇴하기</S.QuitBtn>
+              )}
             </S.BtnBox>
           </S.Main>
         </S.Content>

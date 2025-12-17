@@ -5,6 +5,8 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import useAuthStore from "@/stores/useAuthStore";
+import api from "@/api/api";
 
 export default function SettingPage() {
   const navigate = useNavigate();
@@ -13,12 +15,23 @@ export default function SettingPage() {
   const [showLogoutToast, setShowLogoutToast] = useState(false);
 
   const handleLogout = () => {
-    // 로그아웃 로직 추가
-    setShowLogoutModal(false);
-    setShowLogoutToast(true);
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+      setShowLogoutModal(false);
+      useAuthStore.getState().logout(); // Zustand 스토어에서 로그아웃 처리
+      setShowLogoutToast(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (err) {
+      console.error("로그아웃 처리 중 오류:", err);
+      alert("로그아웃에 실패했습니다.");
+      return;
+    }
   };
 
   return (
@@ -36,7 +49,7 @@ export default function SettingPage() {
           <ConfirmModal
             question="로그아웃 하시겠습니까?"
             onClose={() => setShowLogoutModal(false)}
-            onConfirm={handleLogout}
+            onConfirm={handleConfirmLogout}
           />
         )}
         {showLogoutToast && (
@@ -77,9 +90,7 @@ export default function SettingPage() {
             <S.SettingWord>버전</S.SettingWord>
             <S.SettingWord>1.0</S.SettingWord>
           </S.SettingWordLine>
-          <S.LogOutBtn onClick={() => setShowLogoutModal(true)}>
-            로그아웃
-          </S.LogOutBtn>
+          <S.LogOutBtn onClick={handleLogout}>로그아웃</S.LogOutBtn>
         </S.SettingList>
       </S.Container>
     </>
