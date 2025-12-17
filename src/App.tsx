@@ -32,8 +32,31 @@ import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 
 import NotFound from "@/pages/NotFound/NotFound";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
+import { useEffect } from "react";
 
 function App() {
+  const { isLoading, isAuthenticated, initializeAuth } = useAuthStore(); // 로그인 상태 관리
+  const { fetchNotifications } = useNotificationStore(); // 알림 상태 관리
+
+  useEffect(() => {
+    // 앱 시작 시 인증 상태 초기화 (로컬 스토리지 토큰 확인)
+    initializeAuth();
+  }, [initializeAuth]);
+
+  useEffect(() => {
+    // 인증 상태가 true가 되고 (isLoading이 false가 된 후) 알림 가져오기
+    if (!isLoading && isAuthenticated) {
+      fetchNotifications();
+    }
+  }, [isLoading, isAuthenticated, fetchNotifications]);
+
+  if (isLoading) {
+    // 로딩스피너 구현 예정
+    return;
+  }
+
   return (
     <RootLayout>
       <ThemeProvider theme={theme}>

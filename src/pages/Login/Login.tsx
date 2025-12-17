@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -37,10 +39,11 @@ export default function Login() {
       });
 
       // axios는 HTTP 상태 코드를 res.status로 제공 -> API 명세서와 무관
-      if (res.status === 200 && res.data.accessToken) {
-        const { accessToken } = res.data;
-        localStorage.setItem("accessToken", accessToken);
-        navigate("/"); // 로그인 성공 후 이동할 경로
+      if (res.status === 200 && res.data.data.accessToken) {
+        const accessToken = res.data.data.accessToken;
+        useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
+        useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
+        navigate("/home"); // 로그인 성공 후 이동할 경로
       }
     } catch (error) {
       console.error("로그인 실패:", error);
@@ -88,7 +91,7 @@ export default function Login() {
         </S.InputBox>
         <S.BtnBox>
           {/* 추후 onClick 이벤트 추가(handleLogin) */}
-          <Button title="입력 완료" onClick={() => {}} />
+          <Button title="입력 완료" onClick={handleLogin} />
         </S.BtnBox>
       </S.Container>
     </>

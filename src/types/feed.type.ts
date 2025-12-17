@@ -1,26 +1,41 @@
 /**
- * Feed 타입 정의
- * @property {number} id - 피드 고유 ID
- * @property {string} content - 피드 내용
- * @property {string} createDate - 피드 생성 일자
- * @property {number} authorId - 피드 작성자 ID
- * @property {string} authorName - 피드 작성자 이름
- * @property {string} profileImageUrl - 피드 작성자 프로필 이미지 URL (선택)
- * @property {string} bio - 피드 작성자 소개
- * @property {Array<{ id: number; nickname: string }>} taggedUsers - 피드에 태그된 사용자 목록 (선택)
- * @property {boolean} isLiked - 피드에 좋아요를 눌렀는지 여부
+ * API 명세서에 따라 내 명언과 다른 사람 명언으로 구분
  */
-export interface Feed {
+
+/**
+ * 내 명언 타입
+ * - content: 명언 내용
+ * - groupName: 내가 속한 그룹 이름
+ * - authorNickname: 명언 작성자 닉네임
+ * - birthYear: 명언 작성자 출생 연도
+ */
+export interface MyQuote {
+  content: string;
+  groupName: string;
+  authorNickname: string;
+  birthYear: number;
+}
+
+/**
+ * 다른 사람 명언 타입
+ * - id: 명언 고유 ID
+ * - content: 명언 내용
+ * - taggedNicknames: 명언에 태그된 닉네임 배열
+ * - authorNickname: 명언 작성자 닉네임
+ * - authorProfileImage: 명언 작성자 프로필 이미지 URL (선택적)
+ * - authorIntroduction: 명언 작성자 소개글 (선택적)
+ * - timeAgo: 명언 작성 시간 (예: "2시간 전")
+ * - isLiked: 현재 사용자가 이 명언을 좋아요했는지 여부
+ * - isFriendQuote: 작성자가 친구인지 여부
+ */
+export interface OtherQuote {
   id: number;
   content: string;
-  createDate: string;
-  authorId: number;
-  authorName: string;
-  profileImageUrl?: string;
-  bio?: string;
-  taggedUsers?: {
-    id: number;
-    nickname: string;
-  }[];
+  taggedNicknames: string[];
+  authorNickname: string;
+  authorProfileImage?: string;
+  authorIntroduction?: string;
+  timeAgo: string;
   isLiked: boolean;
+  isFriendQuote: boolean;
 }
