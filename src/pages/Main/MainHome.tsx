@@ -23,6 +23,8 @@ export default function MainHome() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [friendList, setFriendList] = useState<Friend[]>([]); // 아무것도 쓰지 않은 친구 명언 파악을 위한 친구 리스트 상태
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+
   // handleShare 상태 관리
   const [shareStatus, setShareStatus] = useState<
     "nothing" | "sharing" | "completed"
@@ -75,7 +77,7 @@ export default function MainHome() {
       setShareStatus("completed");
     } catch (error) {
       console.error("Share failed", error);
-      alert("이미지 저장에 실패했습니다.");
+      setShowErrorToast(true);
       setShareStatus("nothing"); // 실패 시 초기화
     }
   };
@@ -141,6 +143,14 @@ export default function MainHome() {
           }
           isOnShare={shareStatus === "sharing"}
           showOverlay={true}
+        />
+      )}
+
+      {showErrorToast && (
+        <ToastModal
+          isVisible={showErrorToast}
+          onClose={() => setShowErrorToast(false)}
+          text="이미지 저장에 실패했습니다."
         />
       )}
     </S.Container>

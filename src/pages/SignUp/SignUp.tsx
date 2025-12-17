@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -19,9 +20,13 @@ export default function SignUp() {
   const navigate = useNavigate();
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSignUp = async () => {
     if (!isValidEmail(email) || pwd.length < 8 || birth.length !== 4) {
-      alert("입력값을 다시 확인해주세요.");
+      setErrorMessage("입력값을 확인해 주세요.");
+      setShowErrorToast(true);
       return;
     }
 
@@ -42,14 +47,15 @@ export default function SignUp() {
         navigate("/profile");
       } else {
         // 회원가입은 성공했지만, 토큰이 응답에 없는 경우
-        alert(
+        console.error(
           "회원가입은 완료되었으나, 인증 정보를 받지 못했습니다. 로그인 페이지로 이동합니다."
         );
         navigate("/login");
       }
     } catch (error) {
       console.error("회원가입 실패:", error);
-      alert("회원가입에 실패했습니다.");
+      setErrorMessage("회원가입에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -57,6 +63,13 @@ export default function SignUp() {
     <>
       <PageTitle title="회원가입" />
       <S.Container>
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}

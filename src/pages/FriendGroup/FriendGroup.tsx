@@ -47,6 +47,9 @@ export default function FriendGroup() {
   const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // 추가할 친구 ID 상태
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const navigate = useNavigate();
 
   // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회
@@ -125,11 +128,11 @@ export default function FriendGroup() {
   );
 
   const handleConfirmDelete = useCallback(async () => {
-    if (selectedFriendId === null) {
-      console.error("삭제할 친구 ID가 유효하지 않습니다.");
-      setShowDeleteModal(false);
-      return;
-    }
+    // if (selectedFriendId === null) {
+    //   console.error("삭제할 친구 ID가 유효하지 않습니다.");
+    //   setShowDeleteModal(false);
+    //   return;
+    // }
     try {
       await api.delete(`/api/friends/${selectedFriendId}`);
       setShowDeleteModal(false);
@@ -140,7 +143,8 @@ export default function FriendGroup() {
       // }, 1500);
     } catch (err) {
       console.error("친구 삭제 처리 중 오류:", err);
-      alert("친구 삭제에 실패했습니다.");
+      setErrorMessage("친구 삭제에 실패했습니다.");
+      setShowErrorToast(true);
       return;
     }
   }, []);
@@ -152,11 +156,11 @@ export default function FriendGroup() {
   }, []);
 
   const handleConfirmAdd = useCallback(async () => {
-    if (selectedUserId === null) {
-      console.error("추가할 사용자 ID가 유효하지 않습니다.");
-      setShowAddModal(false);
-      return;
-    }
+    // if (selectedUserId === null) {
+    //   console.error("추가할 사용자 ID가 유효하지 않습니다.");
+    //   setShowAddModal(false);
+    //   return;
+    // }
     try {
       await api.post(`/api/friends/add/${selectedUserId}`);
 
@@ -168,7 +172,8 @@ export default function FriendGroup() {
       // }, 1500);
     } catch (err) {
       console.error("친구 추가 처리 중 오류:", err);
-      alert("친구 추가에 실패했습니다.");
+      setErrorMessage("친구 추가에 실패했습니다.");
+      setShowErrorToast(true);
       return;
     }
   }, [selectedUserId]);
@@ -207,6 +212,13 @@ export default function FriendGroup() {
             text="친구가 추가되었습니다."
             isVisible={showAddToast}
             onClose={() => setShowAddToast(false)}
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
           />
         )}
         <Header

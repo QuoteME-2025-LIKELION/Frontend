@@ -6,12 +6,16 @@ import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import api from "@/api/api";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function ChangeMessage() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const location = useLocation();
   const { groupId } = useParams();
+
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const currentMotto = location.state?.currentMotto || "";
@@ -22,7 +26,8 @@ export default function ChangeMessage() {
     const newMotto = message.trim();
 
     if (newMotto.length > 20) {
-      alert("메시지는 20자 이내로 입력해 주세요.");
+      setErrorMessage("메시지는 20자 이내로 입력해 주세요.");
+      setShowErrorToast(true);
       return;
     }
     try {
@@ -30,6 +35,8 @@ export default function ChangeMessage() {
       navigate(`/group/${groupId}`);
     } catch (err) {
       console.error("그룹 메시지 변경 오류:", err);
+      setErrorMessage("그룹 메시지 변경에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -37,6 +44,13 @@ export default function ChangeMessage() {
     <>
       <PageTitle title="그룹 메시지 변경" />
       <S.Container>
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={false}
           showXBtn={true}

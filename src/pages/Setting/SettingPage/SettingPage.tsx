@@ -13,6 +13,7 @@ export default function SettingPage() {
   const [showToast, setShowToast] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutToast, setShowLogoutToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -29,7 +30,7 @@ export default function SettingPage() {
       }, 1500);
     } catch (err) {
       console.error("로그아웃 처리 중 오류:", err);
-      alert("로그아웃에 실패했습니다.");
+      setShowErrorToast(true);
       return;
     }
   };
@@ -57,6 +58,13 @@ export default function SettingPage() {
             text="로그아웃 되었습니다."
             isVisible={showLogoutToast}
             onClose={() => setShowLogoutToast(false)}
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="로그아웃에 실패했습니다."
           />
         )}
         <Header

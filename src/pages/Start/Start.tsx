@@ -2,9 +2,12 @@ import Button from "@/components/Button/Button";
 import * as S from "./StartStyled";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/api";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import { useState } from "react";
 
 export default function Start() {
   const navigate = useNavigate();
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleGuestLogin = async () => {
     try {
@@ -12,12 +15,19 @@ export default function Start() {
       navigate("/home");
     } catch (error) {
       console.error("게스트 로그인 실패:", error);
-      alert("게스트 로그인에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
   return (
     <S.Container>
+      {showErrorToast && (
+        <ToastModal
+          isVisible={showErrorToast}
+          onClose={() => setShowErrorToast(false)}
+          text="게스트 로그인에 실패했습니다."
+        />
+      )}
       <S.TextBox>
         <S.TitleText>QuoteMe</S.TitleText>
         <S.Text>소소한 생각도 쿼트미로 소중하게 모아보세요.</S.Text>

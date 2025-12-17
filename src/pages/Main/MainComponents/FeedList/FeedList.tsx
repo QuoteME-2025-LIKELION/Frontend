@@ -6,6 +6,7 @@ import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface QuotesItem extends OtherQuote {
   friendId: number;
@@ -32,20 +33,8 @@ export default function FeedList({
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [quotes, setQuotes] = useState<QuotesItem[]>([]); // 피드 목록을 상태로 관리
 
-  const [shareStatus, setShareStatus] = useState<
-    "nothing" | "sharing" | "completed"
-  >("nothing");
-
-  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
-  useEffect(() => {
-    if (shareStatus === "completed") {
-      const timer = setTimeout(() => {
-        setShareStatus("nothing");
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [shareStatus]);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // otherQuotes나 friendList가 변경될 때 feeds 상태를 업데이트
   useEffect(() => {
@@ -89,7 +78,8 @@ export default function FeedList({
     } catch (err) {
       console.error("태그 요청 실패:", err);
       // 실패 시 사용자에게 알림
-      alert("태그 요청에 실패했습니다.");
+      setErrorMessage("태그 요청에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -115,7 +105,8 @@ export default function FeedList({
         )
       );
       console.error("좋아요 처리 실패:", err);
-      alert("좋아요 처리에 실패했습니다.");
+      setErrorMessage("좋아요 처리에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -149,12 +140,22 @@ export default function FeedList({
     } catch (err) {
       console.error("콕 찌르기 실패:", err);
       // 실패 시 사용자에게 알림
-      alert("콕 찌르기에 실패했습니다.");
+      setErrorMessage("콕 찌르기에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
   return (
     <S.FeedList>
+      {showErrorToast && (
+        <ToastModal
+          isVisible={showErrorToast}
+          onClose={() => {
+            setShowErrorToast(false);
+          }}
+          text={errorMessage}
+        />
+      )}
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <Feed

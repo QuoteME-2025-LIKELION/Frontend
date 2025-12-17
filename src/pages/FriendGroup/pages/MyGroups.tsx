@@ -18,6 +18,8 @@ export default function MyGroups() {
   const [selectedGroup, setSelectedGroup] = useState(""); // 탈퇴할 그룹 이름 상태
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // 탈퇴할 그룹 ID 상태
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+
   const fetchMyGroups = useCallback(async () => {
     try {
       const res = await api.get("/api/groups/me");
@@ -59,7 +61,7 @@ export default function MyGroups() {
       fetchMyGroups();
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
-      alert("그룹 탈퇴에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [selectedGroupId, fetchMyGroups]);
   return (
@@ -79,6 +81,13 @@ export default function MyGroups() {
             text="그룹을 탈퇴하였습니다."
             isVisible={showQuitToast}
             onClose={() => setShowQuitToast(false)}
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="그룹 탈퇴에 실패했습니다."
           />
         )}
         <Header
