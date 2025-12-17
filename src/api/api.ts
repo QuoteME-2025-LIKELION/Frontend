@@ -19,7 +19,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("API REQUEST INTERCEPTOR - TOKEN:", token);
+    // console.log("API REQUEST INTERCEPTOR - TOKEN:", token);
 
     // 토큰이 존재하면 Authorization 헤더에 'Bearer' 토큰 형식으로 추가
     if (token) {
