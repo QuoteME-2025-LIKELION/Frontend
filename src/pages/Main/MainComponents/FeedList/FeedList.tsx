@@ -56,6 +56,8 @@ export default function FeedList({
           taggedNicknames: [],
           timeAgo: "",
           isLiked: false,
+          createDate: "",
+          isFriendQuote: true,
         };
       }
     });
@@ -127,7 +129,7 @@ export default function FeedList({
             profileImageUrl={quote.authorProfileImage}
             authorName={quote.authorNickname}
             bio={quote.authorIntroduction}
-            createDate={quote.timeAgo}
+            createDate={quote.createDate}
             content={quote.content}
             tag={quote.taggedNicknames}
             isLiked={quote.isLiked}
@@ -141,6 +143,7 @@ export default function FeedList({
             }}
             isInArchive={false}
             isSilenced={quote.isSilenced}
+            timeAgo={quote.timeAgo}
           />
         ))
       ) : (

@@ -14,6 +14,7 @@ export interface MyQuote {
   groupName: string;
   authorNickname: string;
   birthYear: number;
+  createDate?: string;
 }
 
 /**
@@ -38,4 +39,5 @@ export interface OtherQuote {
   timeAgo: string;
   isLiked: boolean;
   isFriendQuote: boolean;
+  createDate?: string;
 }
