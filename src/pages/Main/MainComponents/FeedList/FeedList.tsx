@@ -134,7 +134,12 @@ export default function FeedList({
             tag={quote.taggedNicknames}
             isLiked={quote.isLiked}
             onLike={() => handleLike(quote.id, quote.isLiked)}
-            onShare={() => handleShare(quote.authorNickname, index)}
+            // Quote가 있을 때만 공유 버튼 활성화
+            onShare={
+              !quote.isSilenced
+                ? () => handleShare(quote.authorNickname, index)
+                : undefined
+            }
             onRequest={() => {
               handleRequest(quote.id);
             }}
