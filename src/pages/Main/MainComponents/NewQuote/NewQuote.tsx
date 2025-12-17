@@ -4,8 +4,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import { MOCK_FRIENDS } from "@/data/friends";
+import type { MyQuote } from "@/types/feed.type";
 
-export default function NewQuote() {
+interface NewQuoteProps {
+  quote: {
+    content: string;
+    authorName: string;
+    authorBirthYear?: number | null;
+  };
+  setMyQuote: (quote: MyQuote) => void;
+}
+export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -31,9 +40,7 @@ export default function NewQuote() {
               fill="black"
             />
           </svg>
-          <S.Text style={{ fontSize: 16 }}>
-            오늘 못한 건 내일의 에너지로 남는다.
-          </S.Text>
+          <S.Text style={{ fontSize: 16 }}>{quote.content}</S.Text>
           <svg
             width="11"
             height="10"
@@ -47,7 +54,14 @@ export default function NewQuote() {
             />
           </svg>
         </S.FirstLine>
-        <S.Text style={{ fontSize: 12 }}> - 손지수(20000~)</S.Text>
+        <S.Text style={{ fontSize: 12 }}>
+          {" "}
+          {quote.authorName
+            ? `- ${quote.authorName}${
+                quote.authorBirthYear ? `(${quote.authorBirthYear}~)` : ""
+              }`
+            : ""}
+        </S.Text>
       </S.Commend>
       <S.TagBox>
         <S.Text2>친구 태그하기</S.Text2>
@@ -65,7 +79,18 @@ export default function NewQuote() {
         </S.TagList>
       </S.TagBox>
       <S.BtnBox>
-        <Button title="명언 남기기" onClick={() => navigate("/home")} />
+        <Button
+          title="명언 남기기"
+          onClick={() => {
+            setMyQuote({
+              content: quote.content,
+              authorNickname: quote.authorName,
+              birthYear: quote.authorBirthYear ?? 0,
+              groupName: "",
+            });
+            navigate("/home");
+          }}
+        />
       </S.BtnBox>
     </S.Container>
   );
