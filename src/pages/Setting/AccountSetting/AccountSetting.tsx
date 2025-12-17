@@ -6,6 +6,8 @@ import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 
 export default function AccountSetting() {
   const navigate = useNavigate();
@@ -17,6 +19,12 @@ export default function AccountSetting() {
     return regex.test(email);
   };
   const isNumeric = (value: string) => /^\d+$/.test(value);
+
+  const [showToast, setShowToast] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSave = () => {
     // 저장 로직 추가
@@ -30,37 +38,76 @@ export default function AccountSetting() {
       // TODO: POST /api/profile/account
       // await api.post("", payload);
 
-      navigate("/setting-page");
+      setShowToast(true);
+      setTimeout(() => {
+        navigate("/setting-page");
+      }, 1500);
     } catch (e) {
       console.error("계정 정보 저장 실패", e);
-      // TODO: 에러 토스트 추가 가능
+      setErrorMessage("계정 정보 저장에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     try {
-      // TODO: DELETE /api/profile/account
-      // await api.delete();
       await api.delete("/api/profile/account");
-
       localStorage.removeItem("accessToken");
-      alert("회원 탈퇴가 완료되었습니다.");
-      navigate("/");
+      setShowDeleteModal(false);
+      setShowDeleteToast(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (e) {
       console.error("계정 삭제 실패", e);
+      setShowDeleteModal(false);
+      setErrorMessage("계정 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
+  };
+
+  const handleDelete = () => {
+    setShowDeleteModal(true);
   };
 
   return (
     <>
       <PageTitle title="계정 설정" />
       <S.Container>
+        {showToast && (
+          <ToastModal
+            isVisible={showToast}
+            onClose={() => setShowToast(false)}
+            text="계정 정보가 저장되었습니다."
+          />
+        )}
+        {showDeleteModal && (
+          <ConfirmModal
+            onClose={() => setShowDeleteModal(false)}
+            question="정말로 계정을 삭제하시겠습니까?"
+            onConfirm={handleConfirmDelete}
+          />
+        )}
+        {showDeleteToast && (
+          <ToastModal
+            isVisible={showDeleteToast}
+            onClose={() => setShowDeleteToast(false)}
+            text="계정이 삭제되었습니다."
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={false}
           showXBtn={true}
           title="계정 설정"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/setting-page")}
         />
         <S.InputBox>
           <Input

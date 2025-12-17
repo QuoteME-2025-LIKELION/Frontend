@@ -118,6 +118,7 @@ export const Quotation = styled.div`
 export const Text = styled.div`
   font-size: 1rem; /* 16px */
   letter-spacing: -0.28px;
+  line-height: 1.05 !important;
 `;
 
 export const TagContainer = styled.div<{ $isInArchive?: boolean }>`

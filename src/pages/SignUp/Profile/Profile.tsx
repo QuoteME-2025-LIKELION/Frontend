@@ -6,6 +6,7 @@ import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function Profile() {
   const [preview, setPreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [pwd, setIntro] = useState("");
+
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -45,7 +48,7 @@ export default function Profile() {
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
       console.error("프로필 저장 실패:", error);
-      alert("프로필 저장에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -53,12 +56,19 @@ export default function Profile() {
     <>
       <PageTitle title="회원가입" />
       <S.Container>
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="프로필 저장에 실패했습니다."
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
           title="프로필 설정"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview
@@ -87,7 +97,7 @@ export default function Profile() {
             maxLength={10}
             required
           />
-          <S.LimitText>10자 내외</S.LimitText>
+          <S.LimitText>10자 이내</S.LimitText>
           <Input
             value={pwd}
             onChange={(e) => setIntro(e.target.value)}
@@ -97,7 +107,7 @@ export default function Profile() {
             maxLength={30}
             required
           />
-          <S.LimitText>30자 내외</S.LimitText>
+          <S.LimitText>30자 이내</S.LimitText>
         </S.InputBox>
         <S.BtnBox>
           <Button title="저장 완료" onClick={handleSignUp} />

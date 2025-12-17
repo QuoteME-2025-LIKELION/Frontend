@@ -31,7 +31,7 @@ export default function DateHeader() {
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/home")}
             style={{ cursor: "pointer" }}
           >
             <path

@@ -144,7 +144,7 @@ export default function Invite() {
           showXBtn={true}
           title=""
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate(`/group/${groupId}`)}
         />
         <S.Content>
           <Search

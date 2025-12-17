@@ -28,6 +28,9 @@ export default function Group() {
   const [showGroupDeleteModal, setShowGroupDeleteModal] = useState(false);
   const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     const fetchMyData = async () => {
       try {
@@ -75,7 +78,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹원 삭제 오류:", err);
       setShowDeleteModal(false);
-      alert("삭제에 실패했습니다.");
+      setErrorMessage("그룹원 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, selectedMemberId]);
 
@@ -105,7 +109,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setShowQuitModal(false);
-      alert("그룹 탈퇴에 실패했습니다.");
+      setErrorMessage("그룹 탈퇴에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, navigate]);
 
@@ -124,7 +129,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);
       setShowGroupDeleteModal(false);
-      alert("그룹 삭제에 실패했습니다.");
+      setErrorMessage("그룹 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, navigate]);
   return (
@@ -175,12 +181,19 @@ export default function Group() {
             onClose={() => setShowGroupDeleteToast(false)}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
           title=""
           backgroundColor="secondary"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <S.GrayBox>

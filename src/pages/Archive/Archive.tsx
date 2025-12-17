@@ -16,7 +16,7 @@ export default function Archive() {
           showXBtn={true}
           title="아카이브"
           backgroundColor="secondary"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
           <S.Btn

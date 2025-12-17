@@ -110,7 +110,7 @@ export default function Notification() {
           showXBtn={true}
           title="알림함"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
           <S.Btn
