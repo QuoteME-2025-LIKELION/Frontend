@@ -87,8 +87,23 @@ export default function CreateGroup() {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
 
     if (groupName.trim().length === 0) {
-      alert("그룹명을 입력해주세요.");
+      alert("그룹명을 입력해 주세요.");
       return; // 그룹명이 없으면 여기서 중단
+    }
+
+    if (groupName.length > 10) {
+      alert("그룹명은 10자 이내로 입력해 주세요.");
+      return;
+    }
+
+    if (motto.length > 20) {
+      alert("메시지는 20자 이내로 입력해 주세요.");
+      return;
+    }
+
+    if (selectedFriends.length > 4) {
+      alert("최대 4명까지 초대할 수 있습니다.");
+      return;
     }
 
     try {

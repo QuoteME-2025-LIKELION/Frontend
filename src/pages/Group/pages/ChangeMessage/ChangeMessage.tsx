@@ -20,6 +20,11 @@ export default function ChangeMessage() {
 
   const handleSave = async () => {
     const newMotto = message.trim();
+
+    if (newMotto.length > 20) {
+      alert("메시지는 20자 이내로 입력해 주세요.");
+      return;
+    }
     try {
       await api.patch(`/api/groups/${groupId}/motto`, { motto: newMotto });
       navigate(-1);
