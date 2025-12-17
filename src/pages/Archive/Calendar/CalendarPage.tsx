@@ -43,7 +43,7 @@ export default function CalendarPage() {
       const selectedDateString = formatDateToYYYYMMDD(selectedDate);
       const fetchFeeds = async () => {
         try {
-          const res = await api.get(`/archives?date=${selectedDateString}`);
+          const res = await api.get(`/api/archives?date=${selectedDateString}`);
           setFilteredFeeds(res.data);
         } catch (err) {
           console.error(err);
