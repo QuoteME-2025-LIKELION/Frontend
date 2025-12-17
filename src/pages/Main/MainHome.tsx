@@ -16,6 +16,7 @@ export default function MainHome() {
   const { date } = useParams();
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
   const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
@@ -49,6 +50,20 @@ export default function MainHome() {
     fetchData();
   }, [date]);
 
+  // 태그 요청 - quoteId를 받아 모달 상태 설정
+  const handleTagRequest = (quoteId: number) => {
+    setRequestType("tag");
+    setSelectedId(quoteId);
+    setIsTagModalOpen(true);
+  };
+
+  // 콕 찌르기 - friendId를 받아 모달 상태 설정
+  const handlePoke = (friendId: number) => {
+    setRequestType("poke");
+    setSelectedId(friendId);
+    setIsTagModalOpen(true);
+  };
+
   return (
     <S.Container>
       <DateHeader active={active} setActive={setActive} />
@@ -73,23 +88,21 @@ export default function MainHome() {
         </S.Toggle>
       )}
 
-      <HomeBox date={date} />
+      <HomeBox date={date} myQuote={myQuote} />
       <FeedList
         date={date}
-        onTagRequest={() => {
-          //API
-          setIsTagModalOpen(true);
-        }}
-        onPoke={() => {
-          //API
-          setIsTagModalOpen(true);
-        }}
+        otherQuotes={otherQuotes}
+        friendList={friendList}
+        onTagRequest={handleTagRequest}
+        onPoke={handlePoke}
       />
       {isTagModalOpen && (
-        <RequestModal type="tag" onClose={() => setIsTagModalOpen(false)} />
+        <RequestModal
+          type={requestType}
+          onClose={() => setIsTagModalOpen(false)}
+          isVisible={isTagModalOpen}
+        />
       )}
-      <HomeBox date={date} myQuote={myQuote} />
-      <FeedList date={date} otherQuotes={otherQuotes} friendList={friendList} />
     </S.Container>
   );
 }
