@@ -1,11 +1,16 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./FeedListStyled";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+
+interface QuotesItem extends OtherQuote {
+  friendId: number;
+  isSilenced: boolean;
+}
 
 export default function FeedList({
   date,
@@ -25,6 +30,7 @@ export default function FeedList({
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [quotes, setQuotes] = useState<QuotesItem[]>([]); // 피드 목록을 상태로 관리
 
   const [shareStatus, setShareStatus] = useState<
     "nothing" | "sharing" | "completed"
@@ -41,34 +47,28 @@ export default function FeedList({
     }
   }, [shareStatus]);
 
-  // 친구 목록과 명언 목록 조합
-  const combinedFeeds = useMemo(() => {
-    // otherQuotes를 닉네임으로 쉽게 찾을 수 있도록 Map으로 변환
+  // otherQuotes나 friendList가 변경될 때 feeds 상태를 업데이트
+  useEffect(() => {
     const quotesMap = new Map(
       otherQuotes.map((quote) => [quote.authorNickname, quote])
     );
 
-    // 친구 목록을 기준으로 최종 피드 배열 생성
-    return friendList.map((friend) => {
+    const combined = friendList.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
-
       if (friendQuote) {
-        // 친구가 오늘 명언을 썼다면, 해당 명언 정보와 isSilenced: false를 반환
         return {
           ...friendQuote,
-          friendId: friend.id, // friendId를 별도 속성으로 추가 (명언 안 쓴 경우와 구분)
+          friendId: friend.id,
           isSilenced: false,
         };
       } else {
-        // 친구가 명언을 안 썼다면, 친구 정보 기반으로 빈 명언 객체 생성
         return {
-          id: friend.id, // key로 사용하기 위한 고유 ID
-          friendId: friend.id, // friendId를 명시적으로 추가
+          id: friend.id,
+          friendId: friend.id,
           authorNickname: friend.nickname,
           authorProfileImage: friend.profileImage,
           authorIntroduction: friend.introduction,
-          isSilenced: true, // isSilenced 플래그를 true로 설정
-          // 나머지 Feed 컴포넌트가 필요로 하는 기본값들
+          isSilenced: true,
           content: "",
           taggedNicknames: [],
           timeAgo: "",
@@ -78,6 +78,7 @@ export default function FeedList({
         };
       }
     });
+    setQuotes(combined);
   }, [otherQuotes, friendList]);
 
   const handleRequest = async (quoteId: number) => {
@@ -91,23 +92,33 @@ export default function FeedList({
       alert("태그 요청에 실패했습니다.");
     }
   };
+
   const handleLike = async (quoteId: number, isLiked: boolean) => {
-    if (isLiked) {
-      try {
+    // 먼저 UI를 낙관적으로 업데이트
+    setQuotes((prevQuotes) =>
+      prevQuotes.map((quote) =>
+        quote.id === quoteId ? { ...quote, isLiked: !isLiked } : quote
+      )
+    );
+
+    try {
+      if (isLiked) {
         await api.delete(`/api/quotes/${quoteId}/like`);
-      } catch (err) {
-        console.error("좋아요 취소 실패:", err);
-        alert("좋아요를 취소하지 못했습니다.");
-      }
-    } else {
-      try {
+      } else {
         await api.post(`/api/quotes/${quoteId}/like`);
-      } catch (err) {
-        console.error("좋아요 실패:", err);
-        alert("좋아요에 실패했습니다.");
       }
+    } catch (err) {
+      // API 호출 실패 시 UI를 원래 상태로 되돌림
+      setQuotes((prevQuotes) =>
+        prevQuotes.map((quote) =>
+          quote.id === quoteId ? { ...quote, isLiked: isLiked } : quote
+        )
+      );
+      console.error("좋아요 처리 실패:", err);
+      alert("좋아요 처리에 실패했습니다.");
     }
   };
+
   const handleShare = (authorNickname: string, index: number) => {
     const shareProcess = () =>
       new Promise<void>((resolve, reject) => {
@@ -129,6 +140,7 @@ export default function FeedList({
 
     onShare(shareProcess);
   };
+
   const handlePoke = async (friendId: number) => {
     try {
       await api.post(`/api/pokes/${friendId}`);
@@ -143,8 +155,8 @@ export default function FeedList({
 
   return (
     <S.FeedList>
-      {combinedFeeds.length > 0 ? (
-        combinedFeeds.map((quote, index) => (
+      {quotes.length > 0 ? (
+        quotes.map((quote, index) => (
           <Feed
             key={quote.id}
             ref={(el: HTMLDivElement | null) => {
