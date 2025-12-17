@@ -1,20 +1,60 @@
 import * as S from "./WriteBoxStyled";
 import { useState } from "react";
+import api from "@/api/api";
 
+interface QuoteResponse {
+  content: string;
+  authorName?: string;
+  authorBirthYear?: number;
+  taggedMemberNames?: string[];
+  createDate?: string;
+}
 interface WriteBoxProps {
-  onComplete: () => void;
-  onAI: () => void;
+  onComplete: (data: QuoteResponse) => void;
+  onAI: (text: string) => void;
 }
 
 export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
   const [text, setText] = useState("");
+  const today = new Date();
 
+  const month = today.getMonth() + 1; // 0부터 시작
+  const date = today.getDate();
+
+  const dayNames = [
+    "일요일",
+    "월요일",
+    "화요일",
+    "수요일",
+    "목요일",
+    "금요일",
+    "토요일",
+  ];
+  const day = dayNames[today.getDay()];
   const isLong = text.length > 30;
+
+  const handleSubmit = async () => {
+    try {
+      const post = await api.post("/api/quotes", {
+        content: text, // 짧은 명언
+        originalContent: "", // 직접 작성이므로 비움
+        taggedMemberIds: [],
+      });
+
+      onComplete(post.data); // ✅ 성공 후 다음 단계
+    } catch (e) {
+      console.error(e);
+      alert("명언 작성에 실패했어요.");
+    }
+  };
+
   return (
     <S.Container>
       <S.Datebox>
-        <S.Month>10/31</S.Month>
-        <S.Weekend>화요일</S.Weekend>
+        <S.Month>
+          {month}/{date}
+        </S.Month>
+        <S.Weekend>{day}</S.Weekend>
       </S.Datebox>
       <S.Guide>
         오늘의 명언을 직접 적거나 <br /> 오늘 일기를 적고 명언 만들기를 부탁할
@@ -29,7 +69,7 @@ export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
         </S.LineWrap>
       </S.WriteBox>
       {isLong ? (
-        <S.RecommendBtn onClick={onAI}>
+        <S.RecommendBtn onClick={() => onAI(text)}>
           <S.BtnText>AI 추천 받기</S.BtnText>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +88,7 @@ export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
           </svg>
         </S.RecommendBtn>
       ) : (
-        <S.RecommendBtn onClick={onComplete}>
+        <S.RecommendBtn onClick={handleSubmit}>
           <S.BtnText>입력완료</S.BtnText>
           <svg
             xmlns="http://www.w3.org/2000/svg"

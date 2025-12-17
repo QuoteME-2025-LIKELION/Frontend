@@ -3,7 +3,8 @@ import * as S from "./ProfileCenterStyled";
 import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
-//import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import api from "@/api/api";
 
 export default function ProfileCenter() {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ export default function ProfileCenter() {
   const showXBtn = fromPath === "/home";
   const showBackBtn = fromPath === "/setting-page" || fromPath === "default"; // 'default'일 때도 true
 
-  /*
   const [profile, setProfile] = useState<{
     nickname: string;
     email: string;
@@ -25,9 +25,13 @@ export default function ProfileCenter() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // TODO: GET /api/profile
-        // const res = await api.get("/api/profile");
-        // setProfile(res.data);
+        const res = await api.get("/api/settings/profile");
+        setProfile({
+          nickname: res.data.nickname,
+          email: res.data.email,
+          intro: res.data.introduction,
+          imageUrl: res.data.profileImage,
+        });
       } catch (e) {
         console.error("프로필 조회 실패", e);
       }
@@ -35,7 +39,7 @@ export default function ProfileCenter() {
 
     fetchProfile();
   }, []);
-  */
+
   return (
     <>
       <PageTitle title="프로필 관리" />
@@ -49,14 +53,20 @@ export default function ProfileCenter() {
           onClickBackBtn={() => navigate("/setting-page")}
         />
         <S.ProfileWrapper>
-          <S.ImgPreview />
+          <S.ImgPreview
+            style={{
+              backgroundImage: profile?.imageUrl
+                ? `url(${profile.imageUrl})`
+                : "none",
+            }}
+          />
           <S.ImgInput>이미지 등록</S.ImgInput>
         </S.ProfileWrapper>
         <S.InputBox>
-          <S.InfoBox>이름</S.InfoBox>
-          <S.InfoBox style={{ color: "#959595" }}>이메일</S.InfoBox>
+          <S.InfoBox>{profile?.nickname}</S.InfoBox>
+          <S.InfoBox style={{ color: "#959595" }}>{profile?.email}</S.InfoBox>
           <S.TextName>자기소개</S.TextName>
-          <S.InfoBox>안녕하세욤</S.InfoBox>
+          <S.InfoBox>{profile?.intro}</S.InfoBox>
           <Button title="편집하기" onClick={() => navigate("/profile-edit")} />
         </S.InputBox>
       </S.Container>

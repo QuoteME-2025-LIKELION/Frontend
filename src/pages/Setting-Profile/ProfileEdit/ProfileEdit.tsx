@@ -6,15 +6,16 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import api from "@/api/api";
 
 // TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
   const navigate = useNavigate();
 
-  const [email, setNickname] = useState("");
-  const [preview, setPreview] = useState<string | null>(null);
-  const [pwd, setIntro] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [intro, setIntro] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -29,17 +30,17 @@ export default function ProfileEdit() {
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
-  const handleSave = () => {
+  const handleSave = async () => {
     // 프로필 변경 저장 로직 추가
 
     const payload = {
-      nickname: email,
-      intro: pwd,
+      nickname,
+      introduction: intro,
       profileImage: preview, // 나중에 multipart면 여기만 변경
     };
 
     try {
-      // await api.post("/api/profile", payload);
+      await api.post("/api/settings/profile", payload);
       setShowToast(true);
 
       setTimeout(() => {
@@ -89,7 +90,7 @@ export default function ProfileEdit() {
         <S.InputBox>
           <S.TextName>자기소개</S.TextName>
           <Input
-            value={email}
+            value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임 설정"
             type="text"
@@ -100,7 +101,7 @@ export default function ProfileEdit() {
           <S.LimitText>10자 내외</S.LimitText>
           <S.TextName>자기소개</S.TextName>
           <Input
-            value={pwd}
+            value={intro}
             onChange={(e) => setIntro(e.target.value)}
             placeholder="자기소개 설정"
             type="text"
