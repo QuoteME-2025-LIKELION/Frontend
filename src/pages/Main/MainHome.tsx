@@ -50,6 +50,20 @@ export default function MainHome() {
     fetchData();
   }, [date]);
 
+  // 태그 요청 - quoteId를 받아 모달 상태 설정
+  const handleTagRequest = (quoteId: number) => {
+    setRequestType("tag");
+    setSelectedId(quoteId);
+    setIsTagModalOpen(true);
+  };
+
+  // 콕 찌르기 - friendId를 받아 모달 상태 설정
+  const handlePoke = (friendId: number) => {
+    setRequestType("poke");
+    setSelectedId(friendId);
+    setIsTagModalOpen(true);
+  };
+
   return (
     <S.Container>
       <DateHeader active={active} setActive={setActive} />
@@ -79,19 +93,16 @@ export default function MainHome() {
         date={date}
         otherQuotes={otherQuotes}
         friendList={friendList}
-        onTagRequest={() => {
-          //API
-          setIsTagModalOpen(true);
-        }}
-        onPoke={() => {
-          //API
-          setIsTagModalOpen(true);
-        }}
+        onTagRequest={handleTagRequest}
+        onPoke={handlePoke}
       />
       {isTagModalOpen && (
-        <RequestModal type="tag" onClose={() => setIsTagModalOpen(false)} />
+        <RequestModal
+          type={requestType}
+          onClose={() => setIsTagModalOpen(false)}
+          isVisible={isTagModalOpen}
+        />
       )}
-      <HomeBox date={date} myQuote={myQuote} />
     </S.Container>
   );
 }
