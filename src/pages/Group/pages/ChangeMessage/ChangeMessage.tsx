@@ -27,7 +27,7 @@ export default function ChangeMessage() {
     }
     try {
       await api.patch(`/api/groups/${groupId}/motto`, { motto: newMotto });
-      navigate(-1);
+      navigate(`/group/${groupId}`);
     } catch (err) {
       console.error("그룹 메시지 변경 오류:", err);
     }
@@ -42,7 +42,7 @@ export default function ChangeMessage() {
           showXBtn={true}
           title=""
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate(`/group/${groupId}`)}
         />
         <S.Content>
           <S.Title>그룹 메시지</S.Title>

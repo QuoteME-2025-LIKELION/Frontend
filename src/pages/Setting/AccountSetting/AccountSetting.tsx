@@ -60,7 +60,7 @@ export default function AccountSetting() {
           showXBtn={true}
           title="계정 설정"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/setting-page")}
         />
         <S.InputBox>
           <Input

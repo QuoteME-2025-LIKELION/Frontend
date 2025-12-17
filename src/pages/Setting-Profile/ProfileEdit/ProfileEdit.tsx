@@ -43,7 +43,7 @@ export default function ProfileEdit() {
       setShowToast(true);
 
       setTimeout(() => {
-        navigate(-1);
+        navigate("/profile-center");
       }, 1500);
     } catch (e) {
       console.error("프로필 저장 실패", e);

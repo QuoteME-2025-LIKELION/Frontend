@@ -157,7 +157,7 @@ export default function CreateGroup() {
           showXBtn={true}
           title="그룹 만들기"
           backgroundColor="primary"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <S.NavyBox>

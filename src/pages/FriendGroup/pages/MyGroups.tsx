@@ -86,7 +86,7 @@ export default function MyGroups() {
           showXBtn={true}
           title="나의 그룹 관리"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           {groupsData.length > 0 ? (

@@ -58,7 +58,7 @@ export default function Profile() {
           showXBtn={false}
           title="프로필 설정"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview

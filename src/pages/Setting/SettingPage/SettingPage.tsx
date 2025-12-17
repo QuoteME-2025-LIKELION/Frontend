@@ -64,7 +64,7 @@ export default function SettingPage() {
           showXBtn={true}
           title="환경설정"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.SettingList>
           <S.SettingBtn

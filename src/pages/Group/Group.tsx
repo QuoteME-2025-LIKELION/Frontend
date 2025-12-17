@@ -180,7 +180,7 @@ export default function Group() {
           showXBtn={false}
           title=""
           backgroundColor="secondary"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <S.GrayBox>

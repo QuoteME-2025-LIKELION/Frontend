@@ -60,7 +60,7 @@ export default function Login() {
           showXBtn={false}
           title="로그인"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.InputBox>
           <Input

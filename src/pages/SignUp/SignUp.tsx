@@ -62,7 +62,7 @@ export default function SignUp() {
           showXBtn={false}
           title="회원가입"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.InputBox>
           <Input

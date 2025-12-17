@@ -44,7 +44,7 @@ export default function JoinGroup() {
       setShowToast(true);
 
       setTimeout(() => {
-        navigate(-1);
+        navigate("/friend-group");
       }, 1500);
     } catch (err) {
       console.error("그룹 참여 요청 오류:", err);
@@ -88,7 +88,7 @@ export default function JoinGroup() {
           showXBtn={false}
           title=""
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <GroupCard group={groupData!} onBtnClick={() => setShowModal(true)} />

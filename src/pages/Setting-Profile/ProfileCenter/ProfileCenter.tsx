@@ -45,8 +45,8 @@ export default function ProfileCenter() {
           showXBtn={showXBtn}
           title="프로필 관리"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
-          onClickBackBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
+          onClickBackBtn={() => navigate("/setting-page")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview />
