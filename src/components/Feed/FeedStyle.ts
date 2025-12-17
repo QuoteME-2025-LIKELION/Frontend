@@ -2,7 +2,8 @@ import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
 export const Container = styled.div<{ $isInArchive?: boolean }>`
-  background-color: transparent;
+  background-color: ${({ $isInArchive }) =>
+    $isInArchive ? `${theme.colors.primary}` : "#fff"};
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -37,6 +38,13 @@ export const ProfileImg = styled.img`
   height: 2.8125rem;
   border-radius: 50%;
   object-fit: cover;
+`;
+
+export const DefaultProfileImg = styled.div`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.territory};
 `;
 
 export const ProfileInfo = styled.div`
@@ -143,13 +151,12 @@ export const Tag = styled.div`
   letter-spacing: -0.24px;
 `;
 
-export const Name = styled.div<{ $isMyName: boolean; $isInArchive?: boolean }>`
+export const Name = styled.div<{ $isInArchive?: boolean }>`
   background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $isMyName, $isInArchive }) =>
-    $isInArchive ? "#fff" : $isMyName ? "#3679B5" : "#000"};
+  color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
 `;
 
 export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`

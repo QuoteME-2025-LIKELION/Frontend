@@ -1,48 +1,32 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
 import * as S from "./MyQuotesStyle";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-
-const mockData = [
-  {
-    date: "10/31",
-    day: "화요일",
-    title: "방귀 뀐 놈이 성 낸다",
-    desc: "오늘 말랑이랑 몰랑이랑 같이 카공을 했는데 갑자기 냄새가 났다. 갑자기 말랑이가 나를 의심하기 시작했고, 당황한 나는 어쩌구저쩌구 여기부턴 말줄임표",
-    tag: ["말랑이", "몰랑이"],
-  },
-  {
-    date: "10/30",
-    day: "월요일",
-    title: "여긴일부러30자거의딱맞춰서줄바꿈보려고길게써볼게요길다길어",
-    desc: "",
-    tag: [], // 일부러 태그 없이
-  },
-  {
-    date: "10/29",
-    day: "일요일",
-    title: "어쩌구저쩌구",
-    desc: "오늘은 완전 정말 대박 진짜 쩔게 어쩌구저쩌구였다 울라불라숑",
-    tag: [
-      "말랑이",
-      "몰랑이",
-      "말랑이",
-      "몰랑이",
-      "말랑이",
-      "몰랑이",
-      "말랑이",
-      "몰랑이",
-      "말랑이",
-      "몰랑이",
-    ],
-  },
-];
+import { useNavigate } from "react-router-dom";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import api from "@/api/api";
 
 export default function MyQuotes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedQuoteDate, setSelectedQuoteDate] = useState<string | null>(
     null
   );
+  const [myQuotes, setMyQuotes] = useState<ArchiveFeed[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMyQuotes = async () => {
+      try {
+        const res = await api.get("/api/archives/me");
+        setMyQuotes(res.data);
+      } catch (err) {
+        console.error(err);
+        setMyQuotes([]);
+      }
+    };
+
+    fetchMyQuotes();
+  }, []);
 
   const handleQuoteClick = useCallback((date: string) => {
     setSelectedQuoteDate(date);
@@ -50,7 +34,7 @@ export default function MyQuotes() {
   }, []);
 
   const moveToDate = useCallback((date: string) => {
-    console.log(date, "날짜로 이동");
+    navigate(`/home/${date}`);
     // 실제 이동 로직을 추후 여기에 구현
     setShowModal(false); // 이동 후 모달 닫기
   }, []);
@@ -73,15 +57,11 @@ export default function MyQuotes() {
           showOverlay={true}
         />
       )}
-      {mockData.map((data, index) => (
+      {myQuotes.map((feed) => (
         <MyQuoteFeed
-          key={index}
-          date={data.date}
-          day={data.day}
-          title={data.title}
-          desc={data.desc}
-          tag={data.tag}
-          onClick={() => handleQuoteClick(data.date)}
+          key={feed.id}
+          archiveFeed={feed}
+          onClick={() => handleQuoteClick(feed.createDate.slice(0, 10))}
         />
       ))}
     </S.Container>

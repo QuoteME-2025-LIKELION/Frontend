@@ -1,22 +1,20 @@
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
 import * as S from "./MyQuoteFeedStyle";
+import { formatDateDay } from "@/utils/formatDateDay";
 
 interface MyQuoteFeedProps {
-  date: string;
-  day: string;
-  title: string;
-  desc?: string;
-  tag?: string[];
+  archiveFeed: ArchiveFeed;
   onClick?: () => void;
 }
 
 export default function MyQuoteFeed({
-  date,
-  day,
-  title,
-  desc,
-  tag,
+  archiveFeed,
   onClick,
 }: MyQuoteFeedProps) {
+  const { content, originalContent, createDate, taggedMemberNames } =
+    archiveFeed;
+  const { date, day } = formatDateDay(createDate);
+
   return (
     <S.Container onClick={onClick}>
       <S.DateBox>
@@ -26,10 +24,10 @@ export default function MyQuoteFeed({
       <S.FeedContainer>
         <S.TitleBox>
           <S.Quotation>“</S.Quotation>
-          <S.Title>{title}</S.Title>
+          <S.Title>{content}</S.Title>
           <S.Quotation>”</S.Quotation>
         </S.TitleBox>
-        <S.Desc>{desc}</S.Desc>
+        <S.Desc>{originalContent}</S.Desc>
         <S.TagContainer>
           <S.TagBox>
             <svg
@@ -47,7 +45,7 @@ export default function MyQuoteFeed({
               />
             </svg>
             <S.Tag>
-              {tag?.map((name, index) => (
+              {taggedMemberNames?.map((name, index) => (
                 <div key={index}>{name}</div>
               ))}
               <svg

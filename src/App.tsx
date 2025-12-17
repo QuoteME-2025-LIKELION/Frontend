@@ -32,8 +32,31 @@ import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 
 import NotFound from "@/pages/NotFound/NotFound";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
+import { useEffect } from "react";
 
 function App() {
+  const { isLoading, isAuthenticated, initializeAuth } = useAuthStore(); // 로그인 상태 관리
+  const { fetchNotifications } = useNotificationStore(); // 알림 상태 관리
+
+  useEffect(() => {
+    // 앱 시작 시 인증 상태 초기화 (로컬 스토리지 토큰 확인)
+    initializeAuth();
+  }, [initializeAuth]);
+
+  useEffect(() => {
+    // 인증 상태가 true가 되고 (isLoading이 false가 된 후) 알림 가져오기
+    if (!isLoading && isAuthenticated) {
+      fetchNotifications();
+    }
+  }, [isLoading, isAuthenticated, fetchNotifications]);
+
+  if (isLoading) {
+    // 로딩스피너 구현 예정
+    return;
+  }
+
   return (
     <RootLayout>
       <ThemeProvider theme={theme}>
@@ -44,8 +67,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
 
-          {/* 게스트로 시작 버튼 누르면 /home으로 이동하도록 라우팅 수정했습니다. */}
-          <Route path="/home" element={<MainHome />} />
+          {/* 아카이브 페이지에서 날짜로 이동하면 date 파라미터 받도록 수정 */}
+          <Route path="/home/:date?" element={<MainHome />} />
           <Route path="/write" element={<MainWrite />} />
 
           <Route path="/archive" element={<Archive />}>
@@ -62,13 +85,11 @@ function App() {
 
           <Route path="/friend-group" element={<FriendGroup />} />
           <Route path="/my-groups" element={<MyGroups />} />
-          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
-          {/* <Route path="/join-group/:id" element={<JoinGroup />} /> */}
-          <Route path="/join-group" element={<JoinGroup />} />
           <Route path="/create-group" element={<CreateGroup />} />
-          {/* 추후 param으로 그룹 id 받는 식으로 변경 예정 */}
-          {/* <Route path="/group/:id" /> */}
-          <Route path="/group">
+
+          <Route path="/join-group/:groupId" element={<JoinGroup />} />
+
+          <Route path="/group/:groupId">
             <Route index element={<Group />} />
             <Route path="invite" element={<Invite />} />
             <Route path="change-message" element={<ChangeMessage />} />

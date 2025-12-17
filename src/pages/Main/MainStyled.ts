@@ -30,7 +30,7 @@ export const Toggle = styled.div`
 
 export const ToggleBtn = styled.div`
   cursor: pointer;
-  color: #959595;
+  color: ${theme.colors.territory};
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   letter-spacing: -0.28px;
@@ -39,3 +39,5 @@ export const ToggleBtn = styled.div`
     color: black;
   }
 `;
+
+export const TagRequestModal = styled.div``;

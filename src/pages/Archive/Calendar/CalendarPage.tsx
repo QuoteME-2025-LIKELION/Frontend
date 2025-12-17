@@ -4,76 +4,25 @@ import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import api from "@/api/api";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { useNavigate } from "react-router-dom";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-interface FeedData {
-  id: number;
-  date: string;
-  username: string;
-  year: number;
-  text: string;
-  tag: string[] | null;
-  isMine: boolean;
-}
-
-const mockData: FeedData[] = [
-  {
-    id: 1,
-    date: "2025-11-05",
-    username: "이대형",
-    year: 1999,
-    text: "자유로운 우리를 봐 자유로워",
-    tag: null,
-    isMine: true,
-  },
-  {
-    id: 2,
-    date: "2025-11-07",
-    username: "김말랑",
-    year: 2005,
-    text: "말랑말랑",
-    tag: ["말랑이", "말랑"],
-    isMine: false,
-  },
-  {
-    id: 3,
-    date: "2025-11-07",
-    username: "이대형",
-    year: 1999,
-    text: "자유로운 우리를 봐 자유로워",
-    tag: null,
-    isMine: true,
-  },
-  {
-    id: 4,
-    date: "2025-11-15",
-    username: "테스트",
-    year: 2000,
-    text: "다른 날짜 피드입니다.",
-    tag: ["태그1"],
-    isMine: false,
-  },
-];
-
-// Date 객체를 'YYYY-MM-DD' 형식의 문자열로 변환하는 함수
-const formatDateToYYYYMMDD = (date: Date): string => {
-  const year = date.getFullYear();
-  // month는 0부터 시작하므로 +1 후 두 자리로 패딩
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
-  const [filteredFeeds, setFilteredFeeds] = useState<FeedData[]>([]);
+  const [filteredFeeds, setFilteredFeeds] = useState<ArchiveFeed[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  // 이거는 페이지 이동 시 사용
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
 
+  // 달력 클릭 시 사용
   useEffect(() => {
     let selectedDate: Date | null = null;
 
@@ -92,9 +41,17 @@ export default function CalendarPage() {
 
     if (selectedDate) {
       const selectedDateString = formatDateToYYYYMMDD(selectedDate);
+      const fetchFeeds = async () => {
+        try {
+          const res = await api.get(`/api/archives?date=${selectedDateString}`);
+          setFilteredFeeds(res.data);
+        } catch (err) {
+          console.error(err);
+          setFilteredFeeds([]);
+        }
+      };
 
-      const feeds = mockData.filter((feed) => feed.date === selectedDateString);
-      setFilteredFeeds(feeds);
+      fetchFeeds();
     }
   }, [value]);
 
@@ -104,8 +61,7 @@ export default function CalendarPage() {
   }, []);
 
   const moveToDate = useCallback((date: string) => {
-    console.log(date, "날짜로 이동");
-    // 실제 이동 로직을 추후 여기에 구현
+    navigate(`/home/${date}`);
     setShowModal(false); // 이동 후 모달 닫기
   }, []);
 
@@ -184,12 +140,14 @@ export default function CalendarPage() {
           filteredFeeds.map((feed) => (
             <Feed
               key={feed.id}
-              username={feed.username}
-              year={feed.year}
-              text={feed.text}
-              tag={feed.tag}
+              authorName={feed.authorName}
+              year={feed.authorBirthYear}
+              content={feed.content}
+              tag={feed.taggedMemberNames}
               isInArchive={true}
-              onArchiveClick={() => handleArchiveClick(feed.date)}
+              onArchiveClick={() =>
+                handleArchiveClick(feed.createDate.slice(0, 10))
+              }
             />
           ))}
       </S.FeedContainer>

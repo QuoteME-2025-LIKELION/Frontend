@@ -1,3 +1,4 @@
+import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./AccountSettingStyled";
 import Header from "@/components/Header/Header";
@@ -36,12 +37,14 @@ export default function AccountSetting() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     try {
       // TODO: DELETE /api/profile/account
       // await api.delete();
+      await api.delete("/api/profile/account");
 
-      // TODO: 로그아웃 처리 (토큰 삭제 등)
+      localStorage.removeItem("accessToken");
+      alert("회원 탈퇴가 완료되었습니다.");
       navigate("/");
     } catch (e) {
       console.error("계정 삭제 실패", e);

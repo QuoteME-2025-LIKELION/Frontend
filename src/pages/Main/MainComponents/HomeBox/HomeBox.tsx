@@ -1,27 +1,92 @@
 import * as S from "./HomeBoxStyled";
 import { useNavigate } from "react-router-dom";
-export default function HomeBox() {
+import { formatCustomDate } from "@/utils/formatDate";
+import { useRef } from "react";
+import { toPng } from "html-to-image";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import type { MyQuote } from "@/types/feed.type";
+
+export default function HomeBox({
+  date,
+  myQuote,
+}: {
+  date?: string;
+  myQuote: MyQuote | null;
+}) {
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
+  const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
+  const formattedDate = formatCustomDate(displayDate);
+  const [month, day, weekday] = formattedDate.split(" ");
+
+  const hasFeed = !!myQuote;
+  let line1: string, line2: string;
+
+  // 내 피드 내용이 존재한다면 두 줄로 분리
+  // 존재하지 않는다면 피드 작성하도록 유도
+  if (hasFeed) {
+    const text = myQuote.content;
+    if (text.length <= 10) {
+      [line1, line2] = [text, ""];
+    } else {
+      const middle = Math.floor(text.length / 2);
+      const splitPoint = text.lastIndexOf(" ", middle);
+      if (splitPoint !== -1) {
+        line1 = text.substring(0, splitPoint);
+        line2 = text.substring(splitPoint + 1);
+      } else {
+        line1 = text.substring(0, middle);
+        line2 = text.substring(middle);
+      }
+    }
+  } else {
+    line1 = "오늘 있었던 일을 바탕으로";
+    line2 = "나만의 명언을 남겨보세요";
+  }
+
+  const handleShare = () => {
+    if (containerRef.current) {
+      toPng(containerRef.current)
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.download = `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`;
+          link.href = dataUrl;
+          link.click();
+          alert("나의 명언 이미지가 다운로드되었습니다.");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  };
+
   return (
-    <S.Container>
+    <S.Container ref={containerRef}>
       <S.textbox>
-        <S.Month>OCT</S.Month>
-        <S.weekend>화요일</S.weekend>
+        <S.Month>{month}</S.Month>
+        <S.weekend>{weekday}</S.weekend>
       </S.textbox>
+      {/* 내 피드가 존재하지 않는다면 글 쓰기 페이지로 이동 */}
+      {/* 내 피드가 존재한다면 태그 수정 페이지로 이동 */}
       <S.Wrapper onClick={() => navigate("/write")}>
-        <S.Left>31</S.Left>
+        <S.Left>{day}</S.Left>
         <S.Right>
+          <S.Text hasFeed={hasFeed}>{line1}</S.Text>
+          {line2 && <S.Text hasFeed={hasFeed}>{line2}</S.Text>}
           <S.Line />
-          <S.Text>오늘 있었던 일을 바탕으로</S.Text>
-          <S.Line></S.Line>
-          <S.Text>나만의 명언을 남겨보세요</S.Text>
         </S.Right>
       </S.Wrapper>
       <S.bottom>
-        <S.Line></S.Line>
         <S.BottomTextBox>
-          <S.Text2>그룹이름</S.Text2>
-          <S.Text2>- 손지수 (2000~)</S.Text2>
+          <S.Text2>
+            {myQuote?.groupName ? `- ${myQuote.groupName} ` : ""}
+          </S.Text2>
+          <S.Text2>
+            {myQuote
+              ? `- ${myQuote.authorNickname} (${myQuote.birthYear}~)`
+              : ""}
+          </S.Text2>
         </S.BottomTextBox>
         <S.BottomBtn>
           <svg
@@ -43,7 +108,7 @@ export default function HomeBox() {
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            onClick={() => ""} //onclick 함수 연결
+            onClick={handleShare} //onclick 함수 연결
             style={{ cursor: "pointer" }}
           >
             <path

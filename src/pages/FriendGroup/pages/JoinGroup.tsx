@@ -1,23 +1,55 @@
 import Header from "@/components/Header/Header";
 import * as S from "./PagesStyle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GroupCard from "@/pages/FriendGroup/components/GroupCard";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import type { Group } from "@/types/group.type";
+import api from "@/api/api";
 
 export default function JoinGroup() {
-  // TO-DO : useParams() 활용해 그룹 ID 받아온 뒤, 해당 그룹 정보 API로 조회해서 렌더링
+  const { groupId } = useParams();
   const navigate = useNavigate();
+  const [groupData, setGroupData] = useState<Group | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+
+  useEffect(() => {
+    const fetchGroupData = async () => {
+      try {
+        const res = await api.get(`/api/groups/${groupId}`);
+        setGroupData(res.data);
+      } catch (err) {
+        console.error("그룹 데이터 불러오기 오류:", err);
+        setGroupData(null);
+      }
+    };
+
+    fetchGroupData();
+  }, [groupId]);
 
   // 그룹 참여 요청 전송 로직
-  const handleConfirm = useCallback(() => {
-    setShowModal(false);
-    setShowToast(true);
-  }, []);
+  const handleConfirm = useCallback(async () => {
+    if (groupData?.memberCount === 5) {
+      setShowErrorToast(true);
+      return;
+    }
+    try {
+      await api.post(`/api/groups/${groupId}/join-request`);
+
+      setShowModal(false);
+      setShowToast(true);
+
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
+    } catch (err) {
+      console.error("그룹 참여 요청 오류:", err);
+    }
+  }, [navigate, groupId]);
 
   return (
     <>
@@ -40,6 +72,17 @@ export default function JoinGroup() {
             showOverlay={false}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            text="그룹원이"
+            redText="5인을 초과"
+            text2="하여"
+            text3="참여가 불가능합니다."
+            showOverlay={false}
+            onClose={() => setShowErrorToast(false)}
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
@@ -48,12 +91,7 @@ export default function JoinGroup() {
           onClickBackBtn={() => navigate(-1)}
         />
         <S.Content>
-          <GroupCard
-            title="스어 친구들"
-            memberCount={3}
-            sinceYear={2025}
-            onBtnClick={() => setShowModal(true)}
-          />
+          <GroupCard group={groupData!} onBtnClick={() => setShowModal(true)} />
         </S.Content>
       </S.Container>
     </>
