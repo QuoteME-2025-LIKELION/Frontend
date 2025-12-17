@@ -29,7 +29,12 @@ export default function CreateGroup() {
     const fetchFriends = async () => {
       try {
         const res = await api.get("/api/settings/friends-list");
-        setFriendList(res.data);
+        const validFriends = Array.isArray(res.data)
+          ? res.data.filter(
+              (friend: Friend | null) => friend && friend.id && friend.nickname
+            )
+          : [];
+        setFriendList(validFriends);
       } catch (err) {
         console.error("친구 목록 불러오기 오류:", err);
         setFriendList([]);
@@ -59,14 +64,16 @@ export default function CreateGroup() {
   );
 
   // 선택된 친구 객체 목록 (검색해도 항상 상단에 고정)
-  const selectedFriendObjects = friendList.filter((friend) =>
-    selectedFriends.includes(friend.id)
+  const selectedFriendObjects = friendList.filter(
+    (friend) => friend && selectedFriends.includes(friend.id)
   );
 
   // 선택되지 않은 친구 목록 중 검색 키워드로 필터링
   const filteredUnselectedFriends = friendList.filter(
     (friend) =>
-      !selectedFriends.includes(friend.id) && friend.nickname.includes(keyword)
+      friend &&
+      !selectedFriends.includes(friend.id) &&
+      friend.nickname.includes(keyword)
   );
 
   // 위 목록을 합쳐서 최종적으로 표시할 친구 목록 생성
@@ -90,7 +97,7 @@ export default function CreateGroup() {
         name: groupName,
         motto: motto,
       });
-      const newGroupId = createGroupRes.data;
+      const newGroupId = createGroupRes.data.id;
 
       if (!newGroupId) {
         throw new Error("그룹 ID를 받아오지 못했습니다.");
