@@ -1,30 +1,84 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./FeedListStyled";
-import { MOCK_FEEDS } from "@/data/feeds";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import type { OtherQuote } from "@/types/feed.type";
+import type { Friend } from "@/types/friend.type";
+import api from "@/api/api";
 
-export default function FeedList({ date }: { date?: string }) {
+export default function FeedList({
+  date,
+  otherQuotes,
+  friendList,
+}: {
+  date?: string;
+  otherQuotes: OtherQuote[] | [];
+  friendList: Friend[] | [];
+}) {
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const handleLike = () => {
-    console.log("좋아요 클릭");
-  };
+  // 친구 목록과 명언 목록 조합
+  const combinedFeeds = useMemo(() => {
+    // otherQuotes를 닉네임으로 쉽게 찾을 수 있도록 Map으로 변환
+    const quotesMap = new Map(
+      otherQuotes.map((quote) => [quote.authorNickname, quote])
+    );
 
-  const handleShare = (
-    createDate: string,
-    authorName: string,
-    index: number
-  ) => {
+    // 친구 목록을 기준으로 최종 피드 배열 생성
+    return friendList.map((friend) => {
+      const friendQuote = quotesMap.get(friend.nickname);
+
+      if (friendQuote) {
+        // 친구가 오늘 명언을 썼다면, 해당 명언 정보와 isSilenced: false를 반환
+        return {
+          ...friendQuote,
+          friendId: friend.id, // friendId를 별도 속성으로 추가 (명언 안 쓴 경우와 구분)
+          isSilenced: false,
+        };
+      } else {
+        // 친구가 명언을 안 썼다면, 친구 정보 기반으로 빈 명언 객체 생성
+        return {
+          id: friend.id, // key로 사용하기 위한 고유 ID
+          friendId: friend.id, // friendId를 명시적으로 추가
+          authorNickname: friend.nickname,
+          authorProfileImage: friend.profileImage,
+          authorIntroduction: friend.introduction,
+          isSilenced: true, // isSilenced 플래그를 true로 설정
+          // 나머지 Feed 컴포넌트가 필요로 하는 기본값들
+          content: "",
+          taggedNicknames: [],
+          timeAgo: "",
+          isLiked: false,
+        };
+      }
+    });
+  }, [otherQuotes, friendList]);
+
+  const handleLike = async (quoteId: number, isLiked: boolean) => {
+    if (isLiked) {
+      try {
+        await api.delete(`/api/quotes/${quoteId}/like`);
+      } catch (err) {
+        console.error("좋아요 취소 실패:", err);
+      }
+    } else {
+      try {
+        await api.post(`/api/quotes/${quoteId}/like`);
+      } catch (err) {
+        console.error("좋아요 실패:", err);
+      }
+    }
+  };
+  const handleShare = (authorNickname: string, index: number) => {
     const feedElement = feedRefs.current[index];
     if (feedElement) {
       toPng(feedElement)
         .then((dataUrl) => {
           const link = document.createElement("a");
-          link.download = `QuoteMe-${createDate.slice(0, 10)}-${authorName}.png`;
+          link.download = `QuoteMe-${displayDate}-${authorNickname}.png`;
           link.href = dataUrl;
           link.click();
           alert("명언 이미지가 다운로드되었습니다.");
@@ -35,35 +89,50 @@ export default function FeedList({ date }: { date?: string }) {
     }
   };
 
-  const handleRequest = () => {
-    console.log("태그 요청하기");
+  const handleRequest = async (quoteId: number) => {
+    try {
+      await api.post(`/api/quotes/${quoteId}/tag-request`);
+      alert("명언 요청이 전송되었습니다.");
+    } catch (err) {
+      console.error("명언 요청 실패:", err);
+    }
   };
-  const handlePoke = () => {
-    console.log("콕 찌르기");
+  const handlePoke = async (friendId: number) => {
+    try {
+      await api.post(`/api/pokes/${friendId}`);
+      alert("친구를 콕 찔렀습니다.");
+    } catch (err) {
+      console.error("콕 찌르기 실패:", err);
+    }
   };
 
   return (
     <S.FeedList>
-      {MOCK_FEEDS.map((feed, index) => (
-        <Feed
-          key={feed.id}
-          ref={(el: HTMLDivElement | null) => {
-            feedRefs.current[index] = el;
-          }}
-          profileImageUrl={feed.profileImageUrl}
-          authorName={feed.authorName}
-          bio={feed.bio}
-          createDate={feed.createDate}
-          content={feed.content}
-          tag={feed.taggedUsers?.map((user) => user.nickname)}
-          isLiked={feed.isLiked}
-          onLike={handleLike}
-          onShare={() => handleShare(feed.createDate, feed.authorName, index)}
-          onRequest={handleRequest}
-          onPoke={handlePoke}
-          isInArchive={false}
-        />
-      ))}
+      {combinedFeeds.length > 0 ? (
+        combinedFeeds.map((quote, index) => (
+          <Feed
+            key={quote.id}
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            profileImageUrl={quote.authorProfileImage}
+            authorName={quote.authorNickname}
+            bio={quote.authorIntroduction}
+            createDate={quote.timeAgo}
+            content={quote.content}
+            tag={quote.taggedNicknames}
+            isLiked={quote.isLiked}
+            onLike={() => handleLike(quote.id, quote.isLiked)}
+            onShare={() => handleShare(quote.authorNickname, index)}
+            onRequest={() => handleRequest(quote.id)}
+            onPoke={() => handlePoke(quote.friendId)}
+            isInArchive={false}
+            isSilenced={quote.isSilenced}
+          />
+        ))
+      ) : (
+        <S.NoFeedText>명언을 나눌 친구가 없습니다.</S.NoFeedText>
+      )}
     </S.FeedList>
   );
 }

@@ -4,51 +4,29 @@ import { formatCustomDate } from "@/utils/formatDate";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import type { Feed } from "@/types/feed.type";
+import type { MyQuote } from "@/types/feed.type";
 
-interface MyFeed extends Feed {
-  id: number;
-  content: string;
-  createDate: string;
-  authorName: string;
-  taggedUsers?: {
-    id: number;
-    nickname: string;
-  }[];
-  isLiked: boolean;
-  year: number;
-}
-
-const MOCK_MY_FEED: MyFeed = {
-  id: 1,
-  authorId: 99,
-  authorName: "손지수",
-  year: 2000,
-  createDate: "2025-12-12T21:52:40.724895",
-  content: "오늘 못한 건 내일의 에너지로 남는다.",
-  taggedUsers: [
-    { id: 1, nickname: "듀랄라" },
-    { id: 2, nickname: "어푸" },
-  ],
-  isLiked: false,
-};
-
-export default function HomeBox({ date }: { date?: string }) {
+export default function HomeBox({
+  date,
+  myQuote,
+}: {
+  date?: string;
+  myQuote: MyQuote | null;
+}) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-  const formattedDate = formatCustomDate(MOCK_MY_FEED.createDate);
+  const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
 
-  // 나중에 이걸 내 피드 API 응답으로 대체
-  const hasFeed = !!MOCK_MY_FEED;
+  const hasFeed = !!myQuote;
   let line1: string, line2: string;
 
   // 내 피드 내용이 존재한다면 두 줄로 분리
   // 존재하지 않는다면 피드 작성하도록 유도
   if (hasFeed) {
-    const text = MOCK_MY_FEED.content;
+    const text = myQuote.content;
     if (text.length <= 10) {
       [line1, line2] = [text, ""];
     } else {
@@ -67,12 +45,12 @@ export default function HomeBox({ date }: { date?: string }) {
     line2 = "나만의 명언을 남겨보세요";
   }
 
-  const handleShare = (createDate: string) => {
+  const handleShare = () => {
     if (containerRef.current) {
       toPng(containerRef.current)
         .then((dataUrl) => {
           const link = document.createElement("a");
-          link.download = `QuoteMe-${createDate.slice(0, 10)}-${MOCK_MY_FEED.authorName}.png`;
+          link.download = `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`;
           link.href = dataUrl;
           link.click();
           alert("나의 명언 이미지가 다운로드되었습니다.");
@@ -102,28 +80,12 @@ export default function HomeBox({ date }: { date?: string }) {
       <S.bottom>
         <S.BottomTextBox>
           <S.Text2>
-            <S.TagList>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-              >
-                <path
-                  d="M7.99984 8.66667C9.84079 8.66667 11.3332 7.17428 11.3332 5.33333C11.3332 3.49238 9.84079 2 7.99984 2C6.15889 2 4.6665 3.49238 4.6665 5.33333C4.6665 7.17428 6.15889 8.66667 7.99984 8.66667ZM7.99984 8.66667C9.41433 8.66667 10.7709 9.22857 11.7711 10.2288C12.7713 11.229 13.3332 12.5855 13.3332 14M7.99984 8.66667C6.58535 8.66667 5.2288 9.22857 4.2286 10.2288C3.22841 11.229 2.6665 12.5855 2.6665 14"
-                  stroke="white"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {MOCK_MY_FEED.taggedUsers
-                ?.map((user) => user.nickname)
-                .join(", ")}
-            </S.TagList>
+            {myQuote?.groupName ? `- ${myQuote.groupName} ` : ""}
           </S.Text2>
           <S.Text2>
-            - {MOCK_MY_FEED.authorName} ({MOCK_MY_FEED.year}~)
+            {myQuote
+              ? `- ${myQuote.authorNickname} (${myQuote.birthYear}~)`
+              : ""}
           </S.Text2>
         </S.BottomTextBox>
         <S.BottomBtn>
@@ -146,7 +108,7 @@ export default function HomeBox({ date }: { date?: string }) {
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            onClick={() => handleShare(MOCK_MY_FEED.createDate)} //onclick 함수 연결
+            onClick={handleShare} //onclick 함수 연결
             style={{ cursor: "pointer" }}
           >
             <path
