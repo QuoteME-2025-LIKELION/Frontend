@@ -95,7 +95,7 @@ export default function HomeBox({
         <S.Left>{day}</S.Left>
         <S.Right>
           <S.Text hasFeed={hasFeed}>{line1}</S.Text>
-          {line2 && <S.Text hasFeed={hasFeed}>{line2}</S.Text>}
+          <S.Text hasFeed={hasFeed}>{line2 ? line2 : ""}</S.Text>
           <S.Line />
         </S.Right>
       </S.Wrapper>
