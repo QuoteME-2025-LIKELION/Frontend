@@ -30,30 +30,21 @@ export default function Profile() {
     setPreview(url);
   };
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-
   const handleSignUp = async () => {
-    // 회원가입 및 프로필 설정 로직 추가
     try {
-      // 이미지 파일을 Base64로 변환
-      let imageBase64: string | null = null;
+      const formData = new FormData();
+
+      formData.append("nickname", email);
+      formData.append("intro", pwd);
+
       if (imageFile) {
-        imageBase64 = await toBase64(imageFile);
+        formData.append("image", imageFile);
       }
-
-      const profileData = {
-        nickname: email,
-        introduction: pwd,
-        profileImage: imageBase64, // Base64 문자열 또는 null
-      };
-
-      await api.post("/api/profile", profileData);
+      await api.post("/api/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
