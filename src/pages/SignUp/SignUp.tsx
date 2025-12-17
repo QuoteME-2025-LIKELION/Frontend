@@ -20,7 +20,6 @@ export default function SignUp() {
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const handleSignUp = async () => {
-    console.log("SIGNUP CLICKED");
     if (!isValidEmail(email) || pwd.length < 8 || birth.length !== 4) {
       alert("입력값을 다시 확인해주세요.");
       return;
