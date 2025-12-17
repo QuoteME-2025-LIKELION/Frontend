@@ -35,16 +35,12 @@ export default function Profile() {
       const formData = new FormData();
 
       formData.append("nickname", email);
-      formData.append("intro", pwd);
+      formData.append("introduction", pwd);
 
       if (imageFile) {
-        formData.append("image", imageFile);
+        formData.append("profileImage", imageFile);
       }
-      await api.post("/api/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.post("/api/profile", formData);
 
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
