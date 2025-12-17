@@ -1,5 +1,5 @@
 import theme from "@/styles/theme";
-import { keyframes } from "@emotion/react";
+import { keyframes, css } from "@emotion/react";
 import styled from "@emotion/styled";
 
 const fadeIn = keyframes`
@@ -38,7 +38,7 @@ export const Overlay = styled.div<{ $showOverlay: boolean }>`
   align-items: center;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isOnShare: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -51,9 +51,14 @@ export const Container = styled.div`
   max-width: 16.625rem; /* 266px */
   height: 3.8125rem; /* 61px */
   white-space: nowrap;
-  animation:
-    ${fadeIn} 0.3s ease-out,
-    ${fadeOut} 0.3s ease-in 1s forwards;
+  animation: ${({ $isOnShare }) =>
+    $isOnShare
+      ? css`
+          ${fadeIn} 0.3s ease-out forwards
+        `
+      : css`
+          ${fadeIn} 0.3s ease-out, ${fadeOut} 0.3s ease-in 1.2s forwards
+        `};
 
   ${theme.fonts.batang}
   color: #000;

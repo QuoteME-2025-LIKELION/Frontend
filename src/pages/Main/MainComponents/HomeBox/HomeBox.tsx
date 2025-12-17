@@ -1,7 +1,7 @@
 import * as S from "./HomeBoxStyled";
 import { useNavigate } from "react-router-dom";
 import { formatCustomDate } from "@/utils/formatDate";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
@@ -9,9 +9,11 @@ import type { MyQuote } from "@/types/feed.type";
 export default function HomeBox({
   date,
   myQuote,
+  onShare,
 }: {
   date?: string;
   myQuote: MyQuote | null;
+  onShare: (shareProcess: () => Promise<void>) => void;
 }) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +21,20 @@ export default function HomeBox({
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
+
+  const [shareStatus, setShareStatus] = useState<
+    "nothing" | "sharing" | "completed"
+  >("nothing");
+
+  useEffect(() => {
+    if (shareStatus === "completed") {
+      const timer = setTimeout(() => {
+        setShareStatus("nothing");
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [shareStatus]);
 
   const hasFeed = !!myQuote;
   let line1: string, line2: string;
@@ -46,19 +62,25 @@ export default function HomeBox({
   }
 
   const handleShare = () => {
-    if (containerRef.current) {
-      toPng(containerRef.current)
-        .then((dataUrl) => {
-          const link = document.createElement("a");
-          link.download = `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`;
-          link.href = dataUrl;
-          link.click();
-          alert("나의 명언 이미지가 다운로드되었습니다.");
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+    // 이미지 생성 로직을 Promise로 감싸서 부모에게 전달
+    const shareProcess = () =>
+      new Promise<void>((resolve, reject) => {
+        if (containerRef.current) {
+          toPng(containerRef.current)
+            .then((dataUrl) => {
+              const link = document.createElement("a");
+              link.download = `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`;
+              link.href = dataUrl;
+              link.click();
+              resolve(); // 성공 시 resolve
+            })
+            .catch((err) => {
+              reject(err); // 실패 시 reject
+            });
+        }
+      });
+
+    onShare(shareProcess); // 부모의 executeShare 함수 실행
   };
 
   return (

@@ -10,6 +10,7 @@ import type { MyQuote, OtherQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
+import ToastModal from "@/components/ToastModal/ToastModal";
 export default function MainHome() {
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
@@ -21,6 +22,11 @@ export default function MainHome() {
   const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [friendList, setFriendList] = useState<Friend[]>([]); // 아무것도 쓰지 않은 친구 명언 파악을 위한 친구 리스트 상태
+
+  // handleShare 상태 관리
+  const [shareStatus, setShareStatus] = useState<
+    "nothing" | "sharing" | "completed"
+  >("nothing");
 
   useEffect(() => {
     const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
@@ -61,6 +67,29 @@ export default function MainHome() {
     setIsTagModalOpen(true);
   };
 
+  // 공유 프로세스를 실행하는 래퍼 함수
+  const executeShare = async (shareProcess: () => Promise<void>) => {
+    setShareStatus("sharing");
+    try {
+      await shareProcess(); // 자식에게 받은 이미지 생성 로직 실행
+      setShareStatus("completed");
+    } catch (error) {
+      console.error("Share failed", error);
+      alert("이미지 저장에 실패했습니다.");
+      setShareStatus("nothing"); // 실패 시 초기화
+    }
+  };
+
+  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
+  useEffect(() => {
+    if (shareStatus === "completed") {
+      const timer = setTimeout(() => {
+        setShareStatus("nothing");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [shareStatus]);
+
   return (
     <S.Container>
       <DateHeader active={active} setActive={setActive} />
@@ -85,19 +114,33 @@ export default function MainHome() {
         </S.Toggle>
       )}
 
-      <HomeBox date={date} myQuote={myQuote} />
+      <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
       <FeedList
         date={date}
         otherQuotes={otherQuotes}
         friendList={friendList}
         onTagRequest={handleTagRequest}
         onPoke={handlePoke}
+        onShare={executeShare}
       />
       {isTagModalOpen && (
         <RequestModal
           type={requestType}
           onClose={() => setIsTagModalOpen(false)}
           isVisible={isTagModalOpen}
+        />
+      )}
+      {shareStatus !== "nothing" && (
+        <ToastModal
+          isVisible={true}
+          onClose={() => setShareStatus("nothing")}
+          text={
+            shareStatus === "sharing"
+              ? "명언 이미지를 저장중입니다."
+              : "명언 이미지를 저장했습니다."
+          }
+          isOnShare={shareStatus === "sharing"}
+          showOverlay={true}
         />
       )}
     </S.Container>

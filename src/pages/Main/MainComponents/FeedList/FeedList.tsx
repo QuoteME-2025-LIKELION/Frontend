@@ -1,6 +1,6 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./FeedListStyled";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
@@ -13,16 +13,33 @@ export default function FeedList({
   friendList,
   onTagRequest,
   onPoke,
+  onShare,
 }: {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
   onTagRequest?: (quoteId: number) => void;
   onPoke?: (friendId: number) => void;
+  onShare: (shareProcess: () => Promise<void>) => void;
 }) {
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [shareStatus, setShareStatus] = useState<
+    "nothing" | "sharing" | "completed"
+  >("nothing");
+
+  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
+  useEffect(() => {
+    if (shareStatus === "completed") {
+      const timer = setTimeout(() => {
+        setShareStatus("nothing");
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [shareStatus]);
 
   // 친구 목록과 명언 목록 조합
   const combinedFeeds = useMemo(() => {
@@ -80,30 +97,37 @@ export default function FeedList({
         await api.delete(`/api/quotes/${quoteId}/like`);
       } catch (err) {
         console.error("좋아요 취소 실패:", err);
+        alert("좋아요를 취소하지 못했습니다.");
       }
     } else {
       try {
         await api.post(`/api/quotes/${quoteId}/like`);
       } catch (err) {
         console.error("좋아요 실패:", err);
+        alert("좋아요에 실패했습니다.");
       }
     }
   };
   const handleShare = (authorNickname: string, index: number) => {
-    const feedElement = feedRefs.current[index];
-    if (feedElement) {
-      toPng(feedElement)
-        .then((dataUrl) => {
-          const link = document.createElement("a");
-          link.download = `QuoteMe-${displayDate}-${authorNickname}.png`;
-          link.href = dataUrl;
-          link.click();
-          alert("명언 이미지가 다운로드되었습니다.");
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+    const shareProcess = () =>
+      new Promise<void>((resolve, reject) => {
+        const feedElement = feedRefs.current[index];
+        if (feedElement) {
+          toPng(feedElement)
+            .then((dataUrl) => {
+              const link = document.createElement("a");
+              link.download = `QuoteMe-${displayDate}-${authorNickname}.png`;
+              link.href = dataUrl;
+              link.click();
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
+      });
+
+    onShare(shareProcess);
   };
   const handlePoke = async (friendId: number) => {
     try {

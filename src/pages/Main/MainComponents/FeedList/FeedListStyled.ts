@@ -2,11 +2,16 @@ import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
 export const FeedList = styled.div`
-  padding: 20px 35px;
-  gap: 20px;
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 10px 0;
+
+  /* 명언 이미지 저장을 감안해 각 Feed에 padding 추가 */
+  & > div {
+    width: 100%;
+    padding: 10px 35px;
+  }
 `;
 
 export const NoFeedText = styled.div`

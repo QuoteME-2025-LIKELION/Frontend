@@ -9,6 +9,7 @@ interface ToastModalProps {
   redText?: string;
   text2?: string;
   text3?: string;
+  isOnShare?: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ interface ToastModalProps {
  * @param props.redText - 모달에 표시될 빨간색 텍스트 (선택 사항)
  * @param props.text2 - 빨간색 텍스트 옆으로 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
  * @param props.text3 - 다음 줄에 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
+ * @param props.isOnShare - 공유 시 표시 여부 (기본값 false)
  * @example
  * <ToastModal
  *  isVisible={showToast}
@@ -40,9 +42,10 @@ export default function ToastModal({
   redText,
   text2,
   text3,
+  isOnShare = false,
 }: ToastModalProps) {
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && !isOnShare) {
       const timer = setTimeout(() => {
         onClose();
       }, 1500); // 1.5초 후에 모달 닫기
@@ -51,12 +54,12 @@ export default function ToastModal({
         clearTimeout(timer);
       };
     }
-  }, [isVisible, onClose]);
+  }, [isVisible, onClose, isOnShare]);
 
   if (!isVisible) return null;
   return (
     <S.Overlay $showOverlay={showOverlay}>
-      <S.Container>
+      <S.Container $isOnShare={isOnShare}>
         <div>
           {text}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
           {text2 && text2}
