@@ -69,6 +69,7 @@ export const Text = styled.div<{ hasFeed: boolean }>`
   font-weight: 500;
   padding: 9px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.5);
+  min-height: 2.0625rem; /* 33px */
 `;
 
 export const Left = styled.div`
