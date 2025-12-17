@@ -2,7 +2,7 @@ export interface Group {
   id: number;
   // leaderNickname: string;
   motto?: string;
-  name: string;
+  name?: string;
   memberCount?: number;
   members?:
     | [
@@ -16,4 +16,5 @@ export interface Group {
     | [];
   totalQuoteCount?: number;
   createdAt?: string;
+  leaderNickname?: string;
 }

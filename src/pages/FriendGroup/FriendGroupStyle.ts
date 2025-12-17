@@ -127,3 +127,17 @@ export const FriendList = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const EmptyBox = styled.div`
+  width: 100%;
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+  letter-spacing: -0.3px;
+  text-align: center;
+`;

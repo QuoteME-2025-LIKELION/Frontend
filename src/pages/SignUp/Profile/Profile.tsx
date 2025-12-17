@@ -31,7 +31,6 @@ export default function Profile() {
   };
 
   const handleSignUp = async () => {
-    // 회원가입 및 프로필 설정 로직 추가
     try {
       const formData = new FormData();
 
@@ -41,14 +40,13 @@ export default function Profile() {
       if (imageFile) {
         formData.append("image", imageFile);
       }
-
       await api.post("/api/profile", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      navigate("/login"); // 프로필 저장 후 로그인
+      navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
       console.error("프로필 저장 실패:", error);
       alert("프로필 저장에 실패했습니다.");

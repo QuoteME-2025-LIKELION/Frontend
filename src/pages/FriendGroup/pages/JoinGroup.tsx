@@ -15,6 +15,7 @@ export default function JoinGroup() {
   const [groupData, setGroupData] = useState<Group | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -32,6 +33,10 @@ export default function JoinGroup() {
 
   // 그룹 참여 요청 전송 로직
   const handleConfirm = useCallback(async () => {
+    if (groupData?.memberCount === 5) {
+      setShowErrorToast(true);
+      return;
+    }
     try {
       await api.post(`/api/groups/${groupId}/join-request`);
 
@@ -65,6 +70,17 @@ export default function JoinGroup() {
             isVisible={showToast}
             onClose={() => setShowToast(false)}
             showOverlay={false}
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            text="그룹원이"
+            redText="5인을 초과"
+            text2="하여"
+            text3="참여가 불가능합니다."
+            showOverlay={false}
+            onClose={() => setShowErrorToast(false)}
           />
         )}
         <Header

@@ -31,19 +31,19 @@ export default function GroupCard({
         <>
           <S.Btn onClick={onCardClick}>
             <S.TextBox>
-              <S.Title>{group.name}</S.Title>
+              <S.Title>{group?.name}</S.Title>
               <S.InfoBox>
                 <S.InfoLine>
                   <div>멤버</div>
-                  <div>{group.memberCount}명</div>
+                  <div>{group?.memberCount}명</div>
                 </S.InfoLine>
                 <S.InfoLine>
                   <div>since</div>
-                  <div>{group.createdAt?.slice(0, 4)}</div>
+                  <div>{group?.createdAt?.slice(0, 4)}</div>
                 </S.InfoLine>
               </S.InfoBox>
             </S.TextBox>
-            <S.Count>{group.memberCount}</S.Count>
+            <S.Count>{group?.memberCount}</S.Count>
           </S.Btn>
           <Button title="그룹 탈퇴하기" onClick={onBtnClick} />
         </>
@@ -51,19 +51,19 @@ export default function GroupCard({
         <>
           <S.GroupBox>
             <S.TextBox>
-              <S.Title>{group.name}</S.Title>
+              <S.Title>{group?.name}</S.Title>
               <S.InfoBox>
                 <S.InfoLine>
                   <div>멤버</div>
-                  <div>{group.memberCount}명</div>
+                  <div>{group?.memberCount}명</div>
                 </S.InfoLine>
                 <S.InfoLine>
                   <div>since</div>
-                  <div>{group.createdAt?.slice(0, 4)}</div>
+                  <div>{group?.createdAt?.slice(0, 4)}</div>
                 </S.InfoLine>
               </S.InfoBox>
             </S.TextBox>
-            <S.Count>{group.memberCount}</S.Count>
+            <S.Count>{group?.memberCount}</S.Count>
           </S.GroupBox>
           <Button title="그룹 참여하기" onClick={onBtnClick} />
         </>

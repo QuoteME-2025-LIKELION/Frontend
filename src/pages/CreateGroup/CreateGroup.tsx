@@ -29,7 +29,12 @@ export default function CreateGroup() {
     const fetchFriends = async () => {
       try {
         const res = await api.get("/api/settings/friends-list");
-        setFriendList(res.data);
+        const validFriends = Array.isArray(res.data)
+          ? res.data.filter(
+              (friend: Friend | null) => friend && friend.id && friend.nickname
+            )
+          : [];
+        setFriendList(validFriends);
       } catch (err) {
         console.error("친구 목록 불러오기 오류:", err);
         setFriendList([]);
@@ -59,14 +64,16 @@ export default function CreateGroup() {
   );
 
   // 선택된 친구 객체 목록 (검색해도 항상 상단에 고정)
-  const selectedFriendObjects = friendList.filter((friend) =>
-    selectedFriends.includes(friend.id)
+  const selectedFriendObjects = friendList.filter(
+    (friend) => friend && selectedFriends.includes(friend.id)
   );
 
   // 선택되지 않은 친구 목록 중 검색 키워드로 필터링
   const filteredUnselectedFriends = friendList.filter(
     (friend) =>
-      !selectedFriends.includes(friend.id) && friend.nickname.includes(keyword)
+      friend &&
+      !selectedFriends.includes(friend.id) &&
+      friend.nickname.includes(keyword)
   );
 
   // 위 목록을 합쳐서 최종적으로 표시할 친구 목록 생성
@@ -80,8 +87,23 @@ export default function CreateGroup() {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
 
     if (groupName.trim().length === 0) {
-      alert("그룹명을 입력해주세요.");
+      alert("그룹명을 입력해 주세요.");
       return; // 그룹명이 없으면 여기서 중단
+    }
+
+    if (groupName.length > 10) {
+      alert("그룹명은 10자 이내로 입력해 주세요.");
+      return;
+    }
+
+    if (motto.length > 20) {
+      alert("메시지는 20자 이내로 입력해 주세요.");
+      return;
+    }
+
+    if (selectedFriends.length > 4) {
+      alert("최대 4명까지 초대할 수 있습니다.");
+      return;
     }
 
     try {
@@ -90,7 +112,7 @@ export default function CreateGroup() {
         name: groupName,
         motto: motto,
       });
-      const newGroupId = createGroupRes.data;
+      const newGroupId = createGroupRes.data.id;
 
       if (!newGroupId) {
         throw new Error("그룹 ID를 받아오지 못했습니다.");

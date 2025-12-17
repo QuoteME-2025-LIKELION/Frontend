@@ -89,15 +89,19 @@ export default function MyGroups() {
           onClickXBtn={() => navigate(-1)}
         />
         <S.Content>
-          {groupsData.map((group) => (
-            <GroupCard
-              key={group.id}
-              group={group}
-              onBtnClick={() => handleQuitGroup(group.name, group.id)}
-              isButton={true}
-              onCardClick={() => navigate(`/group/${group.id}`)}
-            />
-          ))}
+          {groupsData.length > 0 ? (
+            groupsData.map((group) => (
+              <GroupCard
+                key={group.id}
+                group={group}
+                onBtnClick={() => handleQuitGroup(group.name!, group.id)}
+                isButton={true}
+                onCardClick={() => navigate(`/group/${group.id}`)}
+              />
+            ))
+          ) : (
+            <S.EmptyBox>참여 중인 그룹이 없습니다.</S.EmptyBox>
+          )}
         </S.Content>
       </S.Container>
     </>
