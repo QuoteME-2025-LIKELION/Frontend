@@ -51,17 +51,16 @@ export default function AccountSetting() {
 
   const handleConfirmDelete = async () => {
     try {
-      // TODO: DELETE /api/profile/account
-      // await api.delete();
       await api.delete("/api/profile/account");
-
       localStorage.removeItem("accessToken");
+      setShowDeleteModal(false);
       setShowDeleteToast(true);
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (e) {
       console.error("계정 삭제 실패", e);
+      setShowDeleteModal(false);
       setErrorMessage("계정 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
