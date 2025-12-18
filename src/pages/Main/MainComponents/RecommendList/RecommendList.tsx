@@ -10,10 +10,6 @@ interface RecommendListProps {
   content: string;
 }
 
-interface SummarizeResponse {
-  summary: string;
-}
-
 export default function RecommendListList({
   content,
   onSelectComplete,

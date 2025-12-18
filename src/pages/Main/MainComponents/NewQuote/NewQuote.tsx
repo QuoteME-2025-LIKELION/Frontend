@@ -2,7 +2,6 @@ import List from "@/components/List/List";
 import * as S from "./NewQuoteStyled";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
-import type { MyQuote } from "@/types/feed.type";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
@@ -13,9 +12,8 @@ interface NewQuoteProps {
     authorName: string;
     authorBirthYear?: number | null;
   };
-  setMyQuote: (quote: MyQuote) => void;
 }
-export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
+export default function NewQuote({ quote }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
 
