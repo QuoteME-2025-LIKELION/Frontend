@@ -18,7 +18,6 @@ export interface Notification {
   type: "POKE" | "LIKE" | "TAG" | "GROUP" | "TAG_REQUEST";
   message: string;
   targetId: number;
-  requestId?: number;
   senderName: string;
   createDate: string;
   isRead: boolean;
