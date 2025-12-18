@@ -2,7 +2,6 @@ import List from "@/components/List/List";
 import * as S from "./NewQuoteStyled";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
-import { MOCK_FRIENDS } from "@/data/friends";
 import type { MyQuote } from "@/types/feed.type";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
@@ -41,6 +40,27 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
 
     fetchFriends();
   }, []);
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        content: quote.content,
+        taggedMemberIds: selectedIds, // ⭐ 핵심
+      };
+
+      const res = await api.post("/api/quotes", payload);
+      res.data.myQuotes.forEach((q: any) => {
+        console.log("quoteId:", q.id);
+        console.log("taggedMemberIds:", q.taggedMemberIds);
+        console.log("taggedMemberNames:", q.taggedMemberNames);
+      });
+      navigate("/home");
+    } catch (e) {
+      console.error("명언 제출 실패", e);
+      alert("명언 제출에 실패했어요.");
+    }
+  };
+
   return (
     <S.Container>
       <S.Commend>
@@ -96,18 +116,7 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
         </S.TagList>
       </S.TagBox>
       <S.BtnBox>
-        <Button
-          title="명언 남기기"
-          onClick={() => {
-            setMyQuote({
-              content: quote.content,
-              authorNickname: quote.authorName,
-              birthYear: quote.authorBirthYear ?? 0,
-              groupName: "",
-            });
-            navigate("/home");
-          }}
-        />
+        <Button title="명언 남기기" onClick={handleSubmit} />
       </S.BtnBox>
     </S.Container>
   );

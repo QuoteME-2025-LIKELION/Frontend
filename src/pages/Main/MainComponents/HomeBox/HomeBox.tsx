@@ -6,15 +6,13 @@ import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
 
-export default function HomeBox({
-  date,
-  myQuote,
-  onShare,
-}: {
+interface HomeBoxProps {
   date?: string;
   myQuote: MyQuote | null;
   onShare: (shareProcess: () => Promise<void>) => void;
-}) {
+}
+
+export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
