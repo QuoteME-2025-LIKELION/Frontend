@@ -1,10 +1,12 @@
 import List from "@/components/List/List";
 import * as S from "./NewQuoteStyled";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import { MOCK_FRIENDS } from "@/data/friends";
 import type { MyQuote } from "@/types/feed.type";
+import { useEffect, useState } from "react";
+import type { Friend } from "@/types/friend.type";
+import api from "@/api/api";
 
 interface NewQuoteProps {
   quote: {
@@ -16,6 +18,8 @@ interface NewQuoteProps {
 }
 export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(selectedIds.filter((item) => item !== id));
@@ -24,6 +28,19 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
     }
   };
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const res = await api.get("/api/settings/friends-list");
+        setFriends(res.data);
+      } catch (e) {
+        console.error("친구 목록 조회 실패", e);
+      }
+    };
+
+    fetchFriends();
+  }, []);
   return (
     <S.Container>
       <S.Commend>
@@ -67,7 +84,7 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
         <S.Text2>친구 태그하기</S.Text2>
         <S.TagList>
           {/* 나중에 'MOCK_FRIENDS' 부분만 실제 API 조회 결과로 교체하면 됩니다! */}
-          {MOCK_FRIENDS.map((f) => (
+          {friends.map((f) => (
             <List
               key={f.id}
               friend={f}
