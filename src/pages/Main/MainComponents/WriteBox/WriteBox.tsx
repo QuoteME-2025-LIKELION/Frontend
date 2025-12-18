@@ -1,6 +1,5 @@
 import * as S from "./WriteBoxStyled";
 import { useState } from "react";
-import api from "@/api/api";
 
 interface QuoteResponse {
   content: string;
