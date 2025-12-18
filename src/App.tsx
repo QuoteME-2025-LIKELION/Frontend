@@ -1,8 +1,12 @@
 import { ThemeProvider } from "@emotion/react";
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
 import RootLayout from "@/layouts/RootLayout";
 import GlobalStyles from "@/styles/GlobalStyles";
 import theme from "@/styles/theme";
+import ProtectedRoute from "@/layouts/ProtectedRoute";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
 
 import Start from "@/pages/Start/Start";
 import SignUp from "@/pages/SignUp/SignUp";
@@ -32,10 +36,8 @@ import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 
 import NotFound from "@/pages/NotFound/NotFound";
-import useAuthStore from "@/stores/useAuthStore";
-import useNotificationStore from "@/stores/useNotificationStore";
-import { useEffect } from "react";
-import ProtectedRoute from "@/layouts/ProtectedRoute";
+
+import Spinner from "@/components/Spinner/Spinner";
 
 function App() {
   const { isLoading, isAuthenticated, initializeAuth } = useAuthStore(); // 로그인 상태 관리
@@ -54,8 +56,7 @@ function App() {
   }, [isLoading, isAuthenticated, fetchNotifications]);
 
   if (isLoading) {
-    // 로딩스피너 구현 예정
-    return;
+    return <Spinner />; // 로딩 중일 때 스피너 표시
   }
 
   return (

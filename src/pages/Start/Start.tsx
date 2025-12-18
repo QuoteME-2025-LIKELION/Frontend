@@ -6,6 +6,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
+import Spinner from "@/components/Spinner/Spinner";
 
 export default function Start() {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ export default function Start() {
 
   // 로딩 중이거나 리디렉션 될 사용자에게는 페이지 내용을 보여주지 않음
   if (isLoading || isAuthenticated) {
-    return null; // 또는 로딩 스피너
+    return <Spinner />;
   }
 
   return (

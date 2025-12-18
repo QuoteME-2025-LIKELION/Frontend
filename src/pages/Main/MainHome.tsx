@@ -12,6 +12,7 @@ import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import Spinner from "@/components/Spinner/Spinner";
 export default function MainHome() {
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
@@ -104,11 +105,7 @@ export default function MainHome() {
 
   return (
     <S.Container>
-      {isLoading && (
-        <S.SpinnerContainer>
-          <S.Spinner />
-        </S.SpinnerContainer>
-      )}
+      {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
       {date ? (
