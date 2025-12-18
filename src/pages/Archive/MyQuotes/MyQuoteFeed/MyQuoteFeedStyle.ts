@@ -6,9 +6,10 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.9375rem 2.5rem; /* 15px 40px */
+  padding: 0.9375rem 1.25rem; /* 15px 20px */
   gap: 0.625rem; /* 10px */
   cursor: pointer;
+  background-color: ${theme.colors.primary};
 `;
 
 export const DateBox = styled.div`
@@ -143,5 +144,16 @@ export const IconBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+`;
+
+export const ShareBtn = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+
+  &:active {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 `;

@@ -60,14 +60,18 @@ export default function ProfileCenter() {
                 : "none",
             }}
           />
-          <S.ImgInput>이미지 등록</S.ImgInput>
         </S.ProfileWrapper>
         <S.InputBox>
           <S.InfoBox>{profile?.nickname}</S.InfoBox>
           <S.InfoBox style={{ color: "#959595" }}>{profile?.email}</S.InfoBox>
           <S.TextName>자기소개</S.TextName>
           <S.InfoBox>{profile?.intro}</S.InfoBox>
-          <Button title="편집하기" onClick={() => navigate("/profile-edit")} />
+          <Button
+            title="편집하기"
+            onClick={() =>
+              navigate("/profile-edit", { state: { profile: profile } })
+            }
+          />
         </S.InputBox>
       </S.Container>
     </>

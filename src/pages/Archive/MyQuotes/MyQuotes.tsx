@@ -1,10 +1,12 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
 import * as S from "./MyQuotesStyle";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
 import api from "@/api/api";
+import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
+import { toPng } from "html-to-image";
 
 export default function MyQuotes() {
   const [showModal, setShowModal] = useState(false);
@@ -13,6 +15,10 @@ export default function MyQuotes() {
   );
   const [myQuotes, setMyQuotes] = useState<ArchiveFeed[]>([]);
   const navigate = useNavigate();
+
+  const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { onShare } = useOutletContext<ArchiveOutletContext>();
 
   useEffect(() => {
     const fetchMyQuotes = async () => {
@@ -47,6 +53,28 @@ export default function MyQuotes() {
     }
   }, [selectedQuoteDate, moveToDate]);
 
+  const handleShare = (date: string, authorNickname: string, index: number) => {
+    const shareProcess = () =>
+      new Promise<void>((resolve, reject) => {
+        const feedElement = feedRefs.current[index];
+        if (feedElement) {
+          toPng(feedElement)
+            .then((dataUrl) => {
+              const link = document.createElement("a");
+              link.download = `QuoteMe-${date}-${authorNickname}.png`;
+              link.href = dataUrl;
+              link.click();
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
+      });
+
+    onShare(shareProcess);
+  };
+
   return (
     <S.Container>
       {showModal && (
@@ -57,11 +85,17 @@ export default function MyQuotes() {
           showOverlay={true}
         />
       )}
-      {myQuotes.map((feed) => (
+      {myQuotes.map((feed, index) => (
         <MyQuoteFeed
           key={feed.id}
+          ref={(el: HTMLDivElement | null) => {
+            feedRefs.current[index] = el;
+          }}
           archiveFeed={feed}
           onClick={() => handleQuoteClick(feed.createDate.slice(0, 10))}
+          onShare={() =>
+            handleShare(feed.createDate.slice(0, 10), feed.authorName, index)
+          }
         />
       ))}
     </S.Container>

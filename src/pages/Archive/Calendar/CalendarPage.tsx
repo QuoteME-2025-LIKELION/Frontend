@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "./CalendarPageStyle";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
@@ -7,7 +7,9 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
 import api from "@/api/api";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { toPng } from "html-to-image";
+import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 
 type ValuePiece = Date | null;
 
@@ -18,6 +20,9 @@ export default function CalendarPage() {
   const [filteredFeeds, setFilteredFeeds] = useState<ArchiveFeed[]>([]);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { onShare } = useOutletContext<ArchiveOutletContext>();
 
   // 이거는 페이지 이동 시 사용
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
@@ -72,6 +77,28 @@ export default function CalendarPage() {
       setShowModal(false);
     }
   }, [selectedFeedDate, moveToDate]);
+
+  const handleShare = (date: string, authorNickname: string, index: number) => {
+    const shareProcess = () =>
+      new Promise<void>((resolve, reject) => {
+        const feedElement = feedRefs.current[index];
+        if (feedElement) {
+          toPng(feedElement)
+            .then((dataUrl) => {
+              const link = document.createElement("a");
+              link.download = `QuoteMe-${date}-${authorNickname}.png`;
+              link.href = dataUrl;
+              link.click();
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
+      });
+
+    onShare(shareProcess);
+  };
 
   return (
     <S.Container>
@@ -137,9 +164,12 @@ export default function CalendarPage() {
       />
       <S.FeedContainer>
         {filteredFeeds.length > 0 &&
-          filteredFeeds.map((feed) => (
+          filteredFeeds.map((feed, index) => (
             <Feed
               key={feed.id}
+              ref={(el: HTMLDivElement | null) => {
+                feedRefs.current[index] = el;
+              }}
               authorName={feed.authorName}
               year={feed.authorBirthYear}
               content={feed.content}
@@ -147,6 +177,13 @@ export default function CalendarPage() {
               isInArchive={true}
               onArchiveClick={() =>
                 handleArchiveClick(feed.createDate.slice(0, 10))
+              }
+              onShare={() =>
+                handleShare(
+                  feed.createDate.slice(0, 10),
+                  feed.authorName,
+                  index
+                )
               }
             />
           ))}

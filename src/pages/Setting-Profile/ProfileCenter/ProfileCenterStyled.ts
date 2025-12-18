@@ -65,6 +65,8 @@ export const ImgPreview = styled.div`
   height: 80px;
   border-radius: 80px;
   background-color: #e0e0e0;
+  background-size: cover; /* 이미지 크기 조절 */
+  background-position: center; /* 이미지 위치 조절 */
 `;
 
 export const ImgInput = styled.div`
