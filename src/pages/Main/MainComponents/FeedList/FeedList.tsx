@@ -11,6 +11,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 interface QuotesItem extends OtherQuote {
   friendId: number;
   isSilenced: boolean;
+  quoteId?: number;
 }
 
 export default function FeedList({
@@ -47,6 +48,7 @@ export default function FeedList({
       if (friendQuote) {
         return {
           ...friendQuote,
+          quoteId: friendQuote.id,
           friendId: friend.id,
           isSilenced: false,
         };
@@ -178,7 +180,9 @@ export default function FeedList({
                 : undefined
             }
             onRequest={() => {
-              handleRequest(quote.id);
+              if (quote.quoteId) {
+                handleRequest(quote.quoteId);
+              }
             }}
             onPoke={() => {
               handlePoke(quote.friendId);

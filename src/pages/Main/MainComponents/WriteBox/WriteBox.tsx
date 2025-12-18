@@ -32,20 +32,12 @@ export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
   ];
   const day = dayNames[today.getDay()];
   const isLong = text.length > 30;
-
-  const handleSubmit = async () => {
-    try {
-      const post = await api.post("/api/quotes", {
-        content: text, // 짧은 명언
-        originalContent: "", // 직접 작성이므로 비움
-        taggedMemberIds: [],
-      });
-
-      onComplete(post.data); // ✅ 성공 후 다음 단계
-    } catch (e) {
-      console.error(e);
-      alert("명언 작성에 실패했어요.");
-    }
+  const handleSubmit = () => {
+    onComplete({
+      content: text,
+      authorName: "", // 서버 저장 전이므로 비워도 됨
+      authorBirthYear: undefined,
+    });
   };
 
   return (
