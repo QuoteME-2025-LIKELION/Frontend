@@ -191,5 +191,9 @@ export const BtnBox = styled.div`
     width: 1rem;
     height: 1rem;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 `;

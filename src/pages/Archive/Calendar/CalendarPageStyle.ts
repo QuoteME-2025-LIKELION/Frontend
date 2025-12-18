@@ -149,10 +149,15 @@ export const CalendarStyles = css`
 export const FeedContainer = styled.div`
   width: 100%;
   max-width: 393px;
-  padding: 1.875rem 2.5rem; /* 30px 40px */
+  padding: 0.9375rem 1.25rem; /* 15px 20px */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1.25rem; /* 20px */
+
+  & > div {
+    width: 100%;
+    padding: 0.9375rem 1.25rem; /* 15px 20px */
+  }
 `;

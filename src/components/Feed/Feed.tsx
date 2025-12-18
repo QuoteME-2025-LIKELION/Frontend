@@ -294,7 +294,13 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
                 </svg>
               )}
             </button>
-            <button type="button" onClick={() => handleClick(onShare)}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation(); // 이벤트 버블링 중단 (Archive 클릭 방지)
+                onShare(); // 기존 공유 로직 실행
+              }}
+            >
               {isInArchive ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
