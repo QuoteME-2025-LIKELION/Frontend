@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
+import { useLocation } from "react-router-dom";
 
 interface HomeBoxProps {
   date?: string;
@@ -19,6 +20,9 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
+  const location = useLocation();
+
+  const hasQuoteFromWrite = location.state?.hasQuote;
 
   const [shareStatus, setShareStatus] = useState<
     "nothing" | "sharing" | "completed"
@@ -89,7 +93,16 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       </S.textbox>
       {/* 내 피드가 존재하지 않는다면 글 쓰기 페이지로 이동 */}
       {/* 내 피드가 존재한다면 태그 수정 페이지로 이동 */}
-      <S.Wrapper onClick={() => navigate("/write")}>
+      <S.Wrapper
+        onClick={() => {
+          navigate("/write", {
+            state: { fromHomeBoxClick: true, quote: myQuote },
+          });
+          if (hasQuoteFromWrite === true) {
+            navigate("/fix");
+          }
+        }}
+      >
         <S.Left>{day}</S.Left>
         <S.Right>
           <S.Text hasFeed={hasFeed}>{line1}</S.Text>

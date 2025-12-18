@@ -1,7 +1,5 @@
-import * as S from "./WriteBoxStyled";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "@/api/api";
+import * as S from "../WriteBox/WriteBoxStyled";
+import { useState } from "react";
 
 interface QuoteResponse {
   content: string;
@@ -17,9 +15,7 @@ interface WriteBoxProps {
 
 export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
   const [text, setText] = useState("");
-
   const today = new Date();
-  const navigate = useNavigate();
 
   const month = today.getMonth() + 1; // 0부터 시작
   const date = today.getDate();
@@ -51,10 +47,6 @@ export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
         </S.Month>
         <S.Weekend>{day}</S.Weekend>
       </S.Datebox>
-      <S.Guide>
-        오늘의 명언을 직접 적거나 <br /> 오늘 일기를 적고 명언 만들기를 부탁할
-        수 있어요
-      </S.Guide>
       <S.WriteBox>
         <S.TextArea value={text} onChange={(e) => setText(e.target.value)} />
         <S.LineWrap>

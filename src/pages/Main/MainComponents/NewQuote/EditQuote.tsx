@@ -8,11 +8,14 @@ import api from "@/api/api";
 
 interface NewQuoteProps {
   quote: {
+    id?: number;
     content: string;
     authorName: string;
     authorBirthYear?: number | null;
   };
+  mode?: "create" | "fix";
 }
+
 export default function NewQuote({ quote }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -26,15 +29,6 @@ export default function NewQuote({ quote }: NewQuoteProps) {
   };
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    await api.post("/api/quotes", {
-      content: quote.content,
-      taggedMemberIds: selectedIds,
-    });
-
-    navigate("/home", { state: { hasQuote: true } });
-  };
-
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -47,6 +41,26 @@ export default function NewQuote({ quote }: NewQuoteProps) {
 
     fetchFriends();
   }, []);
+
+  const handleSubmit = async () => {
+    console.log("FIX MODE quote =", quote);
+    console.log("quoteId:", quote.id);
+
+    if (!quote.id) {
+      alert("수정할 명언 ID가 없습니다.");
+      return;
+    }
+
+    try {
+      await api.patch(`/api/quotes/${quote.id}/tags`, {
+        taggedMemberIds: selectedIds,
+      });
+
+      navigate("/home");
+    } catch (e: any) {
+      alert(e?.response?.data?.msg ?? "처리에 실패했어요.");
+    }
+  };
 
   return (
     <S.Container>
@@ -103,7 +117,7 @@ export default function NewQuote({ quote }: NewQuoteProps) {
         </S.TagList>
       </S.TagBox>
       <S.BtnBox>
-        <Button title="명언 남기기" onClick={handleSubmit} />
+        <Button title="태그 수정하기" onClick={handleSubmit} />
       </S.BtnBox>
     </S.Container>
   );

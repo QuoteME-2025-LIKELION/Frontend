@@ -1,20 +1,20 @@
 import DateHeader from "./MainComponents/DateHeader/DateHeader";
 import HomeBox from "./MainComponents/HomeBox/HomeBox";
-import FeedList from "./MainComponents/FeedList/FeedList";
 import * as S from "@/pages/Main/MainStyled";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import RequestModal from "./MainComponents/Modal/RequestModal";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
-
 import type { MyQuote, OtherQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
+import EditQuote from "@/pages/Main/MainComponents/NewQuote/EditQuote";
+import { useLocation } from "react-router-dom";
+import NewQuote from "@/pages/Main/MainComponents/NewQuote/EditQuote";
 
-export default function MainHome() {
+export default function TagFix() {
   const navigate = useNavigate();
 
   // 토글 상태 관리
@@ -22,10 +22,11 @@ export default function MainHome() {
   const [isToggleVisible, setIsToggleVisible] = useState(false);
 
   const { date } = useParams();
-  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-  const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
 
   const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
+  const [newQuoteActive, setNewQuoteActive] = useState(false);
+  const [createdQuote, setCreatedQuote] = useState<any>(null);
+
   const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [friendList, setFriendList] = useState<Friend[]>([]); // 아무것도 쓰지 않은 친구 명언 파악을 위한 친구 리스트 상태
@@ -37,6 +38,9 @@ export default function MainHome() {
     "nothing" | "sharing" | "completed"
   >("nothing");
 
+  const location = useLocation();
+  const quote = location.state?.quote;
+
   useEffect(() => {
     // date 파라미터 유효성 검사
     if (date) {
@@ -45,6 +49,12 @@ export default function MainHome() {
         navigate("/*", { replace: true }); // 잘못된 형식이면 NotFound 페이지로 이동
         return; // 유효하지 않으면 데이터 요청 등 아래 로직을 실행하지 않음
       }
+      void newQuoteActive;
+      void createdQuote;
+      void friendList;
+      void otherQuotes;
+      void setCreatedQuote;
+      void setNewQuoteActive;
     }
 
     const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
@@ -91,18 +101,6 @@ export default function MainHome() {
     };
   }, [active]);
 
-  // 태그 요청
-  const handleTagRequest = () => {
-    setRequestType("tag");
-    setIsTagModalOpen(true);
-  };
-
-  // 콕 찌르기
-  const handlePoke = () => {
-    setRequestType("poke");
-    setIsTagModalOpen(true);
-  };
-
   // 공유 프로세스를 실행하는 래퍼 함수
   const executeShare = async (shareProcess: () => Promise<void>) => {
     setShareStatus("sharing");
@@ -125,6 +123,10 @@ export default function MainHome() {
       return () => clearTimeout(timer);
     }
   }, [shareStatus]);
+
+  if (!quote) {
+    return <div>잘못된 접근입니다</div>;
+  }
 
   return (
     <S.Container>
@@ -158,22 +160,18 @@ export default function MainHome() {
       )}
 
       <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
-      <FeedList
-        date={date}
-        otherQuotes={otherQuotes}
-        friendList={friendList}
-        onTagRequest={handleTagRequest}
-        onPoke={handlePoke}
-        onShare={executeShare}
-        isLoading={isLoading}
-      />
-      {isTagModalOpen && (
-        <RequestModal
-          type={requestType}
-          onClose={() => setIsTagModalOpen(false)}
-          isVisible={isTagModalOpen}
+      {quote && (
+        <EditQuote
+          quote={{
+            id: quote.id,
+            content: quote.content,
+            authorName: quote.authorNickname,
+            authorBirthYear: quote.birthYear,
+          }}
+          mode="fix"
         />
       )}
+
       {shareStatus !== "nothing" && (
         <ToastModal
           isVisible={true}

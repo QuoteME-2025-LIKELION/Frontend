@@ -11,6 +11,7 @@
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  */
 export interface MyQuote {
+  id?: number;
   content: string;
   groupName: string;
   authorNickname: string;

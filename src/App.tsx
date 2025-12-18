@@ -34,7 +34,7 @@ import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
 import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
-
+import TagFix from "@/pages/Main/TagFix";
 import NotFound from "@/pages/NotFound/NotFound";
 
 import Spinner from "@/components/Spinner/Spinner";
@@ -73,7 +73,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home/:date?" element={<MainHome />} />
             <Route path="/write" element={<MainWrite />} />
-
+            <Route path="/fix" element={<TagFix />} />
             <Route path="/archive" element={<Archive />}>
               <Route index element={<CalendarPage />} />
               <Route path="my-quotes" element={<MyQuotes />} />
