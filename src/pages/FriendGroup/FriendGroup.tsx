@@ -47,6 +47,9 @@ export default function FriendGroup() {
   const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // 추가할 친구 ID 상태
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const navigate = useNavigate();
 
   // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회
@@ -61,28 +64,30 @@ export default function FriendGroup() {
     [groupsList]
   );
 
-  // 친구 및 그룹 목록 초기 불러오기
-  useEffect(() => {
-    const fetchFriendsAndGroups = async () => {
-      try {
-        const friendsRes = await api.get("/api/settings/friends-list");
-        const validFriends = Array.isArray(friendsRes.data)
-          ? friendsRes.data.filter(isValidFriend)
-          : [];
-        setFriendList(validFriends);
-        const groupsRes = await api.get("/api/groups/me");
-        const validGroups = Array.isArray(groupsRes.data)
-          ? groupsRes.data.filter(isValidGroup)
-          : [];
-        setGroupsList(validGroups);
-      } catch (err) {
-        console.error("친구 및 그룹 목록 불러오기 오류:", err);
-        setFriendList([]);
-        setGroupsList([]);
-      }
-    };
-    fetchFriendsAndGroups();
+  // 친구 및 그룹 목록 불러오기
+  const fetchFriendsAndGroups = useCallback(async () => {
+    try {
+      const friendsRes = await api.get("/api/settings/friends-list");
+      const validFriends = Array.isArray(friendsRes.data)
+        ? friendsRes.data.filter(isValidFriend)
+        : [];
+      setFriendList(validFriends);
+      const groupsRes = await api.get("/api/groups/me");
+      const validGroups = Array.isArray(groupsRes.data)
+        ? groupsRes.data.filter(isValidGroup)
+        : [];
+      setGroupsList(validGroups);
+    } catch (err) {
+      console.error("친구 및 그룹 목록 불러오기 오류:", err);
+      setFriendList([]);
+      setGroupsList([]);
+    }
   }, []);
+
+  // 초기 렌더링 시 데이터 로드
+  useEffect(() => {
+    fetchFriendsAndGroups();
+  }, [fetchFriendsAndGroups]);
 
   // 검색어가 변경될 때마다 디바운스된 키워드로 검색 실행
   useEffect(() => {
@@ -125,25 +130,24 @@ export default function FriendGroup() {
   );
 
   const handleConfirmDelete = useCallback(async () => {
-    if (selectedFriendId === null) {
-      console.error("삭제할 친구 ID가 유효하지 않습니다.");
-      setShowDeleteModal(false);
-      return;
-    }
+    // if (selectedFriendId === null) {
+    //   console.error("삭제할 친구 ID가 유효하지 않습니다.");
+    //   setShowDeleteModal(false);
+    //   return;
+    // }
     try {
+      console.log("Deleting friend with ID:", selectedFriendId);
       await api.delete(`/api/friends/${selectedFriendId}`);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
-      // 새로고침
-      // setTimeout(() => {
-      //   navigate(0);
-      // }, 1500);
+      fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 삭제 처리 중 오류:", err);
-      alert("친구 삭제에 실패했습니다.");
-      return;
+      setShowDeleteModal(false);
+      setErrorMessage("친구 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
-  }, []);
+  }, [fetchFriendsAndGroups]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
@@ -152,26 +156,26 @@ export default function FriendGroup() {
   }, []);
 
   const handleConfirmAdd = useCallback(async () => {
-    if (selectedUserId === null) {
-      console.error("추가할 사용자 ID가 유효하지 않습니다.");
-      setShowAddModal(false);
-      return;
-    }
+    // if (selectedUserId === null) {
+    //   console.error("추가할 사용자 ID가 유효하지 않습니다.");
+    //   setShowAddModal(false);
+    //   return;
+    // }
     try {
+      console.log("Adding friend with ID:", selectedUserId);
       await api.post(`/api/friends/add/${selectedUserId}`);
 
       setShowAddModal(false);
       setShowAddToast(true);
-      // 새로고침
-      // setTimeout(() => {
-      //   navigate(0);
-      // }, 1500);
+      // fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 추가 처리 중 오류:", err);
-      alert("친구 추가에 실패했습니다.");
+      setShowAddModal(false);
+      setErrorMessage("친구 추가에 실패했습니다.");
+      setShowErrorToast(true);
       return;
     }
-  }, [selectedUserId]);
+  }, [fetchFriendsAndGroups]);
 
   return (
     <>
@@ -209,12 +213,19 @@ export default function FriendGroup() {
             onClose={() => setShowAddToast(false)}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={false}
           showXBtn={true}
           title="친구 및 그룹"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.Content>
           <Search
@@ -222,7 +233,10 @@ export default function FriendGroup() {
             desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            onClear={() => setKeyword("")}
+            onClear={() => {
+              setKeyword("");
+              fetchFriendsAndGroups();
+            }}
           />
           <S.Section>
             <S.Title>

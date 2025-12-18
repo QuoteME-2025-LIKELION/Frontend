@@ -118,6 +118,7 @@ export const Quotation = styled.div`
 export const Text = styled.div`
   font-size: 1rem; /* 16px */
   letter-spacing: -0.28px;
+  line-height: 1.05 !important;
 `;
 
 export const TagContainer = styled.div<{ $isInArchive?: boolean }>`
@@ -190,5 +191,9 @@ export const BtnBox = styled.div`
     width: 1rem;
     height: 1rem;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 `;

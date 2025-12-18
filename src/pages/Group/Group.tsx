@@ -9,7 +9,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import api from "@/api/api";
-import type { Friend } from "@/types/friend.type";
+import type { AxiosError } from "axios";
 
 export default function Group() {
   const { groupId } = useParams();
@@ -28,6 +28,9 @@ export default function Group() {
   const [showGroupDeleteModal, setShowGroupDeleteModal] = useState(false);
   const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     const fetchMyData = async () => {
       try {
@@ -43,18 +46,29 @@ export default function Group() {
   }, []);
 
   useEffect(() => {
+    // groupId 유효성 검사
+    if (!groupId || isNaN(Number(groupId))) {
+      navigate("/*", { replace: true });
+      return;
+    }
+
     const fetchGroupData = async () => {
       try {
         const res = await api.get(`/api/groups/${groupId}`);
         setGroupData(res.data);
-      } catch (err) {
+      } catch (err: AxiosError | any) {
         console.error("그룹 데이터 불러오기 오류:", err);
         setGroupData(null);
+
+        // 500 에러일 경우 NotFound 페이지로 이동
+        if (err.response && err.response.status === 500) {
+          navigate("/*", { replace: true });
+        }
       }
     };
 
     fetchGroupData();
-  }, [groupId]);
+  }, [groupId, navigate]);
 
   const handleDeleteMember = useCallback((userName: string, userId: number) => {
     setSelectedMember(userName);
@@ -75,7 +89,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹원 삭제 오류:", err);
       setShowDeleteModal(false);
-      alert("삭제에 실패했습니다.");
+      setErrorMessage("그룹원 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, selectedMemberId]);
 
@@ -105,7 +120,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setShowQuitModal(false);
-      alert("그룹 탈퇴에 실패했습니다.");
+      setErrorMessage("그룹 탈퇴에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, navigate]);
 
@@ -124,7 +140,8 @@ export default function Group() {
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);
       setShowGroupDeleteModal(false);
-      alert("그룹 삭제에 실패했습니다.");
+      setErrorMessage("그룹 삭제에 실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupId, navigate]);
   return (
@@ -175,12 +192,19 @@ export default function Group() {
             onClose={() => setShowGroupDeleteToast(false)}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text={errorMessage}
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
           title=""
           backgroundColor="secondary"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <S.GrayBox>
@@ -211,11 +235,7 @@ export default function Group() {
             <S.Section>
               <S.Title>그룹 메시지</S.Title>
               <S.MessageBox
-                onClick={() =>
-                  navigate(`/group/${groupId}/change-message`, {
-                    state: { currentMotto: groupData?.motto },
-                  })
-                }
+                onClick={() => navigate(`/group/${groupId}/change-message`)}
               >
                 <S.Quotation>“</S.Quotation>
                 {groupData?.motto ? (
@@ -244,14 +264,7 @@ export default function Group() {
             <S.BtnBox>
               <Button
                 title="그룹 초대하기"
-                onClick={() =>
-                  navigate(`/group/${groupId}/invite`, {
-                    state: {
-                      currentMembers: (groupData?.members as Friend[]) || [],
-                      groupName: groupData?.name,
-                    },
-                  })
-                }
+                onClick={() => navigate(`/group/${groupId}/invite`)}
               />
               {groupData?.leaderNickname === myNickName ? (
                 <S.QuitBtn onClick={handleDeleteGroup}>그룹 삭제하기</S.QuitBtn>

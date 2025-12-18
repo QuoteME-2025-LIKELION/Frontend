@@ -3,18 +3,25 @@ import * as S from "./ProfileEditStyled";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import api from "@/api/api";
 
 // TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialProfile = location.state?.profile;
 
-  const [email, setNickname] = useState("");
-  const [preview, setPreview] = useState<string | null>(null);
-  const [pwd, setIntro] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [nickname, setNickname] = useState(initialProfile?.nickname || "");
+  const [intro, setIntro] = useState(initialProfile?.intro || "");
+  const [preview, setPreview] = useState<string | null>(
+    initialProfile?.imageUrl || null
+  );
+  // 실제 파일 객체를 담을 상태 추가
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -26,24 +33,35 @@ export default function ProfileEdit() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // 파일 객체 저장 및 미리보기 URL 생성
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
-  const handleSave = () => {
-    // 프로필 변경 저장 로직 추가
+  const handleSave = async () => {
+    // FormData 객체 생성
+    const formData = new FormData();
 
-    const payload = {
-      nickname: email,
-      intro: pwd,
-      profileImage: preview, // 나중에 multipart면 여기만 변경
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+    const profileData = {
+      nickname: nickname,
+      introduction: intro,
     };
 
+    formData.append(
+      "data",
+      new Blob([JSON.stringify(profileData)], { type: "application/json" })
+    );
+
     try {
-      // await api.post("/api/profile", payload);
+      await api.put("/api/settings/profile", formData);
       setShowToast(true);
 
       setTimeout(() => {
-        navigate(-1);
+        navigate("/profile-center");
       }, 1500);
     } catch (e) {
       console.error("프로필 저장 실패", e);
@@ -87,9 +105,9 @@ export default function ProfileEdit() {
           <S.ImgInput onClick={handleClickUpload}>이미지 등록</S.ImgInput>
         </S.ProfileWrapper>
         <S.InputBox>
-          <S.TextName>자기소개</S.TextName>
+          <S.TextName>닉네임</S.TextName>
           <Input
-            value={email}
+            value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임 설정"
             type="text"
@@ -97,10 +115,10 @@ export default function ProfileEdit() {
             maxLength={10}
             required
           />
-          <S.LimitText>10자 내외</S.LimitText>
+          <S.LimitText>10자 이내</S.LimitText>
           <S.TextName>자기소개</S.TextName>
           <Input
-            value={pwd}
+            value={intro}
             onChange={(e) => setIntro(e.target.value)}
             placeholder="자기소개 설정"
             type="text"
@@ -108,7 +126,7 @@ export default function ProfileEdit() {
             maxLength={30}
             required
           />
-          <S.LimitText>30자 내외</S.LimitText>
+          <S.LimitText>30자 이내</S.LimitText>
           <Button title="저장하기" onClick={handleSave} />
         </S.InputBox>
       </S.Container>

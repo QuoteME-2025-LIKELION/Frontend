@@ -8,6 +8,7 @@ import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,9 @@ export default function Login() {
     const regex = /\S+@\S+\.\S+/;
     return regex.test(email);
   };
-  const correctPassword = ""; //백 연동 필요
+
+  const [showToast, setShowToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   /**
    * - 로그인 버튼 클릭 시 실행될 로직의 예시입니다.
@@ -29,7 +32,7 @@ export default function Login() {
    */
   const handleLogin = async () => {
     if (!isValidEmail(email) || pwd.length === 0) {
-      alert("이메일과 비밀번호를 올바르게 입력해주세요.");
+      setShowErrorToast(true);
       return;
     }
     try {
@@ -45,9 +48,8 @@ export default function Login() {
         useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
         navigate("/home"); // 로그인 성공 후 이동할 경로
       }
-    } catch (error) {
-      console.error("로그인 실패:", error);
-      // res.status에 따라 에러 처리 로직 구현
+    } catch (err) {
+      console.error("로그인 실패:", err);
     }
   };
 
@@ -55,12 +57,27 @@ export default function Login() {
     <>
       <PageTitle title="로그인" />
       <S.Container>
+        {showToast && (
+          <ToastModal
+            isVisible={showToast}
+            onClose={() => setShowToast(false)}
+            text="비밀번호 찾기는 구현 예정입니다."
+          />
+        )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="이메일 또는 비밀번호를"
+            text3="올바르게 입력해 주세요."
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
           title="로그인"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.InputBox>
           <Input
@@ -84,13 +101,14 @@ export default function Login() {
               유효하지 않은 이메일 형식입니다.
             </S.WarningMessage>
           )}
-          {pwd.length > 0 && pwd !== correctPassword && (
-            <S.WarningMessage>잘못된 비밀번호입니다.</S.WarningMessage>
+          {pwd.length > 0 && pwd.length < 8 && (
+            <S.WarningMessage>비밀번호는 최소 8자 이상입니다.</S.WarningMessage>
           )}
-          <S.MissingBtn> 비밀번호를 잊었다면?</S.MissingBtn>
+          <S.MissingBtn onClick={() => setShowToast(true)}>
+            비밀번호를 잊었다면?
+          </S.MissingBtn>
         </S.InputBox>
         <S.BtnBox>
-          {/* 추후 onClick 이벤트 추가(handleLogin) */}
           <Button title="입력 완료" onClick={handleLogin} />
         </S.BtnBox>
       </S.Container>

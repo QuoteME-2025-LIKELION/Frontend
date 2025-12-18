@@ -6,14 +6,17 @@ import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 export default function Profile() {
   const navigate = useNavigate();
 
-  const [email, setNickname] = useState("");
+  const [nickname, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [pwd, setIntro] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [intro, setIntro] = useState("");
+
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +28,7 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setImageFile(file);
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
@@ -34,18 +37,25 @@ export default function Profile() {
     try {
       const formData = new FormData();
 
-      formData.append("nickname", email);
-      formData.append("introduction", pwd);
-
-      if (imageFile) {
-        formData.append("profileImage", imageFile);
+      if (selectedFile) {
+        formData.append("image", selectedFile);
       }
-      await api.post("/api/profile", formData);
+
+      const profileData = {
+        nickname: nickname,
+        introduction: intro,
+      };
+
+      formData.append(
+        "data",
+        new Blob([JSON.stringify(profileData)], { type: "application/json" })
+      );
+      await api.post("/api/settings/profile", formData);
 
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
       console.error("프로필 저장 실패:", error);
-      alert("프로필 저장에 실패했습니다.");
+      setShowErrorToast(true);
     }
   };
 
@@ -53,12 +63,19 @@ export default function Profile() {
     <>
       <PageTitle title="회원가입" />
       <S.Container>
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="프로필 저장에 실패했습니다."
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
           title="프로필 설정"
           backgroundColor="white"
-          onClickBackBtn={() => navigate(-1)}
+          onClickBackBtn={() => navigate("/")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview
@@ -79,7 +96,7 @@ export default function Profile() {
         </S.ProfileWrapper>
         <S.InputBox>
           <Input
-            value={email}
+            value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임 설정"
             type="text"
@@ -87,9 +104,9 @@ export default function Profile() {
             maxLength={10}
             required
           />
-          <S.LimitText>10자 내외</S.LimitText>
+          <S.LimitText>10자 이내</S.LimitText>
           <Input
-            value={pwd}
+            value={intro}
             onChange={(e) => setIntro(e.target.value)}
             placeholder="자기소개 설정"
             type="text"
@@ -97,7 +114,7 @@ export default function Profile() {
             maxLength={30}
             required
           />
-          <S.LimitText>30자 내외</S.LimitText>
+          <S.LimitText>30자 이내</S.LimitText>
         </S.InputBox>
         <S.BtnBox>
           <Button title="저장 완료" onClick={handleSignUp} />

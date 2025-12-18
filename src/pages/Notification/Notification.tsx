@@ -8,7 +8,6 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
 import api from "@/api/api";
 import useNotificationStore from "@/stores/useNotificationStore";
-
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
   const map: Record<string, Notification[]> = {};
@@ -84,7 +83,8 @@ export default function Notification() {
       } catch (err) {
         console.error(err);
       }
-
+      const res = await api.get("/api/notifications");
+      console.log(res.data);
       const { type } = notification;
       if (type === "GROUP") {
         navigate(`/group/${notification.targetId}`);
@@ -92,7 +92,7 @@ export default function Notification() {
         // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
         navigate("/write");
       } else if (type === "TAG" || type === "TAG_REQUEST") {
-        navigate("/home");
+        navigate(`/home/${notification.createDate.slice(0, 10)}`);
       }
 
       // 상태 업데이트를 위해 알림 목록 다시 불러오기
@@ -100,7 +100,6 @@ export default function Notification() {
     },
     [navigate, fetchNotifications]
   );
-
   return (
     <>
       <PageTitle title="알림" />
@@ -110,7 +109,7 @@ export default function Notification() {
           showXBtn={true}
           title="알림함"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
           <S.Btn

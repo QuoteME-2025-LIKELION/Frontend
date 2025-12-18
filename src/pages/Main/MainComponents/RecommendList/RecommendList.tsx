@@ -2,26 +2,69 @@ import * as S from "./RecommendListStyled";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "@/components/Button/Button";
+import api from "@/api/api";
+import { useEffect } from "react";
 
 interface RecommendListProps {
-  onSelectComplete: () => void;
+  onSelectComplete: (text: string) => void;
+  content: string;
+}
+
+interface SummarizeResponse {
+  summary: string;
 }
 
 export default function RecommendListList({
+  content,
   onSelectComplete,
 }: RecommendListProps) {
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [quotes, setQuotes] = useState<
+    { id: number; text: string; author: string }[]
+  >([]);
 
-  const quotes = [
-    { id: 1, text: "오늘 못한 건 내일의 에너지로 남는다.", author: "손지수" },
-    { id: 2, text: "쉬는 것도 해야 할 일의 일부다.", author: "손지수" },
-    {
-      id: 3,
-      text: "해야 할 일은 내일의 나를 위해 남겨둔 선물이다.",
-      author: "듀듀",
-    },
-  ];
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        console.log("📤 summarize 요청 content:", content);
+
+        const res = await api.post<{ summary: string }>(
+          "/api/quotes/summarize",
+          { content }
+        );
+
+        console.log("📥 summarize 응답 전체:", res);
+        console.log("📥 summarize 응답 data:", res.data);
+        console.log("📥 summarize summary:", res.data?.summary);
+
+        if (!res.data?.summary) {
+          console.warn("⚠️ summary가 없음");
+          setQuotes([]);
+          return;
+        }
+
+        setQuotes([
+          {
+            id: 1,
+            text: res.data.summary,
+            author: "QuoteMe AI",
+          },
+        ]);
+      } catch (e: any) {
+        console.error("❌    에러:", e);
+        console.log("status:", e.response?.status);
+        console.log("data:", e.response?.data);
+      }
+    };
+
+    if (content) {
+      fetchSummary();
+    } else {
+      console.warn("⚠️ content가 비어 있음");
+    }
+  }, [content]);
+
   return (
     <S.Container>
       <S.Head>
@@ -65,7 +108,7 @@ export default function RecommendListList({
               </svg>
               <S.Text
                 style={{ fontSize: 16, width: 250 }}
-                dangerouslySetInnerHTML={{ __html: q.text }}
+                dangerouslySetInnerHTML={{ __html: q.text || "" }}
               />
               <svg
                 width="11"
@@ -84,7 +127,15 @@ export default function RecommendListList({
           </S.Commend>
         ))}
         <S.BtnBox>
-          <Button title="선택 완료" onClick={onSelectComplete} />
+          <Button
+            title="선택 완료"
+            onClick={() => {
+              if (selectedId === null) return;
+              const selected = quotes.find((q) => q.id === selectedId);
+              if (!selected) return;
+              onSelectComplete(selected.text);
+            }}
+          />
         </S.BtnBox>
       </S.ComendList>
     </S.Container>

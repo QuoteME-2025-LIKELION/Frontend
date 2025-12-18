@@ -13,6 +13,7 @@ export default function SettingPage() {
   const [showToast, setShowToast] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutToast, setShowLogoutToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -29,7 +30,8 @@ export default function SettingPage() {
       }, 1500);
     } catch (err) {
       console.error("로그아웃 처리 중 오류:", err);
-      alert("로그아웃에 실패했습니다.");
+      setShowLogoutModal(false);
+      setShowErrorToast(true);
       return;
     }
   };
@@ -59,12 +61,19 @@ export default function SettingPage() {
             onClose={() => setShowLogoutToast(false)}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => setShowErrorToast(false)}
+            text="로그아웃에 실패했습니다."
+          />
+        )}
         <Header
           showBackBtn={false}
           showXBtn={true}
           title="환경설정"
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/home")}
         />
         <S.SettingList>
           <S.SettingBtn

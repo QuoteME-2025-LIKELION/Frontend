@@ -25,6 +25,10 @@ export default function CreateGroup() {
 
   const [isSubmitted, setIsSubmitted] = useState(false); // 그룹 생성 시도 여부 상태
 
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage3, setErrorMessage3] = useState("");
+
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -87,22 +91,29 @@ export default function CreateGroup() {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
 
     if (groupName.trim().length === 0) {
-      alert("그룹명을 입력해 주세요.");
+      setErrorMessage("그룹명을 입력해주세요.");
+      setShowErrorToast(true);
       return; // 그룹명이 없으면 여기서 중단
     }
 
     if (groupName.length > 10) {
-      alert("그룹명은 10자 이내로 입력해 주세요.");
+      setErrorMessage("그룹명은 10자 이내로");
+      setErrorMessage3("입력해 주세요.");
+      setShowErrorToast(true);
       return;
     }
 
     if (motto.length > 20) {
-      alert("메시지는 20자 이내로 입력해 주세요.");
+      setErrorMessage("메시지는 20자 이내로");
+      setErrorMessage3("입력해 주세요.");
+      setShowErrorToast(true);
       return;
     }
 
     if (selectedFriends.length > 4) {
-      alert("최대 4명까지 초대할 수 있습니다.");
+      setErrorMessage("친구는 최대 4명까지");
+      setErrorMessage3("초대할 수 있습니다.");
+      setShowErrorToast(true);
       return;
     }
 
@@ -136,7 +147,9 @@ export default function CreateGroup() {
       }, 1500);
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);
-      alert("그룹 생성 또는 친구 초대에 실패했습니다.");
+      setErrorMessage("그룹 생성 또는 친구 초대에");
+      setErrorMessage3("실패했습니다.");
+      setShowErrorToast(true);
     }
   }, [groupName, motto, selectedFriends, navigate]);
 
@@ -152,12 +165,23 @@ export default function CreateGroup() {
             showOverlay={false}
           />
         )}
+        {showErrorToast && (
+          <ToastModal
+            isVisible={showErrorToast}
+            onClose={() => {
+              setShowErrorToast(false);
+              setErrorMessage3("");
+            }}
+            text={errorMessage}
+            {...(errorMessage3 && { text3: errorMessage3 })}
+          />
+        )}
         <Header
           showBackBtn={false}
           showXBtn={true}
           title="그룹 만들기"
           backgroundColor="primary"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate("/friend-group")}
         />
         <S.Content>
           <S.NavyBox>
@@ -199,9 +223,11 @@ export default function CreateGroup() {
             <Search
               placeholder="검색"
               desc={
-                displayedFriends.length === 0
+                friendList.length === 0
                   ? "아직 추가된 친구가 없습니다."
-                  : "나의 친구 중에서만 초대할 수 있어요."
+                  : keyword && displayedFriends.length === 0
+                    ? "검색 결과가 없습니다."
+                    : "나의 친구 중에서만 초대할 수 있어요."
               }
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -209,16 +235,18 @@ export default function CreateGroup() {
             />
             <S.FriendListContainer>
               <S.FriendList>
-                {displayedFriends.length > 0 ? (
-                  displayedFriends.map((friend) => (
-                    <List
-                      key={friend.id}
-                      friend={friend}
-                      isSelectable={true}
-                      isSelected={selectedFriends.includes(friend.id)}
-                      onSelect={() => handleSelectFriend(friend.id)}
-                    />
-                  ))
+                {friendList.length > 0 ? (
+                  displayedFriends.length > 0 ? (
+                    displayedFriends.map((friend) => (
+                      <List
+                        key={friend.id}
+                        friend={friend}
+                        isSelectable={true}
+                        isSelected={selectedFriends.includes(friend.id)}
+                        onSelect={() => handleSelectFriend(friend.id)}
+                      />
+                    ))
+                  ) : null
                 ) : (
                   <S.EmptyFriendContainer>
                     <S.EmptyFriendList>

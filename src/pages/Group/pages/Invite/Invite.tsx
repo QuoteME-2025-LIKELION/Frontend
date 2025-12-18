@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as S from "./InviteStyle";
 import Header from "@/components/Header/Header";
 import Search from "@/components/Search/Search";
@@ -10,10 +10,10 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import api from "@/api/api";
 import type { Friend } from "@/types/friend.type";
 import useDebounce from "@/hooks/useDebounce";
+import type { AxiosError } from "axios";
 
 export default function Invite() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { groupId } = useParams();
 
   const [keyword, setKeyword] = useState("");
@@ -27,16 +27,33 @@ export default function Invite() {
 
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
 
-  // state에서 얻어온 정보
-  const { currentMembers, groupName } = location.state || {
-    currentMembers: [],
-    groupName: "",
-  };
+  // API로부터 직접 받아올 상태들
+  const [groupName, setGroupName] = useState("");
+  const [currentMembers, setCurrentMembers] = useState<Friend[]>([]);
 
-  // 현재 멤버 수 -> invite 페이지 넘어온 이후에도 변동 가능성 고려
-  const [currentMembersCount, setCurrentMembersCount] = useState<number>(
-    currentMembers.length || 0
-  );
+  // groupId 유효성 검사
+  useEffect(() => {
+    // 형식 검사 (숫자인지)
+    if (!groupId || isNaN(Number(groupId))) {
+      navigate("/*", { replace: true });
+      return;
+    }
+
+    const fetchGroupData = async () => {
+      try {
+        const res = await api.get(`/api/groups/${groupId}`);
+        setGroupName(res.data.name);
+        setCurrentMembers(res.data.members || []);
+      } catch (err: AxiosError | any) {
+        if (err.response && err.response.status === 500) {
+          navigate("/*", { replace: true });
+        }
+        console.error("그룹 정보 조회 중 오류 발생:", err);
+      }
+    };
+
+    fetchGroupData();
+  }, [groupId, navigate]);
 
   // 친구 목록 조회 및 검색
   useEffect(() => {
@@ -73,7 +90,9 @@ export default function Invite() {
       }
     };
 
-    fetchAndFilterFriends();
+    if (currentMembers.length > 0) {
+      fetchAndFilterFriends();
+    }
   }, [debouncedKeyword, currentMembers]); // 디바운스된 키워드나 그룹 멤버가 바뀔 때마다 실행
 
   // 친구 초대 핸들러
@@ -87,7 +106,7 @@ export default function Invite() {
   );
   const handleConfirmInvite = useCallback(async () => {
     setShowInviteModal(false);
-    if (currentMembersCount < 5) {
+    if (currentMembers.length < 5) {
       try {
         await api.post(`/api/groups/${groupId}/invite/${selectedFriendId}`);
 
@@ -96,7 +115,13 @@ export default function Invite() {
           prevFriends.filter((friend: Friend) => friend.id !== selectedFriendId)
         );
 
-        setCurrentMembersCount((prev) => prev + 1);
+        // 초대 성공 시 현재 멤버 목록에도 추가
+        const invitedFriend = filteredFriends.find(
+          (f) => f.id === selectedFriendId
+        );
+        if (invitedFriend) {
+          setCurrentMembers((prev) => [...prev, invitedFriend]);
+        }
         setShowSuccessToast(true);
       } catch (err) {
         console.error("그룹원 초대 오류:", err);
@@ -104,7 +129,7 @@ export default function Invite() {
     } else {
       setShowErrorToast(true);
     }
-  }, [currentMembersCount, groupId, selectedFriendId]);
+  }, [currentMembers.length, groupId, selectedFriendId]);
   return (
     <>
       <PageTitle title="그룹 초대하기" />
@@ -144,12 +169,16 @@ export default function Invite() {
           showXBtn={true}
           title=""
           backgroundColor="white"
-          onClickXBtn={() => navigate(-1)}
+          onClickXBtn={() => navigate(`/group/${groupId}`)}
         />
         <S.Content>
           <Search
             placeholder="검색"
-            desc="나의 친구 중에서만 초대할 수 있어요."
+            desc={
+              keyword && filteredFriends.length === 0
+                ? "검색 결과가 없습니다."
+                : "나의 친구 중에서만 초대할 수 있어요."
+            }
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => setKeyword("")}

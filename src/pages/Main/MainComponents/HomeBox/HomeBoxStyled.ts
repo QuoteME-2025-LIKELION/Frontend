@@ -11,9 +11,10 @@ export const Container = styled.div`
 `;
 
 export const textbox = styled.div`
-  padding: 10px 159px;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 5px;
 `;
@@ -69,6 +70,7 @@ export const Text = styled.div<{ hasFeed: boolean }>`
   font-weight: 500;
   padding: 9px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.5);
+  min-height: 2.0625rem; /* 33px */
 `;
 
 export const Left = styled.div`
