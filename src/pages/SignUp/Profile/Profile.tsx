@@ -11,10 +11,10 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 export default function Profile() {
   const navigate = useNavigate();
 
-  const [email, setNickname] = useState("");
+  const [nickname, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [pwd, setIntro] = useState("");
+  const [intro, setIntro] = useState("");
 
   const [showErrorToast, setShowErrorToast] = useState(false);
 
@@ -37,12 +37,19 @@ export default function Profile() {
     try {
       const formData = new FormData();
 
-      formData.append("nickname", email);
-      formData.append("introduction", pwd);
-
       if (imageFile) {
-        formData.append("profileImage", imageFile);
+        formData.append("image", imageFile);
       }
+
+      const profileData = {
+        nickname: nickname,
+        introduction: intro,
+      };
+
+      formData.append(
+        "data",
+        new Blob([JSON.stringify(profileData)], { type: "application/json" })
+      );
       await api.post("/api/profile", formData);
 
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
@@ -89,7 +96,7 @@ export default function Profile() {
         </S.ProfileWrapper>
         <S.InputBox>
           <Input
-            value={email}
+            value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임 설정"
             type="text"
@@ -99,7 +106,7 @@ export default function Profile() {
           />
           <S.LimitText>10자 이내</S.LimitText>
           <Input
-            value={pwd}
+            value={intro}
             onChange={(e) => setIntro(e.target.value)}
             placeholder="자기소개 설정"
             type="text"
