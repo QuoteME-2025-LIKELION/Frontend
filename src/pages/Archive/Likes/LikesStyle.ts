@@ -9,7 +9,7 @@ export const Container = styled.div`
   align-items: center;
   gap: 1.25rem;
   background-color: ${theme.colors.primary};
-  padding: 1.875rem 2.5rem;
+  padding: 0.9375rem 1.25rem; /* 15px 20px */
   height: 100%;
   max-height: calc(100vh - 98px);
   overflow-y: scroll;
@@ -17,5 +17,10 @@ export const Container = styled.div`
   -ms-overflow-style: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  & > div {
+    width: 100%;
+    padding: 0.9375rem 1.25rem; /* 15px 20px */
   }
 `;

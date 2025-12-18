@@ -14,4 +14,5 @@ export const Container = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+  padding: 0 1.25rem; /* 0 20px */
 `;

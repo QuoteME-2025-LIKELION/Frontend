@@ -21,13 +21,15 @@ export default function FeedList({
   onTagRequest,
   onPoke,
   onShare,
+  isLoading,
 }: {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
-  onTagRequest?: (quoteId: number) => void;
-  onPoke?: (friendId: number) => void;
+  onTagRequest?: () => void;
+  onPoke?: () => void;
   onShare: (shareProcess: () => Promise<void>) => void;
+  isLoading: boolean;
 }) {
   // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
@@ -76,7 +78,7 @@ export default function FeedList({
     try {
       await api.post(`/api/quotes/${quoteId}/tag-request`);
       // API 호출 성공 후, 부모에게 받은 onTagRequest 함수 호출
-      onTagRequest?.(quoteId);
+      onTagRequest?.();
     } catch (err) {
       console.error("태그 요청 실패:", err);
       // 실패 시 사용자에게 알림
@@ -138,7 +140,7 @@ export default function FeedList({
     try {
       await api.post(`/api/pokes/${friendId}`);
       // API 호출 성공 후, 부모에게 받은 onPoke 함수 호출
-      onPoke?.(friendId);
+      onPoke?.();
     } catch (err) {
       console.error("콕 찌르기 실패:", err);
       // 실패 시 사용자에게 알림
@@ -192,9 +194,9 @@ export default function FeedList({
             timeAgo={quote.timeAgo}
           />
         ))
-      ) : (
+      ) : !isLoading ? (
         <S.NoFeedText>명언을 나눌 친구가 없습니다.</S.NoFeedText>
-      )}
+      ) : null}
     </S.FeedList>
   );
 }

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import api from "@/api/api";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useState } from "react";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
 
 export default function Start() {
   const navigate = useNavigate();
@@ -11,11 +13,33 @@ export default function Start() {
 
   const handleGuestLogin = async () => {
     try {
-      await api.post("/api/auth/guest-login");
-      navigate("/home");
-    } catch (error) {
-      console.error("게스트 로그인 실패:", error);
-      setShowErrorToast(true);
+      const res = await api.post("/api/auth/guest-login");
+      if (res.status === 200 && res.data.data.accessToken) {
+        const accessToken = res.data.data.accessToken;
+        useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
+        useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
+        navigate("/home"); // 로그인 성공 후 이동할 경로
+      }
+    } catch (initialError) {
+      console.error("1차 게스트 로그인 실패, 토큰 재발급 시도:", initialError);
+      // 토큰 재발급 및 로그인 재시도
+      try {
+        // 토큰 재발급 요청
+        await api.post("/api/auth/refresh");
+
+        // 재발급 후 게스트 로그인 재시도
+        const res = await api.post("/api/auth/guest-login");
+        if (res.status === 200 && res.data.data.accessToken) {
+          const accessToken = res.data.data.accessToken;
+          useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
+          useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
+          navigate("/home"); // 로그인 성공 후 이동할 경로
+        }
+      } catch (retryError) {
+        // 재발급 또는 재시도 실패 시 최종 에러 처리
+        console.error("게스트 로그인 재시도 실패:", retryError);
+        setShowErrorToast(true);
+      }
     }
   };
 
