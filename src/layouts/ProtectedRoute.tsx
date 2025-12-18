@@ -2,6 +2,12 @@ import Spinner from "@/components/Spinner/Spinner";
 import useAuthStore from "@/stores/useAuthStore";
 import { Navigate, Outlet } from "react-router-dom";
 
+/**
+ * 인증이 필요한 보호된 경로 레이아웃
+ * @returns 로딩 중엔 로딩 스피너 반환
+ * @returns 비인증 상태면 시작 페이지로 리디렉션
+ * @returns 인증 상태면 요청한 페이지 렌더링
+ */
 export default function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuthStore();
 

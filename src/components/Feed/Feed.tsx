@@ -33,7 +33,7 @@ interface FeedProps {
  * @param props.isSilenced 해당 날짜에 글을 안 올렸을 때 (기본값 false)
  * @param props.isLiked 좋아요를 누른 상태인지 (기본값 false => true일 때만 따로 표시)
  * @param props.onLike 좋아요 토글 함수 (빈 함수가 기본값)
- * @param props.onShare 공유 함수 (빈 함수가 기본값)
+ * @param props.onShare 공유 함수 (빈 함수가 기본값) - isInArchive일 때도 활성화
  * @param props.isMyName 태그 목록에 있는 이름이 내 이름인지 확인하는 함수 (빈 함수가 기본값)
  * @param props.onRequest 태그 요청 함수 (빈 함수가 기본값)
  * @param props.onPoke 콕 찌르기 함수 (빈 함수가 기본값)
@@ -41,7 +41,7 @@ interface FeedProps {
  * @param props.isInArchive 아카이브 페이지에 있는지(전체 UI 흰색 됨) (기본값 false)
  * @param props.onArchiveClick 아카이브 페이지에서 피드 클릭 시 함수
  * @param props.year 사용자 생년 (아카이브 페이지에서만 사용)
- * @param props.timeAgo 작성 시간 (예: "2시간 전")
+ * @param props.timeAgo 작성 시간 (예: "2시간 전") - API 명세서 호환용
  * @example
  * <Feed
  *  profileImageUrl="https://example.com/profile.jpg"
