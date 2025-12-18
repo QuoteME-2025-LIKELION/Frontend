@@ -1,6 +1,8 @@
 import Button from "@/components/Button/Button";
 import * as S from "./GroupCardStyle";
 import type { Group } from "@/types/group.type";
+import { useEffect, useState } from "react";
+import api from "@/api/api";
 
 interface GroupCardProps {
   group: Group;
@@ -25,6 +27,15 @@ export default function GroupCard({
   isButton = false,
   onCardClick,
 }: GroupCardProps) {
+  // API에서 since 정보를 제공하지 않으므로 별도 요청
+  const [since, setSince] = useState("");
+  useEffect(() => {
+    const fetchSince = async () => {
+      const res = await api.get(`/api/groups/${group.id}`);
+      setSince(res.data.createdAt.slice(0, 4));
+    };
+    fetchSince();
+  }, [group.id]);
   return (
     <S.Container>
       {isButton ? (
@@ -39,7 +50,7 @@ export default function GroupCard({
                 </S.InfoLine>
                 <S.InfoLine>
                   <div>since</div>
-                  <div>{group?.createdAt?.slice(0, 4)}</div>
+                  <div>{since}</div>
                 </S.InfoLine>
               </S.InfoBox>
             </S.TextBox>
