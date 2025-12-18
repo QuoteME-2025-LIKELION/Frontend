@@ -8,6 +8,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import api from "@/api/api";
+import type { AxiosError } from "axios";
 
 export default function JoinGroup() {
   const { groupId } = useParams();
@@ -18,18 +19,28 @@ export default function JoinGroup() {
   const [showErrorToast, setShowErrorToast] = useState(false);
 
   useEffect(() => {
+    // groupId 유효성 검사
+    if (!groupId || isNaN(Number(groupId))) {
+      navigate("/*", { replace: true });
+      return;
+    }
+
     const fetchGroupData = async () => {
       try {
         const res = await api.get(`/api/groups/${groupId}`);
         setGroupData(res.data);
-      } catch (err) {
+      } catch (err: AxiosError | any) {
         console.error("그룹 데이터 불러오기 오류:", err);
         setGroupData(null);
+        // 500 에러일 경우 NotFound 페이지로 이동
+        if (err.response && err.response.status === 500) {
+          navigate("/*", { replace: true });
+        }
       }
     };
 
     fetchGroupData();
-  }, [groupId]);
+  }, [groupId, navigate]);
 
   // 그룹 참여 요청 전송 로직
   const handleConfirm = useCallback(async () => {

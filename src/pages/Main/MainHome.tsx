@@ -32,6 +32,15 @@ export default function MainHome() {
   >("nothing");
 
   useEffect(() => {
+    // date 파라미터 유효성 검사
+    if (date) {
+      const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(date);
+      if (!isValidDate) {
+        navigate("/*", { replace: true }); // 잘못된 형식이면 NotFound 페이지로 이동
+        return; // 유효하지 않으면 데이터 요청 등 아래 로직을 실행하지 않음
+      }
+    }
+
     const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
 
     const fetchData = async () => {
@@ -56,7 +65,7 @@ export default function MainHome() {
     };
 
     fetchData();
-  }, [date]);
+  }, [date, navigate]);
 
   // 태그 요청
   const handleTagRequest = () => {
