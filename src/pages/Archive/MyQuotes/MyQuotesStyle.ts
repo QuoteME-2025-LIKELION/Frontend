@@ -1,3 +1,4 @@
+import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
 export const Container = styled.div`
@@ -7,6 +8,7 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   height: 100%;
+  background-color: ${theme.colors.primary};
   max-height: calc(100vh - 98px);
   overflow-y: scroll;
   scrollbar-width: none;

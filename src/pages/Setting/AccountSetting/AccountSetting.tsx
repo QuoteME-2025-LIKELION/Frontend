@@ -3,7 +3,7 @@ import Button from "@/components/Button/Button";
 import * as S from "./AccountSettingStyled";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -26,17 +26,30 @@ export default function AccountSetting() {
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSave = () => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("/api/settings/profile");
+        setEmail(res.data.email);
+      } catch (e) {
+        console.error("프로필 조회 실패", e);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
     // 저장 로직 추가
     const payload = {
       gender,
       birthYear: birth,
       email,
     };
+    console.log(payload);
 
     try {
-      // TODO: POST /api/profile/account
-      // await api.post("", payload);
+      await api.put("/api/profile/account", payload);
 
       setShowToast(true);
       setTimeout(() => {
@@ -110,14 +123,15 @@ export default function AccountSetting() {
           onClickXBtn={() => navigate("/setting-page")}
         />
         <S.InputBox>
-          <Input
+          <S.Select
             value={gender}
             onChange={(e) => setGender(e.target.value)}
-            placeholder="성별"
-            type="text  "
             name="gender"
-            required
-          />
+          >
+            <option value="FEMALE">여성</option>
+            <option value="MALE">남성</option>
+            <option value="">선택 안함</option>
+          </S.Select>
           <Input
             value={birth}
             onChange={(e) => setBirth(e.target.value)}

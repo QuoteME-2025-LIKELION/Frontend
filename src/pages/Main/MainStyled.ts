@@ -2,6 +2,28 @@ import theme from "@/styles/theme";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+`;
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -11,7 +33,7 @@ export const Container = styled.div`
   height: 100vh;
   position: relative;
 `;
-export const Toggle = styled.div`
+export const Toggle = styled.div<{ $active: boolean }>`
   position: absolute; // ★절대 위치
   top: 60px; // DateHeader 아래 원하는 위치
   right: 20px; // 오른쪽 아이콘 기준 위치
@@ -27,6 +49,9 @@ export const Toggle = styled.div`
   border-radius: 10px;
   background: #fff;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.61);
+
+  animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
+    forwards;
 `;
 
 export const ToggleBtn = styled.div`
@@ -42,38 +67,3 @@ export const ToggleBtn = styled.div`
 `;
 
 export const TagRequestModal = styled.div``;
-
-/* 로딩 스피너 */
-export const SpinnerContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9998;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.1);
-`;
-
-const spin = keyframes`
-  100%
-  {
-    transform: rotate(360deg);
-  }
-`;
-
-export const Spinner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  box-sizing: border-box;
-  border-top-color: white;
-  border-radius: 100%;
-
-  animation: ${spin} 1s ease-in-out infinite;
-`;

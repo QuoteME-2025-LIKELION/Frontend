@@ -8,7 +8,6 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
 import api from "@/api/api";
 import useNotificationStore from "@/stores/useNotificationStore";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
   const map: Record<string, Notification[]> = {};
@@ -38,8 +37,6 @@ export default function Notification() {
   // 필터가 선택됐을 땐 null일 때 데이터에서 필터해서 렌더링
 
   const { setHasUnread } = useNotificationStore();
-  const [selectedTagRequest, setSelectedTagRequest] =
-    useState<Notification | null>(null);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -95,8 +92,7 @@ export default function Notification() {
         // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
         navigate("/write");
       } else if (type === "TAG" || type === "TAG_REQUEST") {
-        setSelectedTagRequest(notification);
-        navigate("/home");
+        navigate(`/home/${notification.createDate.slice(0, 10)}`);
       }
 
       // 상태 업데이트를 위해 알림 목록 다시 불러오기
@@ -104,34 +100,6 @@ export default function Notification() {
     },
     [navigate, fetchNotifications]
   );
-  const handleAcceptTag = async () => {
-    if (!selectedTagRequest?.requestId) return;
-
-    try {
-      await api.post(
-        `/api/quotes/requests/${selectedTagRequest.requestId}/accept`
-      );
-      setSelectedTagRequest(null);
-      fetchNotifications();
-    } catch (err) {
-      console.error("태그 요청 수락 실패", err);
-    }
-  };
-
-  const handleRejectTag = async () => {
-    if (!selectedTagRequest?.requestId) return;
-
-    try {
-      await api.post(
-        `/api/quotes/requests/${selectedTagRequest.requestId}/reject`
-      );
-      setSelectedTagRequest(null);
-      fetchNotifications();
-    } catch (err) {
-      console.error("태그 요청 거절 실패", err);
-    }
-  };
-
   return (
     <>
       <PageTitle title="알림" />
@@ -200,14 +168,6 @@ export default function Notification() {
           </S.NotificationList>
         )}
       </S.Container>
-      {selectedTagRequest && (
-        <ConfirmModal
-          nickname={selectedTagRequest.senderName}
-          question="님이 태그 요청을 보냈습니다."
-          onClose={handleRejectTag} // 🔴 취소 = 거절
-          onConfirm={handleAcceptTag} // 🔵 확인 = 수락
-        />
-      )}
     </>
   );
 }

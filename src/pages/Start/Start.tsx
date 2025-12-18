@@ -3,13 +3,23 @@ import * as S from "./StartStyled";
 import { useNavigate } from "react-router-dom";
 import api from "@/api/api";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
+import Spinner from "@/components/Spinner/Spinner";
 
 export default function Start() {
   const navigate = useNavigate();
   const [showErrorToast, setShowErrorToast] = useState(false);
+
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  useEffect(() => {
+    // 인증 상태 로딩이 끝나고, 로그인된 상태라면 /home으로 이동
+    if (!isLoading && isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [isLoading, isAuthenticated, navigate]);
 
   const handleGuestLogin = async () => {
     try {
@@ -42,6 +52,11 @@ export default function Start() {
       }
     }
   };
+
+  // 로딩 중이거나 리디렉션 될 사용자에게는 페이지 내용을 보여주지 않음
+  if (isLoading || isAuthenticated) {
+    return <Spinner />;
+  }
 
   return (
     <S.Container>

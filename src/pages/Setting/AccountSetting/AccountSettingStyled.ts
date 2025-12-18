@@ -81,3 +81,30 @@ export const DeleteBtn = styled.button`
   margin-top: 40px;
   ${theme.fonts.pretendard}
 `;
+
+export const Select = styled.select`
+  width: 100%;
+  height: 2.1875rem; /* 35px */
+  padding: 0.625rem 0.9375rem; /* 10px 15px */
+  background-color: ${theme.colors.secondary};
+  border: none;
+  border-top: 0.5px solid ${theme.colors.territory};
+  border-bottom: 0.5px solid ${theme.colors.territory};
+  display: flex;
+  align-items: center;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  ${theme.fonts.pretendard}
+  color: #000;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  letter-spacing: -0.28px;
+
+  background-image: url("https://img.icons8.com/ios-filled/50/sort-down.png");
+  background-repeat: no-repeat;
+  background-position: 96% center;
+  background-size: 0.5rem;
+`;

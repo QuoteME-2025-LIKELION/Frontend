@@ -30,6 +30,7 @@ export default function SettingPage() {
       }, 1500);
     } catch (err) {
       console.error("로그아웃 처리 중 오류:", err);
+      setShowLogoutModal(false);
       setShowErrorToast(true);
       return;
     }

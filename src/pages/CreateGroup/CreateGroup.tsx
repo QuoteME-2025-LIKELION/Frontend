@@ -223,9 +223,11 @@ export default function CreateGroup() {
             <Search
               placeholder="검색"
               desc={
-                displayedFriends.length === 0
+                friendList.length === 0
                   ? "아직 추가된 친구가 없습니다."
-                  : "나의 친구 중에서만 초대할 수 있어요."
+                  : keyword && displayedFriends.length === 0
+                    ? "검색 결과가 없습니다."
+                    : "나의 친구 중에서만 초대할 수 있어요."
               }
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -233,16 +235,18 @@ export default function CreateGroup() {
             />
             <S.FriendListContainer>
               <S.FriendList>
-                {displayedFriends.length > 0 ? (
-                  displayedFriends.map((friend) => (
-                    <List
-                      key={friend.id}
-                      friend={friend}
-                      isSelectable={true}
-                      isSelected={selectedFriends.includes(friend.id)}
-                      onSelect={() => handleSelectFriend(friend.id)}
-                    />
-                  ))
+                {friendList.length > 0 ? (
+                  displayedFriends.length > 0 ? (
+                    displayedFriends.map((friend) => (
+                      <List
+                        key={friend.id}
+                        friend={friend}
+                        isSelectable={true}
+                        isSelected={selectedFriends.includes(friend.id)}
+                        onSelect={() => handleSelectFriend(friend.id)}
+                      />
+                    ))
+                  ) : null
                 ) : (
                   <S.EmptyFriendContainer>
                     <S.EmptyFriendList>

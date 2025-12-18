@@ -1,6 +1,7 @@
-import type { Feed } from "@/types/feed.type";
+// import type { Feed } from "@/types/feed.type";
+// Feed 타입을 더 이상 사용하지 않으므로 주석처리
 
-export const MOCK_FEEDS: Feed[] = [
+export const MOCK_FEEDS: {}[] = [
   {
     id: 1,
     content: "방귀 뀐 놈이 성낸다",

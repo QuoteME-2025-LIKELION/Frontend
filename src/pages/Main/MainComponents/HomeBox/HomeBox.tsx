@@ -1,6 +1,6 @@
 import * as S from "./HomeBoxStyled";
 import { useNavigate } from "react-router-dom";
-import { formatCustomDate } from "@/utils/formatDate";
+import { formatCustomDate } from "@/utils/formatCustomDate";
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";

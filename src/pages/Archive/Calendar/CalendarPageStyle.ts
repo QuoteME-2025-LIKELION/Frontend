@@ -9,6 +9,8 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  background-color: ${theme.colors.primary};
 `;
 
 /* Calendar 컴포넌트 스타일 오버라이딩 */

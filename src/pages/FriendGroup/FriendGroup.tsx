@@ -64,28 +64,30 @@ export default function FriendGroup() {
     [groupsList]
   );
 
-  // 친구 및 그룹 목록 초기 불러오기
-  useEffect(() => {
-    const fetchFriendsAndGroups = async () => {
-      try {
-        const friendsRes = await api.get("/api/settings/friends-list");
-        const validFriends = Array.isArray(friendsRes.data)
-          ? friendsRes.data.filter(isValidFriend)
-          : [];
-        setFriendList(validFriends);
-        const groupsRes = await api.get("/api/groups/me");
-        const validGroups = Array.isArray(groupsRes.data)
-          ? groupsRes.data.filter(isValidGroup)
-          : [];
-        setGroupsList(validGroups);
-      } catch (err) {
-        console.error("친구 및 그룹 목록 불러오기 오류:", err);
-        setFriendList([]);
-        setGroupsList([]);
-      }
-    };
-    fetchFriendsAndGroups();
+  // 친구 및 그룹 목록 불러오기
+  const fetchFriendsAndGroups = useCallback(async () => {
+    try {
+      const friendsRes = await api.get("/api/settings/friends-list");
+      const validFriends = Array.isArray(friendsRes.data)
+        ? friendsRes.data.filter(isValidFriend)
+        : [];
+      setFriendList(validFriends);
+      const groupsRes = await api.get("/api/groups/me");
+      const validGroups = Array.isArray(groupsRes.data)
+        ? groupsRes.data.filter(isValidGroup)
+        : [];
+      setGroupsList(validGroups);
+    } catch (err) {
+      console.error("친구 및 그룹 목록 불러오기 오류:", err);
+      setFriendList([]);
+      setGroupsList([]);
+    }
   }, []);
+
+  // 초기 렌더링 시 데이터 로드
+  useEffect(() => {
+    fetchFriendsAndGroups();
+  }, [fetchFriendsAndGroups]);
 
   // 검색어가 변경될 때마다 디바운스된 키워드로 검색 실행
   useEffect(() => {
@@ -134,20 +136,18 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
+      console.log("Deleting friend with ID:", selectedFriendId);
       await api.delete(`/api/friends/${selectedFriendId}`);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
-      // 새로고침
-      // setTimeout(() => {
-      //   navigate(0);
-      // }, 1500);
+      fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 삭제 처리 중 오류:", err);
+      setShowDeleteModal(false);
       setErrorMessage("친구 삭제에 실패했습니다.");
       setShowErrorToast(true);
-      return;
     }
-  }, []);
+  }, [fetchFriendsAndGroups]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
@@ -162,21 +162,20 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
+      console.log("Adding friend with ID:", selectedUserId);
       await api.post(`/api/friends/add/${selectedUserId}`);
 
       setShowAddModal(false);
       setShowAddToast(true);
-      // 새로고침
-      // setTimeout(() => {
-      //   navigate(0);
-      // }, 1500);
+      // fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 추가 처리 중 오류:", err);
+      setShowAddModal(false);
       setErrorMessage("친구 추가에 실패했습니다.");
       setShowErrorToast(true);
       return;
     }
-  }, [selectedUserId]);
+  }, [fetchFriendsAndGroups]);
 
   return (
     <>
@@ -234,7 +233,10 @@ export default function FriendGroup() {
             desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            onClear={() => setKeyword("")}
+            onClear={() => {
+              setKeyword("");
+              fetchFriendsAndGroups();
+            }}
           />
           <S.Section>
             <S.Title>

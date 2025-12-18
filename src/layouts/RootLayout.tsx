@@ -7,6 +7,9 @@ const MainWrapper = styled.div`
   margin: 0 auto;
 `;
 
+/**
+ * 기본 레이아웃
+ */
 export default function RootLayout({
   children,
 }: {
