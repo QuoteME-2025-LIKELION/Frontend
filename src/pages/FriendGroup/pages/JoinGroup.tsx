@@ -17,6 +17,7 @@ export default function JoinGroup() {
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
+  const [showFullErrorToast, setShowFullErrorToast] = useState(false);
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -53,12 +54,13 @@ export default function JoinGroup() {
 
       setShowModal(false);
       setShowToast(true);
-
       setTimeout(() => {
         navigate("/friend-group");
       }, 1500);
     } catch (err) {
       console.error("그룹 참여 요청 오류:", err);
+      setShowModal(false);
+      setShowFullErrorToast(true);
     }
   }, [navigate, groupId]);
 
@@ -92,6 +94,14 @@ export default function JoinGroup() {
             text3="참여가 불가능합니다."
             showOverlay={false}
             onClose={() => setShowErrorToast(false)}
+          />
+        )}
+        {showFullErrorToast && (
+          <ToastModal
+            isVisible={showFullErrorToast}
+            text="그룹 참여 요청에 실패했습니다."
+            showOverlay={false}
+            onClose={() => setShowFullErrorToast(false)}
           />
         )}
         <Header
