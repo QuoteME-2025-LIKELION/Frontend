@@ -35,6 +35,7 @@ import NotFound from "@/pages/NotFound/NotFound";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
 import { useEffect } from "react";
+import ProtectedRoute from "@/layouts/ProtectedRoute";
 
 function App() {
   const { isLoading, isAuthenticated, initializeAuth } = useAuthStore(); // 로그인 상태 관리
@@ -67,32 +68,34 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
 
-          {/* 아카이브 페이지에서 날짜로 이동하면 date 파라미터 받도록 수정 */}
-          <Route path="/home/:date?" element={<MainHome />} />
-          <Route path="/write" element={<MainWrite />} />
+          {/* 인증이 필요한 페이지  */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home/:date?" element={<MainHome />} />
+            <Route path="/write" element={<MainWrite />} />
 
-          <Route path="/archive" element={<Archive />}>
-            <Route index element={<CalendarPage />} />
-            <Route path="my-quotes" element={<MyQuotes />} />
-            <Route path="likes" element={<Likes />} />
-          </Route>
-          <Route path="/notification" element={<Notification />} />
+            <Route path="/archive" element={<Archive />}>
+              <Route index element={<CalendarPage />} />
+              <Route path="my-quotes" element={<MyQuotes />} />
+              <Route path="likes" element={<Likes />} />
+            </Route>
+            <Route path="/notification" element={<Notification />} />
 
-          <Route path="/profile-center" element={<ProfileCenter />} />
-          <Route path="/profile-edit" element={<ProfileEdit />} />
-          <Route path="/setting-page" element={<SettingPage />} />
-          <Route path="/account-setting" element={<AccountSetting />} />
+            <Route path="/profile-center" element={<ProfileCenter />} />
+            <Route path="/profile-edit" element={<ProfileEdit />} />
+            <Route path="/setting-page" element={<SettingPage />} />
+            <Route path="/account-setting" element={<AccountSetting />} />
 
-          <Route path="/friend-group" element={<FriendGroup />} />
-          <Route path="/my-groups" element={<MyGroups />} />
-          <Route path="/create-group" element={<CreateGroup />} />
+            <Route path="/friend-group" element={<FriendGroup />} />
+            <Route path="/my-groups" element={<MyGroups />} />
+            <Route path="/create-group" element={<CreateGroup />} />
 
-          <Route path="/join-group/:groupId" element={<JoinGroup />} />
+            <Route path="/join-group/:groupId" element={<JoinGroup />} />
 
-          <Route path="/group/:groupId">
-            <Route index element={<Group />} />
-            <Route path="invite" element={<Invite />} />
-            <Route path="change-message" element={<ChangeMessage />} />
+            <Route path="/group/:groupId">
+              <Route index element={<Group />} />
+              <Route path="invite" element={<Invite />} />
+              <Route path="change-message" element={<ChangeMessage />} />
+            </Route>
           </Route>
 
           {/* 정의되지 않은 모든 경로는 NotFound 페이지 렌더링 */}
