@@ -13,7 +13,7 @@ export default function Profile() {
 
   const [nickname, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [intro, setIntro] = useState("");
 
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -28,7 +28,7 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setImageFile(file);
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
@@ -37,8 +37,8 @@ export default function Profile() {
     try {
       const formData = new FormData();
 
-      if (imageFile) {
-        formData.append("image", imageFile);
+      if (selectedFile) {
+        formData.append("image", selectedFile);
       }
 
       const profileData = {
@@ -50,7 +50,7 @@ export default function Profile() {
         "data",
         new Blob([JSON.stringify(profileData)], { type: "application/json" })
       );
-      await api.post("/api/profile", formData);
+      await api.post("/api/settings/profile", formData);
 
       navigate("/home"); // 최초 프로필 설정 후 바로 메인화면 진입
     } catch (error) {
