@@ -84,7 +84,8 @@ export default function Notification() {
       } catch (err) {
         console.error(err);
       }
-
+      const res = await api.get("/api/notifications");
+      console.log(res.data);
       const { type } = notification;
       if (type === "GROUP") {
         navigate(`/group/${notification.targetId}`);
