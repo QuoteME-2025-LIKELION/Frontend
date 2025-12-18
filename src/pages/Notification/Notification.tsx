@@ -92,7 +92,7 @@ export default function Notification() {
         // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
         navigate("/write");
       } else if (type === "TAG" || type === "TAG_REQUEST") {
-        navigate("/home");
+        navigate(`/home/${notification.createDate.slice(0, 10)}`);
       }
 
       // 상태 업데이트를 위해 알림 목록 다시 불러오기
