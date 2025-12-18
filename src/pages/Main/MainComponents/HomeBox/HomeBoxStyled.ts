@@ -11,9 +11,10 @@ export const Container = styled.div`
 `;
 
 export const textbox = styled.div`
-  padding: 10px 159px;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 5px;
 `;

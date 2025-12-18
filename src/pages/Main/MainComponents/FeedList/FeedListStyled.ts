@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 
 export const FeedList = styled.div`
   width: 100%;
+  max-width: 393px;
   display: flex;
   flex-direction: column;
   padding: 10px 17.5px;
