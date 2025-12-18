@@ -174,7 +174,11 @@ export default function Invite() {
         <S.Content>
           <Search
             placeholder="검색"
-            desc="나의 친구 중에서만 초대할 수 있어요."
+            desc={
+              keyword && filteredFriends.length === 0
+                ? "검색 결과가 없습니다."
+                : "나의 친구 중에서만 초대할 수 있어요."
+            }
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => setKeyword("")}
