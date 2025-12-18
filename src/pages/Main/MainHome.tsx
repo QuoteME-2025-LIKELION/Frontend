@@ -5,6 +5,7 @@ import * as S from "@/pages/Main/MainStyled";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import RequestModal from "./MainComponents/Modal/RequestModal";
+import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 
 import type { MyQuote, OtherQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
@@ -57,14 +58,14 @@ export default function MainHome() {
     fetchData();
   }, [date]);
 
-  // 태그 요청 - quoteId를 받아 모달 상태 설정
-  const handleTagRequest = (quoteId: number) => {
+  // 태그 요청
+  const handleTagRequest = () => {
     setRequestType("tag");
     setIsTagModalOpen(true);
   };
 
-  // 콕 찌르기 - friendId를 받아 모달 상태 설정
-  const handlePoke = (friendId: number) => {
+  // 콕 찌르기
+  const handlePoke = () => {
     setRequestType("poke");
     setIsTagModalOpen(true);
   };
@@ -94,7 +95,18 @@ export default function MainHome() {
 
   return (
     <S.Container>
-      <DateHeader active={active} setActive={setActive} />
+      {isLoading && (
+        <S.SpinnerContainer>
+          <S.Spinner />
+        </S.SpinnerContainer>
+      )}
+
+      {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
+      {date ? (
+        <XHeader />
+      ) : (
+        <DateHeader active={active} setActive={setActive} />
+      )}
 
       {active && (
         <S.Toggle>
@@ -124,6 +136,7 @@ export default function MainHome() {
         onTagRequest={handleTagRequest}
         onPoke={handlePoke}
         onShare={executeShare}
+        isLoading={isLoading}
       />
       {isTagModalOpen && (
         <RequestModal
