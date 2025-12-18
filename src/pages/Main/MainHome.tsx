@@ -15,7 +15,11 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
 export default function MainHome() {
   const navigate = useNavigate();
+
+  // 토글 상태 관리
   const [active, setActive] = useState(false);
+  const [isToggleVisible, setIsToggleVisible] = useState(false);
+
   const { date } = useParams();
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
@@ -68,6 +72,24 @@ export default function MainHome() {
     fetchData();
   }, [date, navigate]);
 
+  // 토글 애니메이션 및 렌더링 관련 로직
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (active) {
+      setIsToggleVisible(true);
+    } else {
+      timer = setTimeout(() => {
+        setIsToggleVisible(false);
+      }, 300); // 애니메이션 시간과 동일하게 설정
+    }
+
+    // 컴포넌트가 언마운트되거나 active 상태가 바뀌면 타이머 정리
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [active]);
+
   // 태그 요청
   const handleTagRequest = () => {
     setRequestType("tag");
@@ -114,8 +136,8 @@ export default function MainHome() {
         <DateHeader active={active} setActive={setActive} />
       )}
 
-      {active && (
-        <S.Toggle>
+      {isToggleVisible && (
+        <S.Toggle $active={active}>
           <S.ToggleBtn onClick={() => navigate("/friend-group")}>
             친구 및 그룹
           </S.ToggleBtn>
