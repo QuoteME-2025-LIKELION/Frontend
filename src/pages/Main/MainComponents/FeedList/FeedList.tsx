@@ -11,6 +11,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 interface QuotesItem extends OtherQuote {
   friendId: number;
   isSilenced: boolean;
+  quoteId?: number;
 }
 
 export default function FeedList({
@@ -49,6 +50,7 @@ export default function FeedList({
       if (friendQuote) {
         return {
           ...friendQuote,
+          quoteId: friendQuote.id,
           friendId: friend.id,
           isSilenced: false,
         };
@@ -158,43 +160,43 @@ export default function FeedList({
           text={errorMessage}
         />
       )}
-      {
-        quotes.length > 0 ? (
-          quotes.map((quote, index) => (
-            <Feed
-              key={quote.id}
-              ref={(el: HTMLDivElement | null) => {
-                feedRefs.current[index] = el;
-              }}
-              profileImageUrl={quote.authorProfileImage}
-              authorName={quote.authorNickname}
-              bio={quote.authorIntroduction}
-              createDate={quote.createDate}
-              content={quote.content}
-              tag={quote.taggedNicknames}
-              isLiked={quote.isLiked}
-              onLike={() => handleLike(quote.id, quote.isLiked)}
-              // Quote가 있을 때만 공유 버튼 활성화
-              onShare={
-                !quote.isSilenced
-                  ? () => handleShare(quote.authorNickname, index)
-                  : undefined
+      {quotes.length > 0 ? (
+        quotes.map((quote, index) => (
+          <Feed
+            key={quote.id}
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            profileImageUrl={quote.authorProfileImage}
+            authorName={quote.authorNickname}
+            bio={quote.authorIntroduction}
+            createDate={quote.createDate}
+            content={quote.content}
+            tag={quote.taggedNicknames}
+            isLiked={quote.isLiked}
+            onLike={() => handleLike(quote.id, quote.isLiked)}
+            // Quote가 있을 때만 공유 버튼 활성화
+            onShare={
+              !quote.isSilenced
+                ? () => handleShare(quote.authorNickname, index)
+                : undefined
+            }
+            onRequest={() => {
+              if (quote.quoteId) {
+                handleRequest(quote.quoteId);
               }
-              onRequest={() => {
-                handleRequest(quote.id);
-              }}
-              onPoke={() => {
-                handlePoke(quote.friendId);
-              }}
-              isInArchive={false}
-              isSilenced={quote.isSilenced}
-              timeAgo={quote.timeAgo}
-            />
-          ))
-        ) : !isLoading ? ( // 로딩이 끝났고, quotes가 비어있을 때만 메시지 표시
-          <S.NoFeedText>명언을 나눌 친구가 없습니다.</S.NoFeedText>
-        ) : null /* 로딩 중일 때는 아무것도 표시하지 않음 */
-      }
+            }}
+            onPoke={() => {
+              handlePoke(quote.friendId);
+            }}
+            isInArchive={false}
+            isSilenced={quote.isSilenced}
+            timeAgo={quote.timeAgo}
+          />
+        ))
+      ) : !isLoading ? (
+        <S.NoFeedText>명언을 나눌 친구가 없습니다.</S.NoFeedText>
+      ) : null}
     </S.FeedList>
   );
 }
