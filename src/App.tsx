@@ -34,7 +34,7 @@ import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
 import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
-import TagFix from "@/pages/Main/TagFix";
+import TagFix from "@/pages/Main/MainComponents/TagFix/TagFix";
 import NotFound from "@/pages/NotFound/NotFound";
 
 import Spinner from "@/components/Spinner/Spinner";

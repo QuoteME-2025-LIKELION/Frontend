@@ -1,5 +1,5 @@
-import DateHeader from "./MainComponents/DateHeader/DateHeader";
-import HomeBox from "./MainComponents/HomeBox/HomeBox";
+import DateHeader from "../DateHeader/DateHeader";
+import HomeBox from "../HomeBox/HomeBox";
 import * as S from "@/pages/Main/MainStyled";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
