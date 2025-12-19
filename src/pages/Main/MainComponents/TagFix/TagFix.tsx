@@ -37,7 +37,6 @@ export default function TagFix() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // 두 API를 병렬로 호출
         const res = await api.get(`/api/quotes?date=${displayDate}`);
         setMyQuote(res.data.myQuotes[0] || null);
       } catch (err) {
@@ -108,6 +107,7 @@ export default function TagFix() {
             content: myQuote.content,
             authorName: myQuote.authorNickname,
             authorBirthYear: myQuote.birthYear,
+            taggedNicknames: myQuote.taggedNicknames,
           }}
           mode="fix"
         />

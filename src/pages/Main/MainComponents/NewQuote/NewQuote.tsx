@@ -13,6 +13,7 @@ interface NewQuoteProps {
     content: string;
     authorName: string;
     authorBirthYear?: number | null;
+    taggedNicknames?: string[]; // fix 모드에서만 사용
   };
   mode?: "create" | "fix"; // fix일 때만 명시적으로 추가하도록
 }
@@ -36,14 +37,24 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
     const fetchFriends = async () => {
       try {
         const res = await api.get("/api/settings/friends-list");
-        setFriends(res.data);
+        const fetchedFriends: Friend[] = res.data;
+        setFriends(fetchedFriends);
+
+        // fix 모드일 때, 이미 태그된 친구들을 selectedIds에 미리 추가
+        if (mode === "fix" && quote.taggedNicknames) {
+          const taggedFriends = fetchedFriends.filter((friend) =>
+            quote.taggedNicknames?.includes(friend.nickname)
+          );
+          const taggedIds = taggedFriends.map((friend) => friend.id);
+          setSelectedIds(taggedIds);
+        }
       } catch (e) {
         console.error("친구 목록 조회 실패", e);
       }
     };
 
     fetchFriends();
-  }, []);
+  }, [mode, quote.taggedNicknames]);
 
   const handleSubmit = async () => {
     if (mode === "create") {
