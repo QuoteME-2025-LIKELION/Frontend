@@ -150,6 +150,8 @@ export const CalendarStyles = css`
 
 export const FeedContainer = styled.div`
   width: 100%;
+  height: 100%;
+  background-color: ${theme.colors.primary};
   max-width: 393px;
   padding: 0.9375rem 1.25rem; /* 15px 20px */
   display: flex;
