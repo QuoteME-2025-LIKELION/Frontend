@@ -76,30 +76,34 @@ export default function SettingPage() {
           onClickXBtn={() => navigate("/home")}
         />
         <S.SettingList>
-          <S.SettingBtn
-            onClick={() =>
-              navigate("/profile-center", {
-                state: { from: "/setting-page" }, // setting 페이지(환경설정에서 왔다고 표시)
-              })
-            }
-          >
-            프로필
-          </S.SettingBtn>
-          <S.SettingBtn onClick={() => navigate("/account-setting")}>
-            계정
-          </S.SettingBtn>
-          <S.SettingBtn onClick={() => setShowToast(true)}>알림</S.SettingBtn>
-          <S.SettingBtn
-            style={{ borderBottom: "1px solid #DDD" }}
-            onClick={() => setShowToast(true)}
-          >
-            공지사항
-          </S.SettingBtn>
-          <S.SettingWordLine>
-            <S.SettingWord>버전</S.SettingWord>
-            <S.SettingWord>1.0</S.SettingWord>
-          </S.SettingWordLine>
-          <S.LogOutBtn onClick={handleLogout}>로그아웃</S.LogOutBtn>
+          <div>
+            <S.SettingBtn
+              onClick={() =>
+                navigate("/profile-center", {
+                  state: { from: "/setting-page" }, // setting 페이지(환경설정에서 왔다고 표시)
+                })
+              }
+            >
+              프로필
+            </S.SettingBtn>
+            <S.SettingBtn onClick={() => navigate("/account-setting")}>
+              계정
+            </S.SettingBtn>
+            <S.SettingBtn onClick={() => setShowToast(true)}>알림</S.SettingBtn>
+            <S.SettingBtn
+              style={{ borderBottom: "1px solid #DDD" }}
+              onClick={() => setShowToast(true)}
+            >
+              공지사항
+            </S.SettingBtn>
+          </div>
+          <div>
+            <S.SettingWordLine>
+              <S.SettingWord>버전</S.SettingWord>
+              <S.SettingWord>1.0</S.SettingWord>
+            </S.SettingWordLine>
+            <S.LogOutBtn onClick={handleLogout}>로그아웃</S.LogOutBtn>
+          </div>
         </S.SettingList>
       </S.Container>
     </>

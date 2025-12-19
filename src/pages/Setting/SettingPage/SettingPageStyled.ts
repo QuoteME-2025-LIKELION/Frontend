@@ -12,10 +12,15 @@ export const Container = styled.div`
 
 export const SettingList = styled.div`
   width: 100%;
-  padding: 0 2rem; /* 0 32px */
+  height: 100%;
+  padding: 1rem 2rem 5rem; /* 16px 32px 80px */
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  justify-content: space-between;
+
+  & > div {
+    width: 100%;
+  }
 `;
 
 export const SettingBtn = styled.button`
@@ -56,7 +61,6 @@ export const InputBtn = styled.div`
 export const SettingWordLine = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 522px;
   width: 100%;
   padding: 0 0.8125rem; /* 0 13px */
 `;
