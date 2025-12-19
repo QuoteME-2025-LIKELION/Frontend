@@ -12,6 +12,7 @@ interface InputProps {
   minLength?: number;
   maxLength?: number;
   hideSpin?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -28,6 +29,7 @@ interface InputProps {
  * @param props.minLength 입력창의 최소 입력 길이
  * @param props.maxLength 입력창의 최대 입력 길이
  * @param props.hideSpin 숫자 input에서 기본 스핀 버튼을 숨길지 여부
+ * @param props.onKeyDown 키다운 이벤트 핸들러
  * @example
  * <Input
  *  value={email}
@@ -50,6 +52,7 @@ export default function Input({
   minLength,
   maxLength,
   hideSpin,
+  onKeyDown,
 }: InputProps) {
   return (
     <S.Input
@@ -63,7 +66,8 @@ export default function Input({
       required={required}
       minLength={minLength}
       maxLength={maxLength}
-      hideSpin={hideSpin} 
+      hideSpin={hideSpin}
+      onKeyDown={onKeyDown}
     />
   );
 }

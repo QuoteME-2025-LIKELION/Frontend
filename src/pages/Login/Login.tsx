@@ -3,6 +3,7 @@ import * as S from "./LoginStyled";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState } from "react";
+import type { KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -53,6 +54,12 @@ export default function Login() {
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <>
       <PageTitle title="로그인" />
@@ -91,6 +98,7 @@ export default function Login() {
           <Input
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="비밀번호 입력"
             type="password"
             name="password"
