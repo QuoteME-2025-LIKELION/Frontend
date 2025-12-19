@@ -12,7 +12,6 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
 import EditQuote from "@/pages/Main/MainComponents/NewQuote/EditQuote";
 import { useLocation } from "react-router-dom";
-import NewQuote from "@/pages/Main/MainComponents/NewQuote/EditQuote";
 
 export default function TagFix() {
   const navigate = useNavigate();

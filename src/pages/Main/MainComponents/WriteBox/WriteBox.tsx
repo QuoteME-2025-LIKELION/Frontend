@@ -1,7 +1,5 @@
 import * as S from "./WriteBoxStyled";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "@/api/api";
+import { useState } from "react";
 
 interface QuoteResponse {
   content: string;
@@ -19,7 +17,6 @@ export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
   const [text, setText] = useState("");
 
   const today = new Date();
-  const navigate = useNavigate();
 
   const month = today.getMonth() + 1; // 0부터 시작
   const date = today.getDate();
