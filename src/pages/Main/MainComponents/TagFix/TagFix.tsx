@@ -2,7 +2,7 @@ import DateHeader from "../DateHeader/DateHeader";
 import HomeBox from "../HomeBox/HomeBox";
 import * as S from "@/pages/Main/MainStyled";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 import type { MyQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
@@ -12,12 +12,12 @@ import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 
 export default function TagFix() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const date = location.state?.date as string | undefined;
 
   // 토글 상태 관리
   const [active, setActive] = useState(false);
   const [isToggleVisible, setIsToggleVisible] = useState(false);
-
-  const { date } = useParams();
 
   const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

@@ -15,7 +15,6 @@ interface HomeBoxProps {
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
@@ -105,9 +104,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       </S.Wrapper>
       <S.bottom>
         <S.BottomTextBox>
-          <S.Text2>
-            {myQuote?.groupName ? `- ${myQuote.groupName} ` : ""}
-          </S.Text2>
+          <S.Text2>{myQuote?.groupName ? `${myQuote.groupName}` : ""}</S.Text2>
           <S.Text2>
             {myQuote
               ? `- ${myQuote.authorNickname} (${myQuote.birthYear}~)`

@@ -86,13 +86,22 @@ export default function Notification() {
       const res = await api.get("/api/notifications");
       console.log(res.data);
       const { type } = notification;
-      if (type === "GROUP") {
-        navigate(`/group/${notification.targetId}`);
-      } else if (type === "POKE") {
-        // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
-        navigate("/write");
-      } else if (type === "TAG" || type === "TAG_REQUEST") {
-        navigate(`/home/${notification.createDate.slice(0, 10)}`);
+      switch (type) {
+        case "GROUP":
+          // 그룹 알림은 그룹 페이지로 이동
+          navigate(`/group/${notification.targetId}`);
+          break;
+        case "POKE":
+          // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
+          navigate("/write");
+          break;
+        case "TAG":
+          navigate(`/home/${notification.createDate.slice(0, 10)}`);
+          break;
+        case "TAG_REQUEST":
+          // id로 명언 찾는 API가 아직 미비해서 일단 home으로 이동
+          navigate("/home");
+          break;
       }
 
       // 상태 업데이트를 위해 알림 목록 다시 불러오기

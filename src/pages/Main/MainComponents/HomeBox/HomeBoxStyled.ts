@@ -84,7 +84,7 @@ export const Left = styled.div`
   font-weight: 400;
   line-height: 100%;
   letter-spacing: -1.5px;
-  width: 5.3125rem; /* 85px */
+  width: 5.625rem; /* 90px */
 `;
 
 export const Right = styled.div`
@@ -118,9 +118,8 @@ export const Text2 = styled.div`
 
 export const TagList = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 0.3125rem; /* 5px */
+  word-break: keep-all;
 `;
 export const BottomTextBox = styled.div`
   display: flex;
