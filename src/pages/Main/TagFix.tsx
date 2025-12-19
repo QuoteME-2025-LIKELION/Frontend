@@ -4,14 +4,11 @@ import * as S from "@/pages/Main/MainStyled";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
-import type { MyQuote, OtherQuote } from "@/types/feed.type";
+import type { MyQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import api from "@/api/api";
-import type { Friend } from "@/types/friend.type";
-import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
-import EditQuote from "@/pages/Main/MainComponents/NewQuote/EditQuote";
-import { useLocation } from "react-router-dom";
+import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 
 export default function TagFix() {
   const navigate = useNavigate();
@@ -23,22 +20,7 @@ export default function TagFix() {
   const { date } = useParams();
 
   const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
-  const [newQuoteActive, setNewQuoteActive] = useState(false);
-  const [createdQuote, setCreatedQuote] = useState<any>(null);
-
-  const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [friendList, setFriendList] = useState<Friend[]>([]); // 아무것도 쓰지 않은 친구 명언 파악을 위한 친구 리스트 상태
-
-  const [showErrorToast, setShowErrorToast] = useState(false);
-
-  // handleShare 상태 관리
-  const [shareStatus, setShareStatus] = useState<
-    "nothing" | "sharing" | "completed"
-  >("nothing");
-
-  const location = useLocation();
-  const quote = location.state?.quote;
 
   useEffect(() => {
     // date 파라미터 유효성 검사
@@ -48,12 +30,6 @@ export default function TagFix() {
         navigate("/*", { replace: true }); // 잘못된 형식이면 NotFound 페이지로 이동
         return; // 유효하지 않으면 데이터 요청 등 아래 로직을 실행하지 않음
       }
-      void newQuoteActive;
-      void createdQuote;
-      void friendList;
-      void otherQuotes;
-      void setCreatedQuote;
-      void setNewQuoteActive;
     }
 
     const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
@@ -62,18 +38,11 @@ export default function TagFix() {
       setIsLoading(true);
       try {
         // 두 API를 병렬로 호출
-        const [quotesResponse, friendsResponse] = await Promise.all([
-          api.get(`/api/quotes?date=${displayDate}`),
-          api.get("/api/settings/friends-list"),
-        ]);
-        setMyQuote(quotesResponse.data.myQuotes[0] || null);
-        setOtherQuotes(quotesResponse.data.otherQuotes);
-        setFriendList(friendsResponse.data);
+        const res = await api.get(`/api/quotes?date=${displayDate}`);
+        setMyQuote(res.data.myQuotes[0] || null);
       } catch (err) {
         console.error("메인화면 조회 실패", err);
         setMyQuote(null);
-        setOtherQuotes([]);
-        setFriendList([]);
       } finally {
         setIsLoading(false);
       }
@@ -99,33 +68,6 @@ export default function TagFix() {
       clearTimeout(timer);
     };
   }, [active]);
-
-  // 공유 프로세스를 실행하는 래퍼 함수
-  const executeShare = async (shareProcess: () => Promise<void>) => {
-    setShareStatus("sharing");
-    try {
-      await shareProcess(); // 자식에게 받은 이미지 생성 로직 실행
-      setShareStatus("completed");
-    } catch (error) {
-      console.error("Share failed", error);
-      setShowErrorToast(true);
-      setShareStatus("nothing"); // 실패 시 초기화
-    }
-  };
-
-  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
-  useEffect(() => {
-    if (shareStatus === "completed") {
-      const timer = setTimeout(() => {
-        setShareStatus("nothing");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [shareStatus]);
-
-  if (!quote) {
-    return <div>잘못된 접근입니다</div>;
-  }
 
   return (
     <S.Container>
@@ -158,38 +100,16 @@ export default function TagFix() {
         </S.Toggle>
       )}
 
-      <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
-      {quote && (
-        <EditQuote
+      <HomeBox date={date} myQuote={myQuote} />
+      {myQuote && (
+        <NewQuote
           quote={{
-            id: quote.id,
-            content: quote.content,
-            authorName: quote.authorNickname,
-            authorBirthYear: quote.birthYear,
+            id: myQuote.id,
+            content: myQuote.content,
+            authorName: myQuote.authorNickname,
+            authorBirthYear: myQuote.birthYear,
           }}
           mode="fix"
-        />
-      )}
-
-      {shareStatus !== "nothing" && (
-        <ToastModal
-          isVisible={true}
-          onClose={() => setShareStatus("nothing")}
-          text={
-            shareStatus === "sharing"
-              ? "명언 이미지를 저장중입니다."
-              : "명언 이미지를 저장했습니다."
-          }
-          isOnShare={shareStatus === "sharing"}
-          showOverlay={true}
-        />
-      )}
-
-      {showErrorToast && (
-        <ToastModal
-          isVisible={showErrorToast}
-          onClose={() => setShowErrorToast(false)}
-          text="이미지 저장에 실패했습니다."
         />
       )}
     </S.Container>

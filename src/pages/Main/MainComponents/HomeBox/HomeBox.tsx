@@ -5,12 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
-import { useLocation } from "react-router-dom";
 
 interface HomeBoxProps {
   date?: string;
   myQuote: MyQuote | null;
-  onShare: (shareProcess: () => Promise<void>) => void;
+  onShare?: (shareProcess: () => Promise<void>) => void; // TagFix에서는 전달 X
 }
 
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
@@ -20,9 +19,6 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
-  const location = useLocation();
-
-  const hasQuoteFromWrite = location.state?.hasQuote;
 
   const [shareStatus, setShareStatus] = useState<
     "nothing" | "sharing" | "completed"
@@ -82,7 +78,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
         }
       });
 
-    onShare(shareProcess); // 부모의 executeShare 함수 실행
+    onShare?.(shareProcess); // 부모의 executeShare 함수 실행
   };
 
   return (
@@ -95,12 +91,9 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       {/* 내 피드가 존재한다면 태그 수정 페이지로 이동 */}
       <S.Wrapper
         onClick={() => {
-          navigate("/write", {
-            state: { fromHomeBoxClick: true, quote: myQuote },
-          });
-          if (hasQuoteFromWrite === true) {
-            navigate("/fix");
-          }
+          hasFeed
+            ? navigate("/fix", { state: { date: displayDate } })
+            : navigate("/write");
         }}
       >
         <S.Left>{day}</S.Left>

@@ -5,17 +5,23 @@ import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface NewQuoteProps {
   quote: {
+    id?: number;
     content: string;
     authorName: string;
     authorBirthYear?: number | null;
   };
+  mode?: "create" | "fix"; // fix일 때만 명시적으로 추가하도록
 }
-export default function NewQuote({ quote }: NewQuoteProps) {
+
+export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -25,15 +31,6 @@ export default function NewQuote({ quote }: NewQuoteProps) {
     }
   };
   const navigate = useNavigate();
-
-  const handleSubmit = async () => {
-    await api.post("/api/quotes", {
-      content: quote.content,
-      taggedMemberIds: selectedIds,
-    });
-
-    navigate("/home", { state: { hasQuote: true } });
-  };
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -48,8 +45,50 @@ export default function NewQuote({ quote }: NewQuoteProps) {
     fetchFriends();
   }, []);
 
+  const handleSubmit = async () => {
+    if (mode === "create") {
+      try {
+        await api.post("/api/quotes", {
+          content: quote.content,
+          authorName: quote.authorName,
+          authorBirthYear: quote.authorBirthYear,
+          taggedMemberIds: selectedIds,
+        });
+        navigate("/home");
+      } catch (e: any) {
+        setErrorMessage("글 작성에 실패했어요.");
+        setShowErrorToast(true);
+      }
+    } else {
+      // fix mode
+      if (!quote.id) {
+        setErrorMessage("유효하지 않은 명언입니다.");
+        setShowErrorToast(true);
+        return;
+      }
+
+      try {
+        await api.patch(`/api/quotes/${quote.id}/tags`, {
+          taggedMemberIds: selectedIds,
+        });
+
+        navigate("/home");
+      } catch (e: any) {
+        setErrorMessage("태그 수정에 실패했어요.");
+        setShowErrorToast(true);
+      }
+    }
+  };
+
   return (
     <S.Container>
+      {showErrorToast && (
+        <ToastModal
+          text={errorMessage}
+          isVisible={showErrorToast}
+          onClose={() => setShowErrorToast(false)}
+        />
+      )}
       <S.Commend>
         <S.FirstLine>
           <svg
@@ -90,7 +129,6 @@ export default function NewQuote({ quote }: NewQuoteProps) {
       <S.TagBox>
         <S.Text2>친구 태그하기</S.Text2>
         <S.TagList>
-          {/* 나중에 'MOCK_FRIENDS' 부분만 실제 API 조회 결과로 교체하면 됩니다! */}
           {friends.map((f) => (
             <List
               key={f.id}
@@ -103,7 +141,10 @@ export default function NewQuote({ quote }: NewQuoteProps) {
         </S.TagList>
       </S.TagBox>
       <S.BtnBox>
-        <Button title="명언 남기기" onClick={handleSubmit} />
+        <Button
+          title={mode === "create" ? "명언 남기기" : "태그 수정하기"}
+          onClick={handleSubmit}
+        />
       </S.BtnBox>
     </S.Container>
   );
