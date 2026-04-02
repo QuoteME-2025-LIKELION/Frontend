@@ -4,6 +4,12 @@ interface ButtonProps {
   title: string;
   onClick: () => void;
   disabled?: boolean;
+  font?: "batang" | "pretendard";
+  children?: React.ReactNode;
+  bgColor?: string;
+  fontcolor?: string;
+  border?: string;
+  disableActive?: boolean;
 }
 
 /**
@@ -18,10 +24,39 @@ interface ButtonProps {
  *  onClick={() => console.log("클릭됨")}
  * />
  */
-export default function Button({ title, onClick, disabled }: ButtonProps) {
+export default function Button({
+  title,
+  children,
+  onClick,
+  disabled,
+  font = "batang",
+  bgColor,
+  fontcolor,
+  border,
+  disableActive = false,
+}: ButtonProps) {
   return (
-    <S.Button onClick={onClick} disabled={disabled}>
-      {title}
+    <S.Button
+      onClick={onClick}
+      disabled={disabled}
+      font={font}
+      bgColor={bgColor}
+      fontcolor={fontcolor}
+      border={border}
+      disableActive={disableActive}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          width: "100%",
+        }}
+      >
+        {children}
+        <span>{title}</span>
+      </div>
     </S.Button>
   );
 }

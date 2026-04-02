@@ -83,6 +83,7 @@ export const Left = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 100%;
+  margin-right: 4%;
   letter-spacing: -1.5px;
   width: 5.625rem; /* 90px */
 `;

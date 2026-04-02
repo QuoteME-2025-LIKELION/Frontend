@@ -4,23 +4,28 @@ import styled from "@emotion/styled";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
-  max-width: 393px;
   background-color: ${() => theme.colors.primary};
   height: 100vh;
-  justify-content: center;
+  position: relative;
 `;
 
-export const TextBox = styled.div``;
+export const TextBox = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 24px;
+`;
 export const TitleText = styled.div`
-  ${theme.fonts.chonburi};
+  ${theme.fonts.batang};
   font-size: 48px;
   color: #fff;
   text-align: center;
   font-weight: 400;
   line-height: 100%;
-  padding-bottom: 30px;
+  padding-bottom: 12px;
 `;
 export const Text = styled.div`
   ${theme.fonts.pretendard};
@@ -30,16 +35,19 @@ export const Text = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 100%;
-  margin-bottom: 21px;
+  letter-spacing: -0.28px;
 `;
 
 export const BtnBox = styled.div`
-  width: 260px;
+  width: 100%;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.875rem; /* 14px */
+  margin-top: auto;
+  margin-bottom: 34px;
 `;
 
 export const Button = styled.button`
@@ -49,7 +57,7 @@ export const Button = styled.button`
   border-top: 0.5px solid ${theme.colors.territory};
   border-bottom: 0.5px solid ${theme.colors.territory};
   display: flex;
-  justify-content: center;
+  justify-self: self-end;
   align-items: center;
   padding: 0.4375rem 0.625rem; /* 7px 10px */
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
@@ -72,4 +80,42 @@ export const ButtonText = styled.div`
   color: #000;
   text-align: center;
   font-weight: 700;
+`;
+
+export const LogButton = styled.button`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+export const Overlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  background: var(--bg-overlay, rgba(33, 36, 43, 0.45));
+`;
+export const Loginbox = styled.div`
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: 393px;
+  box-sizing: border-box;
+
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  background: #fff;
+  z-index: 11;
+  border-radius: var(--spacing-radius-md, 12px) var(--spacing-radius-md, 12px) 0
+    0;
+  background: var(--bg-basement-neutral, #e9eaec);
+
+  /* global-shadow */
+  box-shadow: 0 0 10px 0 rgba(20, 56, 88, 0.16);
 `;
