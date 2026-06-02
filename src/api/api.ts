@@ -43,7 +43,7 @@ api.interceptors.response.use(
 
       // Auth Store의 logout 함수로 상태 변경, 토큰 제거
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      window.location.href = "/";
 
       return Promise.reject(error);
     }

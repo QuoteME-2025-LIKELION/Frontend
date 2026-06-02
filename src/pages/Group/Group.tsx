@@ -9,6 +9,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import api from "@/api/api";
+import theme from "@/styles/theme";
 import type { AxiosError } from "axios";
 
 export default function Group() {

@@ -34,21 +34,21 @@ export const Container = styled.div`
   position: relative;
 `;
 export const Toggle = styled.div<{ $active: boolean }>`
-  position: absolute; // ★절대 위치
-  top: 60px; // DateHeader 아래 원하는 위치
-  right: 20px; // 오른쪽 아이콘 기준 위치
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 270px; /* 피그마 보고 조절 */
+  height: 100vh;
+
   z-index: 999;
 
-  display: inline-flex;
-  padding: 15px;
+  display: flex;
+  align-items: center;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 15px;
 
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.61);
+  background: var(--bg-basement-neutral, #e9eaec);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 
   animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
     forwards;
@@ -56,14 +56,105 @@ export const Toggle = styled.div<{ $active: boolean }>`
 
 export const ToggleBtn = styled.div`
   cursor: pointer;
-  color: ${theme.colors.territory};
-  font-size: 0.875rem; /* 14px */
-  font-weight: 500;
+  color: ${theme.colors["fg-primary"]};
+  font-size: 18px; /* 14px */
+  font-weight: 700;
   letter-spacing: -0.28px;
-  ${theme.fonts.pretendard}
+  ${theme.fonts.batang}
   &:hover, &:active {
     color: black;
   }
+
+  padding: var(--spacing-padding-md, 20px) 0;
+  text-align: center;
+  width: 240px;
+  border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
 `;
 
 export const TagRequestModal = styled.div``;
+
+export const ToggleWrapper = styled.div`
+  position: absolute;
+  background: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100%;
+`;
+
+export const ImgBox = styled.div`
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+export const ImgPreview = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 80px;
+  background-color: #e0e0e0;
+  background-size: cover; /* 이미지 크기 조절 */
+  background-position: center; /* 이미지 위치 조절 */
+  display: flex;
+`;
+
+export const UserName = styled.div`
+  color: ${theme.colors["fg-primary"]};
+  text-align: center;
+  ${theme.fonts.batang};
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 12px;
+`;
+
+export const UserIntro = styled.div`
+  color: ${theme.colors["fg-subtle"]};
+  text-align: center;
+  ${theme.fonts.pretendard};
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+  margin-top: 4px;
+`;
+
+export const ToggleBtnBox = styled.div`
+  margin-top: 55px;
+`;
+
+export const ToggleInfoBox = styled.div`
+  margin-top: 240px;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const ToggleInfoText = styled.div`
+  color: var(--fg-subtle, #9599a1);
+  text-align: center;
+
+  /* button/xs */
+  font-family: Pretendard;
+  font-size: var(--font-size-t1, 12px);
+  font-style: normal;
+  font-weight: var(--font-weight-medium, 500);
+  line-height: var(--line-height-t1, 18px); /* 150% */
+  letter-spacing: -0.24px;
+`;
+export const CopyToast = styled.div`
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  bottom: 50px;
+  width: 343px;
+  padding: var(--spacing-padding-lg, 16px) var(--spacing-padding-xl, 24px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-gap-xl, 24px);
+
+  border-radius: var(--spacing-radius-sm, 4px);
+  background: var(--bg-neutral, #e9eaec);
+
+  /* global-shadow */
+  box-shadow: 0 0 10px 0 rgba(20, 56, 88, 0.16);
+`;

@@ -7,7 +7,7 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  background-color: #fff;
+  background-color: ${theme.colors.secondary};
   height: 100vh;
 `;
 
@@ -22,6 +22,7 @@ export const Content = styled.div`
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }

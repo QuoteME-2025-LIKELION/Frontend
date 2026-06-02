@@ -5,7 +5,6 @@ import api from "@/api/api";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/useAuthStore";
-import useNotificationStore from "@/stores/useNotificationStore";
 import Spinner from "@/components/Spinner/Spinner";
 
 export default function Start() {
@@ -14,6 +13,7 @@ export default function Start() {
 
   const { isAuthenticated, isLoading } = useAuthStore();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   const closeSheet = () => {
     setIsSheetOpen(false);
   };
@@ -23,38 +23,16 @@ export default function Start() {
       navigate("/home", { replace: true });
     }
   }, [isLoading, isAuthenticated, navigate]);
+
   //구글 카카오 로그인 보류
   //이거 어케 할건지
-  const handleGuestLogin = async () => {
-    try {
-      const res = await api.post("/api/auth/guest-login");
-      if (res.status === 200 && res.data.data.accessToken) {
-        const accessToken = res.data.data.accessToken;
-        useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
-        useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
-        navigate("/home"); // 로그인 성공 후 이동할 경로
-      }
-    } catch (initialError) {
-      console.error("1차 게스트 로그인 실패, 토큰 재발급 시도:", initialError);
-      // 토큰 재발급 및 로그인 재시도
-      try {
-        // 토큰 재발급 요청
-        await api.post("/api/auth/refresh");
+  const handleSignup = (provider: string) => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/${provider}`;
+  };
 
-        // 재발급 후 게스트 로그인 재시도
-        const res = await api.post("/api/auth/guest-login");
-        if (res.status === 200 && res.data.data.accessToken) {
-          const accessToken = res.data.data.accessToken;
-          useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
-          useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
-          navigate("/home"); // 로그인 성공 후 이동할 경로
-        }
-      } catch (retryError) {
-        // 재발급 또는 재시도 실패 시 최종 에러 처리
-        console.error("게스트 로그인 재시도 실패:", retryError);
-        setShowErrorToast(true);
-      }
-    }
+  const handleLogin = (provider: string) => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/${provider}`;
+    alert("로그인 준비중입니다.");
   };
 
   // 로딩 중이거나 리디렉션 될 사용자에게는 페이지 내용을 보여주지 않음
@@ -68,7 +46,7 @@ export default function Start() {
         <ToastModal
           isVisible={showErrorToast}
           onClose={() => setShowErrorToast(false)}
-          text="게스트 로그인에 실패했습니다."
+          text="회원가입에 실패했습니다."
         />
       )}
       <S.TextBox>
@@ -79,7 +57,7 @@ export default function Start() {
         <Button
           title="Google계정으로 회원가입"
           font="pretendard"
-          onClick={() => navigate("/signup")}
+          onClick={() => handleSignup("google")}
           children={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +100,7 @@ export default function Start() {
         <Button
           title="카카오로 회원가입"
           font="pretendard"
-          onClick={() => navigate("/login")}
+          onClick={() => handleSignup("kakao")}
           bgColor="#FEE500"
           children={
             <svg
@@ -169,7 +147,7 @@ export default function Start() {
             <Button
               title="Google계정으로 로그인"
               font="pretendard"
-              onClick={() => navigate("/signup")}
+              onClick={() => handleLogin("google")}
               children={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -212,7 +190,7 @@ export default function Start() {
             <Button
               title="카카오로 로그인"
               font="pretendard"
-              onClick={() => navigate("/login")}
+              onClick={() => handleLogin("kakao")}
               bgColor="#FEE500"
               children={
                 <svg

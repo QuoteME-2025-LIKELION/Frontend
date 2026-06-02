@@ -224,7 +224,7 @@ export default function FriendGroup() {
           showBackBtn={false}
           showXBtn={true}
           title="친구 및 그룹"
-          backgroundColor="white"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate("/home")}
         />
         <S.Content>
