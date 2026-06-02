@@ -82,7 +82,7 @@ export const ButtonText = styled.div`
   font-weight: 700;
 `;
 
-export const LogButton = styled.button`
+export const LogButton = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;

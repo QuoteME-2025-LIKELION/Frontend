@@ -6,7 +6,7 @@ export default function DateHeader() {
 
   return (
     <S.Container>
-      <S.Header>
+      <S.Header style={{ height: "60px" }}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

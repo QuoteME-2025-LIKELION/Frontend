@@ -17,7 +17,7 @@ export const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 0.5625rem; /* 9px */
-  background-color: ${theme.colors.secondary};
+  background-color: ${theme.colors.white};
 
   button {
     width: 1rem; /* 16px */

@@ -4,11 +4,9 @@ import styled from "@emotion/styled";
 /* 가로 길이는 padding으로 맞추기. 일단 100%로 뒀음. */
 export const Input = styled.input<{ hideSpin?: boolean }>`
   width: 100%;
-  height: 2.1875rem; /* 35px */
+  height: 3.25rem; /* 52px */
   padding: 0.625rem 0.9375rem; /* 10px 15px */
-  background-color: ${theme.colors.secondary};
-  border-top: 0.5px solid ${theme.colors.territory};
-  border-bottom: 0.5px solid ${theme.colors.territory};
+  background-color: ${theme.colors.white};
   display: flex;
   align-items: center;
   outline: none;
@@ -21,6 +19,11 @@ export const Input = styled.input<{ hideSpin?: boolean }>`
 
   &::placeholder {
     color: ${theme.colors.territory};
+  }
+  &:focus {
+    border-radius: var(--spacing-radius-xs, 2px);
+    border: 0.5px solid var(--stroke-brand, ${theme.colors.primary});
+    background: var(--bg-white, #fafafa);
   }
 
   /*Spin 감추려고 코드 추가하였습니다!*/

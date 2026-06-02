@@ -10,12 +10,13 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  background-color: #fff;
+  background-color: ${theme.colors.secondary};
   height: 100vh;
 `;
 
 export const Menu = styled(A.Menu)`
-  background-color: #fff;
+  background-color: ${theme.colors.secondary};
+  padding: 1.875rem 1.4rem;
 `;
 
 export const Btn = styled(A.Btn)<{ $active: boolean }>`
@@ -24,12 +25,15 @@ export const Btn = styled(A.Btn)<{ $active: boolean }>`
       ? css`
           border-top: 1px solid rgba(0, 0, 0, 0.55);
           border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+          background-color: ${theme.colors.secondary};
         `
       : css`
           /* border 유무로 인한 미세한 height 차이 방지 */
           border-top: 1px solid transparent;
           border-bottom: 1px solid transparent;
         `}
+
+  ${theme.fonts.batang};
 `;
 
 /* 모든 알림 보여줄 때 날짜별 알림을 감싸는 전체 리스트 */
@@ -38,12 +42,12 @@ export const NotificationList = styled.div`
   padding: 0.875rem 3rem; /* 14px 48px */
   /* Menu padding과 일치시킴 */
   @media screen and (max-width: 360px) {
-    padding: 0.875rem 1.5rem; /* 14px 24px */
+    padding: 0.775rem 1.5rem; /* 14px 24px */
   }
 
   display: flex;
   flex-direction: column;
-  gap: 1.875rem; /* 30px */
+  gap: 20px; /* 30px */
 `;
 
 /* 모든 알림 보여줄 때 각 날짜와 알림들을 감싸는 박스 */
@@ -69,4 +73,21 @@ export const NotificationWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.3125rem; /* 21px */
+`;
+
+export const Message = styled.div`
+  margin-top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const MessageText = styled.div`
+  color: ${theme.colors["fg-subtle"]};
+  text-align: center;
+  ${theme.fonts.batang};
+  font-weight: var(--font-weight-regular, 400);
+  line-height: var(--line-height-t2, 21px); /* 150% */
+  letter-spacing: -0.28px;
 `;

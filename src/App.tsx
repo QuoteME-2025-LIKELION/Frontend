@@ -7,7 +7,7 @@ import theme from "@/styles/theme";
 import ProtectedRoute from "@/layouts/ProtectedRoute";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
-
+import OAuthCallback from "@/OAuthCallback";
 import Start from "@/pages/Start/Start";
 import SignUp from "@/pages/SignUp/SignUp";
 import Profile from "@/pages/SignUp/Profile/Profile";
@@ -65,12 +65,15 @@ function App() {
         <GlobalStyles />
         <Routes>
           <Route path="/" element={<Start />} />
-          <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
+          {/*<Route path="/signup" element={<SignUp />} />*/}
+
+          <Route path="/oauth2/callback" element={<OAuthCallback />} />
 
           {/* 인증이 필요한 페이지  */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/home/:date?" element={<MainHome />} />
             <Route path="/home/:date?" element={<MainHome />} />
             <Route path="/write" element={<MainWrite />} />
             <Route path="/fix" element={<TagFix />} />

@@ -23,7 +23,8 @@ export const Content = styled.div`
 
 export const NavyBox = styled.div`
   width: 100%;
-  background-color: ${theme.colors.primary};
+  height: 100%;
+  background-color: ${theme.colors.secondary};
   padding: 2.625rem 2.5rem 1.25rem; /* 42px 40px 20px */
   display: flex;
   flex-direction: column;
@@ -46,6 +47,8 @@ export const InputBox = styled(InputContainer)`
     font-weight: 400;
     letter-spacing: -0.26px;
   }
+
+  margin-bottom: 448px;
 `;
 
 export const ErrorMsg = styled.div`
@@ -54,7 +57,7 @@ export const ErrorMsg = styled.div`
 
 export const Main = styled.div`
   width: 100%;
-  background-color: #fff;
+  background-color: ${theme.colors.secondary};
   display: flex;
   flex-direction: column;
   gap: 1.25rem; /* 20px */
@@ -99,6 +102,7 @@ export const Desc = styled(InviteCount)`
   font-size: 0.8125rem; /* 13px */
   font-weight: 400;
   letter-spacing: -0.26px;
+  margin-top: 32px;
 `;
 
 export const FriendListContainer = styled.div`
@@ -165,8 +169,32 @@ export const BtnBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.9375rem 2.5rem; /* 15px 40px */
-  background-color: #fff;
-  position: absolute;
-  bottom: 0;
+  gap: 0.625rem; /* 10px */
+
+  &:disabled {
+    border-top: 0.5px solid var(--stroke-subtle, #c3c5c9);
+    border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
+    color: var(--fg-disabled, #c3c5c9);
+  }
+`;
+
+export const MTitle = styled.div`
+  color: ${theme.colors["fg-primary"]};
+  margin-top: 30px;
+  ${theme.fonts.batang}
+  font-size: var(--font-size-t5, 20px);
+  font-style: normal;
+  font-weight: var(--font-weight-bold, 700);
+  line-height: var(--line-height-t5, 30px); /* 150% */
+`;
+
+export const STitle = styled.div`
+  color: ${theme.colors["fg-subtle"]};
+
+  ${theme.fonts.pretendard}
+  font-size: var(--font-size-t2, 14px);
+  font-style: normal;
+  font-weight: var(--font-weight-regular, 400);
+  line-height: var(--line-height-t2, 21px); /* 150% */
+  letter-spacing: -0.28px;
 `;

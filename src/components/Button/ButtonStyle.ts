@@ -27,7 +27,7 @@ export const Button = styled.button<ButtonProps>`
     `
       : `
       width: 100%;
-      height: 1.875rem; /* 30px */
+      height: 2.875rem; /* 62px */
       border-top: 0.5px solid ${theme.colors.territory};
       border-bottom: 0.5px solid ${theme.colors.territory};
       display: flex;
@@ -35,7 +35,6 @@ export const Button = styled.button<ButtonProps>`
       align-items: center;
       padding: 0.4375rem 0.625rem; /* 7px 10px */
       -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-      background-color: ${bgColor || "#Ffffff"};
 
     `}
 
@@ -60,7 +59,10 @@ export const Button = styled.button<ButtonProps>`
     color: ${({ fontcolor }) => fontcolor || "#000"};
 
   border: ${({ border }) =>
-    border || "1px solid var(--stroke-subtle, #C3C5C9)"};
+    border || `1px solid var(--stroke-subtle, ${theme.colors.primary})`};
+
+  border-left: none;
+  border-right: none;
   /* 임의로 추가 */
 
   ${({ disableActive }) =>
@@ -70,4 +72,12 @@ export const Button = styled.button<ButtonProps>`
       background-color: ${theme.colors.secondary};
     }
   `}
+
+  &:disabled {
+    border-top: 0.5px solid #c3c5c9;
+    border-bottom: 0.5px solid #c3c5c9;
+    color: #c3c5c9;
+    background-color: #f2f2f2;
+    cursor: not-allowed;
+  }
 `;

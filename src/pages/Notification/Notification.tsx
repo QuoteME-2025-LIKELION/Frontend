@@ -7,6 +7,7 @@ import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
 import api from "@/api/api";
+import theme from "@/styles/theme";
 import useNotificationStore from "@/stores/useNotificationStore";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
@@ -109,6 +110,10 @@ export default function Notification() {
     },
     [navigate, fetchNotifications]
   );
+
+  const isEmpty =
+    selectedFilter === null ? grouped.length === 0 : filtered.length === 0;
+
   return (
     <>
       <PageTitle title="알림" />
@@ -116,11 +121,20 @@ export default function Notification() {
         <Header
           showBackBtn={false}
           showXBtn={true}
-          title="알림함"
-          backgroundColor="white"
+          title="알림"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
+          {/* API 연결 해 주세요 */}
+          <S.Btn
+            onClick={() =>
+              setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
+            }
+            $active={selectedFilter === "GROUP"}
+          >
+            전체보기
+          </S.Btn>
           <S.Btn
             onClick={() =>
               setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
@@ -146,7 +160,12 @@ export default function Notification() {
             태그
           </S.Btn>
         </S.Menu>
-        {selectedFilter === null ? (
+        {isEmpty ? (
+          <S.Message>
+            <S.MessageText>도착한 알림이 없어요</S.MessageText>
+            <S.MessageText>알림이 오면 바로 알려드릴게요</S.MessageText>
+          </S.Message>
+        ) : selectedFilter === null ? (
           <S.NotificationList>
             {grouped.map(([dateKey, items]) => (
               <S.NotificationBox key={dateKey}>
