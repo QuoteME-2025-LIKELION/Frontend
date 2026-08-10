@@ -1,5 +1,5 @@
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import * as S from "./MyQuoteFeedStyle";
+import * as S from "./MyQuoteFeed.styles";
 import { formatDateDay } from "@/utils/formatDateDay";
 import { forwardRef } from "react";
 

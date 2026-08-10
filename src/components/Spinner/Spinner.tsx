@@ -1,4 +1,4 @@
-import * as S from "./SpinnerStyle";
+import * as S from "./Spinner.styles";
 
 /**
  * 로딩 스피너 컴포넌트

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import * as S from "./ToastModalStyle";
+import * as S from "./ToastModal.styles";
 
 interface ToastModalProps {
   isVisible: boolean;

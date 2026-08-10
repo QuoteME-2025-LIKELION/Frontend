@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./NotificationStyle";
+import * as S from "./Notification.styles";
 import { useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";
@@ -83,16 +83,23 @@ export default function Notification() {
       } catch (err) {
         console.error(err);
       }
-      const res = await api.get("/api/notifications");
-      console.log(res.data);
       const { type } = notification;
-      if (type === "GROUP") {
-        navigate(`/group/${notification.targetId}`);
-      } else if (type === "POKE") {
-        // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
-        navigate("/write");
-      } else if (type === "TAG" || type === "TAG_REQUEST") {
-        navigate(`/home/${notification.createDate.slice(0, 10)}`);
+      switch (type) {
+        case "GROUP":
+          // 그룹 알림은 그룹 페이지로 이동
+          navigate(`/group/${notification.targetId}`);
+          break;
+        case "POKE":
+          // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
+          navigate("/write");
+          break;
+        case "TAG":
+          navigate(`/home/${notification.createDate.slice(0, 10)}`);
+          break;
+        case "TAG_REQUEST":
+          // id로 명언 찾는 API가 아직 미비해서 일단 home으로 이동
+          navigate("/home");
+          break;
       }
 
       // 상태 업데이트를 위해 알림 목록 다시 불러오기
@@ -100,6 +107,10 @@ export default function Notification() {
     },
     [navigate, fetchNotifications]
   );
+
+  const isEmpty =
+    selectedFilter === null ? grouped.length === 0 : filtered.length === 0;
+
   return (
     <>
       <PageTitle title="알림" />
@@ -107,11 +118,20 @@ export default function Notification() {
         <Header
           showBackBtn={false}
           showXBtn={true}
-          title="알림함"
-          backgroundColor="white"
+          title="알림"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
+          {/* API 연결 해 주세요 */}
+          <S.Btn
+            onClick={() =>
+              setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
+            }
+            $active={selectedFilter === "GROUP"}
+          >
+            전체보기
+          </S.Btn>
           <S.Btn
             onClick={() =>
               setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
@@ -137,7 +157,12 @@ export default function Notification() {
             태그
           </S.Btn>
         </S.Menu>
-        {selectedFilter === null ? (
+        {isEmpty ? (
+          <S.Message>
+            <S.MessageText>도착한 알림이 없어요</S.MessageText>
+            <S.MessageText>알림이 오면 바로 알려드릴게요</S.MessageText>
+          </S.Message>
+        ) : selectedFilter === null ? (
           <S.NotificationList>
             {grouped.map(([dateKey, items]) => (
               <S.NotificationBox key={dateKey}>

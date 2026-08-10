@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import api from "@/api/api";
 import type { Notification } from "@/types/notification.type";
+import { tokenStorage } from "@/utils/tokenStorage";
 
 interface NotificationState {
   hasUnread: boolean;
@@ -17,9 +18,8 @@ interface NotificationState {
 const useNotificationStore = create<NotificationState>((set) => ({
   hasUnread: false,
   fetchNotifications: async () => {
-    const token = localStorage.getItem("accessToken");
+    const token = tokenStorage.getAccessToken();
     if (!token) {
-      console.log("알림 요청: 토큰 부재로 스킵");
       return;
     }
     try {

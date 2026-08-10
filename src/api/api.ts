@@ -1,4 +1,5 @@
 import useAuthStore from "@/stores/useAuthStore";
+import { tokenStorage } from "@/utils/tokenStorage";
 import axios from "axios";
 
 /**
@@ -18,8 +19,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-    // console.log("API REQUEST INTERCEPTOR - TOKEN:", token);
+    const token = tokenStorage.getAccessToken();
 
     // 토큰이 존재하면 Authorization 헤더에 'Bearer' 토큰 형식으로 추가
     if (token) {
@@ -36,14 +36,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // 401 Unauthorized 또는 403 Forbidden 응답 확인
-    if (error.response.status === 401 || error.response.status === 403) {
-      // 토큰이 유효하지 않거나 만료된 경우
-      console.log("인증 에러 감지. 자동 로그아웃 처리 시작.");
+    const status = axios.isAxiosError(error) ? error.response?.status : null;
 
-      // Auth Store의 logout 함수로 상태 변경, 토큰 제거
+    if (status === 401 || status === 403) {
+      // 토큰이 유효하지 않거나 만료된 경우
       useAuthStore.getState().logout();
-      window.location.href = "/login";
 
       return Promise.reject(error);
     }

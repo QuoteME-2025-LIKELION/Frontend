@@ -1,5 +1,5 @@
 import Feed from "@/components/Feed/Feed";
-import * as S from "./LikesStyle";
+import * as S from "./Likes.styles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import api from "@/api/api";

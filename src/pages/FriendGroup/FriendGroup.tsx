@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./FriendGroupStyle";
+import * as S from "./FriendGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
 import List from "@/components/List/List";
@@ -136,7 +136,6 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
-      console.log("Deleting friend with ID:", selectedFriendId);
       await api.delete(`/api/friends/${selectedFriendId}`);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
@@ -147,7 +146,7 @@ export default function FriendGroup() {
       setErrorMessage("친구 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [fetchFriendsAndGroups]);
+  }, [fetchFriendsAndGroups, selectedFriendId]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
@@ -162,7 +161,6 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
-      console.log("Adding friend with ID:", selectedUserId);
       await api.post(`/api/friends/add/${selectedUserId}`);
 
       setShowAddModal(false);
@@ -175,7 +173,7 @@ export default function FriendGroup() {
       setShowErrorToast(true);
       return;
     }
-  }, [fetchFriendsAndGroups]);
+  }, [selectedUserId]);
 
   return (
     <>
@@ -224,7 +222,7 @@ export default function FriendGroup() {
           showBackBtn={false}
           showXBtn={true}
           title="친구 및 그룹"
-          backgroundColor="white"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate("/home")}
         />
         <S.Content>

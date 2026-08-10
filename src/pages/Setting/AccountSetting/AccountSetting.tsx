@@ -1,6 +1,5 @@
-import api from "@/api/api";
 import Button from "@/components/Button/Button";
-import * as S from "./AccountSettingStyled";
+import * as S from "./AccountSetting.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useEffect, useState } from "react";
@@ -8,9 +7,12 @@ import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import useAuthStore from "@/stores/useAuthStore";
+import { profileApi } from "@/api/profileApi";
 
 export default function AccountSetting() {
   const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
   const [email, setEmail] = useState("");
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
@@ -29,7 +31,7 @@ export default function AccountSetting() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get("/api/settings/profile");
+        const res = await profileApi.getAccountProfile();
         setEmail(res.data.email);
       } catch (e) {
         console.error("프로필 조회 실패", e);
@@ -46,10 +48,9 @@ export default function AccountSetting() {
       birthYear: birth,
       email,
     };
-    console.log(payload);
 
     try {
-      await api.put("/api/profile/account", payload);
+      await profileApi.updateAccount(payload);
 
       setShowToast(true);
       setTimeout(() => {
@@ -64,8 +65,8 @@ export default function AccountSetting() {
 
   const handleConfirmDelete = async () => {
     try {
-      await api.delete("/api/profile/account");
-      localStorage.removeItem("accessToken");
+      await profileApi.deleteAccount();
+      logout();
       setShowDeleteModal(false);
       setShowDeleteToast(true);
       setTimeout(() => {

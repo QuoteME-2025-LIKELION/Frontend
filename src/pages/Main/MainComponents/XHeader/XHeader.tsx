@@ -1,4 +1,4 @@
-import * as S from "../DateHeader/DateHeaderStyled";
+import * as S from "../DateHeader/DateHeader.styles";
 import { useNavigate } from "react-router-dom";
 
 export default function DateHeader() {
@@ -6,7 +6,7 @@ export default function DateHeader() {
 
   return (
     <S.Container>
-      <S.Header>
+      <S.Header style={{ height: "60px" }}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

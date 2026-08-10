@@ -1,18 +1,16 @@
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 import WriteBox from "@/pages/Main/MainComponents/WriteBox/WriteBox";
 import RecommendList from "@/pages/Main/MainComponents/RecommendList/RecommendList";
-import * as S from "@/pages/Main/MainStyled";
+import * as S from "@/pages/Main/Main.styles";
 import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { MyQuote } from "@/types/feed.type";
 
 export default function MainWrite() {
   const [newQuoteActive, setNewQuoteActive] = useState(false);
   const [recommendActive, setRecommendActive] = useState(false);
   const [createdQuote, setCreatedQuote] = useState<any>(null);
   const [diaryText, setDiaryText] = useState("");
-  const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
 
   return (
     <>
@@ -46,9 +44,7 @@ export default function MainWrite() {
           />
         )}
 
-        {newQuoteActive && createdQuote && (
-          <NewQuote quote={createdQuote} setMyQuote={setMyQuote} />
-        )}
+        {newQuoteActive && createdQuote && <NewQuote quote={createdQuote} />}
       </S.Container>
     </>
   );

@@ -1,6 +1,5 @@
-import * as S from "./WriteBoxStyled";
+import * as S from "./WriteBox.styles";
 import { useState } from "react";
-import api from "@/api/api";
 
 interface QuoteResponse {
   content: string;
@@ -16,6 +15,7 @@ interface WriteBoxProps {
 
 export default function WriteBox({ onComplete, onAI }: WriteBoxProps) {
   const [text, setText] = useState("");
+
   const today = new Date();
 
   const month = today.getMonth() + 1; // 0부터 시작

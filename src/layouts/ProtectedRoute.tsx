@@ -1,4 +1,3 @@
-import Spinner from "@/components/Spinner/Spinner";
 import useAuthStore from "@/stores/useAuthStore";
 import { Navigate, Outlet } from "react-router-dom";
 
@@ -11,9 +10,9 @@ import { Navigate, Outlet } from "react-router-dom";
 export default function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuthStore();
 
-  // 인증 상태를 확인하는 동안 (로딩 중)
+  // 인증 상태를 확인하는 동안 (로딩 중) - 튕기는 오류 방지를 위해 스피너 제거
   if (isLoading) {
-    return <Spinner />;
+    return null;
   }
 
   // 로그인하지 않은 상태일 경우

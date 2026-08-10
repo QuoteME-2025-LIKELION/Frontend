@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./ProfileCenterStyled";
+import * as S from "./ProfileCenter.styles";
 import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";

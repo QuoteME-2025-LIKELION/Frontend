@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./GroupStyle";
+import * as S from "./Group.styles";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "@/components/List/List";
 import Button from "@/components/Button/Button";
@@ -48,7 +48,7 @@ export default function Group() {
   useEffect(() => {
     // groupId 유효성 검사
     if (!groupId || isNaN(Number(groupId))) {
-      navigate("/*", { replace: true });
+      navigate("/not-found", { replace: true });
       return;
     }
 
@@ -62,7 +62,7 @@ export default function Group() {
 
         // 500 에러일 경우 NotFound 페이지로 이동
         if (err.response && err.response.status === 500) {
-          navigate("/*", { replace: true });
+          navigate("/not-found", { replace: true });
         }
       }
     };

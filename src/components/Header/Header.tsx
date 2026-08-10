@@ -1,4 +1,4 @@
-import * as S from "./HeaderStyle";
+import * as S from "./Header.styles";
 
 interface HeaderProps {
   showBackBtn: boolean;

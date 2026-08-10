@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./CreateGroupStyle";
+import * as S from "./CreateGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
@@ -153,6 +153,8 @@ export default function CreateGroup() {
     }
   }, [groupName, motto, selectedFriends, navigate]);
 
+  const [step, setStep] = useState(1);
+
   return (
     <>
       <PageTitle title="그룹 만들기" />
@@ -180,102 +182,139 @@ export default function CreateGroup() {
           showBackBtn={false}
           showXBtn={true}
           title="그룹 만들기"
-          backgroundColor="primary"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate("/friend-group")}
         />
         <S.Content>
-          <S.NavyBox>
-            {/* navy box */}
-            <S.InputContainer>
-              <S.InputBox>
-                <Input
-                  placeholder="그룹명 설정"
-                  required={true}
-                  value={groupName}
-                  onChange={(e) => setGroupName(e.target.value)}
-                  maxLength={10}
-                />
-                {isSubmitted && groupName.trim().length === 0 ? (
-                  <S.ErrorMsg>그룹명을 입력해주세요.</S.ErrorMsg>
-                ) : (
-                  <div>10자 이내</div>
-                )}
-              </S.InputBox>
-              <S.InputBox>
-                <Input
-                  placeholder="메시지 설정"
-                  value={motto}
-                  onChange={(e) => setMotto(e.target.value)}
-                  maxLength={20}
-                />
-                <div>20자 이내</div>
-              </S.InputBox>
-            </S.InputContainer>
-          </S.NavyBox>
-          <S.Main>
-            <S.TitleContainer>
-              <S.TitleLine>
-                <S.Title>친구 초대하기</S.Title>
-                <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
-              </S.TitleLine>
-              <S.Desc>그룹의 최대 인원은 5명입니다.</S.Desc>
-            </S.TitleContainer>
-            <Search
-              placeholder="검색"
-              desc={
-                friendList.length === 0
-                  ? "아직 추가된 친구가 없습니다."
-                  : keyword && displayedFriends.length === 0
-                    ? "검색 결과가 없습니다."
-                    : "나의 친구 중에서만 초대할 수 있어요."
-              }
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onClear={() => setKeyword("")}
-            />
-            <S.FriendListContainer>
-              <S.FriendList>
-                {friendList.length > 0 ? (
-                  displayedFriends.length > 0 ? (
-                    displayedFriends.map((friend) => (
-                      <List
-                        key={friend.id}
-                        friend={friend}
-                        isSelectable={true}
-                        isSelected={selectedFriends.includes(friend.id)}
-                        onSelect={() => handleSelectFriend(friend.id)}
+          {step != 3 && (
+            <S.NavyBox>
+              {/* navy box */}
+              <S.InputContainer>
+                {step === 1 && (
+                  <>
+                    <S.MTitle>
+                      그룹의 이름을 <br />
+                      설정해 주세요
+                    </S.MTitle>
+                    <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요</S.STitle>
+                    <S.InputBox>
+                      <Input
+                        placeholder="그룹명 설정"
+                        required={true}
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        maxLength={10}
                       />
-                    ))
-                  ) : null
-                ) : (
-                  <S.EmptyFriendContainer>
-                    <S.EmptyFriendList>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                      >
-                        <path
-                          d="M4.66669 4.6665L11.3334 11.3332M11.3334 11.3332V4.6665M11.3334 11.3332H4.66669"
-                          stroke="black"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <button onClick={() => navigate("/friend-group")}>
-                        친구 추가
-                      </button>
-                      <div>탭으로 이동</div>
-                    </S.EmptyFriendList>
-                    <Button title="그룹 만들기" onClick={handleCreateGroup} />
-                  </S.EmptyFriendContainer>
+                      {isSubmitted && groupName.trim().length === 0 ? (
+                        <S.ErrorMsg>그룹명을 입력해주세요.</S.ErrorMsg>
+                      ) : (
+                        <div>10자 이내</div>
+                      )}
+                    </S.InputBox>
+                    <Button
+                      title="다음으로"
+                      onClick={() => setStep(2)}
+                      disabled={groupName.trim().length === 0}
+                    />
+                  </>
                 )}
-              </S.FriendList>
-            </S.FriendListContainer>
-          </S.Main>
+                {step === 2 && (
+                  <>
+                    <S.MTitle>
+                      그룹의 메시지를 <br />
+                      설정해 주세요
+                    </S.MTitle>
+                    <S.STitle>
+                      그룹 메시지는 누구나 언제든 수정할 수 있어요
+                    </S.STitle>
+                    <S.InputBox>
+                      <Input
+                        placeholder="메시지 설정"
+                        value={motto}
+                        onChange={(e) => setMotto(e.target.value)}
+                        maxLength={20}
+                      />
+                      <div>20자 이내</div>
+                    </S.InputBox>
+                    <S.BtnBox>
+                      <Button title="뒤로가기" onClick={() => setStep(1)} />
+                      <Button title="건너뛰기" onClick={() => setStep(3)} />
+                    </S.BtnBox>
+                  </>
+                )}
+              </S.InputContainer>
+            </S.NavyBox>
+          )}
+          {step === 3 && (
+            <S.Main>
+              <S.TitleContainer>
+                <S.TitleLine>
+                  <S.MTitle>
+                    함께할 멤버를 <br />
+                    초대해 보세요
+                  </S.MTitle>
+                  <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
+                </S.TitleLine>
+                <S.Desc>그룹의 최대 정원은 5명이에요</S.Desc>
+              </S.TitleContainer>
+              <Search
+                placeholder="검색"
+                desc={
+                  friendList.length === 0
+                    ? "아직 추가된 친구가 없습니다."
+                    : keyword && displayedFriends.length === 0
+                      ? "검색 결과가 없습니다."
+                      : "나의 친구 중에서만 초대할 수 있어요."
+                }
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onClear={() => setKeyword("")}
+              />
+              <S.FriendListContainer>
+                <S.FriendList>
+                  {friendList.length > 0 ? (
+                    displayedFriends.length > 0 ? (
+                      displayedFriends.map((friend) => (
+                        <List
+                          key={friend.id}
+                          friend={friend}
+                          isSelectable={true}
+                          isSelected={selectedFriends.includes(friend.id)}
+                          onSelect={() => handleSelectFriend(friend.id)}
+                        />
+                      ))
+                    ) : null
+                  ) : (
+                    <S.EmptyFriendContainer>
+                      <S.EmptyFriendList>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                        >
+                          <path
+                            d="M4.66669 4.6665L11.3334 11.3332M11.3334 11.3332V4.6665M11.3334 11.3332H4.66669"
+                            stroke="black"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <button onClick={() => navigate("/friend-group")}>
+                          친구 추가
+                        </button>
+                        <div>탭으로 이동</div>
+                      </S.EmptyFriendList>
+                      <Button title="그룹 만들기" onClick={handleCreateGroup} />
+                    </S.EmptyFriendContainer>
+                  )}
+                </S.FriendList>
+              </S.FriendListContainer>
+            </S.Main>
+          )}
         </S.Content>
+
         {displayedFriends.length > 0 && (
           <S.BtnBox>
             <Button title="그룹 만들기" onClick={handleCreateGroup} />

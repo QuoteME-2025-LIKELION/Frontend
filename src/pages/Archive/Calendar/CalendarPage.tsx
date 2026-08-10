@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "./CalendarPageStyle";
+import * as S from "./CalendarPage.styles";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";

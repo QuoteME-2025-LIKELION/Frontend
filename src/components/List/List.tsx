@@ -1,5 +1,5 @@
 import type { Friend } from "@/types/friend.type";
-import * as S from "./ListStyle";
+import * as S from "./List.styles";
 
 interface ListProps {
   friend: Friend;

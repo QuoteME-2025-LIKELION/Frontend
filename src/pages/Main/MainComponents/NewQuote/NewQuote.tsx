@@ -1,23 +1,28 @@
 import List from "@/components/List/List";
-import * as S from "./NewQuoteStyled";
+import * as S from "./NewQuote.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
-import type { MyQuote } from "@/types/feed.type";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface NewQuoteProps {
   quote: {
+    id?: number;
     content: string;
     authorName: string;
     authorBirthYear?: number | null;
+    taggedNicknames?: string[]; // fix 모드에서만 사용
   };
-  setMyQuote: (quote: MyQuote) => void;
+  mode?: "create" | "fix"; // fix일 때만 명시적으로 추가하도록
 }
-export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
+
+export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -32,37 +37,69 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
     const fetchFriends = async () => {
       try {
         const res = await api.get("/api/settings/friends-list");
-        setFriends(res.data);
+        const fetchedFriends: Friend[] = res.data;
+        setFriends(fetchedFriends);
+
+        // fix 모드일 때, 이미 태그된 친구들을 selectedIds에 미리 추가
+        if (mode === "fix" && quote.taggedNicknames) {
+          const taggedFriends = fetchedFriends.filter((friend) =>
+            quote.taggedNicknames?.includes(friend.nickname)
+          );
+          const taggedIds = taggedFriends.map((friend) => friend.id);
+          setSelectedIds(taggedIds);
+        }
       } catch (e) {
         console.error("친구 목록 조회 실패", e);
       }
     };
 
     fetchFriends();
-  }, []);
+  }, [mode, quote.taggedNicknames]);
 
   const handleSubmit = async () => {
-    try {
-      const payload = {
-        content: quote.content,
-        taggedMemberIds: selectedIds, // ⭐ 핵심
-      };
+    if (mode === "create") {
+      try {
+        await api.post("/api/quotes", {
+          content: quote.content,
+          authorName: quote.authorName,
+          authorBirthYear: quote.authorBirthYear,
+          taggedMemberIds: selectedIds,
+        });
+        navigate("/home");
+      } catch (e: any) {
+        setErrorMessage("글 작성에 실패했어요.");
+        setShowErrorToast(true);
+      }
+    } else {
+      // fix mode
+      if (!quote.id) {
+        setErrorMessage("유효하지 않은 명언입니다.");
+        setShowErrorToast(true);
+        return;
+      }
 
-      const res = await api.post("/api/quotes", payload);
-      res.data.myQuotes.forEach((q: any) => {
-        console.log("quoteId:", q.id);
-        console.log("taggedMemberIds:", q.taggedMemberIds);
-        console.log("taggedMemberNames:", q.taggedMemberNames);
-      });
-      navigate("/home");
-    } catch (e) {
-      console.error("명언 제출 실패", e);
-      alert("명언 제출에 실패했어요.");
+      try {
+        await api.patch(`/api/quotes/${quote.id}/tags`, {
+          taggedMemberIds: selectedIds,
+        });
+
+        navigate("/home");
+      } catch (e: any) {
+        setErrorMessage("태그 수정에 실패했어요.");
+        setShowErrorToast(true);
+      }
     }
   };
 
   return (
     <S.Container>
+      {showErrorToast && (
+        <ToastModal
+          text={errorMessage}
+          isVisible={showErrorToast}
+          onClose={() => setShowErrorToast(false)}
+        />
+      )}
       <S.Commend>
         <S.FirstLine>
           <svg
@@ -103,7 +140,6 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
       <S.TagBox>
         <S.Text2>친구 태그하기</S.Text2>
         <S.TagList>
-          {/* 나중에 'MOCK_FRIENDS' 부분만 실제 API 조회 결과로 교체하면 됩니다! */}
           {friends.map((f) => (
             <List
               key={f.id}
@@ -116,7 +152,10 @@ export default function NewQuote({ quote, setMyQuote }: NewQuoteProps) {
         </S.TagList>
       </S.TagBox>
       <S.BtnBox>
-        <Button title="명언 남기기" onClick={handleSubmit} />
+        <Button
+          title={mode === "create" ? "명언 남기기" : "태그 수정하기"}
+          onClick={handleSubmit}
+        />
       </S.BtnBox>
     </S.Container>
   );

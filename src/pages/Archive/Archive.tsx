@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./ArchiveStyle";
+import * as S from "./Archive.styles";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useEffect, useState } from "react";

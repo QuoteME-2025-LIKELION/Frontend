@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./ChangeMessageStyle";
+import * as S from "./ChangeMessage.styles";
 import { useNavigate, useParams } from "react-router-dom";
 import Input from "@/components/Input/Input";
 import Button from "@/components/Button/Button";
@@ -20,7 +20,7 @@ export default function ChangeMessage() {
   // groupId 유효성 검사 및 그룹 데이터 로딩
   useEffect(() => {
     if (!groupId || isNaN(Number(groupId))) {
-      navigate("/*", { replace: true });
+      navigate("/not-found", { replace: true });
       return;
     }
 
@@ -30,7 +30,7 @@ export default function ChangeMessage() {
         setMessage(res.data.motto || "");
       } catch (err: AxiosError | any) {
         if (err.response && err.response.status === 500) {
-          navigate("/*", { replace: true });
+          navigate("/not-found", { replace: true });
         }
         console.error("그룹 정보 조회 중 오류 발생:", err);
       }
