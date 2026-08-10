@@ -1,4 +1,4 @@
-import * as S from "./LoginStyled";
+import * as S from "./Login.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState } from "react";

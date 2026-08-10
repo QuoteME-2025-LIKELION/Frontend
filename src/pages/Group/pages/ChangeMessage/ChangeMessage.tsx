@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./ChangeMessageStyle";
+import * as S from "./ChangeMessage.styles";
 import { useNavigate, useParams } from "react-router-dom";
 import Input from "@/components/Input/Input";
 import Button from "@/components/Button/Button";

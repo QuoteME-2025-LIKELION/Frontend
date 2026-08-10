@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./ProfileEditStyled";
+import * as S from "./ProfileEdit.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";

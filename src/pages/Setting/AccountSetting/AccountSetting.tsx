@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./AccountSettingStyled";
+import * as S from "./AccountSetting.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useEffect, useState } from "react";

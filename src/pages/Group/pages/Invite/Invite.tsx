@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import * as S from "./InviteStyle";
+import * as S from "./Invite.styles";
 import Header from "@/components/Header/Header";
 import Search from "@/components/Search/Search";
 import { useCallback, useEffect, useState } from "react";

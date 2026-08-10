@@ -1,4 +1,4 @@
-import * as S from "./InputStyle";
+import * as S from "./Input.styles";
 
 interface InputProps {
   value?: string;

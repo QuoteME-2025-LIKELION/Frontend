@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./NotificationStyle";
+import * as S from "./Notification.styles";
 import { useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";

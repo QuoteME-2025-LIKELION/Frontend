@@ -1,5 +1,5 @@
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
-import * as S from "./NotificationLogStyle";
+import * as S from "./NotificationLog.styles";
 import type { Notification } from "@/types/notification.type";
 
 interface NotificationLogProps {

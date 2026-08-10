@@ -1,4 +1,4 @@
-import * as S from "./DateHeaderStyled";
+import * as S from "./DateHeader.styles";
 import { useNavigate } from "react-router-dom";
 import useNotificationStore from "@/stores/useNotificationStore";
 import { useEffect } from "react";

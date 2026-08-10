@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./SignUpStyled";
+import * as S from "./SignUp.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState } from "react";

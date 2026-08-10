@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./ProfileStyled";
+import * as S from "./Profile.styles";
 import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";

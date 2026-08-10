@@ -1,4 +1,4 @@
-import * as S from "./WriteBoxStyled";
+import * as S from "./WriteBox.styles";
 import { useState } from "react";
 
 interface QuoteResponse {

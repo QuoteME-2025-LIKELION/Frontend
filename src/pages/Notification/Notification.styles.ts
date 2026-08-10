@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 // 아카이브 페이지의 상단 메뉴 import
-import * as A from "@/pages/Archive/ArchiveStyle";
+import * as A from "@/pages/Archive/Archive.styles";
 import { css } from "@emotion/react";
 import theme from "@/styles/theme";
 

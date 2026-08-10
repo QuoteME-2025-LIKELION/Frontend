@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import * as S from "./RequestModalStyled";
+import * as S from "./RequestModal.styles";
 
 interface RequestModalProps {
   type: "tag" | "poke";

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import * as G from "@/pages/Group/GroupStyle";
+import * as G from "@/pages/Group/Group.styles";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`

@@ -1,4 +1,4 @@
-import * as G from "@/pages/FriendGroup/FriendGroupStyle";
+import * as G from "@/pages/FriendGroup/FriendGroup.styles";
 import styled from "@emotion/styled";
 
 export const Container = styled(G.Container)`

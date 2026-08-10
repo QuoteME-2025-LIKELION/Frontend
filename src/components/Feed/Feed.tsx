@@ -1,5 +1,5 @@
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
-import * as S from "./FeedStyle";
+import * as S from "./Feed.styles";
 import { forwardRef } from "react";
 
 interface FeedProps {

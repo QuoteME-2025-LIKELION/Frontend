@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./StartStyled";
+import * as S from "./Start.styles";
 import { useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import * as S from "./ConfirmModalStyle";
+import * as S from "./ConfirmModal.styles";
 
 interface ConfirmModalProps {
   question: string;

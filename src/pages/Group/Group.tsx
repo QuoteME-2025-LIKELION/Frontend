@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./GroupStyle";
+import * as S from "./Group.styles";
 import { useNavigate, useParams } from "react-router-dom";
 import List from "@/components/List/List";
 import Button from "@/components/Button/Button";

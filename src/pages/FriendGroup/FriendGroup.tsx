@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./FriendGroupStyle";
+import * as S from "./FriendGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
 import List from "@/components/List/List";

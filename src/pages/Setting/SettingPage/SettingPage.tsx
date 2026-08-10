@@ -1,5 +1,5 @@
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import * as S from "./SettingPageStyled";
+import * as S from "./SettingPage.styles";
 import Header from "@/components/Header/Header";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useState } from "react";

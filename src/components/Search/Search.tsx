@@ -1,4 +1,4 @@
-import * as S from "./SearchStyle";
+import * as S from "./Search.styles";
 
 interface SearchProps {
   placeholder?: string;

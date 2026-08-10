@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import * as C from "@/pages/Group/pages/ChangeMessage/ChangeMessageStyle";
+import * as C from "@/pages/Group/pages/ChangeMessage/ChangeMessage.styles";
 
 export const Container = styled(C.Container)``;
 

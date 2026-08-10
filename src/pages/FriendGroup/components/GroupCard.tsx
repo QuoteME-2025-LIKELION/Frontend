@@ -1,5 +1,5 @@
 import Button from "@/components/Button/Button";
-import * as S from "./GroupCardStyle";
+import * as S from "./GroupCard.styles";
 import type { Group } from "@/types/group.type";
 import { useEffect, useState } from "react";
 import api from "@/api/api";

@@ -1,4 +1,4 @@
-import * as S from "./ButtonStyle";
+import * as S from "./Button.styles";
 
 interface ButtonProps {
   title: string;

@@ -1,4 +1,4 @@
-import * as S from "./RecommendListStyled";
+import * as S from "./RecommendList.styles";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";

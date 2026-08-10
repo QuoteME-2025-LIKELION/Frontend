@@ -1,7 +1,7 @@
 import DateHeader from "./MainComponents/DateHeader/DateHeader";
 import HomeBox from "./MainComponents/HomeBox/HomeBox";
 import FeedList from "./MainComponents/FeedList/FeedList";
-import * as S from "@/pages/Main/MainStyled";
+import * as S from "@/pages/Main/Main.styles";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import RequestModal from "./MainComponents/Modal/RequestModal";

@@ -1,6 +1,6 @@
 import theme from "@/styles/theme";
 import styled from "@emotion/styled";
-import * as G from "@/pages/FriendGroup/components/GroupCardStyle";
+import * as G from "@/pages/FriendGroup/components/GroupCard.styles";
 
 export const Container = styled.div`
   display: flex;

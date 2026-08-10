@@ -1,4 +1,4 @@
-import * as S from "./HomeBoxStyled";
+import * as S from "./HomeBox.styles";
 import { useNavigate } from "react-router-dom";
 import { formatCustomDate } from "@/utils/formatCustomDate";
 import { useEffect, useRef, useState } from "react";

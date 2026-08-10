@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./CreateGroupStyle";
+import * as S from "./CreateGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";

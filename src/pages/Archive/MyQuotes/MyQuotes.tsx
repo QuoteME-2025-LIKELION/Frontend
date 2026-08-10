@@ -1,5 +1,5 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
-import * as S from "./MyQuotesStyle";
+import * as S from "./MyQuotes.styles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { useNavigate, useOutletContext } from "react-router-dom";

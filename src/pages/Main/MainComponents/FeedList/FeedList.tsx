@@ -1,5 +1,5 @@
 import Feed from "@/components/Feed/Feed";
-import * as S from "./FeedListStyled";
+import * as S from "./FeedList.styles";
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";

@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import * as S from "./PagesStyle";
+import * as S from "./Pages.styles";
 import { useNavigate, useParams } from "react-router-dom";
 import GroupCard from "@/pages/FriendGroup/components/GroupCard";
 import { useCallback, useEffect, useState } from "react";

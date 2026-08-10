@@ -1,5 +1,5 @@
 import List from "@/components/List/List";
-import * as S from "./NewQuoteStyled";
+import * as S from "./NewQuote.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
