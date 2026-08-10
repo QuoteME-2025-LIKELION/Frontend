@@ -1,4 +1,3 @@
-import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./SignUpStyled";
 import Header from "@/components/Header/Header";
@@ -8,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { authApi } from "@/api/authApi";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ export default function SignUp() {
     }
 
     try {
-      const res = await api.post("/api/auth/signup", {
+      const res = await authApi.signup({
         email,
         password: pwd,
         birthYear: birth, // ← 명세서 필드명 확인

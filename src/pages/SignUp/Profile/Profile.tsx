@@ -1,4 +1,3 @@
-import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./ProfileStyled";
 import Input from "@/components/Input/Input";
@@ -6,7 +5,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useAuthStore from "@/stores/useAuthStore";
+import { profileApi } from "@/api/profileApi";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ export default function Profile() {
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [intro, setIntro] = useState("");
-  const { login } = useAuthStore();
   const [showErrorToast, setShowErrorToast] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -35,29 +33,15 @@ export default function Profile() {
 
   const handleSignUp = async () => {
     try {
-      const formData = new FormData();
-
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-
-      const profileData = {
+      await profileApi.setupProfile({
         nickname: nickname,
         introduction: intro,
-      };
+        image: selectedFile,
+      });
 
-      formData.append(
-        "data",
-        new Blob([JSON.stringify(profileData)], { type: "application/json" })
-      );
-      await api.post("/api/settings/profile", formData);
-
-      login("test");
-
-      navigate("/start");
-    } catch (error: any) {
+      navigate("/home");
+    } catch (error) {
       console.error("프로필 저장 실패:", error);
-      console.log(JSON.stringify(error.response?.data));
       setShowErrorToast(true);
     }
   };

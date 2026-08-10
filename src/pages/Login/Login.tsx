@@ -1,4 +1,3 @@
-import api from "@/api/api";
 import * as S from "./LoginStyled";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
@@ -10,6 +9,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { authApi } from "@/api/authApi";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -45,13 +45,13 @@ export default function Login() {
       return;
     }
     try {
-      const res = await api.post("/api/auth/login", {
+      const res = await authApi.login({
         email: email,
         password: pwd,
       });
 
       // axios는 HTTP 상태 코드를 res.status로 제공 -> API 명세서와 무관
-      if (res.status === 200 && res.data.data.accessToken) {
+      if (res.status === 200 && res.data.data?.accessToken) {
         const accessToken = res.data.data.accessToken;
         useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
         useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화

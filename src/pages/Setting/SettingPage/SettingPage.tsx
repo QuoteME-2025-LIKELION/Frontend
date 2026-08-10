@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
-import api from "@/api/api";
+import { authApi } from "@/api/authApi";
 
 export default function SettingPage() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function SettingPage() {
 
   const handleConfirmLogout = async () => {
     try {
-      await api.post("/api/auth/logout");
+      await authApi.logout();
       setShowLogoutModal(false);
       useAuthStore.getState().logout(); // Zustand 스토어에서 로그아웃 처리
       setShowLogoutToast(true);
