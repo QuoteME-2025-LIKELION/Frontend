@@ -7,7 +7,6 @@ import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
 import api from "@/api/api";
-import theme from "@/styles/theme";
 import useNotificationStore from "@/stores/useNotificationStore";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {

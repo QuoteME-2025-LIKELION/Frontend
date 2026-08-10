@@ -1,7 +1,6 @@
 import Button from "@/components/Button/Button";
 import * as S from "./StartStyled";
 import { useNavigate } from "react-router-dom";
-import api from "@/api/api";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/useAuthStore";

@@ -1,7 +1,6 @@
 import api from "@/api/api";
 import Button from "@/components/Button/Button";
 import * as S from "./ProfileStyled";
-import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";

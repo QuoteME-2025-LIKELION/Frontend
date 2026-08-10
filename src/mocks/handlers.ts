@@ -282,11 +282,7 @@ export const handlers = [
     });
   }),
 
-  http.get("/api/quotes", ({ request }) => {
-    const url = new URL(request.url);
-    const date = url.searchParams.get("date");
-    const groupId = url.searchParams.get("groupId");
-
+  http.get("/api/quotes", () => {
     return HttpResponse.json({
       myQuotes: [
         {

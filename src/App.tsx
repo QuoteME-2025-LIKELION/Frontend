@@ -9,7 +9,6 @@ import useAuthStore from "@/stores/useAuthStore";
 import useNotificationStore from "@/stores/useNotificationStore";
 import OAuthCallback from "@/OAuthCallback";
 import Start from "@/pages/Start/Start";
-import SignUp from "@/pages/SignUp/SignUp";
 import Profile from "@/pages/SignUp/Profile/Profile";
 import Login from "@/pages/Login/Login";
 
@@ -73,7 +72,6 @@ function App() {
 
           {/* 인증이 필요한 페이지  */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/home/:date?" element={<MainHome />} />
             <Route path="/home/:date?" element={<MainHome />} />
             <Route path="/write" element={<MainWrite />} />
             <Route path="/fix" element={<TagFix />} />
