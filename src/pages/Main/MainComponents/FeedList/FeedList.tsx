@@ -171,7 +171,6 @@ export default function FeedList({
       {showTagModal && (
         <S.TagModalWrapper
           onClick={() => {
-            console.log("wrapper");
             setShowTagModal(false);
           }}
         >

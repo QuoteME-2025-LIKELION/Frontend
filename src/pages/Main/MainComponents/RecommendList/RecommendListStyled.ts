@@ -37,6 +37,7 @@ export const Text = styled.div`
   font-weight: 500;
   line-height: 120%;
   letter-spacing: -0.4px;
+  white-space: pre-line;
 `;
 
 export const Commend = styled.div<{ $isSelected: boolean }>`

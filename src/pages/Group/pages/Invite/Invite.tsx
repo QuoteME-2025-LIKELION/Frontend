@@ -35,7 +35,7 @@ export default function Invite() {
   useEffect(() => {
     // 형식 검사 (숫자인지)
     if (!groupId || isNaN(Number(groupId))) {
-      navigate("/*", { replace: true });
+      navigate("/not-found", { replace: true });
       return;
     }
 
@@ -46,7 +46,7 @@ export default function Invite() {
         setCurrentMembers(res.data.members || []);
       } catch (err: AxiosError | any) {
         if (err.response && err.response.status === 500) {
-          navigate("/*", { replace: true });
+          navigate("/not-found", { replace: true });
         }
         console.error("그룹 정보 조회 중 오류 발생:", err);
       }

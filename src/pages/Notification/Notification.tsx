@@ -83,8 +83,6 @@ export default function Notification() {
       } catch (err) {
         console.error(err);
       }
-      const res = await api.get("/api/notifications");
-      console.log(res.data);
       const { type } = notification;
       switch (type) {
         case "GROUP":

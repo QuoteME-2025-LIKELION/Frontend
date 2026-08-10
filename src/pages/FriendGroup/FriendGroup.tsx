@@ -136,7 +136,6 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
-      console.log("Deleting friend with ID:", selectedFriendId);
       await api.delete(`/api/friends/${selectedFriendId}`);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
@@ -147,7 +146,7 @@ export default function FriendGroup() {
       setErrorMessage("친구 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [fetchFriendsAndGroups]);
+  }, [fetchFriendsAndGroups, selectedFriendId]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
@@ -162,7 +161,6 @@ export default function FriendGroup() {
     //   return;
     // }
     try {
-      console.log("Adding friend with ID:", selectedUserId);
       await api.post(`/api/friends/add/${selectedUserId}`);
 
       setShowAddModal(false);
@@ -175,7 +173,7 @@ export default function FriendGroup() {
       setShowErrorToast(true);
       return;
     }
-  }, [fetchFriendsAndGroups]);
+  }, [selectedUserId]);
 
   return (
     <>

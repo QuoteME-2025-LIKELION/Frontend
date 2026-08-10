@@ -1,9 +1,8 @@
 import * as S from "./RecommendListStyled";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import api from "@/api/api";
-import { useEffect } from "react";
 
 interface RecommendListProps {
   onSelectComplete: (text: string) => void;
@@ -23,19 +22,12 @@ export default function RecommendListList({
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        console.log("📤 summarize 요청 content:", content);
-
         const res = await api.post<{ summary: string }>(
           "/api/quotes/summarize",
           { content }
         );
 
-        console.log("📥 summarize 응답 전체:", res);
-        console.log("📥 summarize 응답 data:", res.data);
-        console.log("📥 summarize summary:", res.data?.summary);
-
         if (!res.data?.summary) {
-          console.warn("⚠️ summary가 없음");
           setQuotes([]);
           return;
         }
@@ -47,17 +39,14 @@ export default function RecommendListList({
             author: "QuoteMe AI",
           },
         ]);
-      } catch (e: any) {
-        console.error("❌    에러:", e);
-        console.log("status:", e.response?.status);
-        console.log("data:", e.response?.data);
+      } catch (e) {
+        console.error("추천 문장 생성 실패:", e);
+        setQuotes([]);
       }
     };
 
     if (content) {
       fetchSummary();
-    } else {
-      console.warn("⚠️ content가 비어 있음");
     }
   }, [content]);
 
@@ -102,10 +91,7 @@ export default function RecommendListList({
                   fill="black"
                 />
               </svg>
-              <S.Text
-                style={{ fontSize: 16, width: 250 }}
-                dangerouslySetInnerHTML={{ __html: q.text || "" }}
-              />
+              <S.Text style={{ fontSize: 16, width: 250 }}>{q.text}</S.Text>
               <svg
                 width="11"
                 height="10"
