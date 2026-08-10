@@ -1,5 +1,6 @@
 // src/stores/useAuthStore.ts
 import { create } from "zustand";
+import { tokenStorage } from "@/utils/tokenStorage";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -20,7 +21,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   // 앱 초기 실행 시 로컬 스토리지 토큰 확인
   initializeAuth: () => {
-    const token = localStorage.getItem("accessToken");
+    const token = tokenStorage.getAccessToken();
     if (token) {
       set({ isAuthenticated: true });
     }
@@ -30,13 +31,13 @@ const useAuthStore = create<AuthState>((set) => ({
 
   // 로그인 성공 시 토큰 저장 및 상태 업데이트
   login: (token) => {
-    localStorage.setItem("accessToken", token); // 토큰 저장
+    tokenStorage.setAccessToken(token);
     set({ isAuthenticated: true, isLoading: false });
   },
 
   // 로그아웃 시 토큰 제거 및 상태 업데이트 (로그아웃 백엔드 API는 아직 미구현)
   logout: () => {
-    localStorage.removeItem("accessToken"); // 토큰 제거
+    tokenStorage.removeAccessToken();
     set({ isAuthenticated: false, isLoading: false });
   },
 }));

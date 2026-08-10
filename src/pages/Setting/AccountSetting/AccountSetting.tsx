@@ -8,9 +8,11 @@ import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import useAuthStore from "@/stores/useAuthStore";
 
 export default function AccountSetting() {
   const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
   const [email, setEmail] = useState("");
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
@@ -65,7 +67,7 @@ export default function AccountSetting() {
   const handleConfirmDelete = async () => {
     try {
       await api.delete("/api/profile/account");
-      localStorage.removeItem("accessToken");
+      logout();
       setShowDeleteModal(false);
       setShowDeleteToast(true);
       setTimeout(() => {
