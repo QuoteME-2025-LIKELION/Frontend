@@ -7,16 +7,24 @@ import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
-import { groupApi } from "@/api/groupApi";
 import { profileApi } from "@/api/profileApi";
 import axios from "axios";
+import {
+  useDeleteGroupMutation,
+  useGroupQuery,
+  useRemoveGroupMemberMutation,
+} from "@/hooks/useGroupQueries";
 
 export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const [groupData, setGroupData] = useState<Group | null>(null);
   const [myNickName, setMyNickName] = useState<string>("");
+  const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
+  const { data: groupData, error: groupError } = useGroupQuery(
+    isValidGroupId ? groupId : undefined
+  );
+  const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
+  const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
@@ -48,28 +56,16 @@ export default function Group() {
 
   useEffect(() => {
     // groupId 유효성 검사
-    if (!groupId || isNaN(Number(groupId))) {
+    if (!isValidGroupId) {
       navigate("/not-found", { replace: true });
-      return;
     }
+  }, [isValidGroupId, navigate]);
 
-    const fetchGroupData = async () => {
-      try {
-        const res = await groupApi.getGroup(groupId);
-        setGroupData(res.data);
-      } catch (err) {
-        console.error("그룹 데이터 불러오기 오류:", err);
-        setGroupData(null);
-
-        // 500 에러일 경우 NotFound 페이지로 이동
-        if (axios.isAxiosError(err) && err.response?.status === 500) {
-          navigate("/not-found", { replace: true });
-        }
-      }
-    };
-
-    fetchGroupData();
-  }, [groupId, navigate]);
+  useEffect(() => {
+    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+      navigate("/not-found", { replace: true });
+    }
+  }, [groupError, navigate]);
 
   const handleDeleteMember = useCallback((userName: string, userId: number) => {
     setSelectedMember(userName);
@@ -84,22 +80,18 @@ export default function Group() {
     }
 
     try {
-      await groupApi.removeMember(groupId, selectedMemberId);
+      await removeGroupMember({ groupId, memberId: selectedMemberId });
 
       // 성공 시 UI 업데이트
       setShowDeleteModal(false);
       setShowDeleteToast(true);
-
-      // 그룹 데이터 다시 불러오기
-      const res = await groupApi.getGroup(groupId);
-      setGroupData(res.data);
     } catch (err) {
       console.error("그룹원 삭제 오류:", err);
       setShowDeleteModal(false);
       setErrorMessage("그룹원 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupId, selectedMemberId]);
+  }, [groupId, removeGroupMember, selectedMemberId]);
 
   const handleQuitGroup = useCallback(() => {
     setShowQuitModal(true);
@@ -116,7 +108,7 @@ export default function Group() {
       }
 
       // 가져온 내 ID로 그룹 탈퇴 API 호출
-      await groupApi.removeMember(groupId!, myId);
+      await removeGroupMember({ groupId: groupId!, memberId: myId });
 
       setShowQuitModal(false);
       setShowQuitToast(true);
@@ -130,7 +122,7 @@ export default function Group() {
       setErrorMessage("그룹 탈퇴에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupId, navigate]);
+  }, [groupId, navigate, removeGroupMember]);
 
   const handleDeleteGroup = useCallback(() => {
     setShowGroupDeleteModal(true);
@@ -143,7 +135,7 @@ export default function Group() {
     }
 
     try {
-      await groupApi.deleteGroup(groupId);
+      await deleteGroup(groupId);
       setShowGroupDeleteModal(false);
       setShowGroupDeleteToast(true);
 
@@ -156,7 +148,7 @@ export default function Group() {
       setErrorMessage("그룹 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupId, navigate]);
+  }, [deleteGroup, groupId, navigate]);
   return (
     <>
       <PageTitle title={groupData?.name || "그룹 상세"} />
