@@ -8,7 +8,6 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useUpdateSettingsProfileMutation } from "@/hooks/useProfileQueries";
 
-// TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +19,6 @@ export default function ProfileEdit() {
   const [preview, setPreview] = useState<string | null>(
     initialProfile?.imageUrl || null
   );
-  // 실제 파일 객체를 담을 상태 추가
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const updateSettingsProfile = useUpdateSettingsProfileMutation();
 
@@ -34,7 +32,6 @@ export default function ProfileEdit() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 파일 객체 저장 및 미리보기 URL 생성
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);

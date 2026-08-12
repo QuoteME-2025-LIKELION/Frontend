@@ -92,7 +92,6 @@ export default function ChangeMessage() {
             />
             <S.Desc>20자 이내</S.Desc>
           </S.InputBox>
-          {/* 메시지 변경 로직 추후 구현 예정 */}
           <Button title="저장 완료" onClick={handleSave} />
         </S.Content>
       </S.Container>

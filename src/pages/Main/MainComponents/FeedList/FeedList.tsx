@@ -36,7 +36,6 @@ export default function FeedList({
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
 }) {
-  // date prop이 없으면(undefined이면) 오늘 날짜를 사용 -> 추후 글 조회를 날짜 기반으로 하도록 요청 예정
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [quotes, setQuotes] = useState<QuotesItem[]>([]); // 피드 목록을 상태로 관리

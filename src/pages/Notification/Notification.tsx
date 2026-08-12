@@ -35,8 +35,6 @@ function groupByDate(list: Notification[]) {
 export default function Notification() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const navigate = useNavigate();
-  // 필터 null일 때는 모든 알림 api 호출한 뒤 가공 (가공 로직 추후 구현)
-  // 필터가 선택됐을 땐 null일 때 데이터에서 필터해서 렌더링
 
   const { setHasUnread } = useNotificationStore();
 
