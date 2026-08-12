@@ -1,17 +1,17 @@
 import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
-interface ButtonProps {
-  font?: "batang" | "pretendard";
-  bgColor?: string;
-  fontcolor?: string;
-  border?: string;
-  disableActive?: boolean;
+interface ButtonStyleProps {
+  $font?: "batang" | "pretendard";
+  $bgColor?: string;
+  $fontColor?: string;
+  $border?: string;
+  $disableActive?: boolean;
 }
 
-export const Button = styled.button<ButtonProps>`
-  ${({ font = "batang", bgColor }) =>
-    font === "pretendard"
+export const Button = styled.button<ButtonStyleProps>`
+  ${({ $font = "batang", $bgColor }) =>
+    $font === "pretendard"
       ? `
       display: flex;
       height: 44px; 
@@ -22,7 +22,7 @@ export const Button = styled.button<ButtonProps>`
       align-self: stretch;
       border-radius: var(--spacing-radius-sm, 4px);
       border: 1px solid var(--stroke-subtle, #C3C5C9);
-      background-color: ${bgColor || "#F2F2F2"};
+      background-color: ${$bgColor || "#F2F2F2"};
 
     `
       : `
@@ -38,8 +38,8 @@ export const Button = styled.button<ButtonProps>`
 
     `}
 
-  ${({ font = "batang" }) =>
-    font === "pretendard"
+  ${({ $font = "batang" }) =>
+    $font === "pretendard"
       ? `
       color: var(--black, #191818);
       font-family: Pretendard, sans-serif;
@@ -56,17 +56,17 @@ export const Button = styled.button<ButtonProps>`
       font-weight: 700;
       letter-spacing: -0.32px;
     `}
-    color: ${({ fontcolor }) => fontcolor || "#000"};
+    color: ${({ $fontColor }) => $fontColor || "#000"};
 
-  border: ${({ border }) =>
-    border || `1px solid var(--stroke-subtle, ${theme.colors.primary})`};
+  border: ${({ $border }) =>
+    $border || `1px solid var(--stroke-subtle, ${theme.colors.primary})`};
 
   border-left: none;
   border-right: none;
   /* 임의로 추가 */
 
-  ${({ disableActive }) =>
-    !disableActive &&
+  ${({ $disableActive }) =>
+    !$disableActive &&
     `
     &:active {
       background-color: ${theme.colors.secondary};

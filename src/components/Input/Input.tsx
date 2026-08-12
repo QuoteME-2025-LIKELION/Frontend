@@ -66,7 +66,7 @@ export default function Input({
       required={required}
       minLength={minLength}
       maxLength={maxLength}
-      hideSpin={hideSpin}
+      $hideSpin={hideSpin}
       onKeyDown={onKeyDown}
     />
   );

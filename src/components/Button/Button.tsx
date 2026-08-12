@@ -39,11 +39,11 @@ export default function Button({
     <S.Button
       onClick={onClick}
       disabled={disabled}
-      font={font}
-      bgColor={bgColor}
-      fontcolor={fontcolor}
-      border={border}
-      disableActive={disableActive}
+      $font={font}
+      $bgColor={bgColor}
+      $fontColor={fontcolor}
+      $border={border}
+      $disableActive={disableActive}
     >
       <S.ButtonContent>
         {children}

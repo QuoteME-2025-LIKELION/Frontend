@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from "react";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import useDebounce from "@/hooks/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import {
@@ -25,6 +26,7 @@ export default function CreateGroup() {
   const [motto, setMotto] = useState("");
 
   const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebounce(keyword, 500);
 
   const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
   const [showToast, setShowToast] = useState(false);
@@ -72,7 +74,7 @@ export default function CreateGroup() {
     (friend) =>
       friend &&
       !selectedFriends.includes(friend.id) &&
-      friend.nickname.includes(keyword)
+      friend.nickname.includes(debouncedKeyword)
   );
 
   // 위 목록을 합쳐서 최종적으로 표시할 친구 목록 생성

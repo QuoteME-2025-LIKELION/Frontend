@@ -1,8 +1,12 @@
 import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
+interface InputStyleProps {
+  $hideSpin?: boolean;
+}
+
 /* 가로 길이는 padding으로 맞추기. 일단 100%로 뒀음. */
-export const Input = styled.input<{ hideSpin?: boolean }>`
+export const Input = styled.input<InputStyleProps>`
   width: 100%;
   height: 3.25rem; /* 52px */
   padding: 0.625rem 0.9375rem; /* 10px 15px */
@@ -27,8 +31,8 @@ export const Input = styled.input<{ hideSpin?: boolean }>`
   }
 
   /*Spin 감추려고 코드 추가하였습니다!*/
-  ${({ hideSpin }) =>
-    hideSpin &&
+  ${({ $hideSpin }) =>
+    $hideSpin &&
     `
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
