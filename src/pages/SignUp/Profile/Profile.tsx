@@ -5,10 +5,11 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { profileApi } from "@/api/profileApi";
+import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { mutateAsync: setupProfile } = useSetupProfileMutation();
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export default function Profile() {
 
   const handleSignUp = async () => {
     try {
-      await profileApi.setupProfile({
+      await setupProfile({
         nickname: nickname,
         introduction: intro,
         image: selectedFile,

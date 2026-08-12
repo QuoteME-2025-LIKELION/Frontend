@@ -54,6 +54,22 @@ export function useUpdateSettingsProfileMutation() {
 }
 
 /**
+ * 회원가입 프로필 설정 후 내 프로필 캐시 갱신
+ */
+export function useSetupProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SetupProfileRequest) =>
+      profileApi.setupProfile(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() });
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.settings() });
+    },
+  });
+}
+
+/**
  * 계정 설정 화면에서 사용하는 계정 프로필 정보 조회
  */
 export function useAccountProfileQuery() {
