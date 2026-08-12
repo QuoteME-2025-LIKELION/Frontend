@@ -21,6 +21,11 @@ import {
 
 const EMPTY_FRIENDS: Friend[] = [];
 
+type InviteTarget = {
+  id: number;
+  nickname: string;
+};
+
 export default function Invite() {
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -28,10 +33,7 @@ export default function Invite() {
 
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스 적용
-  const [selectedFriend, setSelectedFriend] = useState(""); // 초대할 친구 이름 상태
-  const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null); // 초대할 친구 ID 상태
-
-  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteTarget, setInviteTarget] = useState<InviteTarget | null>(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
 
@@ -72,18 +74,14 @@ export default function Invite() {
     }
   }, [groupError, navigate]);
 
-  // 친구 초대 핸들러
   const handleInviteFriend = useCallback(
     (friendName: string, friendId: number) => {
-      setSelectedFriend(friendName);
-      setSelectedFriendId(friendId);
-      setShowInviteModal(true);
+      setInviteTarget({ id: friendId, nickname: friendName });
     },
     []
   );
   const handleConfirmInvite = useCallback(async () => {
-    setShowInviteModal(false);
-    if (selectedFriendId === null || !groupId) {
+    if (!inviteTarget || !groupId) {
       console.error("초대할 친구 또는 그룹 ID가 유효하지 않습니다.");
       setShowErrorToast(true);
       return;
@@ -91,26 +89,30 @@ export default function Invite() {
 
     if (currentMembers.length < 5) {
       try {
-        await inviteGroupMember({ groupId, friendId: selectedFriendId });
+        await inviteGroupMember({ groupId, friendId: inviteTarget.id });
+        setInviteTarget(null);
         setShowSuccessToast(true);
       } catch (err) {
         console.error("그룹원 초대 오류:", err);
+        setInviteTarget(null);
+        setShowErrorToast(true);
       }
     } else {
+      setInviteTarget(null);
       setShowErrorToast(true);
     }
-  }, [currentMembers.length, groupId, inviteGroupMember, selectedFriendId]);
+  }, [currentMembers.length, groupId, inviteGroupMember, inviteTarget]);
   return (
     <>
       <PageTitle title="그룹 초대하기" />
       <S.Container>
-        {showInviteModal && (
+        {inviteTarget && (
           <ConfirmModal
-            nickname={selectedFriend}
+            nickname={inviteTarget.nickname}
             question="님을"
             nickname2={groupName}
             question2="에 초대할까요?"
-            onClose={() => setShowInviteModal(false)}
+            onClose={() => setInviteTarget(null)}
             onConfirm={handleConfirmInvite}
             showOverlay={false}
           />
