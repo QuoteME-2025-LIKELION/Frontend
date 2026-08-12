@@ -1,14 +1,15 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as S from "./CalendarPage.styles";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 
 type ValuePiece = Date | null;
 
@@ -16,10 +17,14 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
+  const {
+    isDateNavigationConfirmOpen,
+    openDateNavigationConfirm,
+    closeDateNavigationConfirm,
+    confirmDateNavigation,
+  } = useConfirmNavigationToDate();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
   const selectedDateString = useMemo(() => {
@@ -36,27 +41,6 @@ export default function CalendarPage() {
   const { data: filteredFeeds = [] } =
     useArchivesByDateQuery(selectedDateString);
 
-  // 페이지 이동 시 사용
-  const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
-
-  const handleArchiveClick = useCallback((date: string) => {
-    setSelectedFeedDate(date); // 날짜 저장
-    setShowModal(true); // 모달 열기
-  }, []);
-
-  const moveToDate = useCallback((date: string) => {
-    navigate(`/home/${date}`);
-    setShowModal(false); // 이동 후 모달 닫기
-  }, []);
-
-  const handleConfirmMove = useCallback(() => {
-    if (selectedFeedDate) {
-      moveToDate(selectedFeedDate); // 저장된 날짜로 이동 함수 호출
-    } else {
-      setShowModal(false);
-    }
-  }, [selectedFeedDate, moveToDate]);
-
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>
       downloadElementImage(
@@ -69,11 +53,11 @@ export default function CalendarPage() {
 
   return (
     <S.Container>
-      {showModal && (
+      {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
-          onClose={() => setShowModal(false)}
-          onConfirm={handleConfirmMove}
+          onClose={closeDateNavigationConfirm}
+          onConfirm={confirmDateNavigation}
           showOverlay={true}
         />
       )}
@@ -143,7 +127,7 @@ export default function CalendarPage() {
               tag={feed.taggedMemberNames}
               isInArchive={true}
               onArchiveClick={() =>
-                handleArchiveClick(feed.createDate.slice(0, 10))
+                openDateNavigationConfirm(feed.createDate.slice(0, 10))
               }
               onShare={() =>
                 handleShare(

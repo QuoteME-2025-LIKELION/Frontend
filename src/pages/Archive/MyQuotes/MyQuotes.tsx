@@ -1,42 +1,26 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
 import * as S from "./MyQuotes.styles";
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { useMyArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 
 export default function MyQuotes() {
-  const [showModal, setShowModal] = useState(false);
-  const [selectedQuoteDate, setSelectedQuoteDate] = useState<string | null>(
-    null
-  );
-  const navigate = useNavigate();
   const { data: myQuotes = [] } = useMyArchivesQuery();
 
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
+  const {
+    isDateNavigationConfirmOpen,
+    openDateNavigationConfirm,
+    closeDateNavigationConfirm,
+    confirmDateNavigation,
+  } = useConfirmNavigationToDate();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
-
-  const handleQuoteClick = useCallback((date: string) => {
-    setSelectedQuoteDate(date);
-    setShowModal(true);
-  }, []);
-
-  const moveToDate = useCallback((date: string) => {
-    navigate(`/home/${date}`);
-    setShowModal(false);
-  }, [navigate]);
-
-  const handleConfirmMove = useCallback(() => {
-    if (selectedQuoteDate) {
-      moveToDate(selectedQuoteDate); // 저장된 날짜로 이동 함수 호출
-    } else {
-      setShowModal(false);
-    }
-  }, [selectedQuoteDate, moveToDate]);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>
@@ -50,11 +34,11 @@ export default function MyQuotes() {
 
   return (
     <S.Container>
-      {showModal && (
+      {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
-          onClose={() => setShowModal(false)}
-          onConfirm={handleConfirmMove}
+          onClose={closeDateNavigationConfirm}
+          onConfirm={confirmDateNavigation}
           showOverlay={true}
         />
       )}
@@ -65,7 +49,9 @@ export default function MyQuotes() {
             feedRefs.current[index] = el;
           }}
           archiveFeed={feed}
-          onClick={() => handleQuoteClick(feed.createDate.slice(0, 10))}
+          onClick={() =>
+            openDateNavigationConfirm(feed.createDate.slice(0, 10))
+          }
           onShare={() =>
             handleShare(feed.createDate.slice(0, 10), feed.authorName, index)
           }
