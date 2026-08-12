@@ -20,6 +20,8 @@ type GroupMemberActionTarget = {
   nickname: string;
 };
 
+type GroupActionConfirm = "quit" | "delete" | null;
+
 export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -36,10 +38,10 @@ export default function Group() {
     useState<GroupMemberActionTarget | null>(null);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
-  const [showQuitModal, setShowQuitModal] = useState(false);
+  const [groupActionConfirm, setGroupActionConfirm] =
+    useState<GroupActionConfirm>(null);
   const [showQuitToast, setShowQuitToast] = useState(false);
 
-  const [showGroupDeleteModal, setShowGroupDeleteModal] = useState(false);
   const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
 
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -81,21 +83,19 @@ export default function Group() {
   }, [deleteMemberTarget, groupId, removeGroupMember]);
 
   const handleQuitGroup = useCallback(() => {
-    setShowQuitModal(true);
+    setGroupActionConfirm("quit");
   }, []);
   const handleConfirmQuit = useCallback(async () => {
     try {
       const myId = myProfile?.id;
 
-      if (myId == null) {
-        // myId를 가져오지 못하면 에러를 발생시켜 catch로 이동
+      if (myId == null || !groupId) {
         throw new Error("사용자 ID를 가져올 수 없습니다.");
       }
 
-      // 가져온 내 ID로 그룹 탈퇴 API 호출
-      await removeGroupMember({ groupId: groupId!, memberId: myId });
+      await removeGroupMember({ groupId, memberId: myId });
 
-      setShowQuitModal(false);
+      setGroupActionConfirm(null);
       setShowQuitToast(true);
 
       setTimeout(() => {
@@ -103,25 +103,25 @@ export default function Group() {
       }, 1500);
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
-      setShowQuitModal(false);
+      setGroupActionConfirm(null);
       setErrorMessage("그룹 탈퇴에 실패했습니다.");
       setShowErrorToast(true);
     }
   }, [groupId, myProfile?.id, navigate, removeGroupMember]);
 
   const handleDeleteGroup = useCallback(() => {
-    setShowGroupDeleteModal(true);
+    setGroupActionConfirm("delete");
   }, []);
   const handleConfirmDeleteGroup = useCallback(async () => {
     if (!groupId) {
       console.error("삭제할 그룹 ID가 유효하지 않습니다.");
-      setShowGroupDeleteModal(false);
+      setGroupActionConfirm(null);
       return;
     }
 
     try {
       await deleteGroup(groupId);
-      setShowGroupDeleteModal(false);
+      setGroupActionConfirm(null);
       setShowGroupDeleteToast(true);
 
       setTimeout(() => {
@@ -129,7 +129,7 @@ export default function Group() {
       }, 1500);
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);
-      setShowGroupDeleteModal(false);
+      setGroupActionConfirm(null);
       setErrorMessage("그룹 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
@@ -154,10 +154,10 @@ export default function Group() {
             onClose={() => setShowDeleteToast(false)}
           />
         )}
-        {showQuitModal && (
+        {groupActionConfirm === "quit" && (
           <ConfirmModal
             question="그룹을 탈퇴하시겠습니까?"
-            onClose={() => setShowQuitModal(false)}
+            onClose={() => setGroupActionConfirm(null)}
             onConfirm={handleConfirmQuit}
           />
         )}
@@ -168,10 +168,10 @@ export default function Group() {
             onClose={() => setShowQuitToast(false)}
           />
         )}
-        {showGroupDeleteModal && (
+        {groupActionConfirm === "delete" && (
           <ConfirmModal
             question="그룹을 삭제하시겠습니까?"
-            onClose={() => setShowGroupDeleteModal(false)}
+            onClose={() => setGroupActionConfirm(null)}
             onConfirm={handleConfirmDeleteGroup}
           />
         )}
