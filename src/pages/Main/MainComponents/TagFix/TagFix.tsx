@@ -4,11 +4,10 @@ import * as S from "@/pages/Main/Main.styles";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
-import type { MyQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import { quoteApi } from "@/api/quoteApi";
 import Spinner from "@/components/Spinner/Spinner";
 import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
+import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 
 export default function TagFix() {
   const navigate = useNavigate();
@@ -19,8 +18,9 @@ export default function TagFix() {
   const [active, setActive] = useState(false);
   const [isToggleVisible, setIsToggleVisible] = useState(false);
 
-  const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
+  const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
+  const myQuote = quotesData?.myQuotes[0] || null;
 
   useEffect(() => {
     // date 파라미터 유효성 검사
@@ -31,23 +31,6 @@ export default function TagFix() {
         return; // 유효하지 않으면 데이터 요청 등 아래 로직을 실행하지 않음
       }
     }
-
-    const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const res = await quoteApi.getQuotesByDate(displayDate);
-        setMyQuote(res.data.myQuotes[0] || null);
-      } catch (err) {
-        console.error("메인화면 조회 실패", err);
-        setMyQuote(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
   }, [date, navigate]);
 
   // 토글 애니메이션 및 렌더링 관련 로직
