@@ -5,7 +5,7 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import Search from "@/components/Search/Search";
 import { useCallback, useMemo, useState } from "react";
-import List from "@/components/List/List";
+import UserListItem from "@/components/UserListItem/UserListItem";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Friend } from "@/types/friend.type";
@@ -277,7 +277,7 @@ export default function CreateGroup() {
                   {friendList.length > 0 ? (
                     displayedFriends.length > 0 ? (
                       displayedFriends.map((friend) => (
-                        <List
+                        <UserListItem
                           key={friend.id}
                           friend={friend}
                           isSelectable={true}

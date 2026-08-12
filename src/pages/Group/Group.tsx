@@ -1,7 +1,7 @@
 import Header from "@/components/Header/Header";
 import * as S from "./Group.styles";
 import { useNavigate, useParams } from "react-router-dom";
-import List from "@/components/List/List";
+import UserListItem from "@/components/UserListItem/UserListItem";
 import Button from "@/components/Button/Button";
 import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -239,7 +239,7 @@ export default function Group() {
             <S.Section>
               <S.Title>그룹원</S.Title>
               {groupData?.members?.map((friend) => (
-                <List
+                <UserListItem
                   key={friend.id}
                   friend={friend}
                   actionButton={{

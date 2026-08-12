@@ -1,7 +1,7 @@
 import type { Friend } from "@/types/friend.type";
-import * as S from "./List.styles";
+import * as S from "./UserListItem.styles";
 
-interface ListProps {
+interface UserListItemProps {
   friend: Friend;
   isSelectable?: boolean; // true면 선택 가능 - 배경색 바뀔 수 있음
   isSelected?: boolean;
@@ -15,7 +15,7 @@ interface ListProps {
 }
 
 /**
- * 리스트에 뜨는 각 아이템 컴포넌트
+ * 사용자 목록에 표시되는 행 컴포넌트
  * @param props
  * @param props.friend 친구(유저) 객체
  * @param props.isSelectable 선택 가능 여부
@@ -26,10 +26,8 @@ interface ListProps {
  * @param props.actionButton.text 버튼에 표시될 텍스트
  * @param props.actionButton.onClick 버튼 클릭 시 실행될 함수
  * @example
- * <List
- *  profileImgUrl="https://example.com/profile.jpg"
- *  username="테스트"
- *  intro="안녕하세요"
+ * <UserListItem
+ *  friend={friend}
  *  isSelectable={true}
  *  isSelected={false}
  *  onSelect={() => console.log("클릭됨")}
@@ -40,13 +38,13 @@ interface ListProps {
  *  }}
  * />
  */
-export default function List({
+export default function UserListItem({
   friend,
   isSelectable = false,
   isSelected = false,
   onSelect,
   actionButton,
-}: ListProps) {
+}: UserListItemProps) {
   const { nickname, introduction, profileImage } = friend;
   const handleClick = isSelectable ? onSelect : undefined;
 

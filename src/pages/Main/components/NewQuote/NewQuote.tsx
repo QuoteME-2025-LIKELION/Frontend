@@ -1,4 +1,4 @@
-import List from "@/components/List/List";
+import UserListItem from "@/components/UserListItem/UserListItem";
 import * as S from "./NewQuote.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
@@ -132,7 +132,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
         <S.Text2>친구 태그하기</S.Text2>
         <S.TagList>
           {friends.map((f) => (
-            <List
+            <UserListItem
               key={f.id}
               friend={f}
               isSelectable={true}

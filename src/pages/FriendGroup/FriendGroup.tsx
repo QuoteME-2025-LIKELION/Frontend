@@ -2,7 +2,7 @@ import Header from "@/components/Header/Header";
 import * as S from "./FriendGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
-import List from "@/components/List/List";
+import UserListItem from "@/components/UserListItem/UserListItem";
 import { useCallback, useMemo, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -262,7 +262,7 @@ export default function FriendGroup() {
                     if (!user || !user.id) return null;
                     const isFriend = friendIdSet.has(user.id);
                     return (
-                      <List
+                      <UserListItem
                         key={user.id}
                         friend={user}
                         actionButton={
@@ -288,7 +288,7 @@ export default function FriendGroup() {
                 )
               ) : friendList.length > 0 ? (
                 friendList.map((friend) => (
-                  <List
+                  <UserListItem
                     key={friend.id}
                     friend={friend}
                     actionButton={{
