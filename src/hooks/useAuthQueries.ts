@@ -6,6 +6,15 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
+ * OAuth provider 인증 페이지로 이동
+ */
+export function useOAuthRedirect() {
+  return (provider: string) => {
+    authApi.redirectToOAuthProvider(provider);
+  };
+}
+
+/**
  * 로그인 요청
  */
 export function useLoginMutation() {
