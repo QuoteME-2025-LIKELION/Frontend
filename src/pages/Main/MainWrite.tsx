@@ -7,9 +7,10 @@ import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { CreatedQuote } from "@/types/feed.type";
 
+type MainWriteStep = "write" | "recommend" | "tag";
+
 export default function MainWrite() {
-  const [newQuoteActive, setNewQuoteActive] = useState(false);
-  const [recommendActive, setRecommendActive] = useState(false);
+  const [activeStep, setActiveStep] = useState<MainWriteStep>("write");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [diaryText, setDiaryText] = useState("");
 
@@ -27,15 +28,15 @@ export default function MainWrite() {
               authorBirthYear: data.authorBirthYear ?? null,
               taggedNicknames: data.taggedMemberNames,
             });
-            setNewQuoteActive(true);
+            setActiveStep("tag");
           }}
           onAI={(text) => {
             setDiaryText(text);
-            setRecommendActive(true);
+            setActiveStep("recommend");
           }}
         />
 
-        {recommendActive && (
+        {activeStep === "recommend" && (
           <RecommendList
             content={diaryText}
             onSelectComplete={(aiText) => {
@@ -44,13 +45,14 @@ export default function MainWrite() {
                 authorName: "QuoteMe AI",
                 authorBirthYear: null,
               });
-              setNewQuoteActive(true);
-              setRecommendActive(false);
+              setActiveStep("tag");
             }}
           />
         )}
 
-        {newQuoteActive && createdQuote && <NewQuote quote={createdQuote} />}
+        {activeStep === "tag" && createdQuote && (
+          <NewQuote quote={createdQuote} />
+        )}
       </S.Container>
     </>
   );
