@@ -125,12 +125,9 @@ export default function Notification() {
           onClickXBtn={() => navigate("/home")}
         />
         <S.Menu>
-          {/* API 연결 해 주세요 */}
           <S.Btn
-            onClick={() =>
-              setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
-            }
-            $active={selectedFilter === "GROUP"}
+            onClick={() => setSelectedFilter(null)}
+            $active={selectedFilter === null}
           >
             전체보기
           </S.Btn>
