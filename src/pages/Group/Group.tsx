@@ -8,8 +8,8 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
-import api from "@/api/api";
 import { groupApi } from "@/api/groupApi";
+import { profileApi } from "@/api/profileApi";
 import type { AxiosError } from "axios";
 
 export default function Group() {
@@ -35,7 +35,7 @@ export default function Group() {
   useEffect(() => {
     const fetchMyData = async () => {
       try {
-        const res = await api.get("/api/profile");
+        const res = await profileApi.getMyProfile();
         const myNickName = res.data.nickname;
         setMyNickName(myNickName);
       } catch (err) {
@@ -107,7 +107,7 @@ export default function Group() {
   const handleConfirmQuit = useCallback(async () => {
     try {
       // 내 프로필에서 내 ID 가져오기
-      const profileRes = await api.get("/api/profile");
+      const profileRes = await profileApi.getMyProfile();
       const myId = profileRes.data.id;
 
       if (myId === null) {

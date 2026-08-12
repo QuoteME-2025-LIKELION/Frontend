@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import api from "@/api/api";
+import { profileApi } from "@/api/profileApi";
 
 // TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
@@ -39,25 +39,12 @@ export default function ProfileEdit() {
     setPreview(url);
   };
   const handleSave = async () => {
-    // FormData 객체 생성
-    const formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
-
-    const profileData = {
-      nickname: nickname,
-      introduction: intro,
-    };
-
-    formData.append(
-      "data",
-      new Blob([JSON.stringify(profileData)], { type: "application/json" })
-    );
-
     try {
-      await api.put("/api/settings/profile", formData);
+      await profileApi.updateSettingsProfile({
+        nickname,
+        introduction: intro,
+        image: selectedFile,
+      });
       setShowToast(true);
 
       setTimeout(() => {

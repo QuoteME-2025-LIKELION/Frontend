@@ -16,6 +16,20 @@ export interface AccountProfileResponse {
   email: string;
 }
 
+export interface MyProfileResponse {
+  id: number;
+  nickname: string;
+  introduction?: string;
+  profileImage?: string;
+}
+
+export interface SettingsProfileResponse {
+  nickname: string;
+  email: string;
+  introduction: string;
+  profileImage?: string;
+}
+
 /**
  * FormData를 만들어주는 유틸 함수
  * - 프로필 이미지 업로드를 위해 multipart/form-data로 요청
@@ -47,6 +61,11 @@ function createProfileFormData({
 export const profileApi = {
   setupProfile: (payload: SetupProfileRequest) =>
     api.post("/api/settings/profile", createProfileFormData(payload)),
+  getMyProfile: () => api.get<MyProfileResponse>("/api/profile"),
+  getSettingsProfile: () =>
+    api.get<SettingsProfileResponse>("/api/settings/profile"),
+  updateSettingsProfile: (payload: SetupProfileRequest) =>
+    api.put("/api/settings/profile", createProfileFormData(payload)),
   getAccountProfile: () =>
     api.get<AccountProfileResponse>("/api/settings/profile"),
   updateAccount: (payload: UpdateAccountRequest) =>

@@ -7,8 +7,8 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
-import api from "@/api/api";
 import { groupApi } from "@/api/groupApi";
+import { profileApi } from "@/api/profileApi";
 
 export default function MyGroups() {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function MyGroups() {
 
     try {
       // 내 프로필에서 내 ID 가져오기
-      const profileRes = await api.get("/api/profile");
+      const profileRes = await profileApi.getMyProfile();
       const myId = profileRes.data.id;
 
       if (myId === null) {

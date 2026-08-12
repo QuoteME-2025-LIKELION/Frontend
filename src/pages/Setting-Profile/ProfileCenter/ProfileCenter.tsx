@@ -4,7 +4,7 @@ import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useEffect, useState } from "react";
-import api from "@/api/api";
+import { profileApi } from "@/api/profileApi";
 
 export default function ProfileCenter() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function ProfileCenter() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get("/api/settings/profile");
+        const res = await profileApi.getSettingsProfile();
         setProfile({
           nickname: res.data.nickname,
           email: res.data.email,
