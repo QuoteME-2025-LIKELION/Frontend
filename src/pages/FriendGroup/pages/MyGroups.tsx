@@ -12,28 +12,28 @@ import {
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 
+type GroupQuitTarget = {
+  id: number;
+  name: string;
+};
+
 export default function MyGroups() {
   const navigate = useNavigate();
   const { data: groupsData = [] } = useMyGroupsQuery();
   const { data: myProfile } = useMyProfileQuery();
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
 
-  const [showQuitModal, setShowQuitModal] = useState(false);
+  const [quitTarget, setQuitTarget] = useState<GroupQuitTarget | null>(null);
   const [showQuitToast, setShowQuitToast] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(""); // 탈퇴할 그룹 이름 상태
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // 탈퇴할 그룹 ID 상태
 
   const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleQuitGroup = useCallback((groupName: string, groupId: number) => {
-    setSelectedGroup(groupName);
-    setSelectedGroupId(groupId);
-    setShowQuitModal(true);
+    setQuitTarget({ id: groupId, name: groupName });
   }, []);
 
   const handleConfirmQuit = useCallback(async () => {
-    setShowQuitModal(false);
-    if (selectedGroupId === null) {
+    if (!quitTarget) {
       console.error("탈퇴할 그룹 ID가 유효하지 않습니다.");
       setShowErrorToast(true);
       return;
@@ -43,31 +43,31 @@ export default function MyGroups() {
       const myId = myProfile?.id;
 
       if (myId == null) {
-        // myId를 가져오지 못하면 에러를 발생시켜 catch로 이동
         throw new Error("사용자 ID를 가져올 수 없습니다.");
       }
 
-      // 가져온 내 ID로 그룹 탈퇴 API 호출
       await removeGroupMember({
-        groupId: selectedGroupId,
+        groupId: quitTarget.id,
         memberId: myId,
       });
 
+      setQuitTarget(null);
       setShowQuitToast(true);
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
+      setQuitTarget(null);
       setShowErrorToast(true);
     }
-  }, [myProfile?.id, removeGroupMember, selectedGroupId]);
+  }, [myProfile?.id, quitTarget, removeGroupMember]);
   return (
     <>
       <PageTitle title="나의 그룹 관리" />
       <S.Container>
-        {showQuitModal && (
+        {quitTarget && (
           <ConfirmModal
-            nickname={selectedGroup}
+            nickname={quitTarget.name}
             question="에서 탈퇴하시겠습니까?"
-            onClose={() => setShowQuitModal(false)}
+            onClose={() => setQuitTarget(null)}
             onConfirm={handleConfirmQuit}
           />
         )}
