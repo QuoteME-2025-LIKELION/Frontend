@@ -82,6 +82,29 @@ export function useUpdateGroupMottoMutation() {
 }
 
 /**
+ * 그룹원 초대 후 그룹 관련 캐시 갱신
+ */
+export function useInviteGroupMemberMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      groupId,
+      friendId,
+    }: {
+      groupId: number | string;
+      friendId: number;
+    }) => groupApi.inviteMember(groupId, friendId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.detail(variables.groupId),
+      });
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+    },
+  });
+}
+
+/**
  * 그룹 삭제 후 내 그룹 목록 캐시 갱신
  */
 export function useDeleteGroupMutation() {
