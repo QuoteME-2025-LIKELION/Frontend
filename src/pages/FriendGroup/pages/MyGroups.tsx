@@ -1,7 +1,7 @@
 import Header from "@/components/Header/Header";
 import * as S from "./Pages.styles";
 import { useNavigate } from "react-router-dom";
-import GroupCard from "@/pages/FriendGroup/components/GroupCard";
+import GroupCard from "../components/GroupCard";
 import { useCallback, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";

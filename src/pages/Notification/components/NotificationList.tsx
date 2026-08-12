@@ -1,4 +1,4 @@
-import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";
+import NotificationLog from "../NotificationLog/NotificationLog";
 import type { Notification } from "@/types/notification.type";
 import * as S from "../Notification.styles";
 
