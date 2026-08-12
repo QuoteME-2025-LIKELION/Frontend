@@ -6,7 +6,7 @@ import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLo
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
-import api from "@/api/api";
+import { notificationApi } from "@/api/notificationApi";
 import useNotificationStore from "@/stores/useNotificationStore";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
@@ -40,7 +40,7 @@ export default function Notification() {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await api.get<Notification[]>("/api/notifications");
+      const res = await notificationApi.getNotifications();
       setNotifications(res.data);
       // 알림을 가져온 후 전역 상태도 업데이트
       const unreadExists = res.data.some((n) => !n.isRead);
@@ -78,7 +78,7 @@ export default function Notification() {
       try {
         // 알림 읽음 처리 (아직 안 읽은 경우에만)
         if (!notification.isRead) {
-          await api.patch(`/api/notifications/${notification.id}/read`);
+          await notificationApi.markAsRead(notification.id);
         }
       } catch (err) {
         console.error(err);

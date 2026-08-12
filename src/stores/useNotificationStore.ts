@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import api from "@/api/api";
-import type { Notification } from "@/types/notification.type";
+import { notificationApi } from "@/api/notificationApi";
 import { tokenStorage } from "@/utils/tokenStorage";
 
 interface NotificationState {
@@ -23,10 +22,8 @@ const useNotificationStore = create<NotificationState>((set) => ({
       return;
     }
     try {
-      const res = await api.get("/api/notifications");
-      const unreadExists = res.data.some(
-        (notification: Notification) => !notification.isRead
-      );
+      const res = await notificationApi.getNotifications();
+      const unreadExists = res.data.some((notification) => !notification.isRead);
       set({ hasUnread: unreadExists });
     } catch (err) {
       console.error("알림 상태 불러오기 실패:", err);
