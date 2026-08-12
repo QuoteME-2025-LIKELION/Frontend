@@ -1,5 +1,5 @@
-import DateHeader from "../DateHeader/DateHeader";
-import HomeBox from "../HomeBox/HomeBox";
+import DateHeader from "@/pages/Main/MainComponents/DateHeader/DateHeader";
+import HomeBox from "@/pages/Main/MainComponents/HomeBox/HomeBox";
 import * as S from "@/pages/Main/Main.styles";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import Spinner from "@/components/Spinner/Spinner";
 import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 
-export default function TagFix() {
+export default function EditQuoteTags() {
   const navigate = useNavigate();
   const location = useLocation();
   const date = location.state?.date as string | undefined;

@@ -9,7 +9,7 @@ import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 interface HomeBoxProps {
   date?: string;
   myQuote: MyQuote | null;
-  onShare?: (shareProcess: () => Promise<void>) => void; // TagFix에서는 전달 X
+  onShare?: (shareProcess: () => Promise<void>) => void; // EditQuoteTags에서는 전달 X
 }
 
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {

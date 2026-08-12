@@ -22,7 +22,7 @@ import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
 import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
-import TagFix from "@/pages/Main/MainComponents/TagFix/TagFix";
+import EditQuoteTags from "@/pages/Main/EditQuoteTags/EditQuoteTags";
 import NotFound from "@/pages/NotFound/NotFound";
 
 /**
@@ -41,7 +41,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/home/:date?" element={<MainHome />} />
         <Route path="/write" element={<MainWrite />} />
-        <Route path="/fix" element={<TagFix />} />
+        <Route path="/fix" element={<EditQuoteTags />} />
         <Route path="/archive" element={<Archive />}>
           <Route index element={<CalendarPage />} />
           <Route path="my-quotes" element={<MyQuotes />} />
