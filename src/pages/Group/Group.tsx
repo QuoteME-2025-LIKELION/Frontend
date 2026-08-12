@@ -1,11 +1,7 @@
 import Header from "@/components/Header/Header";
 import * as S from "./Group.styles";
 import { useNavigate, useParams } from "react-router-dom";
-import UserListItem from "@/components/UserListItem/UserListItem";
-import Button from "@/components/Button/Button";
-import { useCallback, useEffect, useState } from "react";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import ToastModal from "@/components/ToastModal/ToastModal";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import axios from "axios";
 import {
@@ -14,13 +10,12 @@ import {
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
-
-type GroupMemberActionTarget = {
-  id: number;
-  nickname: string;
-};
-
-type GroupActionConfirm = "quit" | "delete" | null;
+import GroupActionModals, {
+  type GroupActionConfirm,
+  type GroupMemberActionTarget,
+} from "./components/GroupActionModals";
+import GroupMainSection from "./components/GroupMainSection";
+import GroupSummaryCard from "./components/GroupSummaryCard";
 
 export default function Group() {
   const { groupId } = useParams();
@@ -46,6 +41,8 @@ export default function Group() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
+  const isLeader = groupData?.leaderNickname === myNickName;
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -138,57 +135,24 @@ export default function Group() {
     <>
       <PageTitle title={groupData?.name || "그룹 상세"} />
       <S.Container>
-        {deleteMemberTarget && (
-          <ConfirmModal
-            nickname={deleteMemberTarget.nickname}
-            question="님을 삭제하시겠습니까?"
-            onClose={() => setDeleteMemberTarget(null)}
-            onConfirm={handleConfirmDelete}
-            showOverlay={true}
-          />
-        )}
-        {showDeleteToast && (
-          <ToastModal
-            text="그룹원이 삭제되었습니다."
-            isVisible={showDeleteToast}
-            onClose={() => setShowDeleteToast(false)}
-          />
-        )}
-        {groupActionConfirm === "quit" && (
-          <ConfirmModal
-            question="그룹을 탈퇴하시겠습니까?"
-            onClose={() => setGroupActionConfirm(null)}
-            onConfirm={handleConfirmQuit}
-          />
-        )}
-        {showQuitToast && (
-          <ToastModal
-            text="그룹을 탈퇴하였습니다."
-            isVisible={showQuitToast}
-            onClose={() => setShowQuitToast(false)}
-          />
-        )}
-        {groupActionConfirm === "delete" && (
-          <ConfirmModal
-            question="그룹을 삭제하시겠습니까?"
-            onClose={() => setGroupActionConfirm(null)}
-            onConfirm={handleConfirmDeleteGroup}
-          />
-        )}
-        {showGroupDeleteToast && (
-          <ToastModal
-            text="그룹이 삭제되었습니다."
-            isVisible={showGroupDeleteToast}
-            onClose={() => setShowGroupDeleteToast(false)}
-          />
-        )}
-        {showErrorToast && (
-          <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
-            text={errorMessage}
-          />
-        )}
+        <GroupActionModals
+          deleteMemberTarget={deleteMemberTarget}
+          groupActionConfirm={groupActionConfirm}
+          showDeleteToast={showDeleteToast}
+          showQuitToast={showQuitToast}
+          showGroupDeleteToast={showGroupDeleteToast}
+          showErrorToast={showErrorToast}
+          errorMessage={errorMessage}
+          onCloseDeleteMember={() => setDeleteMemberTarget(null)}
+          onConfirmDeleteMember={handleConfirmDelete}
+          onCloseGroupAction={() => setGroupActionConfirm(null)}
+          onConfirmQuitGroup={handleConfirmQuit}
+          onConfirmDeleteGroup={handleConfirmDeleteGroup}
+          onCloseDeleteToast={() => setShowDeleteToast(false)}
+          onCloseQuitToast={() => setShowQuitToast(false)}
+          onCloseGroupDeleteToast={() => setShowGroupDeleteToast(false)}
+          onCloseErrorToast={() => setShowErrorToast(false)}
+        />
         <Header
           showBackBtn={true}
           showXBtn={false}
@@ -197,72 +161,17 @@ export default function Group() {
           onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
-          <S.GrayBox>
-            {/* 회색 배경 */}
-            <S.GroupCard>
-              {/* GroupCard처럼 */}
-              <S.TextBox>
-                <S.Title>{groupData?.name}</S.Title>
-                <S.InfoBox>
-                  <S.InfoLine>
-                    <div>멤버</div>
-                    <div>{groupData?.memberCount}명</div>
-                  </S.InfoLine>
-                  <S.InfoLine>
-                    <div>명언</div>
-                    <div>{groupData?.totalQuoteCount}개</div>
-                  </S.InfoLine>
-                  <S.InfoLine>
-                    <div>since</div>
-                    <S.Chonburi>{groupData?.createdAt?.slice(0, 4)}</S.Chonburi>
-                  </S.InfoLine>
-                </S.InfoBox>
-              </S.TextBox>
-              <S.Count>{groupData?.memberCount}</S.Count>
-            </S.GroupCard>
-          </S.GrayBox>
-          <S.Main>
-            <S.Section>
-              <S.Title>그룹 메시지</S.Title>
-              <S.MessageBox
-                onClick={() => navigate(`/group/${groupId}/change-message`)}
-              >
-                <S.Quotation>“</S.Quotation>
-                {groupData?.motto ? (
-                  <S.Text>{groupData?.motto}</S.Text>
-                ) : (
-                  <S.EmptyText>메시지를 입력하세요</S.EmptyText>
-                )}
-                <S.Quotation>”</S.Quotation>
-              </S.MessageBox>
-            </S.Section>
-            <S.Section>
-              <S.Title>그룹원</S.Title>
-              {groupData?.members?.map((friend) => (
-                <UserListItem
-                  key={friend.id}
-                  friend={friend}
-                  actionButton={{
-                    type: "delete",
-                    text: "삭제",
-                    onClick: () =>
-                      handleDeleteMember(friend.nickname, friend.id),
-                  }}
-                />
-              ))}
-            </S.Section>
-            <S.BtnBox>
-              <Button
-                title="그룹 초대하기"
-                onClick={() => navigate(`/group/${groupId}/invite`)}
-              />
-              {groupData?.leaderNickname === myNickName ? (
-                <S.QuitBtn onClick={handleDeleteGroup}>그룹 삭제하기</S.QuitBtn>
-              ) : (
-                <S.QuitBtn onClick={handleQuitGroup}>그룹 탈퇴하기</S.QuitBtn>
-              )}
-            </S.BtnBox>
-          </S.Main>
+          <GroupSummaryCard group={groupData} />
+          <GroupMainSection
+            group={groupData}
+            members={members}
+            isLeader={isLeader}
+            onEditMessage={() => navigate(`/group/${groupId}/change-message`)}
+            onDeleteMember={handleDeleteMember}
+            onInviteGroup={() => navigate(`/group/${groupId}/invite`)}
+            onQuitGroup={handleQuitGroup}
+            onDeleteGroup={handleDeleteGroup}
+          />
         </S.Content>
       </S.Container>
     </>
