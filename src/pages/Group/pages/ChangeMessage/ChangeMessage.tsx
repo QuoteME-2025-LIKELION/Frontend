@@ -5,7 +5,7 @@ import Input from "@/components/Input/Input";
 import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import api from "@/api/api";
+import { groupApi } from "@/api/groupApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { AxiosError } from "axios";
 
@@ -26,7 +26,7 @@ export default function ChangeMessage() {
 
     const fetchGroupData = async () => {
       try {
-        const res = await api.get(`/api/groups/${groupId}`);
+        const res = await groupApi.getGroup(groupId);
         setMessage(res.data.motto || "");
       } catch (err: AxiosError | any) {
         if (err.response && err.response.status === 500) {
@@ -48,7 +48,7 @@ export default function ChangeMessage() {
       return;
     }
     try {
-      await api.patch(`/api/groups/${groupId}/motto`, { motto: newMotto });
+      await groupApi.updateMotto(groupId!, { motto: newMotto });
       navigate(`/group/${groupId}`);
     } catch (err) {
       console.error("그룹 메시지 변경 오류:", err);

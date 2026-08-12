@@ -8,6 +8,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import api from "@/api/api";
+import { groupApi } from "@/api/groupApi";
 
 export default function MyGroups() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function MyGroups() {
 
   const fetchMyGroups = useCallback(async () => {
     try {
-      const res = await api.get("/api/groups/me");
+      const res = await groupApi.getMyGroups();
       setGroupsData(res.data);
     } catch (err) {
       console.error("내 그룹 불러오기 오류:", err);
@@ -43,6 +44,12 @@ export default function MyGroups() {
 
   const handleConfirmQuit = useCallback(async () => {
     setShowQuitModal(false);
+    if (selectedGroupId === null) {
+      console.error("탈퇴할 그룹 ID가 유효하지 않습니다.");
+      setShowErrorToast(true);
+      return;
+    }
+
     try {
       // 내 프로필에서 내 ID 가져오기
       const profileRes = await api.get("/api/profile");
@@ -54,7 +61,7 @@ export default function MyGroups() {
       }
 
       // 가져온 내 ID로 그룹 탈퇴 API 호출
-      await api.delete(`/api/groups/${selectedGroupId}/members/${myId}`);
+      await groupApi.removeMember(selectedGroupId, myId);
 
       setShowQuitToast(true);
       // 그룹 목록 다시 불러오기

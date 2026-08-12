@@ -7,8 +7,8 @@ import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import api from "@/api/api";
 import { friendApi } from "@/api/friendApi";
+import { groupApi } from "@/api/groupApi";
 import type { Friend } from "@/types/friend.type";
 import useDebounce from "@/hooks/useDebounce";
 import type { AxiosError } from "axios";
@@ -42,8 +42,8 @@ export default function Invite() {
 
     const fetchGroupData = async () => {
       try {
-        const res = await api.get(`/api/groups/${groupId}`);
-        setGroupName(res.data.name);
+        const res = await groupApi.getGroup(groupId);
+        setGroupName(res.data.name || "");
         setCurrentMembers(res.data.members || []);
       } catch (err: AxiosError | any) {
         if (err.response && err.response.status === 500) {
@@ -105,9 +105,15 @@ export default function Invite() {
   );
   const handleConfirmInvite = useCallback(async () => {
     setShowInviteModal(false);
+    if (selectedFriendId === null || !groupId) {
+      console.error("초대할 친구 또는 그룹 ID가 유효하지 않습니다.");
+      setShowErrorToast(true);
+      return;
+    }
+
     if (currentMembers.length < 5) {
       try {
-        await api.post(`/api/groups/${groupId}/invite/${selectedFriendId}`);
+        await groupApi.inviteMember(groupId, selectedFriendId);
 
         // 초대에 성공하면 친구 목록에서 해당 친구 제거
         setFilteredFriends((prevFriends) =>

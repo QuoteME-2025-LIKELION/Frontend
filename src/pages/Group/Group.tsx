@@ -9,6 +9,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import api from "@/api/api";
+import { groupApi } from "@/api/groupApi";
 import type { AxiosError } from "axios";
 
 export default function Group() {
@@ -54,7 +55,7 @@ export default function Group() {
 
     const fetchGroupData = async () => {
       try {
-        const res = await api.get(`/api/groups/${groupId}`);
+        const res = await groupApi.getGroup(groupId);
         setGroupData(res.data);
       } catch (err: AxiosError | any) {
         console.error("그룹 데이터 불러오기 오류:", err);
@@ -76,15 +77,21 @@ export default function Group() {
     setShowDeleteModal(true);
   }, []);
   const handleConfirmDelete = useCallback(async () => {
+    if (selectedMemberId === null || !groupId) {
+      console.error("삭제할 그룹원 또는 그룹 ID가 유효하지 않습니다.");
+      setShowDeleteModal(false);
+      return;
+    }
+
     try {
-      await api.delete(`/api/groups/${groupId}/members/${selectedMemberId}`);
+      await groupApi.removeMember(groupId, selectedMemberId);
 
       // 성공 시 UI 업데이트
       setShowDeleteModal(false);
       setShowDeleteToast(true);
 
       // 그룹 데이터 다시 불러오기
-      const res = await api.get(`/api/groups/${groupId}`);
+      const res = await groupApi.getGroup(groupId);
       setGroupData(res.data);
     } catch (err) {
       console.error("그룹원 삭제 오류:", err);
@@ -109,7 +116,7 @@ export default function Group() {
       }
 
       // 가져온 내 ID로 그룹 탈퇴 API 호출
-      await api.delete(`/api/groups/${groupId}/members/${myId}`);
+      await groupApi.removeMember(groupId!, myId);
 
       setShowQuitModal(false);
       setShowQuitToast(true);
@@ -129,8 +136,14 @@ export default function Group() {
     setShowGroupDeleteModal(true);
   }, []);
   const handleConfirmDeleteGroup = useCallback(async () => {
+    if (!groupId) {
+      console.error("삭제할 그룹 ID가 유효하지 않습니다.");
+      setShowGroupDeleteModal(false);
+      return;
+    }
+
     try {
-      await api.delete(`/api/groups/${groupId}`);
+      await groupApi.deleteGroup(groupId);
       setShowGroupDeleteModal(false);
       setShowGroupDeleteToast(true);
 

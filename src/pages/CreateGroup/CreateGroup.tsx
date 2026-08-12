@@ -9,8 +9,8 @@ import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Friend } from "@/types/friend.type";
-import api from "@/api/api";
 import { friendApi } from "@/api/friendApi";
+import { groupApi } from "@/api/groupApi";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
@@ -120,7 +120,7 @@ export default function CreateGroup() {
 
     try {
       // 그룹 생성 API 호출하고 생성된 그룹 ID를 받음
-      const createGroupRes = await api.post("/api/groups", {
+      const createGroupRes = await groupApi.createGroup({
         name: groupName,
         motto: motto,
       });
@@ -135,7 +135,7 @@ export default function CreateGroup() {
         // 모든 초대를 병렬로 처리
         await Promise.all(
           selectedFriends.map((friendId) =>
-            api.post(`/api/groups/${newGroupId}/invite/${friendId}`)
+            groupApi.inviteMember(newGroupId, friendId)
           )
         );
       }

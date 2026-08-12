@@ -7,7 +7,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
-import api from "@/api/api";
+import { groupApi } from "@/api/groupApi";
 import type { AxiosError } from "axios";
 
 export default function JoinGroup() {
@@ -28,7 +28,7 @@ export default function JoinGroup() {
 
     const fetchGroupData = async () => {
       try {
-        const res = await api.get(`/api/groups/${groupId}`);
+        const res = await groupApi.getGroup(groupId);
         setGroupData(res.data);
       } catch (err: AxiosError | any) {
         console.error("그룹 데이터 불러오기 오류:", err);
@@ -50,7 +50,7 @@ export default function JoinGroup() {
       return;
     }
     try {
-      await api.post(`/api/groups/${groupId}/join-request`);
+      await groupApi.requestJoin(groupId!);
 
       setShowModal(false);
       setShowToast(true);

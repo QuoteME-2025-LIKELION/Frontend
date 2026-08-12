@@ -7,8 +7,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
-import api from "@/api/api";
 import { friendApi } from "@/api/friendApi";
+import { groupApi } from "@/api/groupApi";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
@@ -73,7 +73,7 @@ export default function FriendGroup() {
         ? friendsRes.data.filter(isValidFriend)
         : [];
       setFriendList(validFriends);
-      const groupsRes = await api.get("/api/groups/me");
+      const groupsRes = await groupApi.getMyGroups();
       const validGroups = Array.isArray(groupsRes.data)
         ? groupsRes.data.filter(isValidGroup)
         : [];

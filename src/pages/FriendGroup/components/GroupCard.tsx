@@ -2,7 +2,7 @@ import Button from "@/components/Button/Button";
 import * as S from "./GroupCard.styles";
 import type { Group } from "@/types/group.type";
 import { useEffect, useState } from "react";
-import api from "@/api/api";
+import { groupApi } from "@/api/groupApi";
 
 interface GroupCardProps {
   group: Group;
@@ -31,8 +31,8 @@ export default function GroupCard({
   const [since, setSince] = useState("");
   useEffect(() => {
     const fetchSince = async () => {
-      const res = await api.get(`/api/groups/${group.id}`);
-      setSince(res.data.createdAt.slice(0, 4));
+      const res = await groupApi.getGroup(group.id);
+      setSince(res.data.createdAt?.slice(0, 4) || "");
     };
     fetchSince();
   }, [group.id]);
