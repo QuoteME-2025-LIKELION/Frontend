@@ -12,6 +12,8 @@ import {
   useRequestJoinGroupMutation,
 } from "@/hooks/useGroupQueries";
 
+type JoinGroupToast = "success" | "full" | "error" | null;
+
 export default function JoinGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -21,9 +23,7 @@ export default function JoinGroup() {
   );
   const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
   const [showModal, setShowModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [showFullErrorToast, setShowFullErrorToast] = useState(false);
+  const [toastType, setToastType] = useState<JoinGroupToast>(null);
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -41,22 +41,22 @@ export default function JoinGroup() {
 
   // 그룹 참여 요청 전송 로직
   const handleConfirm = useCallback(async () => {
-    if (groupData?.memberCount === 5) {
-      setShowErrorToast(true);
+    if ((groupData?.memberCount ?? 0) >= 5) {
+      setToastType("full");
       return;
     }
     try {
       await requestJoinGroup(groupId!);
 
       setShowModal(false);
-      setShowToast(true);
+      setToastType("success");
       setTimeout(() => {
         navigate("/friend-group");
       }, 1500);
     } catch (err) {
       console.error("그룹 참여 요청 오류:", err);
       setShowModal(false);
-      setShowFullErrorToast(true);
+      setToastType("error");
     }
   }, [groupData?.memberCount, groupId, navigate, requestJoinGroup]);
 
@@ -73,31 +73,31 @@ export default function JoinGroup() {
             showOverlay={false}
           />
         )}
-        {showToast && (
+        {toastType === "success" && (
           <ToastModal
             text="그룹 참여를 요청했습니다."
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
+            isVisible={true}
+            onClose={() => setToastType(null)}
             showOverlay={false}
           />
         )}
-        {showErrorToast && (
+        {toastType === "full" && (
           <ToastModal
-            isVisible={showErrorToast}
+            isVisible={true}
             text="그룹원이"
             redText="5인을 초과"
             text2="하여"
             text3="참여가 불가능합니다."
             showOverlay={false}
-            onClose={() => setShowErrorToast(false)}
+            onClose={() => setToastType(null)}
           />
         )}
-        {showFullErrorToast && (
+        {toastType === "error" && (
           <ToastModal
-            isVisible={showFullErrorToast}
+            isVisible={true}
             text="그룹 참여 요청에 실패했습니다."
             showOverlay={false}
-            onClose={() => setShowFullErrorToast(false)}
+            onClose={() => setToastType(null)}
           />
         )}
         <Header
