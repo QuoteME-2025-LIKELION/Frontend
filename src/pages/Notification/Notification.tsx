@@ -2,7 +2,6 @@ import Header from "@/components/Header/Header";
 import * as S from "./Notification.styles";
 import { useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLog";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
@@ -11,6 +10,10 @@ import {
   useMarkNotificationReadMutation,
   useNotificationsQuery,
 } from "@/hooks/useNotificationsQuery";
+import NotificationFilterTabs, {
+  type NotificationFilter,
+} from "./components/NotificationFilterTabs";
+import NotificationList from "./components/NotificationList";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
   const map: Record<string, Notification[]> = {};
@@ -33,7 +36,8 @@ function groupByDate(list: Notification[]) {
 }
 
 export default function Notification() {
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [selectedFilter, setSelectedFilter] =
+    useState<NotificationFilter | null>(null);
   const navigate = useNavigate();
 
   const { setHasUnread } = useNotificationStore();
@@ -106,11 +110,6 @@ export default function Notification() {
     [navigate, markNotificationRead]
   );
 
-  // 렌더링 분기를 위한 빈 상태 계산
-  const isEmpty =
-    selectedFilter === null ? grouped.length === 0 : filtered.length === 0;
-
-  // 빈 상태, 전체보기, 필터 결과를 각각 다른 목록 형태로 렌더링
   return (
     <>
       <PageTitle title="알림" />
@@ -122,73 +121,16 @@ export default function Notification() {
           backgroundColor="secondary"
           onClickXBtn={() => navigate("/home")}
         />
-        <S.Menu>
-          <S.Btn
-            onClick={() => setSelectedFilter(null)}
-            $active={selectedFilter === null}
-          >
-            전체보기
-          </S.Btn>
-          <S.Btn
-            onClick={() =>
-              setSelectedFilter((prev) => (prev === "GROUP" ? null : "GROUP"))
-            }
-            $active={selectedFilter === "GROUP"}
-          >
-            그룹 알림
-          </S.Btn>
-          <S.Btn
-            onClick={() =>
-              setSelectedFilter((prev) => (prev === "POKE" ? null : "POKE"))
-            }
-            $active={selectedFilter === "POKE"}
-          >
-            콕 찌르기
-          </S.Btn>
-          <S.Btn
-            onClick={() =>
-              setSelectedFilter((prev) => (prev === "TAGS" ? null : "TAGS"))
-            }
-            $active={selectedFilter === "TAGS"}
-          >
-            태그
-          </S.Btn>
-        </S.Menu>
-        {isEmpty ? (
-          <S.Message>
-            <S.MessageText>도착한 알림이 없어요</S.MessageText>
-            <S.MessageText>알림이 오면 바로 알려드릴게요</S.MessageText>
-          </S.Message>
-        ) : selectedFilter === null ? (
-          <S.NotificationList>
-            {grouped.map(([dateKey, items]) => (
-              <S.NotificationBox key={dateKey}>
-                <S.TimeStamp>{dateKey}</S.TimeStamp>
-                <S.NotificationWrapper>
-                  {items.map((item) => (
-                    <NotificationLog
-                      key={item.id}
-                      notification={item}
-                      onClick={() => handleNotificationClick(item)}
-                    />
-                  ))}
-                </S.NotificationWrapper>
-              </S.NotificationBox>
-            ))}
-          </S.NotificationList>
-        ) : (
-          <S.NotificationList>
-            <S.NotificationWrapper>
-              {filtered.map((item) => (
-                <NotificationLog
-                  key={item.id}
-                  notification={item}
-                  onClick={() => handleNotificationClick(item)}
-                />
-              ))}
-            </S.NotificationWrapper>
-          </S.NotificationList>
-        )}
+        <NotificationFilterTabs
+          selectedFilter={selectedFilter}
+          onChangeFilter={setSelectedFilter}
+        />
+        <NotificationList
+          selectedFilter={selectedFilter}
+          groupedNotifications={grouped}
+          filteredNotifications={filtered}
+          onNotificationClick={handleNotificationClick}
+        />
       </S.Container>
     </>
   );
