@@ -1,7 +1,6 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./FeedList.styles";
 import { useEffect, useRef, useState } from "react";
-import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
@@ -12,6 +11,7 @@ import {
   useRequestQuoteTagMutation,
   useUnlikeQuoteMutation,
 } from "@/hooks/useQuoteQueries";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 
 interface QuotesItem extends OtherQuote {
   friendId: number;
@@ -38,6 +38,7 @@ export default function FeedList({
 }) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const downloadElementImage = useElementImageDownload();
   const [quotes, setQuotes] = useState<QuotesItem[]>([]); // 피드 목록을 상태로 관리
   const { mutateAsync: requestQuoteTag } = useRequestQuoteTagMutation();
   const { mutateAsync: likeQuote } = useLikeQuoteMutation();
@@ -124,22 +125,10 @@ export default function FeedList({
 
   const handleShare = (authorNickname: string, index: number) => {
     const shareProcess = () =>
-      new Promise<void>((resolve, reject) => {
-        const feedElement = feedRefs.current[index];
-        if (feedElement) {
-          toPng(feedElement)
-            .then((dataUrl) => {
-              const link = document.createElement("a");
-              link.download = `QuoteMe-${displayDate}-${authorNickname}.png`;
-              link.href = dataUrl;
-              link.click();
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        }
-      });
+      downloadElementImage(
+        feedRefs.current[index],
+        `QuoteMe-${displayDate}-${authorNickname}.png`
+      );
 
     onShare(shareProcess);
   };

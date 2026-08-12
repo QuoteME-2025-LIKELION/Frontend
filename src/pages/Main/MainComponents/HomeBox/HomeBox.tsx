@@ -2,9 +2,9 @@ import * as S from "./HomeBox.styles";
 import { useNavigate } from "react-router-dom";
 import { formatCustomDate } from "@/utils/formatCustomDate";
 import { useRef } from "react";
-import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 
 interface HomeBoxProps {
   date?: string;
@@ -15,6 +15,7 @@ interface HomeBoxProps {
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const downloadElementImage = useElementImageDownload();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
@@ -45,23 +46,11 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   }
 
   const handleShare = () => {
-    // 이미지 생성 로직을 Promise로 감싸서 부모에게 전달
     const shareProcess = () =>
-      new Promise<void>((resolve, reject) => {
-        if (containerRef.current) {
-          toPng(containerRef.current)
-            .then((dataUrl) => {
-              const link = document.createElement("a");
-              link.download = `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`;
-              link.href = dataUrl;
-              link.click();
-              resolve(); // 성공 시 resolve
-            })
-            .catch((err) => {
-              reject(err); // 실패 시 reject
-            });
-        }
-      });
+      downloadElementImage(
+        containerRef.current,
+        `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`
+      );
 
     onShare?.(shareProcess); // 부모의 executeShare 함수 실행
   };
