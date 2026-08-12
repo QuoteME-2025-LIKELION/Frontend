@@ -5,8 +5,8 @@ import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
-import api from "@/api/api";
 import { quoteApi } from "@/api/quoteApi";
+import { friendApi } from "@/api/friendApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface QuotesItem extends OtherQuote {
@@ -139,7 +139,7 @@ export default function FeedList({
 
   const handlePoke = async (friendId: number) => {
     try {
-      await api.post(`/api/pokes/${friendId}`);
+      await friendApi.pokeFriend(friendId);
       // API 호출 성공 후, 부모에게 받은 onPoke 함수 호출
       onPoke?.();
     } catch (err) {

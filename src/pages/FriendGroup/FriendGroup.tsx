@@ -8,6 +8,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
 import api from "@/api/api";
+import { friendApi } from "@/api/friendApi";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
@@ -67,7 +68,7 @@ export default function FriendGroup() {
   // 친구 및 그룹 목록 불러오기
   const fetchFriendsAndGroups = useCallback(async () => {
     try {
-      const friendsRes = await api.get("/api/settings/friends-list");
+      const friendsRes = await friendApi.getFriends();
       const validFriends = Array.isArray(friendsRes.data)
         ? friendsRes.data.filter(isValidFriend)
         : [];
@@ -95,9 +96,7 @@ export default function FriendGroup() {
       // 검색어가 있을 때 실행할 로직
       const fetchResults = async () => {
         try {
-          const res = await api.get(
-            `/api/settings/search?keyword=${debouncedKeyword}`
-          );
+          const res = await friendApi.searchFriendsAndGroups(debouncedKeyword);
 
           const groups = Array.isArray(res.data.groups)
             ? res.data.groups.filter(isValidGroup)
@@ -130,13 +129,13 @@ export default function FriendGroup() {
   );
 
   const handleConfirmDelete = useCallback(async () => {
-    // if (selectedFriendId === null) {
-    //   console.error("삭제할 친구 ID가 유효하지 않습니다.");
-    //   setShowDeleteModal(false);
-    //   return;
-    // }
+    if (selectedFriendId === null) {
+      console.error("삭제할 친구 ID가 유효하지 않습니다.");
+      setShowDeleteModal(false);
+      return;
+    }
     try {
-      await api.delete(`/api/friends/${selectedFriendId}`);
+      await friendApi.deleteFriend(selectedFriendId);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
       fetchFriendsAndGroups(); // 친구 목록 새로고침
@@ -155,13 +154,13 @@ export default function FriendGroup() {
   }, []);
 
   const handleConfirmAdd = useCallback(async () => {
-    // if (selectedUserId === null) {
-    //   console.error("추가할 사용자 ID가 유효하지 않습니다.");
-    //   setShowAddModal(false);
-    //   return;
-    // }
+    if (selectedUserId === null) {
+      console.error("추가할 사용자 ID가 유효하지 않습니다.");
+      setShowAddModal(false);
+      return;
+    }
     try {
-      await api.post(`/api/friends/add/${selectedUserId}`);
+      await friendApi.addFriend(selectedUserId);
 
       setShowAddModal(false);
       setShowAddToast(true);

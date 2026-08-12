@@ -9,8 +9,8 @@ import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 
 import type { MyQuote, OtherQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import api from "@/api/api";
 import { quoteApi } from "@/api/quoteApi";
+import { friendApi } from "@/api/friendApi";
 import type { Friend } from "@/types/friend.type";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
@@ -58,7 +58,7 @@ export default function MainHome() {
         // 두 API를 병렬로 호출
         const [quotesResponse, friendsResponse] = await Promise.all([
           quoteApi.getQuotesByDate(displayDate),
-          api.get("/api/settings/friends-list"),
+          friendApi.getFriends(),
         ]);
         setMyQuote(quotesResponse.data.myQuotes[0] || null);
         setOtherQuotes(quotesResponse.data.otherQuotes);

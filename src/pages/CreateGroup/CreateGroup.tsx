@@ -10,6 +10,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import { friendApi } from "@/api/friendApi";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default function CreateGroup() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await api.get("/api/settings/friends-list");
+        const res = await friendApi.getFriends();
         const validFriends = Array.isArray(res.data)
           ? res.data.filter(
               (friend: Friend | null) => friend && friend.id && friend.nickname

@@ -8,6 +8,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import api from "@/api/api";
+import { friendApi } from "@/api/friendApi";
 import type { Friend } from "@/types/friend.type";
 import useDebounce from "@/hooks/useDebounce";
 import type { AxiosError } from "axios";
@@ -63,13 +64,11 @@ export default function Invite() {
 
         if (debouncedKeyword) {
           // 검색어가 있으면 검색 API 호출
-          const res = await api.get(
-            `/api/settings/search?keyword=${debouncedKeyword}`
-          );
+          const res = await friendApi.searchFriendsAndGroups(debouncedKeyword);
           friendsList = res.data.members;
         } else {
           // 검색어가 없으면 전체 친구 목록 API 호출
-          const res = await api.get("/api/settings/friends-list");
+          const res = await friendApi.getFriends();
           friendsList = res.data;
         }
 

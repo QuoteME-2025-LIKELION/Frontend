@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
-import api from "@/api/api";
 import { quoteApi } from "@/api/quoteApi";
+import { friendApi } from "@/api/friendApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface NewQuoteProps {
@@ -37,7 +37,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await api.get("/api/settings/friends-list");
+        const res = await friendApi.getFriends();
         const fetchedFriends: Friend[] = res.data;
         setFriends(fetchedFriends);
 
