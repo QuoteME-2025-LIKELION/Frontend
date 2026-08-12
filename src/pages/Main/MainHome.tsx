@@ -7,13 +7,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import RequestModal from "./MainComponents/Modal/RequestModal";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 
-import type { MyQuote, OtherQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import { quoteApi } from "@/api/quoteApi";
-import { friendApi } from "@/api/friendApi";
-import type { Friend } from "@/types/friend.type";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
+import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 
 export default function MainHome() {
   const navigate = useNavigate();
@@ -25,11 +23,14 @@ export default function MainHome() {
   const { date } = useParams();
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
-
-  const [myQuote, setMyQuote] = useState<MyQuote | null>(null);
-  const [otherQuotes, setOtherQuotes] = useState<OtherQuote[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [friendList, setFriendList] = useState<Friend[]>([]); // 아무것도 쓰지 않은 친구 명언 파악을 위한 친구 리스트 상태
+  const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
+  const { data: quotesData, isLoading: isQuotesLoading } =
+    useQuotesByDateQuery(displayDate);
+  const { data: friendList = [], isLoading: isFriendsLoading } =
+    useFriendsQuery();
+  const myQuote = quotesData?.myQuotes[0] || null;
+  const otherQuotes = quotesData?.otherQuotes || [];
+  const isLoading = isQuotesLoading || isFriendsLoading;
 
   const [showErrorToast, setShowErrorToast] = useState(false);
 
@@ -50,30 +51,6 @@ export default function MainHome() {
       }
     }
 
-    const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // 두 API를 병렬로 호출
-        const [quotesResponse, friendsResponse] = await Promise.all([
-          quoteApi.getQuotesByDate(displayDate),
-          friendApi.getFriends(),
-        ]);
-        setMyQuote(quotesResponse.data.myQuotes[0] || null);
-        setOtherQuotes(quotesResponse.data.otherQuotes);
-        setFriendList(friendsResponse.data);
-      } catch (err) {
-        console.error("메인화면 조회 실패", err);
-        setMyQuote(null);
-        setOtherQuotes([]);
-        setFriendList([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
   }, [date, navigate]);
 
   // 토글 애니메이션 및 렌더링 관련 로직
