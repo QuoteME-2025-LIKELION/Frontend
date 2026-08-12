@@ -14,15 +14,25 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
-const isValidFriend = (data: any): data is Friend => {
+const isValidFriend = (data: unknown): data is Friend => {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  const friend = data as Partial<Friend>;
   return (
-    data && typeof data.id === "number" && typeof data.nickname === "string"
+    typeof friend.id === "number" && typeof friend.nickname === "string"
   );
 };
 
 // 유효한 그룹 객체인지 확인하는 타입 가드 함수
-const isValidGroup = (data: any): data is Group => {
-  return data && typeof data.id === "number" && typeof data.name === "string";
+const isValidGroup = (data: unknown): data is Group => {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  const group = data as Partial<Group>;
+  return typeof group.id === "number" && typeof group.name === "string";
 };
 
 export default function FriendGroup() {

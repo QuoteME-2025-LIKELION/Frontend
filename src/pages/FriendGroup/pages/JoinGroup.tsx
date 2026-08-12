@@ -8,7 +8,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
 import { groupApi } from "@/api/groupApi";
-import type { AxiosError } from "axios";
+import axios from "axios";
 
 export default function JoinGroup() {
   const { groupId } = useParams();
@@ -30,11 +30,11 @@ export default function JoinGroup() {
       try {
         const res = await groupApi.getGroup(groupId);
         setGroupData(res.data);
-      } catch (err: AxiosError | any) {
+      } catch (err) {
         console.error("그룹 데이터 불러오기 오류:", err);
         setGroupData(null);
         // 500 에러일 경우 NotFound 페이지로 이동
-        if (err.response && err.response.status === 500) {
+        if (axios.isAxiosError(err) && err.response?.status === 500) {
           navigate("/not-found", { replace: true });
         }
       }

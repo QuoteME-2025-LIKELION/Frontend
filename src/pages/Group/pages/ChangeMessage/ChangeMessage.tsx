@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { groupApi } from "@/api/groupApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import type { AxiosError } from "axios";
+import axios from "axios";
 
 export default function ChangeMessage() {
   const navigate = useNavigate();
@@ -28,8 +28,8 @@ export default function ChangeMessage() {
       try {
         const res = await groupApi.getGroup(groupId);
         setMessage(res.data.motto || "");
-      } catch (err: AxiosError | any) {
-        if (err.response && err.response.status === 500) {
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 500) {
           navigate("/not-found", { replace: true });
         }
         console.error("그룹 정보 조회 중 오류 발생:", err);

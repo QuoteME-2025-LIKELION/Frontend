@@ -6,10 +6,18 @@ import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+interface CreatedQuote {
+  id?: number;
+  content: string;
+  authorName: string;
+  authorBirthYear?: number | null;
+  taggedNicknames?: string[];
+}
+
 export default function MainWrite() {
   const [newQuoteActive, setNewQuoteActive] = useState(false);
   const [recommendActive, setRecommendActive] = useState(false);
-  const [createdQuote, setCreatedQuote] = useState<any>(null);
+  const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [diaryText, setDiaryText] = useState("");
 
   return (
@@ -20,7 +28,12 @@ export default function MainWrite() {
 
         <WriteBox
           onComplete={(data) => {
-            setCreatedQuote(data);
+            setCreatedQuote({
+              content: data.content,
+              authorName: data.authorName || "",
+              authorBirthYear: data.authorBirthYear ?? null,
+              taggedNicknames: data.taggedMemberNames,
+            });
             setNewQuoteActive(true);
           }}
           onAI={(text) => {

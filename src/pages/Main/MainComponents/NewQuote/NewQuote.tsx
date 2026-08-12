@@ -67,7 +67,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
           taggedMemberIds: selectedIds,
         });
         navigate("/home");
-      } catch (e: any) {
+      } catch {
         setErrorMessage("글 작성에 실패했어요.");
         setShowErrorToast(true);
       }
@@ -85,7 +85,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
         });
 
         navigate("/home");
-      } catch (e: any) {
+      } catch {
         setErrorMessage("태그 수정에 실패했어요.");
         setShowErrorToast(true);
       }
