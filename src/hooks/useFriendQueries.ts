@@ -1,5 +1,5 @@
 import { friendApi } from "@/api/friendApi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const friendQueryKeys = {
   all: ["friends"] as const,
@@ -33,5 +33,33 @@ export function useFriendSearchQuery(keyword: string, enabled = true) {
       return res.data;
     },
     enabled,
+  });
+}
+
+/**
+ * 친구 추가 후 친구 관련 캐시 갱신
+ */
+export function useAddFriendMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: number) => friendApi.addFriend(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
+    },
+  });
+}
+
+/**
+ * 친구 삭제 후 친구 관련 캐시 갱신
+ */
+export function useDeleteFriendMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (friendId: number) => friendApi.deleteFriend(friendId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
+    },
   });
 }

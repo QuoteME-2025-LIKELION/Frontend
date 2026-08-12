@@ -3,15 +3,20 @@ import * as S from "./FriendGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
 import List from "@/components/List/List";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
-import { friendApi } from "@/api/friendApi";
-import { groupApi } from "@/api/groupApi";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Group } from "@/types/group.type";
+import {
+  useAddFriendMutation,
+  useDeleteFriendMutation,
+  useFriendSearchQuery,
+  useFriendsQuery,
+} from "@/hooks/useFriendQueries";
+import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
 const isValidFriend = (data: unknown): data is Friend => {
@@ -36,15 +41,9 @@ const isValidGroup = (data: unknown): data is Group => {
 };
 
 export default function FriendGroup() {
-  // 내 친구 및 그룹 목록
-  const [friendList, setFriendList] = useState<Friend[]>([]);
-  const [groupsList, setGroupsList] = useState<Group[]>([]);
-
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
-  const [searchResultGroups, setSearchResultGroups] = useState<Group[]>([]);
-  const [searchResultMembers, setSearchResultMembers] = useState<Friend[]>([]);
 
   // 삭제할 아이디 및 모달 상태
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -62,6 +61,34 @@ export default function FriendGroup() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
+  const { data: friends = [] } = useFriendsQuery();
+  const { data: groups = [] } = useMyGroupsQuery();
+  const { data: searchResult } = useFriendSearchQuery(
+    debouncedKeyword,
+    Boolean(debouncedKeyword)
+  );
+  const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
+  const { mutateAsync: addFriend } = useAddFriendMutation();
+
+  const friendList = useMemo(
+    () => friends.filter(isValidFriend),
+    [friends]
+  );
+  const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
+  const searchResultGroups = useMemo(
+    () =>
+      Array.isArray(searchResult?.groups)
+        ? searchResult.groups.filter(isValidGroup)
+        : [],
+    [searchResult]
+  );
+  const searchResultMembers = useMemo(
+    () =>
+      Array.isArray(searchResult?.members)
+        ? searchResult.members.filter(isValidFriend)
+        : [],
+    [searchResult]
+  );
 
   // 현재 친구 ID 목록을 Set으로 만들어 빠른 조회
   const friendIdSet = useMemo(
@@ -74,60 +101,6 @@ export default function FriendGroup() {
     () => new Set(groupsList.map((group) => group.id)),
     [groupsList]
   );
-
-  // 친구 및 그룹 목록 불러오기
-  const fetchFriendsAndGroups = useCallback(async () => {
-    try {
-      const friendsRes = await friendApi.getFriends();
-      const validFriends = Array.isArray(friendsRes.data)
-        ? friendsRes.data.filter(isValidFriend)
-        : [];
-      setFriendList(validFriends);
-      const groupsRes = await groupApi.getMyGroups();
-      const validGroups = Array.isArray(groupsRes.data)
-        ? groupsRes.data.filter(isValidGroup)
-        : [];
-      setGroupsList(validGroups);
-    } catch (err) {
-      console.error("친구 및 그룹 목록 불러오기 오류:", err);
-      setFriendList([]);
-      setGroupsList([]);
-    }
-  }, []);
-
-  // 초기 렌더링 시 데이터 로드
-  useEffect(() => {
-    fetchFriendsAndGroups();
-  }, [fetchFriendsAndGroups]);
-
-  // 검색어가 변경될 때마다 디바운스된 키워드로 검색 실행
-  useEffect(() => {
-    if (debouncedKeyword) {
-      // 검색어가 있을 때 실행할 로직
-      const fetchResults = async () => {
-        try {
-          const res = await friendApi.searchFriendsAndGroups(debouncedKeyword);
-
-          const groups = Array.isArray(res.data.groups)
-            ? res.data.groups.filter(isValidGroup)
-            : [];
-          const members = Array.isArray(res.data.members)
-            ? res.data.members.filter(isValidFriend)
-            : [];
-          setSearchResultGroups(groups);
-          setSearchResultMembers(members);
-        } catch (error) {
-          console.error("검색 오류:", error);
-          setSearchResultGroups([]);
-          setSearchResultMembers([]);
-        }
-      };
-      fetchResults();
-    } else {
-      setSearchResultGroups([]); // 검색어가 없을 때는 결과 초기화
-      setSearchResultMembers([]);
-    }
-  }, [debouncedKeyword]);
 
   const handleDeleteFriend = useCallback(
     (friendName: string, friendId: number) => {
@@ -145,17 +118,16 @@ export default function FriendGroup() {
       return;
     }
     try {
-      await friendApi.deleteFriend(selectedFriendId);
+      await deleteFriend(selectedFriendId);
       setShowDeleteModal(false);
       setShowDeleteToast(true);
-      fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 삭제 처리 중 오류:", err);
       setShowDeleteModal(false);
       setErrorMessage("친구 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [fetchFriendsAndGroups, selectedFriendId]);
+  }, [deleteFriend, selectedFriendId]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
     setSelectedUser(userName);
@@ -170,11 +142,10 @@ export default function FriendGroup() {
       return;
     }
     try {
-      await friendApi.addFriend(selectedUserId);
+      await addFriend(selectedUserId);
 
       setShowAddModal(false);
       setShowAddToast(true);
-      // fetchFriendsAndGroups(); // 친구 목록 새로고침
     } catch (err) {
       console.error("친구 추가 처리 중 오류:", err);
       setShowAddModal(false);
@@ -182,7 +153,7 @@ export default function FriendGroup() {
       setShowErrorToast(true);
       return;
     }
-  }, [selectedUserId]);
+  }, [addFriend, selectedUserId]);
 
   return (
     <>
@@ -242,7 +213,6 @@ export default function FriendGroup() {
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => {
               setKeyword("");
-              fetchFriendsAndGroups();
             }}
           />
           <S.Section>
