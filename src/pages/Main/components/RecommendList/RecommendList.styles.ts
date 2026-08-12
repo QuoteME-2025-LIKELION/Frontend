@@ -40,6 +40,29 @@ export const Text = styled.div`
   white-space: pre-line;
 `;
 
+export const TitleText = styled(Text)`
+  font-size: 20px;
+`;
+
+export const QuoteText = styled(Text)`
+  width: 250px;
+  font-size: 16px;
+`;
+
+export const AuthorText = styled(Text)`
+  font-size: 12px;
+`;
+
+export const RefreshButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+`;
+
 export const Commend = styled.div<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;

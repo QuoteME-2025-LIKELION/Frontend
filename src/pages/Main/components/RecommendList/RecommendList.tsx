@@ -27,28 +27,31 @@ export default function RecommendList({
   return (
     <S.Container>
       <S.Head>
-        <S.Text style={{ fontSize: 20 }}>QuoteMe의 추천</S.Text>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
+        <S.TitleText>QuoteMe의 추천</S.TitleText>
+        <S.RefreshButton
+          type="button"
           onClick={() => {
             setSelectedId(null);
             if (content) {
               void refetch();
             }
           }}
-          style={{ cursor: "pointer" }}
         >
-          <path
-            d="M2 8C2 9.18669 2.35189 10.3467 3.01118 11.3334C3.67047 12.3201 4.60754 13.0892 5.7039 13.5433C6.80026 13.9974 8.00666 14.1162 9.17054 13.8847C10.3344 13.6532 11.4035 13.0818 12.2426 12.2426C13.0818 11.4035 13.6532 10.3344 13.8847 9.17054C14.1162 8.00666 13.9974 6.80026 13.5433 5.7039C13.0892 4.60754 12.3201 3.67047 11.3334 3.01118C10.3467 2.35189 9.18669 2 8 2C6.32263 2.00631 4.71265 2.66082 3.50667 3.82667L2 5.33333M2 5.33333V2M2 5.33333H5.33333"
-            stroke="#959595"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M2 8C2 9.18669 2.35189 10.3467 3.01118 11.3334C3.67047 12.3201 4.60754 13.0892 5.7039 13.5433C6.80026 13.9974 8.00666 14.1162 9.17054 13.8847C10.3344 13.6532 11.4035 13.0818 12.2426 12.2426C13.0818 11.4035 13.6532 10.3344 13.8847 9.17054C14.1162 8.00666 13.9974 6.80026 13.5433 5.7039C13.0892 4.60754 12.3201 3.67047 11.3334 3.01118C10.3467 2.35189 9.18669 2 8 2C6.32263 2.00631 4.71265 2.66082 3.50667 3.82667L2 5.33333M2 5.33333V2M2 5.33333H5.33333"
+              stroke="#959595"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </S.RefreshButton>
       </S.Head>
       <S.ComendList>
         {quotes.map((q) => (
@@ -70,7 +73,7 @@ export default function RecommendList({
                   fill="black"
                 />
               </svg>
-              <S.Text style={{ fontSize: 16, width: 250 }}>{q.text}</S.Text>
+              <S.QuoteText>{q.text}</S.QuoteText>
               <svg
                 width="11"
                 height="10"
@@ -84,7 +87,7 @@ export default function RecommendList({
                 />
               </svg>
             </S.FirstLine>
-            <S.Text style={{ fontSize: 12 }}> - {q.author}</S.Text>
+            <S.AuthorText> - {q.author}</S.AuthorText>
           </S.Commend>
         ))}
         <S.BtnBox>

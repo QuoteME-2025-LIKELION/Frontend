@@ -22,6 +22,14 @@ export const Text = styled.div`
   letter-spacing: -0.4px;
 `;
 
+export const QuoteText = styled(Text)`
+  font-size: 16px;
+`;
+
+export const AuthorText = styled(Text)`
+  font-size: 12px;
+`;
+
 export const Commend = styled.div`
   display: flex;
   flex-direction: column;
@@ -40,22 +48,7 @@ export const FirstLine = styled.div`
   display: flex;
   gap: 18px;
 `;
-// export const SelectBtn = styled.button`
-//   display: flex;
-//   padding: 7px 10px;
-//   justify-content: center;
-//   align-self: stretch;
 
-//   border-top: 0.5px solid #959595;
-//   border-bottom: 0.5px solid #959595;
-//   background: #fff;
-
-//   text-align: center;
-//   ${theme.fonts.batang}
-//   font-size: 16px;
-//   font-weight: 700;
-//   margin: 22px 24px;
-// `;
 export const Text2 = styled.div`
   color: #000;
   text-align: center;

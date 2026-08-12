@@ -105,7 +105,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
               fill="black"
             />
           </svg>
-          <S.Text style={{ fontSize: 16 }}>{quote.content}</S.Text>
+          <S.QuoteText>{quote.content}</S.QuoteText>
           <svg
             width="11"
             height="10"
@@ -119,14 +119,14 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
             />
           </svg>
         </S.FirstLine>
-        <S.Text style={{ fontSize: 12 }}>
+        <S.AuthorText>
           {" "}
           {quote.authorName
             ? `- ${quote.authorName}${
                 quote.authorBirthYear ? `(${quote.authorBirthYear}~)` : ""
               }`
             : ""}
-        </S.Text>
+        </S.AuthorText>
       </S.Commend>
       <S.TagBox>
         <S.Text2>친구 태그하기</S.Text2>
