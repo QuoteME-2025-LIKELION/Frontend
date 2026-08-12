@@ -2,17 +2,20 @@ import Header from "@/components/Header/Header";
 import * as S from "./Pages.styles";
 import { useNavigate } from "react-router-dom";
 import GroupCard from "@/pages/FriendGroup/components/GroupCard";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
-import { groupApi } from "@/api/groupApi";
 import { profileApi } from "@/api/profileApi";
+import {
+  useMyGroupsQuery,
+  useRemoveGroupMemberMutation,
+} from "@/hooks/useGroupQueries";
 
 export default function MyGroups() {
   const navigate = useNavigate();
-  const [groupsData, setGroupsData] = useState<Group[]>([]);
+  const { data: groupsData = [] } = useMyGroupsQuery();
+  const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
 
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showQuitToast, setShowQuitToast] = useState(false);
@@ -20,21 +23,6 @@ export default function MyGroups() {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // 탈퇴할 그룹 ID 상태
 
   const [showErrorToast, setShowErrorToast] = useState(false);
-
-  const fetchMyGroups = useCallback(async () => {
-    try {
-      const res = await groupApi.getMyGroups();
-      setGroupsData(res.data);
-    } catch (err) {
-      console.error("내 그룹 불러오기 오류:", err);
-      setGroupsData([]);
-    }
-  }, []);
-
-  // 컴포넌트 마운트 시 내 그룹 불러오기
-  useEffect(() => {
-    fetchMyGroups();
-  }, [fetchMyGroups]);
 
   const handleQuitGroup = useCallback((groupName: string, groupId: number) => {
     setSelectedGroup(groupName);
@@ -61,16 +49,17 @@ export default function MyGroups() {
       }
 
       // 가져온 내 ID로 그룹 탈퇴 API 호출
-      await groupApi.removeMember(selectedGroupId, myId);
+      await removeGroupMember({
+        groupId: selectedGroupId,
+        memberId: myId,
+      });
 
       setShowQuitToast(true);
-      // 그룹 목록 다시 불러오기
-      fetchMyGroups();
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setShowErrorToast(true);
     }
-  }, [selectedGroupId, fetchMyGroups]);
+  }, [removeGroupMember, selectedGroupId]);
   return (
     <>
       <PageTitle title="나의 그룹 관리" />
