@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import * as S from "./CalendarPage.styles";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
-import Feed from "@/components/Feed/Feed";
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import { useOutletContext } from "react-router-dom";
@@ -116,7 +116,7 @@ export default function CalendarPage() {
       <S.FeedContainer>
         {filteredFeeds.length > 0 &&
           filteredFeeds.map((feed, index) => (
-            <Feed
+            <QuoteFeed
               key={feed.id}
               ref={(el: HTMLDivElement | null) => {
                 feedRefs.current[index] = el;

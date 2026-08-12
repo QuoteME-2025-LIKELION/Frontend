@@ -1,8 +1,8 @@
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
-import * as S from "./Feed.styles";
+import * as S from "./QuoteFeed.styles";
 import { forwardRef } from "react";
 
-interface FeedProps {
+interface QuoteFeedProps {
   profileImageUrl?: string;
   authorName: string;
   bio?: string;
@@ -22,7 +22,7 @@ interface FeedProps {
 }
 
 /**
- * 피드 컴포넌트
+ * 명언 피드 컴포넌트
  * @param props
  * @param props.profileImageUrl 프로필 이미지 URL
  * @param props.authorName 사용자 이름
@@ -43,7 +43,7 @@ interface FeedProps {
  * @param props.year 사용자 생년 (아카이브 페이지에서만 사용)
  * @param props.timeAgo 작성 시간 (예: "2시간 전") - API 명세서 호환용
  * @example
- * <Feed
+ * <QuoteFeed
  *  profileImageUrl="https://example.com/profile.jpg"
  *  authorName="테스트"
  *  bio="안녕하세요"
@@ -62,7 +62,7 @@ interface FeedProps {
  *  year={2000}
  * />
  */
-const Feed = forwardRef<HTMLDivElement, FeedProps>(
+const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
   (
     {
       profileImageUrl,
@@ -336,4 +336,4 @@ const Feed = forwardRef<HTMLDivElement, FeedProps>(
   }
 );
 
-export default Feed;
+export default QuoteFeed;

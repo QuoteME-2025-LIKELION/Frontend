@@ -1,4 +1,4 @@
-import Feed from "@/components/Feed/Feed";
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import * as S from "./FeedList.styles";
 import { useEffect, useRef, useState } from "react";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
@@ -159,7 +159,7 @@ export default function FeedList({
       )}
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
-          <Feed
+          <QuoteFeed
             key={quote.id}
             ref={(el: HTMLDivElement | null) => {
               feedRefs.current[index] = el;

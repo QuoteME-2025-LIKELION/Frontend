@@ -1,4 +1,4 @@
-import Feed from "@/components/Feed/Feed";
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import * as S from "./Likes.styles";
 import { useRef } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -42,7 +42,7 @@ export default function Likes() {
         />
       )}
       {likedFeeds.map((data, index) => (
-        <Feed
+        <QuoteFeed
           ref={(el: HTMLDivElement | null) => {
             feedRefs.current[index] = el;
           }}
