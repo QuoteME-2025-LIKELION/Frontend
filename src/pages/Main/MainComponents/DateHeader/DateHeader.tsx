@@ -2,6 +2,7 @@ import * as S from "./DateHeader.styles";
 import { useNavigate } from "react-router-dom";
 import useNotificationStore from "@/stores/useNotificationStore";
 import { useEffect } from "react";
+import { useNotificationsQuery } from "@/hooks/useNotificationsQuery";
 
 interface DateHeaderProps {
   active: boolean;
@@ -10,12 +11,18 @@ interface DateHeaderProps {
 
 export default function DateHeader({ setActive }: DateHeaderProps) {
   const navigate = useNavigate();
-  const { hasUnread, fetchNotifications } = useNotificationStore();
+  const { hasUnread, setHasUnread } = useNotificationStore();
+  const { data: notifications = [], isError } = useNotificationsQuery();
 
   // 읽지 않은 알림 있는지 확인해 아이콘 표시 결정
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    if (isError) {
+      setHasUnread(false);
+      return;
+    }
+
+    setHasUnread(notifications.some((notification) => !notification.isRead));
+  }, [isError, notifications, setHasUnread]);
 
   return (
     <S.Container>
