@@ -46,3 +46,35 @@ export interface OtherQuote {
   isFriendQuote: boolean;
   createDate?: string;
 }
+
+/**
+ * 명언 작성 입력 단계에서 다음 화면으로 넘기는 초안 타입
+ * @property {string} content: 명언 내용
+ * @property {string} [authorName]: 명언 작성자 이름 (선택적)
+ * @property {number} [authorBirthYear]: 명언 작성자 출생 연도 (선택적)
+ * @property {string[]} [taggedMemberNames]: 태그된 멤버 이름 배열 (선택적)
+ * @property {string} [createDate]: 명언 작성 날짜 (선택적)
+ */
+export interface QuoteDraft {
+  content: string;
+  authorName?: string;
+  authorBirthYear?: number;
+  taggedMemberNames?: string[];
+  createDate?: string;
+}
+
+/**
+ * 작성/태그 선택 단계에서 사용하는 명언 표시 타입
+ * @property {number} [id]: 명언 고유 ID (선택적)
+ * @property {string} content: 명언 내용
+ * @property {string} authorName: 명언 작성자 이름
+ * @property {number | null} [authorBirthYear]: 명언 작성자 출생 연도 (선택적)
+ * @property {string[]} [taggedNicknames]: 명언에 태그된 닉네임 배열 (선택적)
+ */
+export interface CreatedQuote {
+  id?: number;
+  content: string;
+  authorName: string;
+  authorBirthYear?: number | null;
+  taggedNicknames?: string[];
+}

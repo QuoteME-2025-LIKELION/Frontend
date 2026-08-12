@@ -9,15 +9,10 @@ import {
   useCreateQuoteMutation,
   useUpdateQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
+import type { CreatedQuote } from "@/types/feed.type";
 
 interface NewQuoteProps {
-  quote: {
-    id?: number;
-    content: string;
-    authorName: string;
-    authorBirthYear?: number | null;
-    taggedNicknames?: string[]; // fix 모드에서만 사용
-  };
+  quote: CreatedQuote;
   mode?: "create" | "fix"; // fix일 때만 명시적으로 추가하도록
 }
 

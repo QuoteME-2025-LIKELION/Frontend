@@ -1,15 +1,9 @@
 import * as S from "./WriteBox.styles";
 import { useState } from "react";
+import type { QuoteDraft } from "@/types/feed.type";
 
-interface QuoteResponse {
-  content: string;
-  authorName?: string;
-  authorBirthYear?: number;
-  taggedMemberNames?: string[];
-  createDate?: string;
-}
 interface WriteBoxProps {
-  onComplete: (data: QuoteResponse) => void;
+  onComplete: (data: QuoteDraft) => void;
   onAI: (text: string) => void;
 }
 

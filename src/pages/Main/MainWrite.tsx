@@ -5,14 +5,7 @@ import * as S from "@/pages/Main/Main.styles";
 import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
-
-interface CreatedQuote {
-  id?: number;
-  content: string;
-  authorName: string;
-  authorBirthYear?: number | null;
-  taggedNicknames?: string[];
-}
+import type { CreatedQuote } from "@/types/feed.type";
 
 export default function MainWrite() {
   const [newQuoteActive, setNewQuoteActive] = useState(false);
