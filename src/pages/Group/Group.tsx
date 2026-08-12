@@ -7,22 +7,23 @@ import { useCallback, useEffect, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { profileApi } from "@/api/profileApi";
 import axios from "axios";
 import {
   useDeleteGroupMutation,
   useGroupQuery,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
+import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 
 export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const [myNickName, setMyNickName] = useState<string>("");
   const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
   const { data: groupData, error: groupError } = useGroupQuery(
     isValidGroupId ? groupId : undefined
   );
+  const { data: myProfile } = useMyProfileQuery();
+  const myNickName = myProfile?.nickname || "";
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
   const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
 
@@ -39,20 +40,6 @@ export default function Group() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const fetchMyData = async () => {
-      try {
-        const res = await profileApi.getMyProfile();
-        const myNickName = res.data.nickname;
-        setMyNickName(myNickName);
-      } catch (err) {
-        console.error("내 프로필 불러오기 오류:", err);
-      }
-    };
-
-    fetchMyData();
-  }, []);
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -98,11 +85,9 @@ export default function Group() {
   }, []);
   const handleConfirmQuit = useCallback(async () => {
     try {
-      // 내 프로필에서 내 ID 가져오기
-      const profileRes = await profileApi.getMyProfile();
-      const myId = profileRes.data.id;
+      const myId = myProfile?.id;
 
-      if (myId === null) {
+      if (myId == null) {
         // myId를 가져오지 못하면 에러를 발생시켜 catch로 이동
         throw new Error("사용자 ID를 가져올 수 없습니다.");
       }
@@ -122,7 +107,7 @@ export default function Group() {
       setErrorMessage("그룹 탈퇴에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupId, navigate, removeGroupMember]);
+  }, [groupId, myProfile?.id, navigate, removeGroupMember]);
 
   const handleDeleteGroup = useCallback(() => {
     setShowGroupDeleteModal(true);

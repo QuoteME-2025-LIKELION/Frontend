@@ -6,15 +6,16 @@ import { useCallback, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { profileApi } from "@/api/profileApi";
 import {
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
+import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 
 export default function MyGroups() {
   const navigate = useNavigate();
   const { data: groupsData = [] } = useMyGroupsQuery();
+  const { data: myProfile } = useMyProfileQuery();
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
 
   const [showQuitModal, setShowQuitModal] = useState(false);
@@ -39,11 +40,9 @@ export default function MyGroups() {
     }
 
     try {
-      // 내 프로필에서 내 ID 가져오기
-      const profileRes = await profileApi.getMyProfile();
-      const myId = profileRes.data.id;
+      const myId = myProfile?.id;
 
-      if (myId === null) {
+      if (myId == null) {
         // myId를 가져오지 못하면 에러를 발생시켜 catch로 이동
         throw new Error("사용자 ID를 가져올 수 없습니다.");
       }
@@ -59,7 +58,7 @@ export default function MyGroups() {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setShowErrorToast(true);
     }
-  }, [removeGroupMember, selectedGroupId]);
+  }, [myProfile?.id, removeGroupMember, selectedGroupId]);
   return (
     <>
       <PageTitle title="나의 그룹 관리" />
