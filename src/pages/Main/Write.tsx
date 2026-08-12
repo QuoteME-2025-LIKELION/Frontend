@@ -7,10 +7,10 @@ import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { CreatedQuote } from "@/types/feed.type";
 
-type MainWriteStep = "write" | "recommend" | "tag";
+type WriteStep = "write" | "recommend" | "tag";
 
-export default function MainWrite() {
-  const [activeStep, setActiveStep] = useState<MainWriteStep>("write");
+export default function Write() {
+  const [activeStep, setActiveStep] = useState<WriteStep>("write");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [diaryText, setDiaryText] = useState("");
 

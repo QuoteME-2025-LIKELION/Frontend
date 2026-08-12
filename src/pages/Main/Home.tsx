@@ -15,7 +15,7 @@ import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 
-export default function MainHome() {
+export default function Home() {
   const navigate = useNavigate();
 
   // 토글 상태 관리
