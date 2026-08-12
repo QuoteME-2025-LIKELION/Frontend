@@ -6,10 +6,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
-import { authApi } from "@/api/authApi";
+import { useLogoutMutation } from "@/hooks/useAuthQueries";
 
 export default function SettingPage() {
   const navigate = useNavigate();
+  const { mutateAsync: logout } = useLogoutMutation();
   const [showToast, setShowToast] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutToast, setShowLogoutToast] = useState(false);
@@ -21,7 +22,7 @@ export default function SettingPage() {
 
   const handleConfirmLogout = async () => {
     try {
-      await authApi.logout();
+      await logout();
       setShowLogoutModal(false);
       useAuthStore.getState().logout(); // Zustand 스토어에서 로그아웃 처리
       setShowLogoutToast(true);

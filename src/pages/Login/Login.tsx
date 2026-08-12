@@ -8,10 +8,11 @@ import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { authApi } from "@/api/authApi";
+import { useLoginMutation } from "@/hooks/useAuthQueries";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { mutateAsync: login } = useLoginMutation();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const isValidEmail = (email: string) => {
@@ -44,7 +45,7 @@ export default function Login() {
       return;
     }
     try {
-      const res = await authApi.login({
+      const res = await login({
         email: email,
         password: pwd,
       });
