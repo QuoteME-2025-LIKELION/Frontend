@@ -59,7 +59,7 @@ export default function TagFix() {
       {date ? (
         <XHeader />
       ) : (
-        <DateHeader active={active} setActive={setActive} />
+        <DateHeader setActive={setActive} />
       )}
 
       {isToggleVisible && (

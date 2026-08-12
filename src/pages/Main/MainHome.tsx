@@ -107,7 +107,7 @@ export default function MainHome() {
       {date ? (
         <XHeader />
       ) : (
-        <DateHeader active={active} setActive={setActive} />
+        <DateHeader setActive={setActive} />
       )}
 
       {isToggleVisible && (

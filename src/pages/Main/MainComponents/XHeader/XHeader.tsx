@@ -1,7 +1,7 @@
 import * as S from "../DateHeader/DateHeader.styles";
 import { useNavigate } from "react-router-dom";
 
-export default function DateHeader() {
+export default function XHeader() {
   const navigate = useNavigate();
 
   return (

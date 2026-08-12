@@ -8,7 +8,7 @@ interface RecommendListProps {
   content: string;
 }
 
-export default function RecommendListList({
+export default function RecommendList({
   content,
   onSelectComplete,
 }: RecommendListProps) {

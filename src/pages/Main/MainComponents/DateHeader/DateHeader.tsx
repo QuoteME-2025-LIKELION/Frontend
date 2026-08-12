@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useNotificationsQuery } from "@/hooks/useNotificationsQuery";
 
 interface DateHeaderProps {
-  active: boolean;
   setActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

@@ -4,7 +4,6 @@ import * as S from "./RequestModal.styles";
 interface RequestModalProps {
   type: "tag" | "poke";
   onClose: () => void;
-  onPoke?: () => void;
   isVisible?: boolean;
 }
 
