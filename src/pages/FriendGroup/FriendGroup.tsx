@@ -40,22 +40,22 @@ const isValidGroup = (data: unknown): data is Group => {
   return typeof group.id === "number" && typeof group.name === "string";
 };
 
+type FriendActionTarget = {
+  id: number;
+  nickname: string;
+};
+
 export default function FriendGroup() {
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
 
-  // 삭제할 아이디 및 모달 상태
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] =
+    useState<FriendActionTarget | null>(null);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
-  const [selectedFriend, setSelectedFriend] = useState(""); // 삭제할 친구 이름 상태
-  const [selectedFriendId, setSelectedFriendId] = useState<number | null>(null); // 삭제할 친구 ID 상태
 
-  // 추가할 아이디 및 모달 상태
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [addTarget, setAddTarget] = useState<FriendActionTarget | null>(null);
   const [showAddToast, setShowAddToast] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(""); // 추가할 친구 이름 상태
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // 추가할 친구 ID 상태
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -104,66 +104,60 @@ export default function FriendGroup() {
 
   const handleDeleteFriend = useCallback(
     (friendName: string, friendId: number) => {
-      setSelectedFriend(friendName);
-      setSelectedFriendId(friendId);
-      setShowDeleteModal(true);
+      setDeleteTarget({ id: friendId, nickname: friendName });
     },
     []
   );
 
   const handleConfirmDelete = useCallback(async () => {
-    if (selectedFriendId === null) {
+    if (!deleteTarget) {
       console.error("삭제할 친구 ID가 유효하지 않습니다.");
-      setShowDeleteModal(false);
       return;
     }
     try {
-      await deleteFriend(selectedFriendId);
-      setShowDeleteModal(false);
+      await deleteFriend(deleteTarget.id);
+      setDeleteTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
       console.error("친구 삭제 처리 중 오류:", err);
-      setShowDeleteModal(false);
+      setDeleteTarget(null);
       setErrorMessage("친구 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [deleteFriend, selectedFriendId]);
+  }, [deleteFriend, deleteTarget]);
 
   const handleAddFriend = useCallback((userName: string, userId: number) => {
-    setSelectedUser(userName);
-    setSelectedUserId(userId);
-    setShowAddModal(true);
+    setAddTarget({ id: userId, nickname: userName });
   }, []);
 
   const handleConfirmAdd = useCallback(async () => {
-    if (selectedUserId === null) {
+    if (!addTarget) {
       console.error("추가할 사용자 ID가 유효하지 않습니다.");
-      setShowAddModal(false);
       return;
     }
     try {
-      await addFriend(selectedUserId);
+      await addFriend(addTarget.id);
 
-      setShowAddModal(false);
+      setAddTarget(null);
       setShowAddToast(true);
     } catch (err) {
       console.error("친구 추가 처리 중 오류:", err);
-      setShowAddModal(false);
+      setAddTarget(null);
       setErrorMessage("친구 추가에 실패했습니다.");
       setShowErrorToast(true);
       return;
     }
-  }, [addFriend, selectedUserId]);
+  }, [addFriend, addTarget]);
 
   return (
     <>
       <PageTitle title="친구 및 그룹" />
       <S.Container>
-        {showDeleteModal && (
+        {deleteTarget && (
           <ConfirmModal
-            nickname={selectedFriend}
+            nickname={deleteTarget.nickname}
             question="님을 삭제하시겠습니까?"
-            onClose={() => setShowDeleteModal(false)}
+            onClose={() => setDeleteTarget(null)}
             onConfirm={handleConfirmDelete}
             showOverlay={true}
           />
@@ -175,11 +169,11 @@ export default function FriendGroup() {
             onClose={() => setShowDeleteToast(false)}
           />
         )}
-        {showAddModal && (
+        {addTarget && (
           <ConfirmModal
-            nickname={selectedUser}
+            nickname={addTarget.nickname}
             question="님을 추가할까요?"
-            onClose={() => setShowAddModal(false)}
+            onClose={() => setAddTarget(null)}
             onConfirm={handleConfirmAdd}
             showOverlay={true}
           />
