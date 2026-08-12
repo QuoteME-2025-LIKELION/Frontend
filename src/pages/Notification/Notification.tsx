@@ -6,8 +6,11 @@ import NotificationLog from "@/pages/Notification/NotificationLog/NotificationLo
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Notification } from "@/types/notification.type";
-import { notificationApi } from "@/api/notificationApi";
 import useNotificationStore from "@/stores/useNotificationStore";
+import {
+  useMarkNotificationReadMutation,
+  useNotificationsQuery,
+} from "@/hooks/useNotificationsQuery";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
   const map: Record<string, Notification[]> = {};
@@ -31,29 +34,26 @@ function groupByDate(list: Notification[]) {
 
 export default function Notification() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const navigate = useNavigate();
   // 필터 null일 때는 모든 알림 api 호출한 뒤 가공 (가공 로직 추후 구현)
   // 필터가 선택됐을 땐 null일 때 데이터에서 필터해서 렌더링
 
   const { setHasUnread } = useNotificationStore();
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const res = await notificationApi.getNotifications();
-      setNotifications(res.data);
-      // 알림을 가져온 후 전역 상태도 업데이트
-      const unreadExists = res.data.some((n) => !n.isRead);
-      setHasUnread(unreadExists);
-    } catch (err) {
-      console.error(err);
-      setNotifications([]);
-    }
-  }, [setHasUnread]);
+  // 알림 목록 조회와 읽음 처리 mutation을 React Query로 관리
+  const { data: notifications = [], isError } = useNotificationsQuery();
+  const { mutateAsync: markNotificationRead } =
+    useMarkNotificationReadMutation();
 
+  // 조회 결과를 전역 unread 상태와 동기화
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    if (isError) {
+      setHasUnread(false);
+      return;
+    }
+
+    setHasUnread(notifications.some((notification) => !notification.isRead));
+  }, [isError, notifications, setHasUnread]);
 
   // 필터 적용된 배열
   const filtered = useMemo(() => {
@@ -78,11 +78,13 @@ export default function Notification() {
       try {
         // 알림 읽음 처리 (아직 안 읽은 경우에만)
         if (!notification.isRead) {
-          await notificationApi.markAsRead(notification.id);
+          await markNotificationRead(notification.id);
         }
       } catch (err) {
         console.error(err);
       }
+
+      // 알림 유형에 맞는 화면으로 이동
       const { type } = notification;
       switch (type) {
         case "GROUP":
@@ -102,15 +104,15 @@ export default function Notification() {
           break;
       }
 
-      // 상태 업데이트를 위해 알림 목록 다시 불러오기
-      fetchNotifications();
     },
-    [navigate, fetchNotifications]
+    [navigate, markNotificationRead]
   );
 
+  // 렌더링 분기를 위한 빈 상태 계산
   const isEmpty =
     selectedFilter === null ? grouped.length === 0 : filtered.length === 0;
 
+  // 빈 상태, 전체보기, 필터 결과를 각각 다른 목록 형태로 렌더링
   return (
     <>
       <PageTitle title="알림" />
