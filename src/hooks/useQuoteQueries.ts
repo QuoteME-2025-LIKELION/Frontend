@@ -8,6 +8,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const quoteQueryKeys = {
   all: ["quotes"] as const,
   byDate: (date: string) => [...quoteQueryKeys.all, "by-date", date] as const,
+  summary: (content: string) =>
+    [...quoteQueryKeys.all, "summary", content] as const,
 };
 
 /**
@@ -21,6 +23,20 @@ export function useQuotesByDateQuery(date: string | undefined) {
       return res.data;
     },
     enabled: date !== undefined,
+  });
+}
+
+/**
+ * 입력한 문장을 기반으로 추천 명언 문장 생성
+ */
+export function useQuoteSummaryQuery(content: string) {
+  return useQuery({
+    queryKey: quoteQueryKeys.summary(content),
+    queryFn: async () => {
+      const res = await quoteApi.summarizeQuote({ content });
+      return res.data;
+    },
+    enabled: Boolean(content),
   });
 }
 

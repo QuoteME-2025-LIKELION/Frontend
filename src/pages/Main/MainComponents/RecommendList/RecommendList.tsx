@@ -1,8 +1,8 @@
 import * as S from "./RecommendList.styles";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "@/components/Button/Button";
-import { quoteApi } from "@/api/quoteApi";
+import { useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
 
 interface RecommendListProps {
   onSelectComplete: (text: string) => void;
@@ -15,37 +15,16 @@ export default function RecommendListList({
 }: RecommendListProps) {
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [quotes, setQuotes] = useState<
-    { id: number; text: string; author: string }[]
-  >([]);
-
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const res = await quoteApi.summarizeQuote({ content });
-
-        if (!res.data?.summary) {
-          setQuotes([]);
-          return;
-        }
-
-        setQuotes([
-          {
-            id: 1,
-            text: res.data.summary,
-            author: "QuoteMe AI",
-          },
-        ]);
-      } catch (e) {
-        console.error("추천 문장 생성 실패:", e);
-        setQuotes([]);
-      }
-    };
-
-    if (content) {
-      fetchSummary();
-    }
-  }, [content]);
+  const { data: summaryData } = useQuoteSummaryQuery(content);
+  const quotes = summaryData?.summary
+    ? [
+        {
+          id: 1,
+          text: summaryData.summary,
+          author: "QuoteMe AI",
+        },
+      ]
+    : [];
 
   return (
     <S.Container>
