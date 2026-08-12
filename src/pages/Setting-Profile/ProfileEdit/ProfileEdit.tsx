@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { profileApi } from "@/api/profileApi";
+import { useUpdateSettingsProfileMutation } from "@/hooks/useProfileQueries";
 
 // TODO: API 연동 및 이미지 문자열 변환 필요
 export default function ProfileEdit() {
@@ -22,6 +22,7 @@ export default function ProfileEdit() {
   );
   // 실제 파일 객체를 담을 상태 추가
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const updateSettingsProfile = useUpdateSettingsProfileMutation();
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -40,7 +41,7 @@ export default function ProfileEdit() {
   };
   const handleSave = async () => {
     try {
-      await profileApi.updateSettingsProfile({
+      await updateSettingsProfile.mutateAsync({
         nickname,
         introduction: intro,
         image: selectedFile,
