@@ -1,12 +1,12 @@
-import DateHeader from "@/pages/Main/MainComponents/DateHeader/DateHeader";
-import HomeBox from "@/pages/Main/MainComponents/HomeBox/HomeBox";
+import DateHeader from "@/pages/Main/components/DateHeader/DateHeader";
+import HomeBox from "@/pages/Main/components/HomeBox/HomeBox";
 import * as S from "@/pages/Main/Main.styles";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
+import XHeader from "@/pages/Main/components/XHeader/XHeader";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import Spinner from "@/components/Spinner/Spinner";
-import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
+import NewQuote from "@/pages/Main/components/NewQuote/NewQuote";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 
 export default function EditQuoteTags() {

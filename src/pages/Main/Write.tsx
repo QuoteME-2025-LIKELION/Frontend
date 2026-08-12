@@ -1,8 +1,8 @@
-import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
-import WriteBox from "@/pages/Main/MainComponents/WriteBox/WriteBox";
-import RecommendList from "@/pages/Main/MainComponents/RecommendList/RecommendList";
+import XHeader from "@/pages/Main/components/XHeader/XHeader";
+import WriteBox from "@/pages/Main/components/WriteBox/WriteBox";
+import RecommendList from "@/pages/Main/components/RecommendList/RecommendList";
 import * as S from "@/pages/Main/Main.styles";
-import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
+import NewQuote from "@/pages/Main/components/NewQuote/NewQuote";
 import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { CreatedQuote } from "@/types/feed.type";

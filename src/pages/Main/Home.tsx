@@ -1,11 +1,11 @@
-import DateHeader from "./MainComponents/DateHeader/DateHeader";
-import HomeBox from "./MainComponents/HomeBox/HomeBox";
-import FeedList from "./MainComponents/FeedList/FeedList";
+import DateHeader from "@/pages/Main/components/DateHeader/DateHeader";
+import HomeBox from "@/pages/Main/components/HomeBox/HomeBox";
+import FeedList from "@/pages/Main/components/FeedList/FeedList";
 import * as S from "@/pages/Main/Main.styles";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import RequestModal from "./MainComponents/Modal/RequestModal";
-import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
+import RequestModal from "@/pages/Main/components/Modal/RequestModal";
+import XHeader from "@/pages/Main/components/XHeader/XHeader";
 
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import ToastModal from "@/components/ToastModal/ToastModal";
