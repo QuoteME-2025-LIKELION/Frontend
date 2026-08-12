@@ -1,7 +1,7 @@
 import * as S from "./HomeBox.styles";
 import { useNavigate } from "react-router-dom";
 import { formatCustomDate } from "@/utils/formatCustomDate";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { toPng } from "html-to-image";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { MyQuote } from "@/types/feed.type";
@@ -18,20 +18,6 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
-
-  const [shareStatus, setShareStatus] = useState<
-    "nothing" | "sharing" | "completed"
-  >("nothing");
-
-  useEffect(() => {
-    if (shareStatus === "completed") {
-      const timer = setTimeout(() => {
-        setShareStatus("nothing");
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [shareStatus]);
 
   const hasFeed = !!myQuote;
   let line1: string, line2: string;

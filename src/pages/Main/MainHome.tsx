@@ -12,6 +12,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import Spinner from "@/components/Spinner/Spinner";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import { useImageShare } from "@/hooks/useImageShare";
 
 export default function MainHome() {
   const navigate = useNavigate();
@@ -32,14 +33,14 @@ export default function MainHome() {
   const otherQuotes = quotesData?.otherQuotes || [];
   const isLoading = isQuotesLoading || isFriendsLoading;
 
-  const [showErrorToast, setShowErrorToast] = useState(false);
-
   const [isCopied, setIsCopied] = useState(false);
-
-  // handleShare 상태 관리
-  const [shareStatus, setShareStatus] = useState<
-    "nothing" | "sharing" | "completed"
-  >("nothing");
+  const {
+    shareStatus,
+    showShareErrorToast,
+    executeShare,
+    resetShareStatus,
+    closeShareErrorToast,
+  } = useImageShare();
 
   useEffect(() => {
     // date 파라미터 유효성 검사
@@ -82,29 +83,6 @@ export default function MainHome() {
     setRequestType("poke");
     setIsTagModalOpen(true);
   };
-
-  // 공유 프로세스를 실행하는 래퍼 함수
-  const executeShare = async (shareProcess: () => Promise<void>) => {
-    setShareStatus("sharing");
-    try {
-      await shareProcess(); // 자식에게 받은 이미지 생성 로직 실행
-      setShareStatus("completed");
-    } catch (error) {
-      console.error("Share failed", error);
-      setShowErrorToast(true);
-      setShareStatus("nothing"); // 실패 시 초기화
-    }
-  };
-
-  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
-  useEffect(() => {
-    if (shareStatus === "completed") {
-      const timer = setTimeout(() => {
-        setShareStatus("nothing");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [shareStatus]);
 
   //문의 메일 복사
   const handleCopy = async () => {
@@ -230,7 +208,7 @@ export default function MainHome() {
       {shareStatus !== "nothing" && (
         <ToastModal
           isVisible={true}
-          onClose={() => setShareStatus("nothing")}
+          onClose={resetShareStatus}
           text={
             shareStatus === "sharing"
               ? "명언 이미지를 저장중입니다."
@@ -241,10 +219,10 @@ export default function MainHome() {
         />
       )}
 
-      {showErrorToast && (
+      {showShareErrorToast && (
         <ToastModal
-          isVisible={showErrorToast}
-          onClose={() => setShowErrorToast(false)}
+          isVisible={showShareErrorToast}
+          onClose={closeShareErrorToast}
           text="이미지 저장에 실패했습니다."
         />
       )}

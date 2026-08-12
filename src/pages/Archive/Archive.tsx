@@ -2,43 +2,20 @@ import Header from "@/components/Header/Header";
 import * as S from "./Archive.styles";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { useEffect, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useImageShare } from "@/hooks/useImageShare";
 
 export default function Archive() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname.split("/").pop();
-
-  // handleShare 상태 관리
-  const [shareStatus, setShareStatus] = useState<
-    "nothing" | "sharing" | "completed"
-  >("nothing");
-
-  const [showErrorToast, setShowErrorToast] = useState(false);
-
-  // 공유 프로세스를 실행하는 래퍼 함수
-  const executeShare = async (shareProcess: () => Promise<void>) => {
-    setShareStatus("sharing");
-    try {
-      await shareProcess(); // 자식에게 받은 이미지 생성 로직 실행
-      setShareStatus("completed");
-    } catch (error) {
-      console.error("Share failed", error);
-      setShowErrorToast(true);
-      setShareStatus("nothing"); // 실패 시 초기화
-    }
-  };
-
-  // completed 상태가 되면 1.5초 후에 nothing 상태로 되돌리는 로직
-  useEffect(() => {
-    if (shareStatus === "completed") {
-      const timer = setTimeout(() => {
-        setShareStatus("nothing");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [shareStatus]);
+  const {
+    shareStatus,
+    showShareErrorToast,
+    executeShare,
+    resetShareStatus,
+    closeShareErrorToast,
+  } = useImageShare();
 
   return (
     <>
@@ -47,7 +24,7 @@ export default function Archive() {
         {shareStatus !== "nothing" && (
           <ToastModal
             isVisible={true}
-            onClose={() => setShareStatus("nothing")}
+            onClose={resetShareStatus}
             text={
               shareStatus === "sharing"
                 ? "명언 이미지를 저장중입니다."
@@ -58,10 +35,10 @@ export default function Archive() {
           />
         )}
 
-        {showErrorToast && (
+        {showShareErrorToast && (
           <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
+            isVisible={showShareErrorToast}
+            onClose={closeShareErrorToast}
             text="이미지 저장에 실패했습니다."
           />
         )}
