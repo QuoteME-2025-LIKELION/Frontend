@@ -2,7 +2,7 @@ import Button from "@/components/Button/Button";
 import * as S from "./ProfileEdit.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -39,6 +39,15 @@ export default function ProfileEdit() {
     const url = URL.createObjectURL(file);
     setPreview(url);
   };
+
+  useEffect(() => {
+    return () => {
+      if (preview?.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleSave = async () => {
     try {
       await updateSettingsProfile.mutateAsync({
