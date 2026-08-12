@@ -59,6 +59,29 @@ export function useRemoveGroupMemberMutation() {
 }
 
 /**
+ * 그룹 메시지 변경 후 그룹 상세 캐시 갱신
+ */
+export function useUpdateGroupMottoMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      groupId,
+      motto,
+    }: {
+      groupId: number | string;
+      motto: string;
+    }) => groupApi.updateMotto(groupId, { motto }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.detail(variables.groupId),
+      });
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+    },
+  });
+}
+
+/**
  * 그룹 삭제 후 내 그룹 목록 캐시 갱신
  */
 export function useDeleteGroupMutation() {
