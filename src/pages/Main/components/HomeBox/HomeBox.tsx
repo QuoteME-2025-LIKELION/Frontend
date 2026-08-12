@@ -98,20 +98,20 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
               fill="white"
             />
           </svg>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            onClick={hasFeed ? handleShare : () => {}} // Feed가 있을 때만 공유 버튼 활성화
-            style={{ cursor: "pointer" }}
-          >
-            <path
-              d="M13 6.914V2.586L17.707 7.293L21.481 11.067L17.64 14.268L13 18.135V13.9C4.854 13.286 2 18 2 18C2 15.063 2.242 12.015 4.551 9.707C7.235 7.022 11.122 6.832 13 6.914Z"
-              fill="white"
-            />
-          </svg>
+          <S.ShareButton type="button" onClick={handleShare} disabled={!hasFeed}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M13 6.914V2.586L17.707 7.293L21.481 11.067L17.64 14.268L13 18.135V13.9C4.854 13.286 2 18 2 18C2 15.063 2.242 12.015 4.551 9.707C7.235 7.022 11.122 6.832 13 6.914Z"
+                fill="white"
+              />
+            </svg>
+          </S.ShareButton>
         </S.BottomBtn>
       </S.bottom>
     </S.Container>

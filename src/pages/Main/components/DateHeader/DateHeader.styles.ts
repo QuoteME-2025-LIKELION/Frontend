@@ -24,3 +24,11 @@ export const IconBox = styled.div`
   justify-content: center;
   gap: 20px;
 `;
+
+export const IconButton = styled.button`
+  display: flex;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+`;

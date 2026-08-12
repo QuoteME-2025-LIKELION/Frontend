@@ -134,3 +134,15 @@ export const BottomBtn = styled.div`
   justify-content: flex-end;
   padding: 20px 0 10px;
 `;
+
+export const ShareButton = styled.button`
+  display: flex;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+`;

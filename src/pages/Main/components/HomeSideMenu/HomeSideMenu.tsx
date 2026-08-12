@@ -34,13 +34,7 @@ export default function HomeSideMenu({
       <S.ToggleWrapper onClick={onClose}>
         <S.Toggle $active={active} onClick={(event) => event.stopPropagation()}>
           <S.ImgBox>
-            <S.ImgPreview
-              style={{
-                backgroundImage: profileImage ? `url(${profileImage})` : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
+            <S.ImgPreview $profileImage={profileImage}>
               {!profileImage && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

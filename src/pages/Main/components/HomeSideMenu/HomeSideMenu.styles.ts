@@ -60,11 +60,13 @@ export const ImgBox = styled.div`
   justify-content: center;
 `;
 
-export const ImgPreview = styled.div`
+export const ImgPreview = styled.div<{ $profileImage?: string }>`
   width: 80px;
   height: 80px;
   border-radius: 80px;
   background-color: #e0e0e0;
+  background-image: ${({ $profileImage }) =>
+    $profileImage ? `url(${$profileImage})` : "none"};
   background-size: cover; /* 이미지 크기 조절 */
   background-position: center; /* 이미지 위치 조절 */
   display: flex;
