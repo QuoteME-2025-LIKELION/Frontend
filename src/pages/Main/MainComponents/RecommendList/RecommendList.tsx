@@ -1,5 +1,4 @@
 import * as S from "./RecommendList.styles";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "@/components/Button/Button";
 import { useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
@@ -13,9 +12,8 @@ export default function RecommendListList({
   content,
   onSelectComplete,
 }: RecommendListProps) {
-  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const { data: summaryData } = useQuoteSummaryQuery(content);
+  const { data: summaryData, refetch } = useQuoteSummaryQuery(content);
   const quotes = summaryData?.summary
     ? [
         {
@@ -36,7 +34,12 @@ export default function RecommendListList({
           height="16"
           viewBox="0 0 16 16"
           fill="none"
-          onClick={() => navigate("")}
+          onClick={() => {
+            setSelectedId(null);
+            if (content) {
+              void refetch();
+            }
+          }}
           style={{ cursor: "pointer" }}
         >
           <path
