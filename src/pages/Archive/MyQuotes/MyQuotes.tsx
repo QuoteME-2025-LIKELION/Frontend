@@ -26,9 +26,8 @@ export default function MyQuotes() {
 
   const moveToDate = useCallback((date: string) => {
     navigate(`/home/${date}`);
-    // 실제 이동 로직을 추후 여기에 구현
-    setShowModal(false); // 이동 후 모달 닫기
-  }, []);
+    setShowModal(false);
+  }, [navigate]);
 
   const handleConfirmMove = useCallback(() => {
     if (selectedQuoteDate) {
@@ -66,7 +65,7 @@ export default function MyQuotes() {
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
           onClose={() => setShowModal(false)}
-          onConfirm={handleConfirmMove} // 저장된 날짜로 이동 처리
+          onConfirm={handleConfirmMove}
           showOverlay={true}
         />
       )}
