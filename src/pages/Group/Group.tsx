@@ -15,6 +15,11 @@ import {
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 
+type GroupMemberActionTarget = {
+  id: number;
+  nickname: string;
+};
+
 export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -27,10 +32,9 @@ export default function Group() {
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
   const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteMemberTarget, setDeleteMemberTarget] =
+    useState<GroupMemberActionTarget | null>(null);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
-  const [selectedMember, setSelectedMember] = useState(""); // 삭제할 그룹원 이름 상태
-  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null); // 삭제할 그룹원 ID 상태
 
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [showQuitToast, setShowQuitToast] = useState(false);
@@ -55,30 +59,26 @@ export default function Group() {
   }, [groupError, navigate]);
 
   const handleDeleteMember = useCallback((userName: string, userId: number) => {
-    setSelectedMember(userName);
-    setSelectedMemberId(userId);
-    setShowDeleteModal(true);
+    setDeleteMemberTarget({ id: userId, nickname: userName });
   }, []);
   const handleConfirmDelete = useCallback(async () => {
-    if (selectedMemberId === null || !groupId) {
+    if (!deleteMemberTarget || !groupId) {
       console.error("삭제할 그룹원 또는 그룹 ID가 유효하지 않습니다.");
-      setShowDeleteModal(false);
       return;
     }
 
     try {
-      await removeGroupMember({ groupId, memberId: selectedMemberId });
+      await removeGroupMember({ groupId, memberId: deleteMemberTarget.id });
 
-      // 성공 시 UI 업데이트
-      setShowDeleteModal(false);
+      setDeleteMemberTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
       console.error("그룹원 삭제 오류:", err);
-      setShowDeleteModal(false);
+      setDeleteMemberTarget(null);
       setErrorMessage("그룹원 삭제에 실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupId, removeGroupMember, selectedMemberId]);
+  }, [deleteMemberTarget, groupId, removeGroupMember]);
 
   const handleQuitGroup = useCallback(() => {
     setShowQuitModal(true);
@@ -138,11 +138,11 @@ export default function Group() {
     <>
       <PageTitle title={groupData?.name || "그룹 상세"} />
       <S.Container>
-        {showDeleteModal && (
+        {deleteMemberTarget && (
           <ConfirmModal
-            nickname={selectedMember}
+            nickname={deleteMemberTarget.nickname}
             question="님을 삭제하시겠습니까?"
-            onClose={() => setShowDeleteModal(false)}
+            onClose={() => setDeleteMemberTarget(null)}
             onConfirm={handleConfirmDelete}
             showOverlay={true}
           />
