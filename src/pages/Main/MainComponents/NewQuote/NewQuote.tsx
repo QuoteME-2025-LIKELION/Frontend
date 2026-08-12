@@ -5,6 +5,7 @@ import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import { quoteApi } from "@/api/quoteApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface NewQuoteProps {
@@ -59,7 +60,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   const handleSubmit = async () => {
     if (mode === "create") {
       try {
-        await api.post("/api/quotes", {
+        await quoteApi.createQuote({
           content: quote.content,
           authorName: quote.authorName,
           authorBirthYear: quote.authorBirthYear,
@@ -79,7 +80,7 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
       }
 
       try {
-        await api.patch(`/api/quotes/${quote.id}/tags`, {
+        await quoteApi.updateTags(quote.id, {
           taggedMemberIds: selectedIds,
         });
 

@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import XHeader from "@/pages/Main/MainComponents/XHeader/XHeader";
 import type { MyQuote } from "@/types/feed.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import api from "@/api/api";
+import { quoteApi } from "@/api/quoteApi";
 import Spinner from "@/components/Spinner/Spinner";
 import NewQuote from "@/pages/Main/MainComponents/NewQuote/NewQuote";
 
@@ -37,7 +37,7 @@ export default function TagFix() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await api.get(`/api/quotes?date=${displayDate}`);
+        const res = await quoteApi.getQuotesByDate(displayDate);
         setMyQuote(res.data.myQuotes[0] || null);
       } catch (err) {
         console.error("메인화면 조회 실패", err);

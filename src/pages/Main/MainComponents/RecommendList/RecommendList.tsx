@@ -2,7 +2,7 @@ import * as S from "./RecommendList.styles";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
-import api from "@/api/api";
+import { quoteApi } from "@/api/quoteApi";
 
 interface RecommendListProps {
   onSelectComplete: (text: string) => void;
@@ -22,10 +22,7 @@ export default function RecommendListList({
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const res = await api.post<{ summary: string }>(
-          "/api/quotes/summarize",
-          { content }
-        );
+        const res = await quoteApi.summarizeQuote({ content });
 
         if (!res.data?.summary) {
           setQuotes([]);

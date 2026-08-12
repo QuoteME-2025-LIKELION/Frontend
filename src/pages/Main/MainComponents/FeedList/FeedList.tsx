@@ -6,6 +6,7 @@ import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import api from "@/api/api";
+import { quoteApi } from "@/api/quoteApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
 
 interface QuotesItem extends OtherQuote {
@@ -76,7 +77,7 @@ export default function FeedList({
 
   const handleRequest = async (quoteId: number) => {
     try {
-      await api.post(`/api/quotes/${quoteId}/tag-request`);
+      await quoteApi.requestTag(quoteId);
       // API 호출 성공 후, 부모에게 받은 onTagRequest 함수 호출
       onTagRequest?.();
     } catch (err) {
@@ -97,9 +98,9 @@ export default function FeedList({
 
     try {
       if (isLiked) {
-        await api.delete(`/api/quotes/${quoteId}/like`);
+        await quoteApi.unlikeQuote(quoteId);
       } else {
-        await api.post(`/api/quotes/${quoteId}/like`);
+        await quoteApi.likeQuote(quoteId);
       }
     } catch (err) {
       // API 호출 실패 시 UI를 원래 상태로 되돌림
