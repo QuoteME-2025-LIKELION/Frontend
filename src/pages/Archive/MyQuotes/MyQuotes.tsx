@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import api from "@/api/api";
+import { archiveApi } from "@/api/archiveApi";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { toPng } from "html-to-image";
 
@@ -23,7 +23,7 @@ export default function MyQuotes() {
   useEffect(() => {
     const fetchMyQuotes = async () => {
       try {
-        const res = await api.get("/api/archives/me");
+        const res = await archiveApi.getMyArchives();
         setMyQuotes(res.data);
       } catch (err) {
         console.error(err);

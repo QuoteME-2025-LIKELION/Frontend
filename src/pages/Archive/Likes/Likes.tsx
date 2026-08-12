@@ -2,7 +2,7 @@ import Feed from "@/components/Feed/Feed";
 import * as S from "./Likes.styles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import api from "@/api/api";
+import { archiveApi } from "@/api/archiveApi";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
@@ -20,7 +20,7 @@ export default function Likes() {
   useEffect(() => {
     const fetchLikedArchives = async () => {
       try {
-        const res = await api.get("/api/archives/likes");
+        const res = await archiveApi.getLikedArchives();
         setLikedFeeds(res.data);
       } catch (err) {
         console.error(err);

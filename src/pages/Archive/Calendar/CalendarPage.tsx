@@ -5,7 +5,7 @@ import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import api from "@/api/api";
+import { archiveApi } from "@/api/archiveApi";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { toPng } from "html-to-image";
@@ -48,7 +48,7 @@ export default function CalendarPage() {
       const selectedDateString = formatDateToYYYYMMDD(selectedDate);
       const fetchFeeds = async () => {
         try {
-          const res = await api.get(`/api/archives?date=${selectedDateString}`);
+          const res = await archiveApi.getArchivesByDate(selectedDateString);
           setFilteredFeeds(res.data);
         } catch (err) {
           console.error(err);
