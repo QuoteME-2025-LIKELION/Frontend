@@ -4,14 +4,15 @@ import { useCallback, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
-import { toPng } from "html-to-image";
 import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 
 export default function Likes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
   const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const downloadElementImage = useElementImageDownload();
   const { data: likedFeeds = [] } = useLikedArchivesQuery();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
@@ -36,22 +37,10 @@ export default function Likes() {
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>
-      new Promise<void>((resolve, reject) => {
-        const feedElement = feedRefs.current[index];
-        if (feedElement) {
-          toPng(feedElement)
-            .then((dataUrl) => {
-              const link = document.createElement("a");
-              link.download = `QuoteMe-${date}-${authorNickname}.png`;
-              link.href = dataUrl;
-              link.click();
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        }
-      });
+      downloadElementImage(
+        feedRefs.current[index],
+        `QuoteMe-${date}-${authorNickname}.png`
+      );
 
     onShare(shareProcess);
   };

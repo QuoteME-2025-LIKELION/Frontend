@@ -6,9 +6,9 @@ import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { toPng } from "html-to-image";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 
 type ValuePiece = Date | null;
 
@@ -19,6 +19,7 @@ export default function CalendarPage() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const downloadElementImage = useElementImageDownload();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
   const selectedDateString = useMemo(() => {
@@ -58,22 +59,10 @@ export default function CalendarPage() {
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>
-      new Promise<void>((resolve, reject) => {
-        const feedElement = feedRefs.current[index];
-        if (feedElement) {
-          toPng(feedElement)
-            .then((dataUrl) => {
-              const link = document.createElement("a");
-              link.download = `QuoteMe-${date}-${authorNickname}.png`;
-              link.href = dataUrl;
-              link.click();
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        }
-      });
+      downloadElementImage(
+        feedRefs.current[index],
+        `QuoteMe-${date}-${authorNickname}.png`
+      );
 
     onShare(shareProcess);
   };
