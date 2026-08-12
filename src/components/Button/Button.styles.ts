@@ -81,3 +81,11 @@ export const Button = styled.button<ButtonProps>`
     cursor: not-allowed;
   }
 `;
+
+export const ButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+`;

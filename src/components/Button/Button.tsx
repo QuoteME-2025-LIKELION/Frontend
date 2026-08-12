@@ -45,18 +45,10 @@ export default function Button({
       border={border}
       disableActive={disableActive}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          width: "100%",
-        }}
-      >
+      <S.ButtonContent>
         {children}
         <span>{title}</span>
-      </div>
+      </S.ButtonContent>
     </S.Button>
   );
 }
