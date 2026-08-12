@@ -4,17 +4,22 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import Search from "@/components/Search/Search";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import List from "@/components/List/List";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { Friend } from "@/types/friend.type";
-import { friendApi } from "@/api/friendApi";
-import { groupApi } from "@/api/groupApi";
+import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import {
+  useCreateGroupMutation,
+  useInviteGroupMemberMutation,
+} from "@/hooks/useGroupQueries";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
-  const [friendList, setFriendList] = useState<Friend[]>([]);
+  const { data: friends = [] } = useFriendsQuery();
+  const { mutateAsync: createGroup } = useCreateGroupMutation();
+  const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
 
   const [groupName, setGroupName] = useState("");
   const [motto, setMotto] = useState("");
@@ -30,24 +35,13 @@ export default function CreateGroup() {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessage3, setErrorMessage3] = useState("");
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const res = await friendApi.getFriends();
-        const validFriends = Array.isArray(res.data)
-          ? res.data.filter(
-              (friend: Friend | null) => friend && friend.id && friend.nickname
-            )
-          : [];
-        setFriendList(validFriends);
-      } catch (err) {
-        console.error("친구 목록 불러오기 오류:", err);
-        setFriendList([]);
-      }
-    };
-
-    fetchFriends();
-  }, []);
+  const friendList = useMemo(
+    () =>
+      friends.filter(
+        (friend: Friend | null) => friend && friend.id && friend.nickname
+      ),
+    [friends]
+  );
 
   // 친구 선택/해제 핸들러
   const handleSelectFriend = useCallback(
@@ -120,7 +114,7 @@ export default function CreateGroup() {
 
     try {
       // 그룹 생성 API 호출하고 생성된 그룹 ID를 받음
-      const createGroupRes = await groupApi.createGroup({
+      const createGroupRes = await createGroup({
         name: groupName,
         motto: motto,
       });
@@ -135,7 +129,7 @@ export default function CreateGroup() {
         // 모든 초대를 병렬로 처리
         await Promise.all(
           selectedFriends.map((friendId) =>
-            groupApi.inviteMember(newGroupId, friendId)
+            inviteGroupMember({ groupId: newGroupId, friendId })
           )
         );
       }
@@ -152,7 +146,14 @@ export default function CreateGroup() {
       setErrorMessage3("실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupName, motto, selectedFriends, navigate]);
+  }, [
+    createGroup,
+    groupName,
+    inviteGroupMember,
+    motto,
+    navigate,
+    selectedFriends,
+  ]);
 
   const [step, setStep] = useState(1);
 

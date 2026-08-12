@@ -22,6 +22,26 @@ export function useMyGroupsQuery() {
 }
 
 /**
+ * 그룹 생성 후 내 그룹 목록 캐시 갱신
+ */
+export function useCreateGroupMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      name,
+      motto,
+    }: {
+      name: string;
+      motto: string;
+    }) => groupApi.createGroup({ name, motto }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+    },
+  });
+}
+
+/**
  * 그룹 상세 정보 조회
  */
 export function useGroupQuery(groupId: number | string | undefined) {
