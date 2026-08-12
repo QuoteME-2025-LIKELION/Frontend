@@ -3,10 +3,12 @@ import * as S from "./NewQuote.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
-import type { Friend } from "@/types/friend.type";
-import { quoteApi } from "@/api/quoteApi";
-import { friendApi } from "@/api/friendApi";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import {
+  useCreateQuoteMutation,
+  useUpdateQuoteTagsMutation,
+} from "@/hooks/useQuoteQueries";
 
 interface NewQuoteProps {
   quote: {
@@ -21,9 +23,11 @@ interface NewQuoteProps {
 
 export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [friends, setFriends] = useState<Friend[]>([]);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { data: friends = [] } = useFriendsQuery();
+  const { mutateAsync: createQuote } = useCreateQuoteMutation();
+  const { mutateAsync: updateQuoteTags } = useUpdateQuoteTagsMutation();
 
   const toggleSelect = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -35,32 +39,20 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const res = await friendApi.getFriends();
-        const fetchedFriends: Friend[] = res.data;
-        setFriends(fetchedFriends);
-
-        // fix 모드일 때, 이미 태그된 친구들을 selectedIds에 미리 추가
-        if (mode === "fix" && quote.taggedNicknames) {
-          const taggedFriends = fetchedFriends.filter((friend) =>
-            quote.taggedNicknames?.includes(friend.nickname)
-          );
-          const taggedIds = taggedFriends.map((friend) => friend.id);
-          setSelectedIds(taggedIds);
-        }
-      } catch (e) {
-        console.error("친구 목록 조회 실패", e);
-      }
-    };
-
-    fetchFriends();
-  }, [mode, quote.taggedNicknames]);
+    // fix 모드일 때, 이미 태그된 친구들을 selectedIds에 미리 추가
+    if (mode === "fix" && quote.taggedNicknames) {
+      const taggedFriends = friends.filter((friend) =>
+        quote.taggedNicknames?.includes(friend.nickname)
+      );
+      const taggedIds = taggedFriends.map((friend) => friend.id);
+      setSelectedIds(taggedIds);
+    }
+  }, [friends, mode, quote.taggedNicknames]);
 
   const handleSubmit = async () => {
     if (mode === "create") {
       try {
-        await quoteApi.createQuote({
+        await createQuote({
           content: quote.content,
           authorName: quote.authorName,
           authorBirthYear: quote.authorBirthYear,
@@ -80,8 +72,11 @@ export default function NewQuote({ quote, mode = "create" }: NewQuoteProps) {
       }
 
       try {
-        await quoteApi.updateTags(quote.id, {
-          taggedMemberIds: selectedIds,
+        await updateQuoteTags({
+          quoteId: quote.id,
+          payload: {
+            taggedMemberIds: selectedIds,
+          },
         });
 
         navigate("/home");
