@@ -1,38 +1,23 @@
 import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
 import * as S from "./MyQuotes.styles";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import { archiveApi } from "@/api/archiveApi";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { toPng } from "html-to-image";
+import { useMyArchivesQuery } from "@/hooks/useArchiveQueries";
 
 export default function MyQuotes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedQuoteDate, setSelectedQuoteDate] = useState<string | null>(
     null
   );
-  const [myQuotes, setMyQuotes] = useState<ArchiveFeed[]>([]);
   const navigate = useNavigate();
+  const { data: myQuotes = [] } = useMyArchivesQuery();
 
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
-
-  useEffect(() => {
-    const fetchMyQuotes = async () => {
-      try {
-        const res = await archiveApi.getMyArchives();
-        setMyQuotes(res.data);
-      } catch (err) {
-        console.error(err);
-        setMyQuotes([]);
-      }
-    };
-
-    fetchMyQuotes();
-  }, []);
 
   const handleQuoteClick = useCallback((date: string) => {
     setSelectedQuoteDate(date);

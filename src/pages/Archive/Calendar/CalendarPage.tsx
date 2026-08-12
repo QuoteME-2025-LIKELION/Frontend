@@ -1,15 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import * as S from "./CalendarPage.styles";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
 import Feed from "@/components/Feed/Feed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import { archiveApi } from "@/api/archiveApi";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { toPng } from "html-to-image";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
+import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 
 type ValuePiece = Date | null;
 
@@ -17,48 +16,27 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
-  const [filteredFeeds, setFilteredFeeds] = useState<ArchiveFeed[]>([]);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
-
-  // 이거는 페이지 이동 시 사용
-  const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
-
-  // 달력 클릭 시 사용
-  useEffect(() => {
-    let selectedDate: Date | null = null;
-
+  const selectedDateString = useMemo(() => {
     if (value instanceof Date) {
-      selectedDate = value;
-    } else if (
-      Array.isArray(value) &&
-      value.length > 0 &&
-      value[0] instanceof Date
-    ) {
-      selectedDate = value[0];
-    } else {
-      setFilteredFeeds([]);
-      return;
+      return formatDateToYYYYMMDD(value);
     }
 
-    if (selectedDate) {
-      const selectedDateString = formatDateToYYYYMMDD(selectedDate);
-      const fetchFeeds = async () => {
-        try {
-          const res = await archiveApi.getArchivesByDate(selectedDateString);
-          setFilteredFeeds(res.data);
-        } catch (err) {
-          console.error(err);
-          setFilteredFeeds([]);
-        }
-      };
-
-      fetchFeeds();
+    if (Array.isArray(value) && value.length > 0 && value[0] instanceof Date) {
+      return formatDateToYYYYMMDD(value[0]);
     }
+
+    return null;
   }, [value]);
+  const { data: filteredFeeds = [] } =
+    useArchivesByDateQuery(selectedDateString);
+
+  // 페이지 이동 시 사용
+  const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
 
   const handleArchiveClick = useCallback((date: string) => {
     setSelectedFeedDate(date); // 날짜 저장

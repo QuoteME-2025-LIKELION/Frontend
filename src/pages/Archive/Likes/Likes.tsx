@@ -1,35 +1,20 @@
 import Feed from "@/components/Feed/Feed";
 import * as S from "./Likes.styles";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { archiveApi } from "@/api/archiveApi";
-import type { ArchiveFeed } from "@/types/archiveFeed.type";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import { toPng } from "html-to-image";
+import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
 
 export default function Likes() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
-  const [likedFeeds, setLikedFeeds] = useState<ArchiveFeed[]>([]);
   const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { data: likedFeeds = [] } = useLikedArchivesQuery();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
-
-  useEffect(() => {
-    const fetchLikedArchives = async () => {
-      try {
-        const res = await archiveApi.getLikedArchives();
-        setLikedFeeds(res.data);
-      } catch (err) {
-        console.error(err);
-        setLikedFeeds([]);
-      }
-    };
-
-    fetchLikedArchives();
-  }, []);
 
   const handleArchiveClick = useCallback((date: string) => {
     setSelectedFeedDate(date); // 날짜 저장
