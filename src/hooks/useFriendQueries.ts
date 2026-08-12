@@ -63,3 +63,12 @@ export function useDeleteFriendMutation() {
     },
   });
 }
+
+/**
+ * 친구 콕 찌르기 요청
+ */
+export function usePokeFriendMutation() {
+  return useMutation({
+    mutationFn: (friendId: number) => friendApi.pokeFriend(friendId),
+  });
+}

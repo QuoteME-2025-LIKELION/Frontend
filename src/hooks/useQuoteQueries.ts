@@ -73,3 +73,45 @@ export function useUpdateQuoteTagsMutation() {
     },
   });
 }
+
+/**
+ * 태그 요청 후 명언 조회 캐시 갱신
+ */
+export function useRequestQuoteTagMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (quoteId: number) => quoteApi.requestTag(quoteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+    },
+  });
+}
+
+/**
+ * 명언 좋아요 후 명언 조회 캐시 갱신
+ */
+export function useLikeQuoteMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (quoteId: number) => quoteApi.likeQuote(quoteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+    },
+  });
+}
+
+/**
+ * 명언 좋아요 취소 후 명언 조회 캐시 갱신
+ */
+export function useUnlikeQuoteMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (quoteId: number) => quoteApi.unlikeQuote(quoteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+    },
+  });
+}
