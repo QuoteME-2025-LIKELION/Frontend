@@ -125,6 +125,23 @@ export function useInviteGroupMemberMutation() {
 }
 
 /**
+ * 그룹 참여 요청 전송 후 그룹 관련 캐시 갱신
+ */
+export function useRequestJoinGroupMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (groupId: number | string) => groupApi.requestJoin(groupId),
+    onSuccess: (_, groupId) => {
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.detail(groupId),
+      });
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+    },
+  });
+}
+
+/**
  * 그룹 삭제 후 내 그룹 목록 캐시 갱신
  */
 export function useDeleteGroupMutation() {

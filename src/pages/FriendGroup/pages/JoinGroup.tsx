@@ -6,14 +6,20 @@ import { useCallback, useEffect, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
-import { groupApi } from "@/api/groupApi";
 import axios from "axios";
+import {
+  useGroupQuery,
+  useRequestJoinGroupMutation,
+} from "@/hooks/useGroupQueries";
 
 export default function JoinGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const [groupData, setGroupData] = useState<Group | null>(null);
+  const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
+  const { data: groupData, error: groupError } = useGroupQuery(
+    isValidGroupId ? groupId : undefined
+  );
+  const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -21,27 +27,17 @@ export default function JoinGroup() {
 
   useEffect(() => {
     // groupId 유효성 검사
-    if (!groupId || isNaN(Number(groupId))) {
+    if (!isValidGroupId) {
       navigate("/not-found", { replace: true });
-      return;
     }
+  }, [isValidGroupId, navigate]);
 
-    const fetchGroupData = async () => {
-      try {
-        const res = await groupApi.getGroup(groupId);
-        setGroupData(res.data);
-      } catch (err) {
-        console.error("그룹 데이터 불러오기 오류:", err);
-        setGroupData(null);
-        // 500 에러일 경우 NotFound 페이지로 이동
-        if (axios.isAxiosError(err) && err.response?.status === 500) {
-          navigate("/not-found", { replace: true });
-        }
-      }
-    };
-
-    fetchGroupData();
-  }, [groupId, navigate]);
+  useEffect(() => {
+    // 500 에러일 경우 NotFound 페이지로 이동
+    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+      navigate("/not-found", { replace: true });
+    }
+  }, [groupError, navigate]);
 
   // 그룹 참여 요청 전송 로직
   const handleConfirm = useCallback(async () => {
@@ -50,7 +46,7 @@ export default function JoinGroup() {
       return;
     }
     try {
-      await groupApi.requestJoin(groupId!);
+      await requestJoinGroup(groupId!);
 
       setShowModal(false);
       setShowToast(true);
@@ -62,7 +58,7 @@ export default function JoinGroup() {
       setShowModal(false);
       setShowFullErrorToast(true);
     }
-  }, [navigate, groupId]);
+  }, [groupData?.memberCount, groupId, navigate, requestJoinGroup]);
 
   return (
     <>
@@ -112,7 +108,9 @@ export default function JoinGroup() {
           onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
-          <GroupCard group={groupData!} onBtnClick={() => setShowModal(true)} />
+          {groupData && (
+            <GroupCard group={groupData} onBtnClick={() => setShowModal(true)} />
+          )}
         </S.Content>
       </S.Container>
     </>
