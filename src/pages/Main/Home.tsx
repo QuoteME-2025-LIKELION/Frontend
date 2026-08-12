@@ -14,13 +14,17 @@ import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  // 토글 상태 관리
-  const [active, setActive] = useState(false);
-  const [isToggleVisible, setIsToggleVisible] = useState(false);
+  const {
+    active,
+    setActive,
+    isVisible: isToggleVisible,
+    close: closeToggle,
+  } = useAnimatedToggle();
 
   const { date } = useParams();
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
@@ -59,24 +63,6 @@ export default function Home() {
 
   }, [date, navigate]);
 
-  // 토글 애니메이션 및 렌더링 관련 로직
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-
-    if (active) {
-      setIsToggleVisible(true);
-    } else {
-      timer = setTimeout(() => {
-        setIsToggleVisible(false);
-      }, 300); // 애니메이션 시간과 동일하게 설정
-    }
-
-    // 컴포넌트가 언마운트되거나 active 상태가 바뀌면 타이머 정리
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [active]);
-
   // 태그 요청
   const handleTagRequest = () => {
     setRequestType("tag");
@@ -111,7 +97,7 @@ export default function Home() {
       )}
 
       {isToggleVisible && (
-        <S.ToggleWrapper onClick={() => setIsToggleVisible(false)}>
+        <S.ToggleWrapper onClick={closeToggle}>
           <S.Toggle $active={active}>
             <S.ImgBox>
               <S.ImgPreview

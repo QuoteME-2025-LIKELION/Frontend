@@ -1,22 +1,21 @@
 import DateHeader from "@/pages/Main/components/DateHeader/DateHeader";
 import HomeBox from "@/pages/Main/components/HomeBox/HomeBox";
 import * as S from "@/pages/Main/Main.styles";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import XHeader from "@/pages/Main/components/XHeader/XHeader";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import Spinner from "@/components/Spinner/Spinner";
 import NewQuote from "@/pages/Main/components/NewQuote/NewQuote";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 
 export default function EditQuoteTags() {
   const navigate = useNavigate();
   const location = useLocation();
   const date = location.state?.date as string | undefined;
 
-  // 토글 상태 관리
-  const [active, setActive] = useState(false);
-  const [isToggleVisible, setIsToggleVisible] = useState(false);
+  const { active, setActive, isVisible: isToggleVisible } = useAnimatedToggle();
 
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
@@ -32,24 +31,6 @@ export default function EditQuoteTags() {
       }
     }
   }, [date, navigate]);
-
-  // 토글 애니메이션 및 렌더링 관련 로직
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-
-    if (active) {
-      setIsToggleVisible(true);
-    } else {
-      timer = setTimeout(() => {
-        setIsToggleVisible(false);
-      }, 300); // 애니메이션 시간과 동일하게 설정
-    }
-
-    // 컴포넌트가 언마운트되거나 active 상태가 바뀌면 타이머 정리
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [active]);
 
   return (
     <S.Container>
