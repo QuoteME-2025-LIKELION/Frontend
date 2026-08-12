@@ -2,10 +2,7 @@ import Header from "@/components/Header/Header";
 import * as S from "./FriendGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Search from "@/components/Search/Search";
-import UserListItem from "@/components/UserListItem/UserListItem";
 import { useCallback, useMemo, useState } from "react";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -17,6 +14,11 @@ import {
   useFriendsQuery,
 } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import FriendGroupListSection from "./components/FriendGroupListSection";
+import FriendGroupModals, {
+  type FriendActionTarget,
+} from "./components/FriendGroupModals";
+import FriendListSection from "./components/FriendListSection";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
 const isValidFriend = (data: unknown): data is Friend => {
@@ -38,11 +40,6 @@ const isValidGroup = (data: unknown): data is Group => {
 
   const group = data as Partial<Group>;
   return typeof group.id === "number" && typeof group.name === "string";
-};
-
-type FriendActionTarget = {
-  id: number;
-  nickname: string;
 };
 
 export default function FriendGroup() {
@@ -153,45 +150,21 @@ export default function FriendGroup() {
     <>
       <PageTitle title="친구 및 그룹" />
       <S.Container>
-        {deleteTarget && (
-          <ConfirmModal
-            nickname={deleteTarget.nickname}
-            question="님을 삭제하시겠습니까?"
-            onClose={() => setDeleteTarget(null)}
-            onConfirm={handleConfirmDelete}
-            showOverlay={true}
-          />
-        )}
-        {showDeleteToast && (
-          <ToastModal
-            text="친구가 삭제되었습니다."
-            isVisible={showDeleteToast}
-            onClose={() => setShowDeleteToast(false)}
-          />
-        )}
-        {addTarget && (
-          <ConfirmModal
-            nickname={addTarget.nickname}
-            question="님을 추가할까요?"
-            onClose={() => setAddTarget(null)}
-            onConfirm={handleConfirmAdd}
-            showOverlay={true}
-          />
-        )}
-        {showAddToast && (
-          <ToastModal
-            text="친구가 추가되었습니다."
-            isVisible={showAddToast}
-            onClose={() => setShowAddToast(false)}
-          />
-        )}
-        {showErrorToast && (
-          <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
-            text={errorMessage}
-          />
-        )}
+        <FriendGroupModals
+          deleteTarget={deleteTarget}
+          addTarget={addTarget}
+          showDeleteToast={showDeleteToast}
+          showAddToast={showAddToast}
+          showErrorToast={showErrorToast}
+          errorMessage={errorMessage}
+          onCloseDeleteModal={() => setDeleteTarget(null)}
+          onConfirmDelete={handleConfirmDelete}
+          onCloseAddModal={() => setAddTarget(null)}
+          onConfirmAdd={handleConfirmAdd}
+          onCloseDeleteToast={() => setShowDeleteToast(false)}
+          onCloseAddToast={() => setShowAddToast(false)}
+          onCloseErrorToast={() => setShowErrorToast(false)}
+        />
         <Header
           showBackBtn={false}
           showXBtn={true}
@@ -209,101 +182,24 @@ export default function FriendGroup() {
               setKeyword("");
             }}
           />
-          <S.Section>
-            <S.Title>
-              <div>{keyword ? "그룹" : "나의 그룹"}</div>
-              <S.BtnBox>
-                <button onClick={() => navigate("/create-group")}>
-                  그룹 만들기
-                </button>
-                <button onClick={() => navigate("/my-groups")}>관리</button>
-              </S.BtnBox>
-            </S.Title>
-            <S.GroupContainer>
-              {keyword ? (
-                searchResultGroups.length > 0 ? (
-                  searchResultGroups.map((group) => {
-                    if (!group || !group.id) return null;
-                    const isMyGroup = myGroupIdSet.has(group.id);
-                    const path = isMyGroup
-                      ? `/group/${group.id}`
-                      : `/join-group/${group.id}`;
-                    return (
-                      <S.GroupBox key={group.id} onClick={() => navigate(path)}>
-                        <S.GroupName>{group.name}</S.GroupName>
-                        <S.GroupCount>{group.memberCount}</S.GroupCount>
-                      </S.GroupBox>
-                    );
-                  })
-                ) : (
-                  <S.EmptyBox>검색 결과가 없습니다.</S.EmptyBox>
-                )
-              ) : groupsList.length > 0 ? (
-                groupsList.map((group) => (
-                  <S.GroupBox
-                    key={group.id}
-                    onClick={() => navigate(`/group/${group.id}`)}
-                  >
-                    <S.GroupName>{group.name}</S.GroupName>
-                    <S.GroupCount>{group.memberCount}</S.GroupCount>
-                  </S.GroupBox>
-                ))
-              ) : (
-                <S.EmptyBox>가입한 그룹이 없습니다.</S.EmptyBox>
-              )}
-            </S.GroupContainer>
-          </S.Section>
-          <S.Section>
-            {!keyword ? <S.Title>친구</S.Title> : <S.Title>유저</S.Title>}
-            <S.FriendList>
-              {keyword ? (
-                searchResultMembers.length > 0 ? (
-                  searchResultMembers.map((user) => {
-                    if (!user || !user.id) return null;
-                    const isFriend = friendIdSet.has(user.id);
-                    return (
-                      <UserListItem
-                        key={user.id}
-                        friend={user}
-                        actionButton={
-                          isFriend
-                            ? {
-                                type: "delete",
-                                text: "삭제",
-                                onClick: () =>
-                                  handleDeleteFriend(user.nickname, user.id),
-                              }
-                            : {
-                                type: "add",
-                                text: "추가",
-                                onClick: () =>
-                                  handleAddFriend(user.nickname, user.id),
-                              }
-                        }
-                      />
-                    );
-                  })
-                ) : (
-                  <S.EmptyBox>검색 결과가 없습니다.</S.EmptyBox>
-                )
-              ) : friendList.length > 0 ? (
-                friendList.map((friend) => (
-                  <UserListItem
-                    key={friend.id}
-                    friend={friend}
-                    actionButton={{
-                      type: "delete",
-                      text: "삭제",
-                      onClick: () =>
-                        handleDeleteFriend(friend.nickname, friend.id),
-                    }}
-                  />
-                ))
-              ) : (
-                <S.EmptyBox>명언을 나눌 친구가 없습니다.</S.EmptyBox>
-              )}
-            </S.FriendList>
-          </S.Section>
+          <FriendGroupListSection
+            keyword={keyword}
+            groups={groupsList}
+            searchGroups={searchResultGroups}
+            myGroupIdSet={myGroupIdSet}
+            onCreateGroup={() => navigate("/create-group")}
+            onManageGroups={() => navigate("/my-groups")}
+            onOpenGroup={(groupId) => navigate(`/group/${groupId}`)}
+            onJoinGroup={(groupId) => navigate(`/join-group/${groupId}`)}
+          />
+          <FriendListSection
+            keyword={keyword}
+            friends={friendList}
+            searchMembers={searchResultMembers}
+            friendIdSet={friendIdSet}
+            onDeleteFriend={handleDeleteFriend}
+            onAddFriend={handleAddFriend}
+          />
         </S.Content>
       </S.Container>
     </>
