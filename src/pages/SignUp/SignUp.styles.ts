@@ -1,25 +1,39 @@
 import styled from "@emotion/styled";
-import * as L from "@/pages/Login/Login.styles";
+import theme from "@/styles/theme";
 
-export const Container = styled(L.Container)``;
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 393px;
+  height: 100vh;
+`;
 
-export const InputBox = styled(L.InputBox)``;
+export const InputBox = styled.div`
+  width: 100%;
+  padding: 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+`;
 
-export const WarningMessage = styled(L.WarningMessage)``;
+export const WarningMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  color: ${theme.colors.red};
+  font-size: 13px;
+  font-weight: 400;
+  ${theme.fonts.pretendard};
+  letter-spacing: -0.26px;
+`;
 
-// export const InputBtn = styled.div`
-//   ${theme.fonts.batang};
-//   border-top: 0.5px solid ${theme.colors.territory};
-//   border-bottom: 0.5px solid ${theme.colors.territory};
-//   background: #fff;
-//   display: flex;
-//   padding: 7px 10px;
-//   justify-content: center;
-//   align-items: center;
-//   font-weight: 700;
-//   align-self: stretch;
-//   margin-top: 81px;
-//   cursor: pointer;
-// `;
-
-export const BtnBox = styled(L.BtnBox)``;
+export const BtnBox = styled.div`
+  margin-top: 5.875rem;
+  width: 100%;
+  padding: 0 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
