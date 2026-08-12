@@ -1,6 +1,6 @@
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import * as S from "./FeedList.styles";
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
@@ -19,6 +19,16 @@ interface QuotesItem extends OtherQuote {
   quoteId?: number;
 }
 
+type FeedListProps = {
+  date?: string;
+  otherQuotes: OtherQuote[] | [];
+  friendList: Friend[] | [];
+  onTagRequest?: () => void;
+  onPoke?: () => void;
+  onShare: (shareProcess: () => Promise<void>) => void;
+  isLoading: boolean;
+};
+
 export default function FeedList({
   date,
   otherQuotes,
@@ -27,19 +37,13 @@ export default function FeedList({
   onPoke,
   onShare,
   isLoading,
-}: {
-  date?: string;
-  otherQuotes: OtherQuote[] | [];
-  friendList: Friend[] | [];
-  onTagRequest?: () => void;
-  onPoke?: () => void;
-  onShare: (shareProcess: () => Promise<void>) => void;
-  isLoading: boolean;
-}) {
+}: FeedListProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
-  const [quotes, setQuotes] = useState<QuotesItem[]>([]); // 피드 목록을 상태로 관리
+  const [likeOverrides, setLikeOverrides] = useState<Record<number, boolean>>(
+    {}
+  );
   const { mutateAsync: requestQuoteTag } = useRequestQuoteTagMutation();
   const { mutateAsync: likeQuote } = useLikeQuoteMutation();
   const { mutateAsync: unlikeQuote } = useUnlikeQuoteMutation();
@@ -48,40 +52,41 @@ export default function FeedList({
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // otherQuotes나 friendList가 변경될 때 feeds 상태를 업데이트
-  useEffect(() => {
+  const quotes = useMemo<QuotesItem[]>(() => {
     const quotesMap = new Map(
       otherQuotes.map((quote) => [quote.authorNickname, quote])
     );
 
-    const combined = friendList.map((friend) => {
+    return friendList.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
+        const quoteId = friendQuote.id;
+
         return {
           ...friendQuote,
-          quoteId: friendQuote.id,
+          quoteId,
           friendId: friend.id,
           isSilenced: false,
-        };
-      } else {
-        return {
-          id: friend.id,
-          friendId: friend.id,
-          authorNickname: friend.nickname,
-          authorProfileImage: friend.profileImage,
-          authorIntroduction: friend.introduction,
-          isSilenced: true,
-          content: "",
-          taggedNicknames: [],
-          timeAgo: "",
-          isLiked: false,
-          createDate: "",
-          isFriendQuote: true,
+          isLiked: likeOverrides[quoteId] ?? friendQuote.isLiked,
         };
       }
+
+      return {
+        id: friend.id,
+        friendId: friend.id,
+        authorNickname: friend.nickname,
+        authorProfileImage: friend.profileImage,
+        authorIntroduction: friend.introduction,
+        isSilenced: true,
+        content: "",
+        taggedNicknames: [],
+        timeAgo: "",
+        isLiked: false,
+        createDate: "",
+        isFriendQuote: true,
+      };
     });
-    setQuotes(combined);
-  }, [otherQuotes, friendList]);
+  }, [friendList, likeOverrides, otherQuotes]);
 
   const handleRequest = async (quoteId: number) => {
     try {
@@ -97,12 +102,7 @@ export default function FeedList({
   };
 
   const handleLike = async (quoteId: number, isLiked: boolean) => {
-    // 먼저 UI를 낙관적으로 업데이트
-    setQuotes((prevQuotes) =>
-      prevQuotes.map((quote) =>
-        quote.id === quoteId ? { ...quote, isLiked: !isLiked } : quote
-      )
-    );
+    setLikeOverrides((prev) => ({ ...prev, [quoteId]: !isLiked }));
 
     try {
       if (isLiked) {
@@ -111,12 +111,7 @@ export default function FeedList({
         await likeQuote(quoteId);
       }
     } catch (err) {
-      // API 호출 실패 시 UI를 원래 상태로 되돌림
-      setQuotes((prevQuotes) =>
-        prevQuotes.map((quote) =>
-          quote.id === quoteId ? { ...quote, isLiked: isLiked } : quote
-        )
-      );
+      setLikeOverrides((prev) => ({ ...prev, [quoteId]: isLiked }));
       console.error("좋아요 처리 실패:", err);
       setErrorMessage("좋아요 처리에 실패했습니다.");
       setShowErrorToast(true);

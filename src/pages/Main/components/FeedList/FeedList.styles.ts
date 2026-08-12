@@ -20,7 +20,7 @@ export const FeedList = styled.div`
 export const NoFeedText = styled.div`
   width: 100%;
   height: 100%;
-  padding: 16pz 0;
+  padding: 16px 0;
   display: flex;
   justify-content: center;
   align-items: center;
