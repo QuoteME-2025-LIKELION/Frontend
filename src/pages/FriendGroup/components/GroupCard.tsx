@@ -1,8 +1,7 @@
 import Button from "@/components/Button/Button";
 import * as S from "./GroupCard.styles";
 import type { Group } from "@/types/group.type";
-import { useEffect, useState } from "react";
-import api from "@/api/api";
+import { useGroupQuery } from "@/hooks/useGroupQueries";
 
 interface GroupCardProps {
   group: Group;
@@ -27,15 +26,10 @@ export default function GroupCard({
   isButton = false,
   onCardClick,
 }: GroupCardProps) {
-  // API에서 since 정보를 제공하지 않으므로 별도 요청
-  const [since, setSince] = useState("");
-  useEffect(() => {
-    const fetchSince = async () => {
-      const res = await api.get(`/api/groups/${group.id}`);
-      setSince(res.data.createdAt.slice(0, 4));
-    };
-    fetchSince();
-  }, [group.id]);
+  // 목록 응답에 since 정보가 없으면 상세 캐시/조회 데이터로 보강
+  const { data: groupDetail } = useGroupQuery(group.id);
+  const since = (group.createdAt || groupDetail?.createdAt)?.slice(0, 4) || "";
+
   return (
     <S.Container>
       {isButton ? (

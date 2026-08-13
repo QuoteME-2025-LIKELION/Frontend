@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import * as G from "@/pages/Group/Group.styles";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -20,12 +19,18 @@ export const Content = styled.div`
   align-items: center;
 `;
 
-export const Title = styled(G.Title)`
+export const Title = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  ${theme.fonts.batang}
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.32px;
 `;
 
 export const InputBox = styled.div`

@@ -8,11 +8,18 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import useAuthStore from "@/stores/useAuthStore";
-import { profileApi } from "@/api/profileApi";
+import {
+  useAccountProfileQuery,
+  useDeleteAccountMutation,
+  useUpdateAccountMutation,
+} from "@/hooks/useProfileQueries";
 
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
+  const { data: accountProfile } = useAccountProfileQuery();
+  const { mutateAsync: updateAccount } = useUpdateAccountMutation();
+  const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
   const [email, setEmail] = useState("");
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
@@ -29,17 +36,10 @@ export default function AccountSetting() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await profileApi.getAccountProfile();
-        setEmail(res.data.email);
-      } catch (e) {
-        console.error("프로필 조회 실패", e);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+    if (accountProfile?.email) {
+      setEmail(accountProfile.email);
+    }
+  }, [accountProfile?.email]);
 
   const handleSave = async () => {
     // 저장 로직 추가
@@ -50,7 +50,7 @@ export default function AccountSetting() {
     };
 
     try {
-      await profileApi.updateAccount(payload);
+      await updateAccount(payload);
 
       setShowToast(true);
       setTimeout(() => {
@@ -65,7 +65,7 @@ export default function AccountSetting() {
 
   const handleConfirmDelete = async () => {
     try {
-      await profileApi.deleteAccount();
+      await deleteAccount();
       logout();
       setShowDeleteModal(false);
       setShowDeleteToast(true);

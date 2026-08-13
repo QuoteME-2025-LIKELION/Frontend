@@ -7,9 +7,10 @@ import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { authApi } from "@/api/authApi";
+import { useSignUpMutation } from "@/hooks/useAuthQueries";
 
 export default function SignUp() {
+  const { mutateAsync: signUp } = useSignUpMutation();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [birth, setBirth] = useState("");
@@ -31,7 +32,7 @@ export default function SignUp() {
     }
 
     try {
-      const res = await authApi.signup({
+      const res = await signUp({
         email,
         password: pwd,
         birthYear: birth, // ← 명세서 필드명 확인

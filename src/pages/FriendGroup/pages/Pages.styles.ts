@@ -1,7 +1,14 @@
-import * as G from "@/pages/FriendGroup/FriendGroup.styles";
+import theme from "@/styles/theme";
 import styled from "@emotion/styled";
 
-export const Container = styled(G.Container)`
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 393px;
+  background-color: ${theme.colors.secondary};
+  height: 100vh;
   gap: 1.875rem;
 `;
 
@@ -22,7 +29,17 @@ export const Content = styled.div`
   }
 `;
 
-export const EmptyBox = styled(G.EmptyBox)`
+export const EmptyBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+  text-align: center;
   padding: 0;
   height: 100%;
 `;

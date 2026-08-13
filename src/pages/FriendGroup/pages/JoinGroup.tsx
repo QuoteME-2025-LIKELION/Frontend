@@ -1,68 +1,64 @@
 import Header from "@/components/Header/Header";
 import * as S from "./Pages.styles";
 import { useNavigate, useParams } from "react-router-dom";
-import GroupCard from "@/pages/FriendGroup/components/GroupCard";
+import GroupCard from "../components/GroupCard";
 import { useCallback, useEffect, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
-import api from "@/api/api";
-import type { AxiosError } from "axios";
+import axios from "axios";
+import {
+  useGroupQuery,
+  useRequestJoinGroupMutation,
+} from "@/hooks/useGroupQueries";
+
+type JoinGroupToast = "success" | "full" | "error" | null;
 
 export default function JoinGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const [groupData, setGroupData] = useState<Group | null>(null);
+  const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
+  const { data: groupData, error: groupError } = useGroupQuery(
+    isValidGroupId ? groupId : undefined
+  );
+  const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
   const [showModal, setShowModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [showFullErrorToast, setShowFullErrorToast] = useState(false);
+  const [toastType, setToastType] = useState<JoinGroupToast>(null);
 
   useEffect(() => {
     // groupId 유효성 검사
-    if (!groupId || isNaN(Number(groupId))) {
+    if (!isValidGroupId) {
       navigate("/not-found", { replace: true });
-      return;
     }
+  }, [isValidGroupId, navigate]);
 
-    const fetchGroupData = async () => {
-      try {
-        const res = await api.get(`/api/groups/${groupId}`);
-        setGroupData(res.data);
-      } catch (err: AxiosError | any) {
-        console.error("그룹 데이터 불러오기 오류:", err);
-        setGroupData(null);
-        // 500 에러일 경우 NotFound 페이지로 이동
-        if (err.response && err.response.status === 500) {
-          navigate("/not-found", { replace: true });
-        }
-      }
-    };
-
-    fetchGroupData();
-  }, [groupId, navigate]);
+  useEffect(() => {
+    // 500 에러일 경우 NotFound 페이지로 이동
+    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+      navigate("/not-found", { replace: true });
+    }
+  }, [groupError, navigate]);
 
   // 그룹 참여 요청 전송 로직
   const handleConfirm = useCallback(async () => {
-    if (groupData?.memberCount === 5) {
-      setShowErrorToast(true);
+    if ((groupData?.memberCount ?? 0) >= 5) {
+      setToastType("full");
       return;
     }
     try {
-      await api.post(`/api/groups/${groupId}/join-request`);
+      await requestJoinGroup(groupId!);
 
       setShowModal(false);
-      setShowToast(true);
+      setToastType("success");
       setTimeout(() => {
         navigate("/friend-group");
       }, 1500);
     } catch (err) {
       console.error("그룹 참여 요청 오류:", err);
       setShowModal(false);
-      setShowFullErrorToast(true);
+      setToastType("error");
     }
-  }, [navigate, groupId]);
+  }, [groupData?.memberCount, groupId, navigate, requestJoinGroup]);
 
   return (
     <>
@@ -77,31 +73,31 @@ export default function JoinGroup() {
             showOverlay={false}
           />
         )}
-        {showToast && (
+        {toastType === "success" && (
           <ToastModal
             text="그룹 참여를 요청했습니다."
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
+            isVisible={true}
+            onClose={() => setToastType(null)}
             showOverlay={false}
           />
         )}
-        {showErrorToast && (
+        {toastType === "full" && (
           <ToastModal
-            isVisible={showErrorToast}
+            isVisible={true}
             text="그룹원이"
             redText="5인을 초과"
             text2="하여"
             text3="참여가 불가능합니다."
             showOverlay={false}
-            onClose={() => setShowErrorToast(false)}
+            onClose={() => setToastType(null)}
           />
         )}
-        {showFullErrorToast && (
+        {toastType === "error" && (
           <ToastModal
-            isVisible={showFullErrorToast}
+            isVisible={true}
             text="그룹 참여 요청에 실패했습니다."
             showOverlay={false}
-            onClose={() => setShowFullErrorToast(false)}
+            onClose={() => setToastType(null)}
           />
         )}
         <Header
@@ -112,7 +108,9 @@ export default function JoinGroup() {
           onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
-          <GroupCard group={groupData!} onBtnClick={() => setShowModal(true)} />
+          {groupData && (
+            <GroupCard group={groupData} onBtnClick={() => setShowModal(true)} />
+          )}
         </S.Content>
       </S.Container>
     </>

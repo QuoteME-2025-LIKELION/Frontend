@@ -4,8 +4,8 @@ import OAuthCallback from "@/OAuthCallback";
 import Start from "@/pages/Start/Start";
 import Profile from "@/pages/SignUp/Profile/Profile";
 import Login from "@/pages/Login/Login";
-import MainHome from "@/pages/Main/MainHome";
-import MainWrite from "@/pages/Main/MainWrite";
+import Home from "@/pages/Main/Home";
+import Write from "@/pages/Main/Write";
 import Archive from "@/pages/Archive/Archive";
 import CalendarPage from "@/pages/Archive/Calendar/CalendarPage";
 import Likes from "@/pages/Archive/Likes/Likes";
@@ -22,7 +22,7 @@ import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
 import Invite from "@/pages/Group/pages/Invite/Invite";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
-import TagFix from "@/pages/Main/MainComponents/TagFix/TagFix";
+import EditQuoteTags from "@/pages/Main/EditQuoteTags/EditQuoteTags";
 import NotFound from "@/pages/NotFound/NotFound";
 
 /**
@@ -39,9 +39,9 @@ export default function AppRoutes() {
 
       {/* 로그인 상태가 필요한 화면 */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/home/:date?" element={<MainHome />} />
-        <Route path="/write" element={<MainWrite />} />
-        <Route path="/fix" element={<TagFix />} />
+        <Route path="/home/:date?" element={<Home />} />
+        <Route path="/write" element={<Write />} />
+        <Route path="/fix" element={<EditQuoteTags />} />
         <Route path="/archive" element={<Archive />}>
           <Route index element={<CalendarPage />} />
           <Route path="my-quotes" element={<MyQuotes />} />

@@ -6,14 +6,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
-import { authApi } from "@/api/authApi";
+import { useLogoutMutation } from "@/hooks/useAuthQueries";
+
+type SettingToast = "comingSoon" | "logoutSuccess" | "logoutError" | null;
 
 export default function SettingPage() {
   const navigate = useNavigate();
-  const [showToast, setShowToast] = useState(false);
+  const { mutateAsync: logout } = useLogoutMutation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showLogoutToast, setShowLogoutToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [toastType, setToastType] = useState<SettingToast>(null);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -21,17 +22,17 @@ export default function SettingPage() {
 
   const handleConfirmLogout = async () => {
     try {
-      await authApi.logout();
+      await logout();
       setShowLogoutModal(false);
       useAuthStore.getState().logout(); // Zustand 스토어에서 로그아웃 처리
-      setShowLogoutToast(true);
+      setToastType("logoutSuccess");
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (err) {
       console.error("로그아웃 처리 중 오류:", err);
       setShowLogoutModal(false);
-      setShowErrorToast(true);
+      setToastType("logoutError");
       return;
     }
   };
@@ -40,11 +41,11 @@ export default function SettingPage() {
     <>
       <PageTitle title="환경설정" />
       <S.Container>
-        {showToast && (
+        {toastType === "comingSoon" && (
           <ToastModal
             text="준비 중인 기능입니다."
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
+            isVisible={true}
+            onClose={() => setToastType(null)}
           />
         )}
         {showLogoutModal && (
@@ -54,17 +55,17 @@ export default function SettingPage() {
             onConfirm={handleConfirmLogout}
           />
         )}
-        {showLogoutToast && (
+        {toastType === "logoutSuccess" && (
           <ToastModal
             text="로그아웃 되었습니다."
-            isVisible={showLogoutToast}
-            onClose={() => setShowLogoutToast(false)}
+            isVisible={true}
+            onClose={() => setToastType(null)}
           />
         )}
-        {showErrorToast && (
+        {toastType === "logoutError" && (
           <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
+            isVisible={true}
+            onClose={() => setToastType(null)}
             text="로그아웃에 실패했습니다."
           />
         )}
@@ -89,10 +90,12 @@ export default function SettingPage() {
             <S.SettingBtn onClick={() => navigate("/account-setting")}>
               계정
             </S.SettingBtn>
-            <S.SettingBtn onClick={() => setShowToast(true)}>알림</S.SettingBtn>
+            <S.SettingBtn onClick={() => setToastType("comingSoon")}>
+              알림
+            </S.SettingBtn>
             <S.SettingBtn
               style={{ borderBottom: "1px solid #DDD" }}
-              onClick={() => setShowToast(true)}
+              onClick={() => setToastType("comingSoon")}
             >
               공지사항
             </S.SettingBtn>

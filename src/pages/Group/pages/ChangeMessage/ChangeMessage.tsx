@@ -5,39 +5,44 @@ import Input from "@/components/Input/Input";
 import Button from "@/components/Button/Button";
 import { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import api from "@/api/api";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import type { AxiosError } from "axios";
+import axios from "axios";
+import {
+  useGroupQuery,
+  useUpdateGroupMottoMutation,
+} from "@/hooks/useGroupQueries";
 
 export default function ChangeMessage() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const { groupId } = useParams();
+  const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
+  const { data: groupData, error: groupError } = useGroupQuery(
+    isValidGroupId ? groupId : undefined
+  );
+  const { mutateAsync: updateGroupMotto } = useUpdateGroupMottoMutation();
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // groupId 유효성 검사 및 그룹 데이터 로딩
+  // groupId 유효성 검사
   useEffect(() => {
-    if (!groupId || isNaN(Number(groupId))) {
+    if (!isValidGroupId) {
       navigate("/not-found", { replace: true });
-      return;
     }
+  }, [isValidGroupId, navigate]);
 
-    const fetchGroupData = async () => {
-      try {
-        const res = await api.get(`/api/groups/${groupId}`);
-        setMessage(res.data.motto || "");
-      } catch (err: AxiosError | any) {
-        if (err.response && err.response.status === 500) {
-          navigate("/not-found", { replace: true });
-        }
-        console.error("그룹 정보 조회 중 오류 발생:", err);
-      }
-    };
+  useEffect(() => {
+    if (groupData) {
+      setMessage(groupData.motto || "");
+    }
+  }, [groupData]);
 
-    fetchGroupData();
-  }, [groupId, navigate]);
+  useEffect(() => {
+    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+      navigate("/not-found", { replace: true });
+    }
+  }, [groupError, navigate]);
 
   const handleSave = async () => {
     const newMotto = message.trim();
@@ -48,7 +53,7 @@ export default function ChangeMessage() {
       return;
     }
     try {
-      await api.patch(`/api/groups/${groupId}/motto`, { motto: newMotto });
+      await updateGroupMotto({ groupId: groupId!, motto: newMotto });
       navigate(`/group/${groupId}`);
     } catch (err) {
       console.error("그룹 메시지 변경 오류:", err);
@@ -87,7 +92,6 @@ export default function ChangeMessage() {
             />
             <S.Desc>20자 이내</S.Desc>
           </S.InputBox>
-          {/* 메시지 변경 로직 추후 구현 예정 */}
           <Button title="저장 완료" onClick={handleSave} />
         </S.Content>
       </S.Container>

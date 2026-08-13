@@ -1,14 +1,15 @@
 import Button from "@/components/Button/Button";
 import * as S from "./Profile.styles";
 import Input from "@/components/Input/Input";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { profileApi } from "@/api/profileApi";
+import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { mutateAsync: setupProfile } = useSetupProfileMutation();
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
@@ -31,9 +32,17 @@ export default function Profile() {
     setPreview(url);
   };
 
+  useEffect(() => {
+    return () => {
+      if (preview?.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleSignUp = async () => {
     try {
-      await profileApi.setupProfile({
+      await setupProfile({
         nickname: nickname,
         introduction: intro,
         image: selectedFile,

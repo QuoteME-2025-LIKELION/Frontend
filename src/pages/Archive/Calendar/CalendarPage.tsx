@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as S from "./CalendarPage.styles";
 import Calendar from "react-calendar";
 import { Global } from "@emotion/react";
-import Feed from "@/components/Feed/Feed";
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import api from "@/api/api";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { toPng } from "html-to-image";
+import { useOutletContext } from "react-router-dom";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
+import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 
 type ValuePiece = Date | null;
 
@@ -17,96 +17,47 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarPage() {
   const [value, onChange] = useState<Value>(new Date());
-  const [filteredFeeds, setFilteredFeeds] = useState<ArchiveFeed[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const downloadElementImage = useElementImageDownload();
+  const {
+    isDateNavigationConfirmOpen,
+    openDateNavigationConfirm,
+    closeDateNavigationConfirm,
+    confirmDateNavigation,
+  } = useConfirmNavigationToDate();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
-
-  // 이거는 페이지 이동 시 사용
-  const [selectedFeedDate, setSelectedFeedDate] = useState<string | null>(null);
-
-  // 달력 클릭 시 사용
-  useEffect(() => {
-    let selectedDate: Date | null = null;
-
+  const selectedDateString = useMemo(() => {
     if (value instanceof Date) {
-      selectedDate = value;
-    } else if (
-      Array.isArray(value) &&
-      value.length > 0 &&
-      value[0] instanceof Date
-    ) {
-      selectedDate = value[0];
-    } else {
-      setFilteredFeeds([]);
-      return;
+      return formatDateToYYYYMMDD(value);
     }
 
-    if (selectedDate) {
-      const selectedDateString = formatDateToYYYYMMDD(selectedDate);
-      const fetchFeeds = async () => {
-        try {
-          const res = await api.get(`/api/archives?date=${selectedDateString}`);
-          setFilteredFeeds(res.data);
-        } catch (err) {
-          console.error(err);
-          setFilteredFeeds([]);
-        }
-      };
-
-      fetchFeeds();
+    if (Array.isArray(value) && value.length > 0 && value[0] instanceof Date) {
+      return formatDateToYYYYMMDD(value[0]);
     }
+
+    return null;
   }, [value]);
-
-  const handleArchiveClick = useCallback((date: string) => {
-    setSelectedFeedDate(date); // 날짜 저장
-    setShowModal(true); // 모달 열기
-  }, []);
-
-  const moveToDate = useCallback((date: string) => {
-    navigate(`/home/${date}`);
-    setShowModal(false); // 이동 후 모달 닫기
-  }, []);
-
-  const handleConfirmMove = useCallback(() => {
-    if (selectedFeedDate) {
-      moveToDate(selectedFeedDate); // 저장된 날짜로 이동 함수 호출
-    } else {
-      setShowModal(false);
-    }
-  }, [selectedFeedDate, moveToDate]);
+  const { data: filteredFeeds = [] } =
+    useArchivesByDateQuery(selectedDateString);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>
-      new Promise<void>((resolve, reject) => {
-        const feedElement = feedRefs.current[index];
-        if (feedElement) {
-          toPng(feedElement)
-            .then((dataUrl) => {
-              const link = document.createElement("a");
-              link.download = `QuoteMe-${date}-${authorNickname}.png`;
-              link.href = dataUrl;
-              link.click();
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        }
-      });
+      downloadElementImage(
+        feedRefs.current[index],
+        `QuoteMe-${date}-${authorNickname}.png`
+      );
 
     onShare(shareProcess);
   };
 
   return (
     <S.Container>
-      {showModal && (
+      {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
-          onClose={() => setShowModal(false)}
-          onConfirm={handleConfirmMove}
+          onClose={closeDateNavigationConfirm}
+          onConfirm={confirmDateNavigation}
           showOverlay={true}
         />
       )}
@@ -165,7 +116,7 @@ export default function CalendarPage() {
       <S.FeedContainer>
         {filteredFeeds.length > 0 &&
           filteredFeeds.map((feed, index) => (
-            <Feed
+            <QuoteFeed
               key={feed.id}
               ref={(el: HTMLDivElement | null) => {
                 feedRefs.current[index] = el;
@@ -176,7 +127,7 @@ export default function CalendarPage() {
               tag={feed.taggedMemberNames}
               isInArchive={true}
               onArchiveClick={() =>
-                handleArchiveClick(feed.createDate.slice(0, 10))
+                openDateNavigationConfirm(feed.createDate.slice(0, 10))
               }
               onShare={() =>
                 handleShare(

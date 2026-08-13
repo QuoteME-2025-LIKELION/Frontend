@@ -39,24 +39,16 @@ export default function Button({
     <S.Button
       onClick={onClick}
       disabled={disabled}
-      font={font}
-      bgColor={bgColor}
-      fontcolor={fontcolor}
-      border={border}
-      disableActive={disableActive}
+      $font={font}
+      $bgColor={bgColor}
+      $fontColor={fontcolor}
+      $border={border}
+      $disableActive={disableActive}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          width: "100%",
-        }}
-      >
+      <S.ButtonContent>
         {children}
         <span>{title}</span>
-      </div>
+      </S.ButtonContent>
     </S.Button>
   );
 }

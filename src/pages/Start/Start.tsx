@@ -5,10 +5,11 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/useAuthStore";
 import Spinner from "@/components/Spinner/Spinner";
-import { authApi } from "@/api/authApi";
+import { useOAuthRedirect } from "@/hooks/useAuthQueries";
 
 export default function Start() {
   const navigate = useNavigate();
+  const redirectToOAuthProvider = useOAuthRedirect();
   const [showErrorToast, setShowErrorToast] = useState(false);
 
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -27,11 +28,11 @@ export default function Start() {
   //구글 카카오 로그인 보류
   //이거 어케 할건지
   const handleSignup = (provider: string) => {
-    authApi.redirectToOAuthProvider(provider);
+    redirectToOAuthProvider(provider);
   };
 
   const handleLogin = (provider: string) => {
-    authApi.redirectToOAuthProvider(provider);
+    redirectToOAuthProvider(provider);
     alert("로그인 준비중입니다.");
   };
 

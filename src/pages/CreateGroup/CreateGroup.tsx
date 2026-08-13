@@ -2,23 +2,30 @@ import Header from "@/components/Header/Header";
 import * as S from "./CreateGroup.styles";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
-import Input from "@/components/Input/Input";
-import Search from "@/components/Search/Search";
-import { useCallback, useEffect, useState } from "react";
-import List from "@/components/List/List";
-import ToastModal from "@/components/ToastModal/ToastModal";
+import { useCallback, useMemo, useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import useDebounce from "@/hooks/useDebounce";
 import type { Friend } from "@/types/friend.type";
-import api from "@/api/api";
+import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import {
+  useCreateGroupMutation,
+  useInviteGroupMemberMutation,
+} from "@/hooks/useGroupQueries";
+import CreateGroupInviteStep from "./components/CreateGroupInviteStep";
+import CreateGroupStepFields from "./components/CreateGroupStepFields";
+import CreateGroupToasts from "./components/CreateGroupToasts";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
-  const [friendList, setFriendList] = useState<Friend[]>([]);
+  const { data: friends = [] } = useFriendsQuery();
+  const { mutateAsync: createGroup } = useCreateGroupMutation();
+  const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
 
   const [groupName, setGroupName] = useState("");
   const [motto, setMotto] = useState("");
 
   const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebounce(keyword, 500);
 
   const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
   const [showToast, setShowToast] = useState(false);
@@ -29,24 +36,13 @@ export default function CreateGroup() {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessage3, setErrorMessage3] = useState("");
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const res = await api.get("/api/settings/friends-list");
-        const validFriends = Array.isArray(res.data)
-          ? res.data.filter(
-              (friend: Friend | null) => friend && friend.id && friend.nickname
-            )
-          : [];
-        setFriendList(validFriends);
-      } catch (err) {
-        console.error("친구 목록 불러오기 오류:", err);
-        setFriendList([]);
-      }
-    };
-
-    fetchFriends();
-  }, []);
+  const friendList = useMemo(
+    () =>
+      friends.filter(
+        (friend: Friend | null) => friend && friend.id && friend.nickname
+      ),
+    [friends]
+  );
 
   // 친구 선택/해제 핸들러
   const handleSelectFriend = useCallback(
@@ -77,7 +73,7 @@ export default function CreateGroup() {
     (friend) =>
       friend &&
       !selectedFriends.includes(friend.id) &&
-      friend.nickname.includes(keyword)
+      friend.nickname.includes(debouncedKeyword)
   );
 
   // 위 목록을 합쳐서 최종적으로 표시할 친구 목록 생성
@@ -119,7 +115,7 @@ export default function CreateGroup() {
 
     try {
       // 그룹 생성 API 호출하고 생성된 그룹 ID를 받음
-      const createGroupRes = await api.post("/api/groups", {
+      const createGroupRes = await createGroup({
         name: groupName,
         motto: motto,
       });
@@ -134,7 +130,7 @@ export default function CreateGroup() {
         // 모든 초대를 병렬로 처리
         await Promise.all(
           selectedFriends.map((friendId) =>
-            api.post(`/api/groups/${newGroupId}/invite/${friendId}`)
+            inviteGroupMember({ groupId: newGroupId, friendId })
           )
         );
       }
@@ -151,7 +147,14 @@ export default function CreateGroup() {
       setErrorMessage3("실패했습니다.");
       setShowErrorToast(true);
     }
-  }, [groupName, motto, selectedFriends, navigate]);
+  }, [
+    createGroup,
+    groupName,
+    inviteGroupMember,
+    motto,
+    navigate,
+    selectedFriends,
+  ]);
 
   const [step, setStep] = useState(1);
 
@@ -159,25 +162,17 @@ export default function CreateGroup() {
     <>
       <PageTitle title="그룹 만들기" />
       <S.Container>
-        {showToast && (
-          <ToastModal
-            isVisible={showToast}
-            text="그룹이 생성되었습니다."
-            onClose={() => setShowToast(false)}
-            showOverlay={false}
-          />
-        )}
-        {showErrorToast && (
-          <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => {
-              setShowErrorToast(false);
-              setErrorMessage3("");
-            }}
-            text={errorMessage}
-            {...(errorMessage3 && { text3: errorMessage3 })}
-          />
-        )}
+        <CreateGroupToasts
+          showSuccessToast={showToast}
+          showErrorToast={showErrorToast}
+          errorMessage={errorMessage}
+          errorMessage3={errorMessage3}
+          onCloseSuccessToast={() => setShowToast(false)}
+          onCloseErrorToast={() => {
+            setShowErrorToast(false);
+            setErrorMessage3("");
+          }}
+        />
         <Header
           showBackBtn={false}
           showXBtn={true}
@@ -186,133 +181,27 @@ export default function CreateGroup() {
           onClickXBtn={() => navigate("/friend-group")}
         />
         <S.Content>
-          {step != 3 && (
-            <S.NavyBox>
-              {/* navy box */}
-              <S.InputContainer>
-                {step === 1 && (
-                  <>
-                    <S.MTitle>
-                      그룹의 이름을 <br />
-                      설정해 주세요
-                    </S.MTitle>
-                    <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요</S.STitle>
-                    <S.InputBox>
-                      <Input
-                        placeholder="그룹명 설정"
-                        required={true}
-                        value={groupName}
-                        onChange={(e) => setGroupName(e.target.value)}
-                        maxLength={10}
-                      />
-                      {isSubmitted && groupName.trim().length === 0 ? (
-                        <S.ErrorMsg>그룹명을 입력해주세요.</S.ErrorMsg>
-                      ) : (
-                        <div>10자 이내</div>
-                      )}
-                    </S.InputBox>
-                    <Button
-                      title="다음으로"
-                      onClick={() => setStep(2)}
-                      disabled={groupName.trim().length === 0}
-                    />
-                  </>
-                )}
-                {step === 2 && (
-                  <>
-                    <S.MTitle>
-                      그룹의 메시지를 <br />
-                      설정해 주세요
-                    </S.MTitle>
-                    <S.STitle>
-                      그룹 메시지는 누구나 언제든 수정할 수 있어요
-                    </S.STitle>
-                    <S.InputBox>
-                      <Input
-                        placeholder="메시지 설정"
-                        value={motto}
-                        onChange={(e) => setMotto(e.target.value)}
-                        maxLength={20}
-                      />
-                      <div>20자 이내</div>
-                    </S.InputBox>
-                    <S.BtnBox>
-                      <Button title="뒤로가기" onClick={() => setStep(1)} />
-                      <Button title="건너뛰기" onClick={() => setStep(3)} />
-                    </S.BtnBox>
-                  </>
-                )}
-              </S.InputContainer>
-            </S.NavyBox>
-          )}
-          {step === 3 && (
-            <S.Main>
-              <S.TitleContainer>
-                <S.TitleLine>
-                  <S.MTitle>
-                    함께할 멤버를 <br />
-                    초대해 보세요
-                  </S.MTitle>
-                  <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
-                </S.TitleLine>
-                <S.Desc>그룹의 최대 정원은 5명이에요</S.Desc>
-              </S.TitleContainer>
-              <Search
-                placeholder="검색"
-                desc={
-                  friendList.length === 0
-                    ? "아직 추가된 친구가 없습니다."
-                    : keyword && displayedFriends.length === 0
-                      ? "검색 결과가 없습니다."
-                      : "나의 친구 중에서만 초대할 수 있어요."
-                }
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onClear={() => setKeyword("")}
-              />
-              <S.FriendListContainer>
-                <S.FriendList>
-                  {friendList.length > 0 ? (
-                    displayedFriends.length > 0 ? (
-                      displayedFriends.map((friend) => (
-                        <List
-                          key={friend.id}
-                          friend={friend}
-                          isSelectable={true}
-                          isSelected={selectedFriends.includes(friend.id)}
-                          onSelect={() => handleSelectFriend(friend.id)}
-                        />
-                      ))
-                    ) : null
-                  ) : (
-                    <S.EmptyFriendContainer>
-                      <S.EmptyFriendList>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M4.66669 4.6665L11.3334 11.3332M11.3334 11.3332V4.6665M11.3334 11.3332H4.66669"
-                            stroke="black"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <button onClick={() => navigate("/friend-group")}>
-                          친구 추가
-                        </button>
-                        <div>탭으로 이동</div>
-                      </S.EmptyFriendList>
-                      <Button title="그룹 만들기" onClick={handleCreateGroup} />
-                    </S.EmptyFriendContainer>
-                  )}
-                </S.FriendList>
-              </S.FriendListContainer>
-            </S.Main>
-          )}
+          <CreateGroupStepFields
+            step={step}
+            groupName={groupName}
+            motto={motto}
+            isSubmitted={isSubmitted}
+            onChangeGroupName={setGroupName}
+            onChangeMotto={setMotto}
+            onMoveStep={setStep}
+          />
+          <CreateGroupInviteStep
+            step={step}
+            keyword={keyword}
+            friendList={friendList}
+            displayedFriends={displayedFriends}
+            selectedFriends={selectedFriends}
+            onChangeKeyword={setKeyword}
+            onClearKeyword={() => setKeyword("")}
+            onSelectFriend={handleSelectFriend}
+            onMoveToFriendGroup={() => navigate("/friend-group")}
+            onCreateGroup={handleCreateGroup}
+          />
         </S.Content>
 
         {displayedFriends.length > 0 && (

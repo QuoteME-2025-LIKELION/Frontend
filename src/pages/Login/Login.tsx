@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useAuthStore from "@/stores/useAuthStore";
-import useNotificationStore from "@/stores/useNotificationStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { authApi } from "@/api/authApi";
+import { useLoginMutation } from "@/hooks/useAuthQueries";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { mutateAsync: login } = useLoginMutation();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const isValidEmail = (email: string) => {
@@ -45,7 +45,7 @@ export default function Login() {
       return;
     }
     try {
-      const res = await authApi.login({
+      const res = await login({
         email: email,
         password: pwd,
       });
@@ -54,7 +54,6 @@ export default function Login() {
       if (res.status === 200 && res.data.data?.accessToken) {
         const accessToken = res.data.data.accessToken;
         useAuthStore.getState().login(accessToken); // Zustand 스토어에 로그인 상태 업데이트
-        useNotificationStore.getState().fetchNotifications(); // 알림 상태 초기화
         navigate("/home"); // 로그인 성공 후 이동할 경로
       }
     } catch (err) {
