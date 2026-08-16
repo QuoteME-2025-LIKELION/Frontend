@@ -14,12 +14,11 @@ export default defineConfig([
     plugins: {
       import: esPluginImport,
       "unused-imports": eslintPluginUnusedImports,
-      "react-refresh": reactRefresh,
     },
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommended,
-      reactHooks.configs["recommended-latest"],
+      reactHooks.configs.flat["recommended-latest"],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
