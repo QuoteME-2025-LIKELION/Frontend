@@ -22,7 +22,7 @@ export default function Home() {
 
   const {
     active,
-    setActive,
+    toggle: toggleMenu,
     isVisible: isToggleVisible,
     close: closeToggle,
   } = useAnimatedToggle();
@@ -82,7 +82,7 @@ export default function Home() {
       {date ? (
         <XHeader />
       ) : (
-        <DateHeader setActive={setActive} />
+        <DateHeader onToggleMenu={toggleMenu} />
       )}
 
       {isToggleVisible && (

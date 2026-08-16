@@ -25,7 +25,7 @@ export default defineConfig([
       ecmaVersion: 2020,
       parser: tseslint.parser,
       parserOptions: {
-        project: ["./tsconfig.app.json"],
+        project: ["./tsconfig.app.json", "./tsconfig.node.json"],
       },
       globals: globals.browser,
     },

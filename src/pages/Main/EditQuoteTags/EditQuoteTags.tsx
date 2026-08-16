@@ -15,7 +15,7 @@ export default function EditQuoteTags() {
   const location = useLocation();
   const date = location.state?.date as string | undefined;
 
-  const { active, setActive, isVisible: isToggleVisible } = useAnimatedToggle();
+  const { active, toggle: toggleMenu, isVisible: isToggleVisible } = useAnimatedToggle();
 
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
@@ -40,7 +40,7 @@ export default function EditQuoteTags() {
       {date ? (
         <XHeader />
       ) : (
-        <DateHeader setActive={setActive} />
+        <DateHeader onToggleMenu={toggleMenu} />
       )}
 
       {isToggleVisible && (

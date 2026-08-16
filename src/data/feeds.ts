@@ -1,7 +1,19 @@
 // import type { Feed } from "@/types/feed.type";
 // Feed 타입을 더 이상 사용하지 않으므로 주석처리
 
-export const MOCK_FEEDS: {}[] = [
+type MockFeed = {
+  id: number;
+  content: string;
+  createDate: string;
+  authorId: number;
+  authorName: string;
+  profileImageUrl?: string;
+  bio: string;
+  taggedUsers: { id: number; nickname: string }[];
+  isLiked: boolean;
+};
+
+export const MOCK_FEEDS: MockFeed[] = [
   {
     id: 1,
     content: "방귀 뀐 놈이 성낸다",

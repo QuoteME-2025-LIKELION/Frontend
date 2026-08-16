@@ -48,10 +48,9 @@ export default function UserListItem({
   const { nickname, introduction, profileImage } = friend;
   const handleClick = isSelectable ? onSelect : undefined;
 
-  // 버튼 컴포넌트 렌더링
-  const ActionBtn = () => {
-    if (!actionButton) return null;
-    if (isSelectable) return null;
+  let actionButtonElement = null;
+
+  if (actionButton && !isSelectable) {
     const { type, text, onClick } = actionButton;
     const ButtonComponent =
       type === "delete"
@@ -59,9 +58,11 @@ export default function UserListItem({
         : type === "add" || type === "invite"
           ? S.AddBtn
           : null;
-    if (!ButtonComponent) return null;
-    return <ButtonComponent onClick={onClick}>{text}</ButtonComponent>;
-  };
+
+    actionButtonElement = ButtonComponent ? (
+      <ButtonComponent onClick={onClick}>{text}</ButtonComponent>
+    ) : null;
+  }
 
   return (
     <S.Container
@@ -79,9 +80,7 @@ export default function UserListItem({
         <S.Username>{nickname}</S.Username>
         <S.Intro>{introduction}</S.Intro>
       </S.UserBox>
-      <S.BtnBox>
-        <ActionBtn />
-      </S.BtnBox>
+      <S.BtnBox>{actionButtonElement}</S.BtnBox>
     </S.Container>
   );
 }

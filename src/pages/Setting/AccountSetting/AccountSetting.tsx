@@ -2,7 +2,7 @@ import Button from "@/components/Button/Button";
 import * as S from "./AccountSetting.styles";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -20,7 +20,7 @@ export default function AccountSetting() {
   const { data: accountProfile } = useAccountProfileQuery();
   const { mutateAsync: updateAccount } = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
-  const [email, setEmail] = useState("");
+  const [emailDraft, setEmailDraft] = useState<string | null>(null);
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
   const isValidEmail = (email: string) => {
@@ -34,12 +34,7 @@ export default function AccountSetting() {
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    if (accountProfile?.email) {
-      setEmail(accountProfile.email);
-    }
-  }, [accountProfile?.email]);
+  const email = emailDraft ?? accountProfile?.email ?? "";
 
   const handleSave = async () => {
     // 저장 로직 추가
@@ -144,7 +139,7 @@ export default function AccountSetting() {
           <S.TextName>이메일 변경</S.TextName>
           <Input
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmailDraft(e.target.value)}
             placeholder="이메일 입력"
             type="email"
             name="email"

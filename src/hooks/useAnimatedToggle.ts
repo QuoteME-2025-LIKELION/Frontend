@@ -8,20 +8,35 @@ export default function useAnimatedToggle(animationDuration = 300) {
   const [active, setActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  const open = useCallback(() => {
+    setIsVisible(true);
+    setActive(true);
+  }, []);
+
   const close = useCallback(() => {
     setActive(false);
   }, []);
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
+  const toggle = useCallback(() => {
+    setActive((prev) => {
+      const next = !prev;
 
+      if (next) {
+        setIsVisible(true);
+      }
+
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
     if (active) {
-      setIsVisible(true);
-    } else {
-      timer = setTimeout(() => {
-        setIsVisible(false);
-      }, animationDuration);
+      return;
     }
+
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, animationDuration);
 
     return () => {
       clearTimeout(timer);
@@ -30,7 +45,8 @@ export default function useAnimatedToggle(animationDuration = 300) {
 
   return {
     active,
-    setActive,
+    open,
+    toggle,
     isVisible,
     close,
   };

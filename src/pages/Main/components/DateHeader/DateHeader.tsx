@@ -5,10 +5,10 @@ import { useEffect } from "react";
 import { useNotificationsQuery } from "@/hooks/useNotificationsQuery";
 
 interface DateHeaderProps {
-  setActive: React.Dispatch<React.SetStateAction<boolean>>;
+  onToggleMenu: () => void;
 }
 
-export default function DateHeader({ setActive }: DateHeaderProps) {
+export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
   const navigate = useNavigate();
   const { hasUnread, setHasUnread } = useNotificationStore();
   const { data: notifications = [], isError } = useNotificationsQuery();
@@ -81,7 +81,7 @@ export default function DateHeader({ setActive }: DateHeaderProps) {
 
           <S.IconButton
             type="button"
-            onClick={() => setActive((prev) => !prev)}
+            onClick={onToggleMenu}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

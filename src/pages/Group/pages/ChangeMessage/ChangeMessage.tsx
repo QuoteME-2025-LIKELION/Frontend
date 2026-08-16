@@ -14,7 +14,7 @@ import {
 
 export default function ChangeMessage() {
   const navigate = useNavigate();
-  const [message, setMessage] = useState("");
+  const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const { groupId } = useParams();
   const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
   const { data: groupData, error: groupError } = useGroupQuery(
@@ -24,6 +24,7 @@ export default function ChangeMessage() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const message = draftMessage ?? groupData?.motto ?? "";
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -31,12 +32,6 @@ export default function ChangeMessage() {
       navigate("/not-found", { replace: true });
     }
   }, [isValidGroupId, navigate]);
-
-  useEffect(() => {
-    if (groupData) {
-      setMessage(groupData.motto || "");
-    }
-  }, [groupData]);
 
   useEffect(() => {
     if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
@@ -87,7 +82,7 @@ export default function ChangeMessage() {
               placeholder="메시지를 입력하세요"
               name="message"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => setDraftMessage(e.target.value)}
               maxLength={20}
             />
             <S.Desc>20자 이내</S.Desc>

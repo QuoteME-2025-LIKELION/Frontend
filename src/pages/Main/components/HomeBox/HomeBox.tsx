@@ -65,9 +65,12 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       {/* 내 피드가 존재한다면 태그 수정 페이지로 이동 */}
       <S.Wrapper
         onClick={() => {
-          hasFeed
-            ? navigate("/fix", { state: { date: displayDate } })
-            : navigate("/write");
+          if (hasFeed) {
+            navigate("/fix", { state: { date: displayDate } });
+            return;
+          }
+
+          navigate("/write");
         }}
       >
         <S.Left>{day}</S.Left>
