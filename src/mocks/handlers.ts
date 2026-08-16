@@ -1,5 +1,7 @@
 import { http, HttpResponse } from "msw";
 
+const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -79,8 +81,7 @@ export const handlers = [
       id: 1,
       nickname: "손지수",
       introduction: "긍정의 힘을 믿어요",
-      profileImageUrl:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+      profileImageUrl: MOCK_PROFILE_IMAGE,
     });
   }),
 
@@ -90,8 +91,34 @@ export const handlers = [
       id: 1,
       nickname: "수정된닉네임",
       introduction: "프로필이 수정되었습니다.",
-      profileImageUrl:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+      profileImageUrl: MOCK_PROFILE_IMAGE,
+    });
+  }),
+
+  http.post("/api/settings/profile", () => {
+    return HttpResponse.json({
+      nickname: "손지수",
+      email: "guest@quoteme.com",
+      introduction: "긍정의 힘을 믿어요",
+      profileImage: MOCK_PROFILE_IMAGE,
+    });
+  }),
+
+  http.get("/api/settings/profile", () => {
+    return HttpResponse.json({
+      nickname: "손지수",
+      email: "guest@quoteme.com",
+      introduction: "긍정의 힘을 믿어요",
+      profileImage: MOCK_PROFILE_IMAGE,
+    });
+  }),
+
+  http.put("/api/settings/profile", () => {
+    return HttpResponse.json({
+      nickname: "수정된닉네임",
+      email: "guest@quoteme.com",
+      introduction: "프로필이 수정되었습니다.",
+      profileImage: MOCK_PROFILE_IMAGE,
     });
   }),
 
@@ -116,8 +143,7 @@ export const handlers = [
       id: Number(params.id),
       nickname: `타인_${params.id}`,
       introduction: "타인 프로필 소개글입니다.",
-      profileImageUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+      profileImageUrl: MOCK_PROFILE_IMAGE,
     });
   }),
 
@@ -137,16 +163,19 @@ export const handlers = [
     return new HttpResponse(null, { status: 201 });
   }),
 
+  http.post("/api/friends/add/:userId", () => {
+    return new HttpResponse(null, { status: 201 });
+  }),
+
   http.get("/api/friends/requests", () => {
     return HttpResponse.json([
       {
-        requestId: 10,
-        requesterId: 5,
-        requesterNickname: "라라진",
-        requesterProfileImageUrl:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
-        createdAt: "2025-11-07T10:00:00",
-      },
+          requestId: 10,
+          requesterId: 5,
+          requesterNickname: "라라진",
+          requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+          createdAt: "2025-11-07T10:00:00",
+        },
     ]);
   }),
 
@@ -483,8 +512,7 @@ export const handlers = [
           id: 2,
           nickname: keyword ? `${keyword}_유저` : "라라진",
           introduction: "Seize the day",
-          profileImageUrl:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+          profileImageUrl: MOCK_PROFILE_IMAGE,
         },
       ],
       groups: [{ id: 1, name: "무니니", memberCount: 3 }],
@@ -497,8 +525,7 @@ export const handlers = [
         friendId: 2,
         nickname: "라라진",
         introduction: "Seize the day",
-        profileImageUrl:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+        profileImageUrl: MOCK_PROFILE_IMAGE,
         isGroupMember: true,
       },
     ]);
