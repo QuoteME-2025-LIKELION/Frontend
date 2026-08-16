@@ -12,7 +12,8 @@ interface NotificationState {
  */
 const useNotificationStore = create<NotificationState>((set) => ({
   hasUnread: false,
-  setHasUnread: (hasUnread) => set({ hasUnread }),
+  setHasUnread: (hasUnread) =>
+    set((state) => (state.hasUnread === hasUnread ? state : { hasUnread })),
 }));
 
 export default useNotificationStore;

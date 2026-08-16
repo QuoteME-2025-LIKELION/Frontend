@@ -10,18 +10,18 @@ interface DateHeaderProps {
 
 export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
   const navigate = useNavigate();
-  const { hasUnread, setHasUnread } = useNotificationStore();
-  const { data: notifications = [], isError } = useNotificationsQuery();
+  const hasUnread = useNotificationStore((state) => state.hasUnread);
+  const setHasUnread = useNotificationStore((state) => state.setHasUnread);
+  const { data: notifications, isError } = useNotificationsQuery();
+  const nextHasUnread =
+    !isError && Boolean(notifications?.some((notification) => !notification.isRead));
 
   // 읽지 않은 알림 있는지 확인해 아이콘 표시 결정
   useEffect(() => {
-    if (isError) {
-      setHasUnread(false);
-      return;
+    if (hasUnread !== nextHasUnread) {
+      setHasUnread(nextHasUnread);
     }
-
-    setHasUnread(notifications.some((notification) => !notification.isRead));
-  }, [isError, notifications, setHasUnread]);
+  }, [hasUnread, nextHasUnread, setHasUnread]);
 
   return (
     <S.Container>
