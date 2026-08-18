@@ -23,7 +23,7 @@ interface FriendGroupModalsProps {
 }
 
 /**
- * 친구 추가/삭제 확인 모달과 결과 토스트를 한 곳에서 렌더링
+ * 친구 요청/삭제 확인 모달과 결과 토스트를 한 곳에서 렌더링
  */
 export default function FriendGroupModals({
   deleteTarget,
@@ -61,7 +61,7 @@ export default function FriendGroupModals({
       {addTarget && (
         <ConfirmModal
           nickname={addTarget.nickname}
-          question="님을 추가할까요?"
+          question="님에게 친구 요청을 보낼까요?"
           onClose={onCloseAddModal}
           onConfirm={onConfirmAdd}
           showOverlay={true}
@@ -69,7 +69,7 @@ export default function FriendGroupModals({
       )}
       {showAddToast && (
         <ToastModal
-          text="친구가 추가되었습니다."
+          text="친구 요청을 보냈습니다."
           isVisible={showAddToast}
           onClose={onCloseAddToast}
         />

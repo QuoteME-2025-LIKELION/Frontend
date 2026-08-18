@@ -1,12 +1,14 @@
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import * as S from "./SettingPage.styles";
-import Header from "@/components/Header/Header";
-import ToastModal from "@/components/ToastModal/ToastModal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import useAuthStore from "@/stores/useAuthStore";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { useLogoutMutation } from "@/hooks/useAuthQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./SettingPage.styles";
 
 type SettingToast = "comingSoon" | "logoutSuccess" | "logoutError" | null;
 

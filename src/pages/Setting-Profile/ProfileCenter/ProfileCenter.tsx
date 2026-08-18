@@ -1,9 +1,11 @@
-import Button from "@/components/Button/Button";
-import * as S from "./ProfileCenter.styles";
-import Header from "@/components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useSettingsProfileQuery } from "@/hooks/useProfileQueries";
+
+import * as S from "./ProfileCenter.styles";
 
 export default function ProfileCenter() {
   const navigate = useNavigate();

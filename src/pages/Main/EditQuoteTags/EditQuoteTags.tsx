@@ -1,14 +1,16 @@
-import DateHeader from "../components/DateHeader/DateHeader";
-import HomeBox from "../components/HomeBox/HomeBox";
-import * as S from "./EditQuoteTags.styles";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import XHeader from "../components/XHeader/XHeader";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
 import Spinner from "@/components/Spinner/Spinner";
-import NewQuote from "../components/NewQuote/NewQuote";
-import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
+import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
+import * as S from "./EditQuoteTags.styles";
+import DateHeader from "../components/DateHeader/DateHeader";
+import HomeBox from "../components/HomeBox/HomeBox";
+import NewQuote from "../components/NewQuote/NewQuote";
+import XHeader from "../components/XHeader/XHeader";
 
 export default function EditQuoteTags() {
   const navigate = useNavigate();

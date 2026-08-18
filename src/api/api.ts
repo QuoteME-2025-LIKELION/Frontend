@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import useAuthStore from "@/stores/useAuthStore";
 import { tokenStorage } from "@/utils/tokenStorage";
-import axios from "axios";
 
 /**
  * Axios 인스턴스

@@ -1,7 +1,9 @@
-import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import * as S from "./MyQuoteFeed.styles";
-import { formatDateDay } from "@/utils/formatDateDay";
 import { forwardRef } from "react";
+
+import type { ArchiveFeed } from "@/types/archiveFeed.type";
+import { formatDateDay } from "@/utils/formatDateDay";
+
+import * as S from "./MyQuoteFeed.styles";
 
 interface MyQuoteFeedProps {
   archiveFeed: ArchiveFeed;

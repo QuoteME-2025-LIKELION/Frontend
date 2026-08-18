@@ -1,8 +1,10 @@
-import * as S from "./DateHeader.styles";
-import { useNavigate } from "react-router-dom";
-import useNotificationStore from "@/stores/useNotificationStore";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useNotificationsQuery } from "@/hooks/useNotificationsQuery";
+import useNotificationStore from "@/stores/useNotificationStore";
+
+import * as S from "./DateHeader.styles";
 
 interface DateHeaderProps {
   onToggleMenu: () => void;

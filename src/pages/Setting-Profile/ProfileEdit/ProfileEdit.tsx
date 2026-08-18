@@ -1,12 +1,14 @@
-import Button from "@/components/Button/Button";
-import * as S from "./ProfileEdit.styles";
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ToastModal from "@/components/ToastModal/ToastModal";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { useUpdateSettingsProfileMutation } from "@/hooks/useProfileQueries";
+
+import * as S from "./ProfileEdit.styles";
 
 export default function ProfileEdit() {
   const navigate = useNavigate();

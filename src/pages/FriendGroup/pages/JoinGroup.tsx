@@ -1,16 +1,20 @@
-import Header from "@/components/Header/Header";
-import * as S from "./Pages.styles";
-import { useNavigate, useParams } from "react-router-dom";
-import GroupCard from "../components/GroupCard";
-import { useCallback, useEffect, useState } from "react";
-import ToastModal from "@/components/ToastModal/ToastModal";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import PageTitle from "@/components/PageTitle/PageTitle";
 import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
+import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useGroupQuery,
   useRequestJoinGroupMutation,
 } from "@/hooks/useGroupQueries";
+
+import * as S from "./Pages.styles";
+import GroupCard from "../components/GroupCard";
+
+
 
 type JoinGroupToast = "success" | "full" | "error" | null;
 

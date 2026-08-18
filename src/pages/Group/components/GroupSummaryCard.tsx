@@ -1,4 +1,5 @@
 import type { Group } from "@/types/group.type";
+
 import * as S from "../Group.styles";
 
 interface GroupSummaryCardProps {

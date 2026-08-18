@@ -1,32 +1,33 @@
-import Button from "@/components/Button/Button";
-import * as S from "./AccountSetting.styles";
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import useAuthStore from "@/stores/useAuthStore";
 import {
   useAccountProfileQuery,
   useDeleteAccountMutation,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./AccountSetting.styles";
 
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-  const { data: accountProfile } = useAccountProfileQuery();
-  const { mutateAsync: updateAccount } = useUpdateAccountMutation();
+  const {
+    data: accountProfile,
+    isError: isAccountProfileError,
+    isPending: isAccountProfilePending,
+  } = useAccountProfileQuery();
+  const updateAccountMutation = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
-  const [emailDraft, setEmailDraft] = useState<string | null>(null);
-  const [birth, setBirth] = useState("");
-  const [gender, setGender] = useState("");
-  const isValidEmail = (email: string) => {
-    const regex = /\S+@\S+\.\S+/;
-    return regex.test(email);
-  };
+  const [birthDraft, setBirthDraft] = useState<string | null>(null);
+  const [genderDraft, setGenderDraft] = useState<string | null>(null);
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const [showToast, setShowToast] = useState(false);
@@ -34,18 +35,29 @@ export default function AccountSetting() {
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const email = emailDraft ?? accountProfile?.email ?? "";
+  const birth = birthDraft ?? String(accountProfile?.birthYear ?? "");
+  const gender = genderDraft ?? accountProfile?.gender ?? "";
 
   const handleSave = async () => {
-    // 저장 로직 추가
+    if (isAccountProfilePending || !accountProfile) {
+      setErrorMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+
+    if (!isNumeric(birth) || birth.length !== 4) {
+      setErrorMessage("출생년도를 4자리 숫자로 입력해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+
     const payload = {
       gender,
-      birthYear: birth,
-      email,
+      birthYear: Number(birth),
     };
 
     try {
-      await updateAccount(payload);
+      await updateAccountMutation.mutateAsync(payload);
 
       setShowToast(true);
       setTimeout(() => {
@@ -121,7 +133,7 @@ export default function AccountSetting() {
         <S.InputBox>
           <S.Select
             value={gender}
-            onChange={(e) => setGender(e.target.value)}
+            onChange={(e) => setGenderDraft(e.target.value)}
             name="gender"
           >
             <option value="FEMALE">여성</option>
@@ -130,30 +142,27 @@ export default function AccountSetting() {
           </S.Select>
           <Input
             value={birth}
-            onChange={(e) => setBirth(e.target.value)}
+            onChange={(e) => setBirthDraft(e.target.value)}
             placeholder="출생년도(yyyy) 입력"
             type="text  "
             name="birth"
             required
           />
-          <S.TextName>이메일 변경</S.TextName>
-          <Input
-            value={email}
-            onChange={(e) => setEmailDraft(e.target.value)}
-            placeholder="이메일 입력"
-            type="email"
-            name="email"
-            required
-          />
-          {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
+          {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
           )}
-          {email.length > 0 && !isValidEmail(email) && (
+          {isAccountProfileError && (
             <S.WarningMessage>
-              유효하지 않은 이메일 형식입니다.
+              계정 정보를 불러오지 못했습니다.
             </S.WarningMessage>
           )}
-          <Button title="저장하기" onClick={handleSave} />
+          <Button
+            title="저장하기"
+            onClick={handleSave}
+            disabled={
+              isAccountProfilePending || updateAccountMutation.isPending
+            }
+          />
           <S.DeleteBtn onClick={handleDelete}>계정 삭제하기</S.DeleteBtn>
         </S.InputBox>
       </S.Container>

@@ -1,7 +1,9 @@
-import * as S from "./RecommendList.styles";
 import { useState } from "react";
+
 import Button from "@/components/Button/Button";
 import { useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
+
+import * as S from "./RecommendList.styles";
 
 interface RecommendListProps {
   onSelectComplete: (text: string) => void;

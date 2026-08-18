@@ -1,13 +1,15 @@
-import Button from "@/components/Button/Button";
-import * as S from "./SignUp.styles";
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import useAuthStore from "@/stores/useAuthStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useSignUpMutation } from "@/hooks/useAuthQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./SignUp.styles";
 
 export default function SignUp() {
   const { mutateAsync: signUp } = useSignUpMutation();
@@ -25,7 +27,12 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSignUp = async () => {
-    if (!isValidEmail(email) || pwd.length < 8 || birth.length !== 4) {
+    if (
+      !isValidEmail(email) ||
+      pwd.length < 8 ||
+      birth.length !== 4 ||
+      !isNumeric(birth)
+    ) {
       setErrorMessage("입력값을 확인해 주세요.");
       setShowErrorToast(true);
       return;
@@ -106,7 +113,7 @@ export default function SignUp() {
             minLength={4}
             maxLength={4}
           />
-          {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
+          {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
           )}
           {email.length > 0 && !isValidEmail(email) && (

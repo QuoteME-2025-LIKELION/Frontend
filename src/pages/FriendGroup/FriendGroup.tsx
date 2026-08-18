@@ -1,24 +1,26 @@
-import Header from "@/components/Header/Header";
-import * as S from "./FriendGroup.styles";
-import { useNavigate } from "react-router-dom";
-import Search from "@/components/Search/Search";
 import { useCallback, useMemo, useState } from "react";
-import useDebounce from "@/hooks/useDebounce";
-import type { Friend } from "@/types/friend.type";
+import { useNavigate } from "react-router-dom";
+
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
+import Search from "@/components/Search/Search";
+import useDebounce from "@/hooks/useDebounce";
 import {
-  useAddFriendMutation,
   useDeleteFriendMutation,
   useFriendSearchQuery,
   useFriendsQuery,
+  useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import type { Friend } from "@/types/friend.type";
+import type { Group } from "@/types/group.type";
+
 import FriendGroupListSection from "./components/FriendGroupListSection";
 import FriendGroupModals, {
   type FriendActionTarget,
 } from "./components/FriendGroupModals";
 import FriendListSection from "./components/FriendListSection";
+import * as S from "./FriendGroup.styles";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
 const isValidFriend = (data: unknown): data is Friend => {
@@ -65,7 +67,7 @@ export default function FriendGroup() {
     Boolean(debouncedKeyword)
   );
   const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
-  const { mutateAsync: addFriend } = useAddFriendMutation();
+  const { mutateAsync: requestFriend } = useRequestFriendMutation();
 
   const friendList = useMemo(
     () => friends.filter(isValidFriend),
@@ -129,22 +131,22 @@ export default function FriendGroup() {
 
   const handleConfirmAdd = useCallback(async () => {
     if (!addTarget) {
-      console.error("추가할 사용자 ID가 유효하지 않습니다.");
+      console.error("친구 요청을 보낼 사용자 ID가 유효하지 않습니다.");
       return;
     }
     try {
-      await addFriend(addTarget.id);
+      await requestFriend(addTarget.id);
 
       setAddTarget(null);
       setShowAddToast(true);
     } catch (err) {
-      console.error("친구 추가 처리 중 오류:", err);
+      console.error("친구 요청 처리 중 오류:", err);
       setAddTarget(null);
-      setErrorMessage("친구 추가에 실패했습니다.");
+      setErrorMessage("친구 요청 전송에 실패했습니다.");
       setShowErrorToast(true);
       return;
     }
-  }, [addFriend, addTarget]);
+  }, [requestFriend, addTarget]);
 
   return (
     <>

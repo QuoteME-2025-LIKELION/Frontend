@@ -1,17 +1,19 @@
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
-import * as S from "./FeedList.styles";
 import { useMemo, useRef, useState } from "react";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import type { OtherQuote } from "@/types/feed.type";
-import type { Friend } from "@/types/friend.type";
+
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
 import {
   useLikeQuoteMutation,
   useRequestQuoteTagMutation,
   useUnlikeQuoteMutation,
 } from "@/hooks/useQuoteQueries";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import type { OtherQuote } from "@/types/feed.type";
+import type { Friend } from "@/types/friend.type";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
+import * as S from "./FeedList.styles";
 
 interface QuotesItem extends OtherQuote {
   friendId: number;
@@ -42,6 +44,9 @@ export default function FeedList({
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const [likeOverrides, setLikeOverrides] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [pendingLikeIds, setPendingLikeIds] = useState<Record<number, boolean>>(
     {}
   );
   const { mutateAsync: requestQuoteTag } = useRequestQuoteTagMutation();
@@ -102,6 +107,11 @@ export default function FeedList({
   };
 
   const handleLike = async (quoteId: number, isLiked: boolean) => {
+    if (pendingLikeIds[quoteId]) {
+      return;
+    }
+
+    setPendingLikeIds((prev) => ({ ...prev, [quoteId]: true }));
     setLikeOverrides((prev) => ({ ...prev, [quoteId]: !isLiked }));
 
     try {
@@ -110,11 +120,22 @@ export default function FeedList({
       } else {
         await likeQuote(quoteId);
       }
+      setLikeOverrides((prev) => {
+        const next = { ...prev };
+        delete next[quoteId];
+        return next;
+      });
     } catch (err) {
       setLikeOverrides((prev) => ({ ...prev, [quoteId]: isLiked }));
       console.error("좋아요 처리 실패:", err);
       setErrorMessage("좋아요 처리에 실패했습니다.");
       setShowErrorToast(true);
+    } finally {
+      setPendingLikeIds((prev) => {
+        const next = { ...prev };
+        delete next[quoteId];
+        return next;
+      });
     }
   };
 
@@ -166,6 +187,7 @@ export default function FeedList({
             content={quote.content}
             tag={quote.taggedNicknames}
             isLiked={quote.isLiked}
+            isLikeDisabled={Boolean(pendingLikeIds[quote.id])}
             onLike={() => handleLike(quote.id, quote.isLiked)}
             // Quote가 있을 때만 공유 버튼 활성화
             onShare={

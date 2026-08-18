@@ -1,5 +1,6 @@
-import * as S from "./XHeader.styles";
 import { useNavigate } from "react-router-dom";
+
+import * as S from "./XHeader.styles";
 
 export default function XHeader() {
   const navigate = useNavigate();

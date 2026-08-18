@@ -1,13 +1,16 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import {
   profileApi,
   type SetupProfileRequest,
   type UpdateAccountRequest,
 } from "@/api/profileApi";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const profileQueryKeys = {
   all: ["profile"] as const,
   my: () => [...profileQueryKeys.all, "my"] as const,
+  other: (memberId: number | string) =>
+    [...profileQueryKeys.all, "other", String(memberId)] as const,
   settings: () => [...profileQueryKeys.all, "settings"] as const,
   account: () => [...profileQueryKeys.all, "account"] as const,
 };
@@ -22,6 +25,20 @@ export function useMyProfileQuery() {
       const res = await profileApi.getMyProfile();
       return res.data;
     },
+  });
+}
+
+/**
+ * 타인 프로필 정보 조회
+ */
+export function useOtherProfileQuery(memberId: number | string | undefined) {
+  return useQuery({
+    queryKey: profileQueryKeys.other(memberId ?? ""),
+    queryFn: async () => {
+      const res = await profileApi.getOtherProfile(memberId!);
+      return res.data;
+    },
+    enabled: memberId !== undefined,
   });
 }
 
@@ -48,6 +65,7 @@ export function useUpdateSettingsProfileMutation() {
     mutationFn: (payload: SetupProfileRequest) =>
       profileApi.updateSettingsProfile(payload),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() });
       queryClient.invalidateQueries({ queryKey: profileQueryKeys.settings() });
     },
   });

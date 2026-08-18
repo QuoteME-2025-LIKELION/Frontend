@@ -1,9 +1,11 @@
-import Header from "@/components/Header/Header";
-import * as S from "./Archive.styles";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
+
+import * as S from "./Archive.styles";
 
 export default function Archive() {
   const navigate = useNavigate();

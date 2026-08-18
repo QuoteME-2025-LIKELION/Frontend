@@ -1,11 +1,13 @@
-import XHeader from "./components/XHeader/XHeader";
-import WriteBox from "./components/WriteBox/WriteBox";
-import RecommendList from "./components/RecommendList/RecommendList";
-import * as S from "./Main.styles";
-import NewQuote from "./components/NewQuote/NewQuote";
 import { useState } from "react";
+
 import PageTitle from "@/components/PageTitle/PageTitle";
 import type { CreatedQuote } from "@/types/feed.type";
+
+import NewQuote from "./components/NewQuote/NewQuote";
+import RecommendList from "./components/RecommendList/RecommendList";
+import WriteBox from "./components/WriteBox/WriteBox";
+import XHeader from "./components/XHeader/XHeader";
+import * as S from "./Main.styles";
 
 type WriteStep = "write" | "recommend" | "tag";
 

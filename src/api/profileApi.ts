@@ -8,27 +8,24 @@ export interface SetupProfileRequest {
 
 export interface UpdateAccountRequest {
   gender: string;
-  birthYear: string;
-  email: string;
+  birthYear: number;
 }
 
 export interface AccountProfileResponse {
-  email: string;
+  gender: string;
+  birthYear: number;
 }
 
 export interface MyProfileResponse {
   id: number;
   nickname: string;
   introduction?: string;
+  profileImageUrl?: string;
   profileImage?: string;
+  email?: string;
 }
 
-export interface SettingsProfileResponse {
-  nickname: string;
-  email: string;
-  introduction: string;
-  profileImage?: string;
-}
+export type SettingsProfileResponse = MyProfileResponse;
 
 /**
  * FormData를 만들어주는 유틸 함수
@@ -60,14 +57,15 @@ function createProfileFormData({
  */
 export const profileApi = {
   setupProfile: (payload: SetupProfileRequest) =>
-    api.post("/api/settings/profile", createProfileFormData(payload)),
+    api.put("/api/profile", createProfileFormData(payload)),
   getMyProfile: () => api.get<MyProfileResponse>("/api/profile"),
-  getSettingsProfile: () =>
-    api.get<SettingsProfileResponse>("/api/settings/profile"),
+  getOtherProfile: (memberId: number | string) =>
+    api.get<MyProfileResponse>(`/api/profile/${memberId}`),
+  getSettingsProfile: () => api.get<SettingsProfileResponse>("/api/profile"),
   updateSettingsProfile: (payload: SetupProfileRequest) =>
-    api.put("/api/settings/profile", createProfileFormData(payload)),
+    api.put("/api/profile", createProfileFormData(payload)),
   getAccountProfile: () =>
-    api.get<AccountProfileResponse>("/api/settings/profile"),
+    api.get<AccountProfileResponse>("/api/profile/account"),
   updateAccount: (payload: UpdateAccountRequest) =>
     api.put("/api/profile/account", payload),
   deleteAccount: () => api.delete("/api/profile/account"),

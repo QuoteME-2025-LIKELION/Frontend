@@ -1,19 +1,21 @@
-import Header from "@/components/Header/Header";
-import * as S from "./CreateGroup.styles";
-import { useNavigate } from "react-router-dom";
-import Button from "@/components/Button/Button";
 import { useCallback, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useDebounce from "@/hooks/useDebounce";
-import type { Friend } from "@/types/friend.type";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import {
   useCreateGroupMutation,
   useInviteGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
+import type { Friend } from "@/types/friend.type";
+
 import CreateGroupInviteStep from "./components/CreateGroupInviteStep";
 import CreateGroupStepFields from "./components/CreateGroupStepFields";
 import CreateGroupToasts from "./components/CreateGroupToasts";
+import * as S from "./CreateGroup.styles";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
@@ -60,7 +62,7 @@ export default function CreateGroup() {
         }
       });
     },
-    [selectedFriends]
+    []
   );
 
   // 선택된 친구 객체 목록 (검색해도 항상 상단에 고정)

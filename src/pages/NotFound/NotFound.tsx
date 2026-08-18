@@ -1,4 +1,5 @@
 import PageTitle from "@/components/PageTitle/PageTitle";
+
 import * as S from "./NotFound.styles";
 
 export default function NotFound() {

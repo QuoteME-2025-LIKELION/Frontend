@@ -1,5 +1,6 @@
-import useAuthStore from "@/stores/useAuthStore";
 import { Navigate, Outlet } from "react-router-dom";
+
+import useAuthStore from "@/stores/useAuthStore";
 
 /**
  * 인증이 필요한 보호된 경로 레이아웃

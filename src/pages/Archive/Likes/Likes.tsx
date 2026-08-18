@@ -1,12 +1,14 @@
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
-import * as S from "./Likes.styles";
 import { useRef } from "react";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import { useOutletContext } from "react-router-dom";
-import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
+
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
+
+import * as S from "./Likes.styles";
 
 export default function Likes() {
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);

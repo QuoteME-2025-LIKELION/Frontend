@@ -1,6 +1,7 @@
-import NotificationLog from "../NotificationLog/NotificationLog";
 import type { Notification } from "@/types/notification.type";
+
 import * as S from "../Notification.styles";
+import NotificationLog from "../NotificationLog/NotificationLog";
 
 interface NotificationListProps {
   selectedFilter: string | null;

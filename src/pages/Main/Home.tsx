@@ -1,21 +1,23 @@
-import DateHeader from "./components/DateHeader/DateHeader";
-import HomeBox from "./components/HomeBox/HomeBox";
-import FeedList from "./components/FeedList/FeedList";
-import * as S from "./Main.styles";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import RequestModal from "./components/Modal/RequestModal";
-import XHeader from "./components/XHeader/XHeader";
-import HomeSideMenu from "./components/HomeSideMenu/HomeSideMenu";
 
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import ToastModal from "@/components/ToastModal/ToastModal";
+
 import Spinner from "@/components/Spinner/Spinner";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
-import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
-import useAnimatedToggle from "@/hooks/useAnimatedToggle";
+import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
+import DateHeader from "./components/DateHeader/DateHeader";
+import FeedList from "./components/FeedList/FeedList";
+import HomeBox from "./components/HomeBox/HomeBox";
+import HomeSideMenu from "./components/HomeSideMenu/HomeSideMenu";
+import RequestModal from "./components/Modal/RequestModal";
+import XHeader from "./components/XHeader/XHeader";
+import * as S from "./Main.styles";
 
 export default function Home() {
   const navigate = useNavigate();
