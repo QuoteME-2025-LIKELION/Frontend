@@ -1,18 +1,52 @@
-import { notificationApi } from "@/api/notificationApi";
+import {
+  notificationApi,
+  type NotificationCategory,
+  type NotificationSettings,
+} from "@/api/notificationApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const notificationQueryKeys = {
   all: ["notifications"] as const,
+  list: (category?: NotificationCategory) =>
+    [...notificationQueryKeys.all, "list", category ?? "all"] as const,
+  unreadCount: () => [...notificationQueryKeys.all, "unread-count"] as const,
+  settings: () => [...notificationQueryKeys.all, "settings"] as const,
 };
 
 /**
  * 알림 목록을 서버에서 조회하고 React Query 캐시에 저장
  */
-export function useNotificationsQuery() {
+export function useNotificationsQuery(category?: NotificationCategory) {
   return useQuery({
-    queryKey: notificationQueryKeys.all,
+    queryKey: notificationQueryKeys.list(category),
     queryFn: async () => {
-      const res = await notificationApi.getNotifications();
+      const res = await notificationApi.getNotifications(category);
+      return res.data;
+    },
+  });
+}
+
+/**
+ * 미읽음 알림 수 조회
+ */
+export function useUnreadNotificationCountQuery() {
+  return useQuery({
+    queryKey: notificationQueryKeys.unreadCount(),
+    queryFn: async () => {
+      const res = await notificationApi.getUnreadCount();
+      return res.data;
+    },
+  });
+}
+
+/**
+ * 알림 설정 조회
+ */
+export function useNotificationSettingsQuery() {
+  return useQuery({
+    queryKey: notificationQueryKeys.settings(),
+    queryFn: async () => {
+      const res = await notificationApi.getSettings();
       return res.data;
     },
   });
@@ -29,6 +63,23 @@ export function useMarkNotificationReadMutation() {
       notificationApi.markAsRead(notificationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all });
+    },
+  });
+}
+
+/**
+ * 알림 설정 수정 후 설정 캐시 갱신
+ */
+export function useUpdateNotificationSettingsMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: NotificationSettings) =>
+      notificationApi.updateSettings(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: notificationQueryKeys.settings(),
+      });
     },
   });
 }
