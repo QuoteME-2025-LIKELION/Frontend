@@ -17,9 +17,9 @@ import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
-import FriendGroupListSection from "../components/FriendGroupListSection";
 import FriendListSection from "../components/FriendListSection";
 import FriendRequestSection from "../components/FriendRequestSection";
+import GroupListSection from "../components/GroupListSection";
 import * as S from "../FriendGroup.styles";
 
 const isValidFriend = (data: unknown): data is Friend => {
@@ -158,7 +158,7 @@ export default function FriendGroupAdd() {
           />
           {keyword ? (
             <>
-              <FriendGroupListSection
+              <GroupListSection
                 keyword={keyword}
                 groups={[]}
                 searchGroups={searchResultGroups}

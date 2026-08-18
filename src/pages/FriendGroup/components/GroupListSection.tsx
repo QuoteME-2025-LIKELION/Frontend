@@ -2,7 +2,7 @@ import type { Group } from "@/types/group.type";
 
 import * as S from "../FriendGroup.styles";
 
-interface FriendGroupListSectionProps {
+interface GroupListSectionProps {
   keyword: string;
   groups: Group[];
   searchGroups: Group[];
@@ -17,7 +17,7 @@ interface FriendGroupListSectionProps {
 /**
  * 내 그룹 목록 또는 검색된 그룹 목록을 렌더링
  */
-export default function FriendGroupListSection({
+export default function GroupListSection({
   keyword,
   groups,
   searchGroups,
@@ -27,7 +27,7 @@ export default function FriendGroupListSection({
   onOpenGroup,
   onJoinGroup,
   showManagementButtons = true,
-}: FriendGroupListSectionProps) {
+}: GroupListSectionProps) {
   const visibleGroups = keyword ? searchGroups : groups;
   const emptyText = keyword ? "검색 결과가 없습니다." : "가입한 그룹이 없습니다.";
 

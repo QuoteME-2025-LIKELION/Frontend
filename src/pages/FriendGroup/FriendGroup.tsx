@@ -15,11 +15,11 @@ import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
-import FriendGroupListSection from "./components/FriendGroupListSection";
 import FriendGroupModals, {
   type FriendActionTarget,
 } from "./components/FriendGroupModals";
 import FriendListSection from "./components/FriendListSection";
+import GroupListSection from "./components/GroupListSection";
 import * as S from "./FriendGroup.styles";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
@@ -206,7 +206,7 @@ export default function FriendGroup() {
               setKeyword("");
             }}
           />
-          <FriendGroupListSection
+          <GroupListSection
             keyword={keyword}
             groups={groupsList}
             searchGroups={searchResultGroups}
