@@ -1,9 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import {
   quoteApi,
   type CreateQuoteRequest,
   type UpdateQuoteTagsRequest,
 } from "@/api/quoteApi";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const quoteQueryKeys = {
   all: ["quotes"] as const,

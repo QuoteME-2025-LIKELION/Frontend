@@ -1,9 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import {
   notificationApi,
   type NotificationCategory,
   type NotificationSettings,
 } from "@/api/notificationApi";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const notificationQueryKeys = {
   all: ["notifications"] as const,

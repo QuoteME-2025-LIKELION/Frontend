@@ -1,5 +1,6 @@
-import { noticeApi, type NoticeType } from "@/api/noticeApi";
 import { useQuery } from "@tanstack/react-query";
+
+import { noticeApi, type NoticeType } from "@/api/noticeApi";
 
 export const noticeQueryKeys = {
   all: ["notices"] as const,

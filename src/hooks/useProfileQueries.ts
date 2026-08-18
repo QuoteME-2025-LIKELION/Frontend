@@ -1,9 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import {
   profileApi,
   type SetupProfileRequest,
   type UpdateAccountRequest,
 } from "@/api/profileApi";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const profileQueryKeys = {
   all: ["profile"] as const,

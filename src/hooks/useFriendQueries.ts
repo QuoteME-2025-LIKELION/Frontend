@@ -1,5 +1,6 @@
-import { friendApi } from "@/api/friendApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { friendApi } from "@/api/friendApi";
 
 export const friendQueryKeys = {
   all: ["friends"] as const,

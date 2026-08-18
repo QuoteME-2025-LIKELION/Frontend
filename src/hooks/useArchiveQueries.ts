@@ -1,5 +1,6 @@
-import { archiveApi } from "@/api/archiveApi";
 import { useQuery } from "@tanstack/react-query";
+
+import { archiveApi } from "@/api/archiveApi";
 
 export const archiveQueryKeys = {
   all: ["archives"] as const,

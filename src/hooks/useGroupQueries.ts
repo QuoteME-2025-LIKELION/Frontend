@@ -1,5 +1,6 @@
-import { groupApi } from "@/api/groupApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { groupApi } from "@/api/groupApi";
 
 export const groupQueryKeys = {
   all: ["groups"] as const,
