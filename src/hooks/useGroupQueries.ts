@@ -4,8 +4,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const groupQueryKeys = {
   all: ["groups"] as const,
   myGroups: () => [...groupQueryKeys.all, "my-groups"] as const,
+  invitations: () => [...groupQueryKeys.all, "invitations"] as const,
   detail: (groupId: number | string) =>
     [...groupQueryKeys.all, "detail", String(groupId)] as const,
+  joinRequests: (groupId: number | string) =>
+    [...groupQueryKeys.detail(groupId), "join-requests"] as const,
 };
 
 /**
@@ -49,6 +52,65 @@ export function useGroupQuery(groupId: number | string | undefined) {
     queryKey: groupQueryKeys.detail(groupId ?? ""),
     queryFn: async () => {
       const res = await groupApi.getGroup(groupId!);
+      return res.data;
+    },
+    enabled: groupId !== undefined,
+  });
+}
+
+/**
+ * 내게 온 그룹 초대 목록 조회
+ */
+export function useGroupInvitationsQuery(enabled = true) {
+  return useQuery({
+    queryKey: groupQueryKeys.invitations(),
+    queryFn: async () => {
+      const res = await groupApi.getInvitations();
+      return res.data;
+    },
+    enabled,
+  });
+}
+
+/**
+ * 그룹 초대 수락 후 내 그룹과 초대 목록 캐시 갱신
+ */
+export function useAcceptGroupInvitationMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (requestId: number) => groupApi.acceptInvitation(requestId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.invitations() });
+    },
+  });
+}
+
+/**
+ * 그룹 초대 거절 후 초대 목록 캐시 갱신
+ */
+export function useRejectGroupInvitationMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (requestId: number) => groupApi.rejectInvitation(requestId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.invitations() });
+    },
+  });
+}
+
+/**
+ * 그룹 가입 요청 목록 조회
+ */
+export function useGroupJoinRequestsQuery(
+  groupId: number | string | undefined
+) {
+  return useQuery({
+    queryKey: groupQueryKeys.joinRequests(groupId ?? ""),
+    queryFn: async () => {
+      const res = await groupApi.getJoinRequests(groupId!);
       return res.data;
     },
     enabled: groupId !== undefined,
@@ -137,6 +199,47 @@ export function useRequestJoinGroupMutation() {
         queryKey: groupQueryKeys.detail(groupId),
       });
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+    },
+  });
+}
+
+/**
+ * 그룹 가입 요청 수락 후 그룹 상세와 가입 요청 목록 캐시 갱신
+ */
+export function useAcceptGroupJoinRequestMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      groupId: number | string;
+      requestId: number;
+    }) => groupApi.acceptJoinRequest(variables.requestId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.detail(variables.groupId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.joinRequests(variables.groupId),
+      });
+    },
+  });
+}
+
+/**
+ * 그룹 가입 요청 거절 후 가입 요청 목록 캐시 갱신
+ */
+export function useRejectGroupJoinRequestMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      groupId: number | string;
+      requestId: number;
+    }) => groupApi.rejectJoinRequest(variables.requestId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.joinRequests(variables.groupId),
+      });
     },
   });
 }
