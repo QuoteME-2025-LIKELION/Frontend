@@ -1,4 +1,5 @@
 import type { Friend } from "@/types/friend.type";
+
 import * as S from "./UserListItem.styles";
 
 interface UserListItemProps {

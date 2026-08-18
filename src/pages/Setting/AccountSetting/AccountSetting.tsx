@@ -1,18 +1,20 @@
-import Button from "@/components/Button/Button";
-import * as S from "./AccountSetting.styles";
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import useAuthStore from "@/stores/useAuthStore";
 import {
   useAccountProfileQuery,
   useDeleteAccountMutation,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./AccountSetting.styles";
 
 export default function AccountSetting() {
   const navigate = useNavigate();

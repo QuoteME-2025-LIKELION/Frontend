@@ -1,15 +1,14 @@
-import { useNavigate, useParams } from "react-router-dom";
-import * as S from "./Invite.styles";
-import Header from "@/components/Header/Header";
-import Search from "@/components/Search/Search";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import UserListItem from "@/components/UserListItem/UserListItem";
-import ToastModal from "@/components/ToastModal/ToastModal";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Friend } from "@/types/friend.type";
-import useDebounce from "@/hooks/useDebounce";
 import axios from "axios";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
+import PageTitle from "@/components/PageTitle/PageTitle";
+import Search from "@/components/Search/Search";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import UserListItem from "@/components/UserListItem/UserListItem";
+import useDebounce from "@/hooks/useDebounce";
 import {
   useFriendSearchQuery,
   useFriendsQuery,
@@ -18,6 +17,10 @@ import {
   useGroupQuery,
   useInviteGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
+import type { Friend } from "@/types/friend.type";
+
+
+import * as S from "./Invite.styles";
 
 const EMPTY_FRIENDS: Friend[] = [];
 

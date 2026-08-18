@@ -1,7 +1,9 @@
 import Button from "@/components/Button/Button";
-import * as S from "./GroupCard.styles";
-import type { Group } from "@/types/group.type";
 import { useGroupQuery } from "@/hooks/useGroupQueries";
+import type { Group } from "@/types/group.type";
+
+import * as S from "./GroupCard.styles";
+
 
 interface GroupCardProps {
   group: Group;

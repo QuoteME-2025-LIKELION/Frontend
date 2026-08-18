@@ -1,15 +1,17 @@
-import UserListItem from "@/components/UserListItem/UserListItem";
-import * as S from "./NewQuote.styles";
-import { useNavigate } from "react-router-dom";
-import Button from "@/components/Button/Button";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import UserListItem from "@/components/UserListItem/UserListItem";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import {
   useCreateQuoteMutation,
   useUpdateQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
+
+import * as S from "./NewQuote.styles";
 
 interface NewQuoteProps {
   quote: CreatedQuote;

@@ -1,5 +1,6 @@
-import theme from "@/styles/theme";
 import styled from "@emotion/styled";
+
+import theme from "@/styles/theme";
 
 export const Container = styled.div<{ $isInArchive?: boolean }>`
   background-color: ${({ $isInArchive }) =>

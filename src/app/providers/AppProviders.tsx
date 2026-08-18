@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+
 import GlobalStyles from "@/styles/GlobalStyles";
 import theme from "@/styles/theme";
 

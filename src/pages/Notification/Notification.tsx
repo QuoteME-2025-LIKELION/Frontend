@@ -1,19 +1,21 @@
-import Header from "@/components/Header/Header";
-import * as S from "./Notification.styles";
-import { useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatTimeAgo } from "@/utils/formatTimeAgo";
+import { useNavigate } from "react-router-dom";
+
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Notification } from "@/types/notification.type";
-import useNotificationStore from "@/stores/useNotificationStore";
 import {
   useMarkNotificationReadMutation,
   useNotificationsQuery,
 } from "@/hooks/useNotificationsQuery";
+import useNotificationStore from "@/stores/useNotificationStore";
+import type { Notification } from "@/types/notification.type";
+import { formatTimeAgo } from "@/utils/formatTimeAgo";
+
 import NotificationFilterTabs, {
   type NotificationFilter,
 } from "./components/NotificationFilterTabs";
 import NotificationList from "./components/NotificationList";
+import * as S from "./Notification.styles";
 // 날짜별 그룹핑
 function groupByDate(list: Notification[]) {
   const map: Record<string, Notification[]> = {};

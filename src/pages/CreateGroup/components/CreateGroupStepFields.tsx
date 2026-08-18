@@ -1,5 +1,6 @@
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
+
 import * as S from "../CreateGroup.styles";
 
 interface CreateGroupStepFieldsProps {

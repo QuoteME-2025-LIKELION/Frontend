@@ -1,11 +1,13 @@
-import Button from "@/components/Button/Button";
-import * as S from "./Profile.styles";
-import Input from "@/components/Input/Input";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
+
+import * as S from "./Profile.styles";
 
 export default function Profile() {
   const navigate = useNavigate();

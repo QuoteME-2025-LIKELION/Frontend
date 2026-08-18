@@ -1,5 +1,6 @@
-import theme from "@/styles/theme";
 import styled from "@emotion/styled";
+
+import theme from "@/styles/theme";
 
 interface ButtonStyleProps {
   $font?: "batang" | "pretendard";
@@ -14,7 +15,7 @@ export const Button = styled.button<ButtonStyleProps>`
     $font === "pretendard"
       ? `
       display: flex;
-      height: 44px; 
+      height: 44px;
       padding: 0 var(--12, 12px);
       justify-content: center;
       align-items: center;

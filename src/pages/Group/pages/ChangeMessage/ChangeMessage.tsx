@@ -1,16 +1,18 @@
-import Header from "@/components/Header/Header";
-import * as S from "./ChangeMessage.styles";
-import { useNavigate, useParams } from "react-router-dom";
-import Input from "@/components/Input/Input";
-import Button from "@/components/Button/Button";
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import axios from "axios";
 import {
   useGroupQuery,
   useUpdateGroupMottoMutation,
 } from "@/hooks/useGroupQueries";
+
+import * as S from "./ChangeMessage.styles";
 
 export default function ChangeMessage() {
   const navigate = useNavigate();

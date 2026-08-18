@@ -1,16 +1,18 @@
-import Header from "@/components/Header/Header";
-import * as S from "./Pages.styles";
-import { useNavigate } from "react-router-dom";
-import GroupCard from "../components/GroupCard";
 import { useCallback, useState } from "react";
-import ToastModal from "@/components/ToastModal/ToastModal";
+import { useNavigate } from "react-router-dom";
+
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+
+import * as S from "./Pages.styles";
+import GroupCard from "../components/GroupCard";
 
 type GroupQuitTarget = {
   id: number;

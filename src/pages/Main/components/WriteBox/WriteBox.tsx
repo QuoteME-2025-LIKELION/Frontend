@@ -1,6 +1,8 @@
-import * as S from "./WriteBox.styles";
 import { useState } from "react";
+
 import type { QuoteDraft } from "@/types/feed.type";
+
+import * as S from "./WriteBox.styles";
 
 interface WriteBoxProps {
   onComplete: (data: QuoteDraft) => void;

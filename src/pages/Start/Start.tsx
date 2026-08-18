@@ -1,11 +1,13 @@
-import Button from "@/components/Button/Button";
-import * as S from "./Start.styles";
-import { useNavigate } from "react-router-dom";
-import ToastModal from "@/components/ToastModal/ToastModal";
 import { useEffect, useState } from "react";
-import useAuthStore from "@/stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
 import Spinner from "@/components/Spinner/Spinner";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { useOAuthRedirect } from "@/hooks/useAuthQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./Start.styles";
 
 export default function Start() {
   const navigate = useNavigate();

@@ -1,12 +1,10 @@
-import Header from "@/components/Header/Header";
-import * as S from "./FriendGroup.styles";
-import { useNavigate } from "react-router-dom";
-import Search from "@/components/Search/Search";
 import { useCallback, useMemo, useState } from "react";
-import useDebounce from "@/hooks/useDebounce";
-import type { Friend } from "@/types/friend.type";
+import { useNavigate } from "react-router-dom";
+
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import type { Group } from "@/types/group.type";
+import Search from "@/components/Search/Search";
+import useDebounce from "@/hooks/useDebounce";
 import {
   useAddFriendMutation,
   useDeleteFriendMutation,
@@ -14,11 +12,15 @@ import {
   useFriendsQuery,
 } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import type { Friend } from "@/types/friend.type";
+import type { Group } from "@/types/group.type";
+
 import FriendGroupListSection from "./components/FriendGroupListSection";
 import FriendGroupModals, {
   type FriendActionTarget,
 } from "./components/FriendGroupModals";
 import FriendListSection from "./components/FriendListSection";
+import * as S from "./FriendGroup.styles";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
 const isValidFriend = (data: unknown): data is Friend => {

@@ -1,5 +1,6 @@
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
+
 import * as S from "../FriendGroup.styles";
 
 interface FriendListSectionProps {

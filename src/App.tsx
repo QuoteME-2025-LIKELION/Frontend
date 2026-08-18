@@ -1,8 +1,8 @@
-import RootLayout from "@/layouts/RootLayout";
-import Spinner from "@/components/Spinner/Spinner";
 import { useInitializeApp } from "@/app/bootstrap/useInitializeApp";
-import AppRoutes from "@/app/router/AppRoutes";
 import AppProviders from "@/app/providers/AppProviders";
+import AppRoutes from "@/app/router/AppRoutes";
+import Spinner from "@/components/Spinner/Spinner";
+import RootLayout from "@/layouts/RootLayout";
 
 /**
  * 최상위 composition root

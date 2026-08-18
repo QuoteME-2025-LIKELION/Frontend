@@ -1,21 +1,23 @@
-import Header from "@/components/Header/Header";
-import * as S from "./Group.styles";
-import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import PageTitle from "@/components/PageTitle/PageTitle";
 import axios from "axios";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Header from "@/components/Header/Header";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   useDeleteGroupMutation,
   useGroupQuery,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+
 import GroupActionModals, {
   type GroupActionConfirm,
   type GroupMemberActionTarget,
 } from "./components/GroupActionModals";
 import GroupMainSection from "./components/GroupMainSection";
 import GroupSummaryCard from "./components/GroupSummaryCard";
+import * as S from "./Group.styles";
 
 export default function Group() {
   const { groupId } = useParams();

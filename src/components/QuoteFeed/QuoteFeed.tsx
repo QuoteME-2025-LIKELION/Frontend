@@ -1,6 +1,8 @@
-import { formatTimeAgo } from "@/utils/formatTimeAgo";
-import * as S from "./QuoteFeed.styles";
 import { forwardRef } from "react";
+
+import { formatTimeAgo } from "@/utils/formatTimeAgo";
+
+import * as S from "./QuoteFeed.styles";
 
 interface QuoteFeedProps {
   profileImageUrl?: string;

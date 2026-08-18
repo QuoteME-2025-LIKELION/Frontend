@@ -1,13 +1,15 @@
-import Button from "@/components/Button/Button";
-import * as S from "./SignUp.styles";
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Button from "@/components/Button/Button";
+import Header from "@/components/Header/Header";
+import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import useAuthStore from "@/stores/useAuthStore";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useSignUpMutation } from "@/hooks/useAuthQueries";
+import useAuthStore from "@/stores/useAuthStore";
+
+import * as S from "./SignUp.styles";
 
 export default function SignUp() {
   const { mutateAsync: signUp } = useSignUpMutation();

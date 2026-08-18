@@ -1,10 +1,12 @@
-import * as S from "./HomeBox.styles";
-import { useNavigate } from "react-router-dom";
-import { formatCustomDate } from "@/utils/formatCustomDate";
 import { useRef } from "react";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import type { MyQuote } from "@/types/feed.type";
+import { useNavigate } from "react-router-dom";
+
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import type { MyQuote } from "@/types/feed.type";
+import { formatCustomDate } from "@/utils/formatCustomDate";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
+import * as S from "./HomeBox.styles";
 
 interface HomeBoxProps {
   date?: string;

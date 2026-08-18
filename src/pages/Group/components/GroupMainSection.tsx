@@ -2,6 +2,7 @@ import Button from "@/components/Button/Button";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
+
 import * as S from "../Group.styles";
 
 interface GroupMainSectionProps {

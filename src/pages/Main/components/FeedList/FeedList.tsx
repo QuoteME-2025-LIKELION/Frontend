@@ -1,17 +1,19 @@
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
-import * as S from "./FeedList.styles";
 import { useMemo, useRef, useState } from "react";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-import type { OtherQuote } from "@/types/feed.type";
-import type { Friend } from "@/types/friend.type";
+
+import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
 import {
   useLikeQuoteMutation,
   useRequestQuoteTagMutation,
   useUnlikeQuoteMutation,
 } from "@/hooks/useQuoteQueries";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import type { OtherQuote } from "@/types/feed.type";
+import type { Friend } from "@/types/friend.type";
+import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+
+import * as S from "./FeedList.styles";
 
 interface QuotesItem extends OtherQuote {
   friendId: number;

@@ -2,6 +2,7 @@ import Button from "@/components/Button/Button";
 import Search from "@/components/Search/Search";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
+
 import * as S from "../CreateGroup.styles";
 
 interface CreateGroupInviteStepProps {
