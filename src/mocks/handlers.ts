@@ -80,8 +80,10 @@ export const handlers = [
     return HttpResponse.json({
       id: 1,
       nickname: "손지수",
+      email: "guest@quoteme.com",
       introduction: "긍정의 힘을 믿어요",
       profileImageUrl: MOCK_PROFILE_IMAGE,
+      profileImage: MOCK_PROFILE_IMAGE,
     });
   }),
 
@@ -90,34 +92,9 @@ export const handlers = [
     return HttpResponse.json({
       id: 1,
       nickname: "수정된닉네임",
+      email: "guest@quoteme.com",
       introduction: "프로필이 수정되었습니다.",
       profileImageUrl: MOCK_PROFILE_IMAGE,
-    });
-  }),
-
-  http.post("/api/settings/profile", () => {
-    return HttpResponse.json({
-      nickname: "손지수",
-      email: "guest@quoteme.com",
-      introduction: "긍정의 힘을 믿어요",
-      profileImage: MOCK_PROFILE_IMAGE,
-    });
-  }),
-
-  http.get("/api/settings/profile", () => {
-    return HttpResponse.json({
-      nickname: "손지수",
-      email: "guest@quoteme.com",
-      introduction: "긍정의 힘을 믿어요",
-      profileImage: MOCK_PROFILE_IMAGE,
-    });
-  }),
-
-  http.put("/api/settings/profile", () => {
-    return HttpResponse.json({
-      nickname: "수정된닉네임",
-      email: "guest@quoteme.com",
-      introduction: "프로필이 수정되었습니다.",
       profileImage: MOCK_PROFILE_IMAGE,
     });
   }),
@@ -126,6 +103,7 @@ export const handlers = [
     return HttpResponse.json({
       gender: "MALE",
       birthYear: 2000,
+      email: "guest@quoteme.com",
     });
   }),
 
@@ -163,19 +141,15 @@ export const handlers = [
     return new HttpResponse(null, { status: 201 });
   }),
 
-  http.post("/api/friends/add/:userId", () => {
-    return new HttpResponse(null, { status: 201 });
-  }),
-
   http.get("/api/friends/requests", () => {
     return HttpResponse.json([
       {
-          requestId: 10,
-          requesterId: 5,
-          requesterNickname: "라라진",
-          requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-          createdAt: "2025-11-07T10:00:00",
-        },
+        requestId: 10,
+        requesterId: 5,
+        requesterNickname: "라라진",
+        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+        createdAt: "2025-11-07T10:00:00",
+      },
     ]);
   }),
 
@@ -262,7 +236,13 @@ export const handlers = [
 
   http.get("/api/groups/:groupId/join-requests", () => {
     return HttpResponse.json([
-      { requestId: 5, requesterId: 10, requesterNickname: "신규신청자" },
+      {
+        requestId: 5,
+        requesterId: 10,
+        requesterNickname: "신규신청자",
+        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+        createdAt: "2025-11-07T10:00:00",
+      },
     ]);
   }),
 
@@ -461,15 +441,20 @@ export const handlers = [
   http.get("/api/notifications", ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
+    const notificationCategory = category || "GROUP";
 
     return HttpResponse.json([
       {
         id: 1,
-        category: category || "GROUP",
+        category: notificationCategory,
+        type: notificationCategory,
         message: "무니니 그룹에서 초대가 왔습니다.",
         isRead: false,
         createdAt: "2025-11-07T10:00:00",
+        createDate: "2025-11-07T10:00:00",
         referenceId: 3,
+        targetId: 3,
+        senderName: "라라진",
       },
     ]);
   }),
@@ -500,7 +485,34 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 10. 검색 & 친구목록 (Settings)
+  // 10. 공지사항 (Notices)
+  // ==========================================
+  http.get("/api/notices", ({ request }) => {
+    const url = new URL(request.url);
+    const type = url.searchParams.get("type") || "NOTICE";
+
+    return HttpResponse.json([
+      {
+        noticeId: 1,
+        type,
+        title: "QuoteMe 서비스 업데이트 안내",
+        createdAt: "2025-11-07T10:00:00",
+      },
+    ]);
+  }),
+
+  http.get("/api/notices/:noticeId", ({ params }) => {
+    return HttpResponse.json({
+      noticeId: Number(params.noticeId),
+      type: "NOTICE",
+      title: "QuoteMe 서비스 업데이트 안내",
+      content: "신규 API 명세에 맞춘 기능이 순차적으로 적용됩니다.",
+      createdAt: "2025-11-07T10:00:00",
+    });
+  }),
+
+  // ==========================================
+  // 11. 검색 & 친구목록 (Settings)
   // ==========================================
   http.get("/api/settings/search", ({ request }) => {
     const url = new URL(request.url);
@@ -532,7 +544,7 @@ export const handlers = [
   }),
 
   // ==========================================
-  // 11. 콕 찌르기 (Pokes)
+  // 12. 콕 찌르기 (Pokes)
   // ==========================================
   http.post("/api/pokes/:receiverId", () => {
     return new HttpResponse(null, { status: 200 });
