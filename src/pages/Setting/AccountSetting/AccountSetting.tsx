@@ -8,6 +8,7 @@ import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
+  useAccountProfileQuery,
   useDeleteAccountMutation,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
@@ -18,10 +19,11 @@ import * as S from "./AccountSetting.styles";
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
+  const { data: accountProfile } = useAccountProfileQuery();
   const { mutateAsync: updateAccount } = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
-  const [birth, setBirth] = useState("");
-  const [gender, setGender] = useState("");
+  const [birthDraft, setBirthDraft] = useState<string | null>(null);
+  const [genderDraft, setGenderDraft] = useState<string | null>(null);
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const [showToast, setShowToast] = useState(false);
@@ -29,6 +31,8 @@ export default function AccountSetting() {
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const birth = birthDraft ?? String(accountProfile?.birthYear ?? "");
+  const gender = genderDraft ?? accountProfile?.gender ?? "";
 
   const handleSave = async () => {
     if (!isNumeric(birth) || birth.length !== 4) {
@@ -119,7 +123,7 @@ export default function AccountSetting() {
         <S.InputBox>
           <S.Select
             value={gender}
-            onChange={(e) => setGender(e.target.value)}
+            onChange={(e) => setGenderDraft(e.target.value)}
             name="gender"
           >
             <option value="FEMALE">여성</option>
@@ -128,7 +132,7 @@ export default function AccountSetting() {
           </S.Select>
           <Input
             value={birth}
-            onChange={(e) => setBirth(e.target.value)}
+            onChange={(e) => setBirthDraft(e.target.value)}
             placeholder="출생년도(yyyy) 입력"
             type="text  "
             name="birth"

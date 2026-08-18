@@ -226,6 +226,7 @@ export function useLikeQuoteMutation() {
     mutationFn: (quoteId: number) => quoteApi.likeQuote(quoteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["archives"] });
     },
   });
 }
@@ -240,6 +241,7 @@ export function useUnlikeQuoteMutation() {
     mutationFn: (quoteId: number) => quoteApi.unlikeQuote(quoteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["archives"] });
     },
   });
 }
