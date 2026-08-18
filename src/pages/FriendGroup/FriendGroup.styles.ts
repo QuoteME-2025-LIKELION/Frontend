@@ -14,7 +14,7 @@ export const Container = styled.div`
 
 export const Content = styled.div`
   width: 100%;
-  padding: 0.9375rem 2.5rem; /* 15px 40px */
+  padding: 0.9375rem 1.5rem; /* 15px 24px */
   display: flex;
   flex-direction: column;
   gap: 2.25rem; /* 36px */
@@ -70,6 +70,15 @@ export const BtnBox = styled.div`
       color: #000;
     }
   }
+`;
+
+export const HeaderIconButton = styled.button`
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const GroupContainer = styled.div`
@@ -128,6 +137,87 @@ export const FriendList = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+export const AddGuideText = styled.div`
+  margin: 3.5rem 0 4rem;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.28px;
+  text-align: center;
+`;
+
+export const RequestItem = styled.div`
+  width: 100%;
+  border-bottom: 1px solid ${theme.colors.secondary};
+  display: grid;
+  grid-template-columns: 2.8125rem 1fr auto;
+  gap: 0.6875rem; /* 11px */
+  align-items: center;
+  padding: 0.625rem; /* 10px */
+  background-color: #fff;
+`;
+
+export const RequestProfileImg = styled.img`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const RequestDefaultProfileImg = styled.div`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.territory};
+`;
+
+export const RequestUserBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem; /* 8px */
+  min-width: 0;
+
+  div {
+    ${theme.fonts.dotum}
+    font-size: 0.875rem; /* 14px */
+    letter-spacing: -0.28px;
+  }
+`;
+
+export const RequestUsername = styled.div`
+  font-weight: 700;
+  color: #000;
+`;
+
+export const RequestIntro = styled.div`
+  font-weight: 500;
+  color: ${theme.colors.territory};
+`;
+
+export const RequestActionBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+
+  button {
+    ${theme.fonts.dotum}
+    color: #000;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 500;
+    letter-spacing: -0.26px;
+    text-decoration-line: underline;
+    text-underline-position: from-font;
+
+    &:disabled {
+      color: ${theme.colors.territory};
+      cursor: default;
+    }
+  }
 `;
 
 export const EmptyBox = styled.div`

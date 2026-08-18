@@ -11,6 +11,7 @@ interface FriendGroupListSectionProps {
   onManageGroups: () => void;
   onOpenGroup: (groupId: number) => void;
   onJoinGroup: (groupId: number) => void;
+  showManagementButtons?: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ export default function FriendGroupListSection({
   onManageGroups,
   onOpenGroup,
   onJoinGroup,
+  showManagementButtons = true,
 }: FriendGroupListSectionProps) {
   const visibleGroups = keyword ? searchGroups : groups;
   const emptyText = keyword ? "검색 결과가 없습니다." : "가입한 그룹이 없습니다.";
@@ -33,10 +35,12 @@ export default function FriendGroupListSection({
     <S.Section>
       <S.Title>
         <div>{keyword ? "그룹" : "나의 그룹"}</div>
-        <S.BtnBox>
-          <button onClick={onCreateGroup}>그룹 만들기</button>
-          <button onClick={onManageGroups}>관리</button>
-        </S.BtnBox>
+        {showManagementButtons && (
+          <S.BtnBox>
+            <button onClick={onCreateGroup}>그룹 만들기</button>
+            <button onClick={onManageGroups}>관리</button>
+          </S.BtnBox>
+        )}
       </S.Title>
       <S.GroupContainer>
         {visibleGroups.length > 0 ? (
