@@ -225,8 +225,10 @@ export function useLikeQuoteMutation() {
   return useMutation({
     mutationFn: (quoteId: number) => quoteApi.likeQuote(quoteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
-      queryClient.invalidateQueries({ queryKey: ["archives"] });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ["archives"] }),
+      ]);
     },
   });
 }
@@ -240,8 +242,10 @@ export function useUnlikeQuoteMutation() {
   return useMutation({
     mutationFn: (quoteId: number) => quoteApi.unlikeQuote(quoteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
-      queryClient.invalidateQueries({ queryKey: ["archives"] });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ["archives"] }),
+      ]);
     },
   });
 }

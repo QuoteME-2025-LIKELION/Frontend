@@ -13,6 +13,7 @@ interface QuoteFeedProps {
   tag?: string[];
   isSilenced?: boolean;
   isLiked?: boolean; // 좋아요를 누른 상태인지
+  isLikeDisabled?: boolean;
   onLike?: () => void;
   onShare?: () => void;
   onRequest?: () => void;
@@ -75,6 +76,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       tag,
       isSilenced = false,
       isLiked = false,
+      isLikeDisabled = false,
       onLike = () => {},
       onShare = () => {},
       onRequest = () => {},
@@ -229,7 +231,11 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             )}
           </S.TagBox>
           <S.BtnBox>
-            <button type="button" onClick={() => handleClick(onLike)}>
+            <button
+              type="button"
+              disabled={isLikeDisabled}
+              onClick={() => handleClick(onLike)}
+            >
               {isLiked ? (
                 isInArchive ? (
                   <svg

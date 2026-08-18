@@ -19,8 +19,12 @@ import * as S from "./AccountSetting.styles";
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-  const { data: accountProfile } = useAccountProfileQuery();
-  const { mutateAsync: updateAccount } = useUpdateAccountMutation();
+  const {
+    data: accountProfile,
+    isError: isAccountProfileError,
+    isPending: isAccountProfilePending,
+  } = useAccountProfileQuery();
+  const updateAccountMutation = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
   const [birthDraft, setBirthDraft] = useState<string | null>(null);
   const [genderDraft, setGenderDraft] = useState<string | null>(null);
@@ -35,6 +39,12 @@ export default function AccountSetting() {
   const gender = genderDraft ?? accountProfile?.gender ?? "";
 
   const handleSave = async () => {
+    if (isAccountProfilePending || !accountProfile) {
+      setErrorMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+
     if (!isNumeric(birth) || birth.length !== 4) {
       setErrorMessage("출생년도를 4자리 숫자로 입력해 주세요.");
       setShowErrorToast(true);
@@ -47,7 +57,7 @@ export default function AccountSetting() {
     };
 
     try {
-      await updateAccount(payload);
+      await updateAccountMutation.mutateAsync(payload);
 
       setShowToast(true);
       setTimeout(() => {
@@ -141,7 +151,18 @@ export default function AccountSetting() {
           {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
           )}
-          <Button title="저장하기" onClick={handleSave} />
+          {isAccountProfileError && (
+            <S.WarningMessage>
+              계정 정보를 불러오지 못했습니다.
+            </S.WarningMessage>
+          )}
+          <Button
+            title="저장하기"
+            onClick={handleSave}
+            disabled={
+              isAccountProfilePending || updateAccountMutation.isPending
+            }
+          />
           <S.DeleteBtn onClick={handleDelete}>계정 삭제하기</S.DeleteBtn>
         </S.InputBox>
       </S.Container>
