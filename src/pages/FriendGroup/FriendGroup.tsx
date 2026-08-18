@@ -6,10 +6,10 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import useDebounce from "@/hooks/useDebounce";
 import {
-  useAddFriendMutation,
   useDeleteFriendMutation,
   useFriendSearchQuery,
   useFriendsQuery,
+  useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
@@ -67,7 +67,7 @@ export default function FriendGroup() {
     Boolean(debouncedKeyword)
   );
   const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
-  const { mutateAsync: addFriend } = useAddFriendMutation();
+  const { mutateAsync: requestFriend } = useRequestFriendMutation();
 
   const friendList = useMemo(
     () => friends.filter(isValidFriend),
@@ -131,22 +131,22 @@ export default function FriendGroup() {
 
   const handleConfirmAdd = useCallback(async () => {
     if (!addTarget) {
-      console.error("추가할 사용자 ID가 유효하지 않습니다.");
+      console.error("친구 요청을 보낼 사용자 ID가 유효하지 않습니다.");
       return;
     }
     try {
-      await addFriend(addTarget.id);
+      await requestFriend(addTarget.id);
 
       setAddTarget(null);
       setShowAddToast(true);
     } catch (err) {
-      console.error("친구 추가 처리 중 오류:", err);
+      console.error("친구 요청 처리 중 오류:", err);
       setAddTarget(null);
-      setErrorMessage("친구 추가에 실패했습니다.");
+      setErrorMessage("친구 요청 전송에 실패했습니다.");
       setShowErrorToast(true);
       return;
     }
-  }, [addFriend, addTarget]);
+  }, [requestFriend, addTarget]);
 
   return (
     <>

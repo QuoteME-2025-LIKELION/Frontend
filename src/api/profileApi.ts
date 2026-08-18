@@ -8,13 +8,12 @@ export interface SetupProfileRequest {
 
 export interface UpdateAccountRequest {
   gender: string;
-  birthYear: string;
+  birthYear: number;
 }
 
 export interface AccountProfileResponse {
   gender: string;
   birthYear: number;
-  email?: string;
 }
 
 export interface MyProfileResponse {

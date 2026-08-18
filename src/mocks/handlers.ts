@@ -295,10 +295,13 @@ export const handlers = [
     return HttpResponse.json({
       myQuotes: [
         {
-          quoteId: 1,
+          id: 1,
           content: "여자니까 이해해주길",
+          groupName: "야매철학자들",
+          authorNickname: "손지수",
+          birthYear: 2000,
           originalContent: null,
-          taggedMembers: ["뮤랄라", "스페이스"],
+          taggedNicknames: ["뮤랄라", "스페이스"],
         },
       ],
       otherQuotes: [
@@ -313,17 +316,24 @@ export const handlers = [
     });
   }),
 
-  http.get("/api/quotes/feed", () => {
+  http.get("/api/quotes/feed", ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get("page") ?? 0);
+    const size = Number(url.searchParams.get("size") ?? 10);
+
     return HttpResponse.json({
-      content: [
-        {
-          quoteId: 1,
-          authorNickname: "라라진",
-          content: "방귀 퀸 놈이 성낸다",
-        },
-      ],
-      pageable: { pageNumber: 0, pageSize: 10 },
-      last: true,
+      content:
+        page === 0
+          ? [
+              {
+                quoteId: 1,
+                authorNickname: "라라진",
+                content: "방귀 퀸 놈이 성낸다",
+              },
+            ]
+          : [],
+      pageable: { pageNumber: page, pageSize: size },
+      last: page >= 0,
     });
   }),
 
@@ -385,13 +395,15 @@ export const handlers = [
   http.get("/api/archives", () => {
     return HttpResponse.json([
       {
-        quoteId: 1,
+        id: 1,
         content: "방귀 퀸 놈이 성낸다",
         originalContent: "오늘 말랑이랑 몰랑이랑 같이 카공을 했는데...",
-        taggedMembers: ["말랑이", "몰랑이"],
+        createDate: "2025-10-31",
+        authorName: "라라진",
+        authorBirthYear: 2000,
+        taggedMemberNames: ["말랑이", "몰랑이"],
         isBookmarked: true,
         isLiked: false,
-        createdAt: "2025-10-31",
       },
     ]);
   }),

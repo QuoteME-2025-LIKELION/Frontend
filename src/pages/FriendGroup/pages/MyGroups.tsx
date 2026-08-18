@@ -24,6 +24,7 @@ export default function MyGroups() {
   const { data: groupsData = [] } = useMyGroupsQuery();
   const { data: myProfile } = useMyProfileQuery();
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
+  const myId = myProfile?.id;
 
   const [quitTarget, setQuitTarget] = useState<GroupQuitTarget | null>(null);
   const [showQuitToast, setShowQuitToast] = useState(false);
@@ -42,8 +43,6 @@ export default function MyGroups() {
     }
 
     try {
-      const myId = myProfile?.id;
-
       if (myId == null) {
         throw new Error("사용자 ID를 가져올 수 없습니다.");
       }
@@ -60,7 +59,7 @@ export default function MyGroups() {
       setQuitTarget(null);
       setShowErrorToast(true);
     }
-  }, [myProfile?.id, quitTarget, removeGroupMember]);
+  }, [myId, quitTarget, removeGroupMember]);
   return (
     <>
       <PageTitle title="나의 그룹 관리" />

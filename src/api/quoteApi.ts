@@ -90,9 +90,14 @@ function createQuotePayload({
 export const quoteApi = {
   getQuotesByDate: (date: string, groupId?: number | string) =>
     api.get<GetQuotesResponse>("/api/quotes", { params: { date, groupId } }),
-  getQuotesFeed: (date: string, groupId?: number | string) =>
+  getQuotesFeed: (
+    date: string,
+    page: number,
+    groupId?: number | string,
+    size?: number
+  ) =>
     api.get<GetQuotesFeedResponse>("/api/quotes/feed", {
-      params: { date, groupId },
+      params: { date, groupId, page, size },
     }),
   createQuote: (payload: CreateQuoteRequest) =>
     api.post("/api/quotes", createQuotePayload(payload)),

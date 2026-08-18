@@ -8,7 +8,6 @@ import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
-  useAccountProfileQuery,
   useDeleteAccountMutation,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
@@ -19,16 +18,10 @@ import * as S from "./AccountSetting.styles";
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-  const { data: accountProfile } = useAccountProfileQuery();
   const { mutateAsync: updateAccount } = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
-  const [emailDraft, setEmailDraft] = useState<string | null>(null);
   const [birth, setBirth] = useState("");
   const [gender, setGender] = useState("");
-  const isValidEmail = (email: string) => {
-    const regex = /\S+@\S+\.\S+/;
-    return regex.test(email);
-  };
   const isNumeric = (value: string) => /^\d+$/.test(value);
 
   const [showToast, setShowToast] = useState(false);
@@ -36,14 +29,17 @@ export default function AccountSetting() {
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const email = emailDraft ?? accountProfile?.email ?? "";
 
   const handleSave = async () => {
-    // 저장 로직 추가
+    if (!isNumeric(birth) || birth.length !== 4) {
+      setErrorMessage("출생년도를 4자리 숫자로 입력해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+
     const payload = {
       gender,
-      birthYear: birth,
-      email,
+      birthYear: Number(birth),
     };
 
     try {
@@ -138,22 +134,8 @@ export default function AccountSetting() {
             name="birth"
             required
           />
-          <S.TextName>이메일 변경</S.TextName>
-          <Input
-            value={email}
-            onChange={(e) => setEmailDraft(e.target.value)}
-            placeholder="이메일 입력"
-            type="email"
-            name="email"
-            required
-          />
-          {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
+          {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
-          )}
-          {email.length > 0 && !isValidEmail(email) && (
-            <S.WarningMessage>
-              유효하지 않은 이메일 형식입니다.
-            </S.WarningMessage>
           )}
           <Button title="저장하기" onClick={handleSave} />
           <S.DeleteBtn onClick={handleDelete}>계정 삭제하기</S.DeleteBtn>

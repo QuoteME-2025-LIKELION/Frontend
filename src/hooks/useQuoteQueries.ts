@@ -10,8 +10,20 @@ export const quoteQueryKeys = {
   all: ["quotes"] as const,
   byDate: (date: string, groupId?: number | string) =>
     [...quoteQueryKeys.all, "by-date", date, groupId ?? "all"] as const,
-  feed: (date: string, groupId?: number | string) =>
-    [...quoteQueryKeys.all, "feed", date, groupId ?? "all"] as const,
+  feed: (
+    date: string,
+    page: number,
+    groupId?: number | string,
+    size?: number
+  ) =>
+    [
+      ...quoteQueryKeys.all,
+      "feed",
+      date,
+      page,
+      groupId ?? "all",
+      size ?? "default",
+    ] as const,
   summary: (content: string) =>
     [...quoteQueryKeys.all, "summary", content] as const,
   aiUsage: () => [...quoteQueryKeys.all, "ai-usage"] as const,
@@ -57,12 +69,14 @@ export function useQuoteSummaryQuery(content: string) {
  */
 export function useQuotesFeedQuery(
   date: string | undefined,
-  groupId?: number | string
+  page = 0,
+  groupId?: number | string,
+  size?: number
 ) {
   return useQuery({
-    queryKey: quoteQueryKeys.feed(date ?? "", groupId),
+    queryKey: quoteQueryKeys.feed(date ?? "", page, groupId, size),
     queryFn: async () => {
-      const res = await quoteApi.getQuotesFeed(date!, groupId);
+      const res = await quoteApi.getQuotesFeed(date!, page, groupId, size);
       return res.data;
     },
     enabled: date !== undefined,

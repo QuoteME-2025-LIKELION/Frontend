@@ -27,7 +27,12 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSignUp = async () => {
-    if (!isValidEmail(email) || pwd.length < 8 || birth.length !== 4) {
+    if (
+      !isValidEmail(email) ||
+      pwd.length < 8 ||
+      birth.length !== 4 ||
+      !isNumeric(birth)
+    ) {
       setErrorMessage("입력값을 확인해 주세요.");
       setShowErrorToast(true);
       return;
@@ -108,7 +113,7 @@ export default function SignUp() {
             minLength={4}
             maxLength={4}
           />
-          {birth.length > 0 && (!isNumeric(birth) || birth.length > 5) && (
+          {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
             <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
           )}
           {email.length > 0 && !isValidEmail(email) && (
