@@ -89,7 +89,7 @@ export default function GroupActionModals({
           confirmText="탈퇴하기"
           confirmColor="danger"
           variant="card"
-          description="탈퇴해도 재가입 요청을 보낼 수 있어요"
+          description="탈퇴해도 재가입 요청을 보낼 수 있어요."
         />
       )}
       {showQuitToast && (

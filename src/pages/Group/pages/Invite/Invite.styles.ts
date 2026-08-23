@@ -10,12 +10,14 @@ export const Container = styled.div`
   max-width: 393px;
   height: 100vh;
   background-color: ${theme.colors.secondary};
+  overflow: hidden;
 `;
 
 export const Content = styled.div`
   width: 100%;
   flex: 1;
-  padding: 0.9375rem 1.5rem 2rem; /* 15px 24px 32px */
+  min-height: 0;
+  padding: 1.5rem 1.5rem 2rem; /* 24px 24px 32px */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,6 +49,9 @@ export const FriendList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+`;
+
+export const PendingList = styled(FriendList)`
   gap: 0.9375rem; /* 15px */
 `;
 
