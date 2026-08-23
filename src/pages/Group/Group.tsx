@@ -5,8 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
+  useAcceptGroupJoinRequestMutation,
   useDeleteGroupMutation,
+  useGroupJoinRequestsQuery,
   useGroupQuery,
+  useRejectGroupJoinRequestMutation,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
@@ -28,8 +31,16 @@ export default function Group() {
   );
   const { data: myProfile } = useMyProfileQuery();
   const myNickName = myProfile?.nickname || "";
+  const isLeader = groupData?.leaderNickname === myNickName;
+  const { data: joinRequests = [] } = useGroupJoinRequestsQuery(
+    isLeader ? groupId : undefined
+  );
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
   const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
+  const { mutateAsync: acceptGroupJoinRequest } =
+    useAcceptGroupJoinRequestMutation();
+  const { mutateAsync: rejectGroupJoinRequest } =
+    useRejectGroupJoinRequestMutation();
 
   const [deleteMemberTarget, setDeleteMemberTarget] =
     useState<GroupMemberActionTarget | null>(null);
@@ -40,11 +51,13 @@ export default function Group() {
   const [showQuitToast, setShowQuitToast] = useState(false);
 
   const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
+  const [pendingJoinRequestId, setPendingJoinRequestId] = useState<
+    number | null
+  >(null);
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
-  const isLeader = groupData?.leaderNickname === myNickName;
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -80,6 +93,50 @@ export default function Group() {
       setShowErrorToast(true);
     }
   }, [deleteMemberTarget, groupId, removeGroupMember]);
+
+  const handleAcceptJoinRequest = useCallback(
+    async (requestId: number) => {
+      if (!groupId) {
+        console.error("그룹 ID가 유효하지 않습니다.");
+        return;
+      }
+
+      setPendingJoinRequestId(requestId);
+
+      try {
+        await acceptGroupJoinRequest({ groupId, requestId });
+      } catch (err) {
+        console.error("그룹 가입 요청 수락 처리 중 오류:", err);
+        setErrorMessage("그룹 가입 요청 수락에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingJoinRequestId(null);
+      }
+    },
+    [acceptGroupJoinRequest, groupId]
+  );
+
+  const handleRejectJoinRequest = useCallback(
+    async (requestId: number) => {
+      if (!groupId) {
+        console.error("그룹 ID가 유효하지 않습니다.");
+        return;
+      }
+
+      setPendingJoinRequestId(requestId);
+
+      try {
+        await rejectGroupJoinRequest({ groupId, requestId });
+      } catch (err) {
+        console.error("그룹 가입 요청 거절 처리 중 오류:", err);
+        setErrorMessage("그룹 가입 요청 거절에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingJoinRequestId(null);
+      }
+    },
+    [groupId, rejectGroupJoinRequest]
+  );
 
   const handleQuitGroup = useCallback(() => {
     setGroupActionConfirm("quit");
@@ -159,7 +216,7 @@ export default function Group() {
           showBackBtn={true}
           showXBtn={false}
           title=""
-          backgroundColor="secondary"
+          backgroundColor="primary"
           onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
@@ -167,9 +224,13 @@ export default function Group() {
           <GroupMainSection
             group={groupData}
             members={members}
+            joinRequests={joinRequests}
+            pendingJoinRequestId={pendingJoinRequestId}
             isLeader={isLeader}
             onEditMessage={() => navigate(`/group/${groupId}/change-message`)}
             onDeleteMember={handleDeleteMember}
+            onAcceptJoinRequest={handleAcceptJoinRequest}
+            onRejectJoinRequest={handleRejectJoinRequest}
             onInviteGroup={() => navigate(`/group/${groupId}/invite`)}
             onQuitGroup={handleQuitGroup}
             onDeleteGroup={handleDeleteGroup}
