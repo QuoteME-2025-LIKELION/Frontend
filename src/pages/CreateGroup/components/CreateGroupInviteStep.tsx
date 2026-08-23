@@ -1,4 +1,3 @@
-import Button from "@/components/Button/Button";
 import Search from "@/components/Search/Search";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
@@ -14,6 +13,7 @@ interface CreateGroupInviteStepProps {
   onChangeKeyword: (keyword: string) => void;
   onClearKeyword: () => void;
   onSelectFriend: (id: number) => void;
+  onMoveStep: (step: number) => void;
   onMoveToFriendGroup: () => void;
   onCreateGroup: () => void;
 }
@@ -30,6 +30,7 @@ export default function CreateGroupInviteStep({
   onChangeKeyword,
   onClearKeyword,
   onSelectFriend,
+  onMoveStep,
   onMoveToFriendGroup,
   onCreateGroup,
 }: CreateGroupInviteStepProps) {
@@ -45,12 +46,11 @@ export default function CreateGroupInviteStep({
             함께할 멤버를 <br />
             초대해 보세요
           </S.MTitle>
-          <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
         </S.TitleLine>
         <S.Desc>그룹의 최대 정원은 5명이에요</S.Desc>
       </S.TitleContainer>
       <Search
-        placeholder="검색"
+        placeholder="검색어를 입력해 주세요"
         desc={
           friendList.length === 0
             ? "아직 추가된 친구가 없습니다."
@@ -94,11 +94,18 @@ export default function CreateGroupInviteStep({
                 <button onClick={onMoveToFriendGroup}>친구 추가</button>
                 <div>탭으로 이동</div>
               </S.EmptyFriendList>
-              <Button title="그룹 만들기" onClick={onCreateGroup} />
             </S.EmptyFriendContainer>
           )}
         </S.FriendList>
       </S.FriendListContainer>
+      <S.BottomActionBar>
+        <S.ActionButton type="button" onClick={() => onMoveStep(2)}>
+          뒤로가기
+        </S.ActionButton>
+        <S.ActionButton type="button" onClick={onCreateGroup}>
+          {selectedFriends.length > 0 ? "그룹 만들기" : "건너뛰기"}
+        </S.ActionButton>
+      </S.BottomActionBar>
     </S.Main>
   );
 }

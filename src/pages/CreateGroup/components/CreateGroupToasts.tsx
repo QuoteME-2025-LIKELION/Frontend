@@ -28,6 +28,7 @@ export default function CreateGroupToasts({
           text="그룹이 생성되었습니다."
           onClose={onCloseSuccessToast}
           showOverlay={false}
+          variant="snackbar"
         />
       )}
       {showErrorToast && (
@@ -35,6 +36,8 @@ export default function CreateGroupToasts({
           isVisible={showErrorToast}
           onClose={onCloseErrorToast}
           text={errorMessage}
+          showOverlay={false}
+          variant="snackbar"
           {...(errorMessage3 && { text3: errorMessage3 })}
         />
       )}

@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Button from "@/components/Button/Button";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import useDebounce from "@/hooks/useDebounce";
@@ -47,23 +46,20 @@ export default function CreateGroup() {
   );
 
   // 친구 선택/해제 핸들러
-  const handleSelectFriend = useCallback(
-    (id: number) => {
-      setSelectedFriends((prev) => {
-        if (prev.includes(id)) {
-          // 이미 선택된 경우 선택 해제
-          return prev.filter((friendId) => friendId !== id);
-        } else {
-          // 새로 선택하는 경우 4명 미만일 때만 추가 (생각해보니까 만드는 사람도 멤버 수 포함,,)
-          if (prev.length < 4) {
-            return [...prev, id];
-          }
-          return prev;
+  const handleSelectFriend = useCallback((id: number) => {
+    setSelectedFriends((prev) => {
+      if (prev.includes(id)) {
+        // 이미 선택된 경우 선택 해제
+        return prev.filter((friendId) => friendId !== id);
+      } else {
+        // 새로 선택하는 경우 4명 미만일 때만 추가 (생각해보니까 만드는 사람도 멤버 수 포함,,)
+        if (prev.length < 4) {
+          return [...prev, id];
         }
-      });
-    },
-    []
-  );
+        return prev;
+      }
+    });
+  }, []);
 
   // 선택된 친구 객체 목록 (검색해도 항상 상단에 고정)
   const selectedFriendObjects = friendList.filter(
@@ -201,16 +197,11 @@ export default function CreateGroup() {
             onChangeKeyword={setKeyword}
             onClearKeyword={() => setKeyword("")}
             onSelectFriend={handleSelectFriend}
-            onMoveToFriendGroup={() => navigate("/friend-group")}
+            onMoveStep={setStep}
+            onMoveToFriendGroup={() => navigate("/friend-group/add")}
             onCreateGroup={handleCreateGroup}
           />
         </S.Content>
-
-        {displayedFriends.length > 0 && (
-          <S.BtnBox>
-            <Button title="그룹 만들기" onClick={handleCreateGroup} />
-          </S.BtnBox>
-        )}
       </S.Container>
     </>
   );

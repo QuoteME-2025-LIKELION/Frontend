@@ -10,32 +10,41 @@ export const Container = styled.div`
   max-width: 393px;
   height: 100vh;
   position: relative;
+  background-color: ${theme.colors.secondary};
+  overflow: hidden;
 `;
 
 export const Content = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.625rem; /* 26px */
-  background-color: #fff;
-  flex: 1; /* 남은 공간을 모두 차지하도록 변경 */
-  overflow: hidden; /* 내부 스크롤 관리를 위해 추가 */
+  background-color: ${theme.colors.secondary};
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const NavyBox = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${theme.colors.secondary};
-  padding: 2.625rem 2.5rem 1.25rem; /* 42px 40px 20px */
+  padding: 2.75rem 1.5rem 3.25rem; /* 44px 24px 52px */
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 1.625rem; /* 26px */
 `;
 
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* 12px */
+  gap: 2rem; /* 32px */
+`;
+
+export const StepTitleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* 6px */
 `;
 
 export const InputBox = styled(InputContainer)`
@@ -49,7 +58,7 @@ export const InputBox = styled(InputContainer)`
     letter-spacing: -0.26px;
   }
 
-  margin-bottom: 448px;
+  margin-top: 0.25rem;
 `;
 
 export const ErrorMsg = styled.div`
@@ -61,11 +70,11 @@ export const Main = styled.div`
   background-color: ${theme.colors.secondary};
   display: flex;
   flex-direction: column;
-  gap: 1.25rem; /* 20px */
-  padding: 0 2.5rem; /* 0 40px */
-  flex: 1; /* 남은 공간을 모두 차지하도록 변경 */
-  overflow: hidden; /* 내부 스크롤 관리를 위해 추가 */
-  padding-bottom: 3.75rem; /* 60px */
+  gap: 1.875rem; /* 30px */
+  padding: 2.75rem 1.5rem 3.25rem; /* 44px 24px 52px */
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const TitleContainer = styled.div`
@@ -73,7 +82,7 @@ export const TitleContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.3125rem; /* 5px */
+  gap: 0.375rem; /* 6px */
 `;
 
 export const TitleLine = styled.div`
@@ -103,14 +112,13 @@ export const Desc = styled(InviteCount)`
   font-size: 0.8125rem; /* 13px */
   font-weight: 400;
   letter-spacing: -0.26px;
-  margin-top: 32px;
 `;
 
 export const FriendListContainer = styled.div`
   flex: 1;
   overflow-y: auto;
-  margin: 0 -2.5rem; /* Main의 padding을 무시하고 채우기 */
-  padding: 0 2.5rem; /* 0 40px */
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -179,9 +187,47 @@ export const BtnBox = styled.div`
   }
 `;
 
+export const BottomActionBar = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem; /* 10px */
+
+  &:has(> button:only-child) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ActionButton = styled.button`
+  width: 100%;
+  min-height: 2.875rem; /* 46px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 0.5px solid ${theme.colors.primary};
+  border-bottom: 0.5px solid ${theme.colors.primary};
+
+  ${theme.fonts.pretendard}
+  color: ${theme.colors["fg-primary"]};
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.32px;
+
+  &:disabled {
+    border-top-color: #dedede;
+    border-bottom-color: #dedede;
+    color: #c3c5c9;
+    cursor: not-allowed;
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(20, 56, 88, 0.08);
+  }
+`;
+
 export const MTitle = styled.div`
   color: ${theme.colors["fg-primary"]};
-  margin-top: 30px;
+  margin-top: 0;
   ${theme.fonts.batang}
   font-size: var(--font-size-t5, 20px);
   font-style: normal;
