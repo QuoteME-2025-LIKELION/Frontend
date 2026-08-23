@@ -46,6 +46,7 @@ export const GroupCard = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   background-color: transparent;
+  height: 100%;
 `;
 
 export const TextBox = styled.div`
@@ -54,6 +55,8 @@ export const TextBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.625rem; /* 26px */
+  height: 100%;
+  justify-content: space-between;
 `;
 
 export const GroupTitle = styled.div`
@@ -110,7 +113,7 @@ export const Since = styled.div`
 export const Count = styled.div`
   position: absolute;
   right: 0;
-  bottom: 0.3125rem;
+  bottom: 0;
   ${theme.fonts.chonburi}
   color: rgba(255, 255, 255, 0.22);
   font-size: 6rem; /* 96px */
@@ -203,6 +206,29 @@ export const BtnBox = styled(Section)`
   gap: 0.625rem; /* 10px */
 `;
 
+export const InviteButton = styled.button<{ $isDisabled: boolean }>`
+  width: 100%;
+  min-height: 2.875rem; /* 46px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 0.5px solid
+    ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
+  border-bottom: 0.5px solid
+    ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
+
+  ${theme.fonts.batang}
+  color: ${({ $isDisabled }) =>
+    $isDisabled ? "#c3c5c9" : theme.colors["fg-primary"]};
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+
+  &:active {
+    background-color: rgba(20, 56, 88, 0.08);
+  }
+`;
+
 export const RequestList = styled.div`
   width: 100%;
   display: flex;
@@ -284,6 +310,7 @@ export const RequestActionBox = styled.div`
 
 export const QuitBtn = styled.button`
   width: 100%;
+  min-height: 2.875rem; /* 46px */
   padding: 0.4375rem 0.625rem; /* 7px 10px */
   display: flex;
   justify-content: center;

@@ -51,6 +51,7 @@ export default function Group() {
   const [showQuitToast, setShowQuitToast] = useState(false);
 
   const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
+  const [showFullGroupToast, setShowFullGroupToast] = useState(false);
   const [pendingJoinRequestId, setPendingJoinRequestId] = useState<
     number | null
   >(null);
@@ -168,6 +169,15 @@ export default function Group() {
   const handleDeleteGroup = useCallback(() => {
     setGroupActionConfirm("delete");
   }, []);
+  const handleInviteGroup = useCallback(() => {
+    if (members.length >= 5) {
+      setShowFullGroupToast(true);
+      return;
+    }
+
+    navigate(`/group/${groupId}/invite`);
+  }, [groupId, members.length, navigate]);
+
   const handleConfirmDeleteGroup = useCallback(async () => {
     if (!groupId) {
       console.error("삭제할 그룹 ID가 유효하지 않습니다.");
@@ -200,6 +210,7 @@ export default function Group() {
           showDeleteToast={showDeleteToast}
           showQuitToast={showQuitToast}
           showGroupDeleteToast={showGroupDeleteToast}
+          showFullGroupToast={showFullGroupToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
           onCloseDeleteMember={() => setDeleteMemberTarget(null)}
@@ -210,6 +221,7 @@ export default function Group() {
           onCloseDeleteToast={() => setShowDeleteToast(false)}
           onCloseQuitToast={() => setShowQuitToast(false)}
           onCloseGroupDeleteToast={() => setShowGroupDeleteToast(false)}
+          onCloseFullGroupToast={() => setShowFullGroupToast(false)}
           onCloseErrorToast={() => setShowErrorToast(false)}
         />
         <Header
@@ -231,7 +243,7 @@ export default function Group() {
             onDeleteMember={handleDeleteMember}
             onAcceptJoinRequest={handleAcceptJoinRequest}
             onRejectJoinRequest={handleRejectJoinRequest}
-            onInviteGroup={() => navigate(`/group/${groupId}/invite`)}
+            onInviteGroup={handleInviteGroup}
             onQuitGroup={handleQuitGroup}
             onDeleteGroup={handleDeleteGroup}
           />

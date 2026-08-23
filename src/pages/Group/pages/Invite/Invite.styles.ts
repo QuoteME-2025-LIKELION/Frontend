@@ -9,16 +9,24 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   height: 100vh;
-  background-color: #fff;
+  background-color: ${theme.colors.secondary};
 `;
 
 export const Content = styled.div`
   width: 100%;
-  padding: 0.9375rem 2.5rem; /* 15px 40px */
+  flex: 1;
+  padding: 0.9375rem 1.5rem 2rem; /* 15px 24px 32px */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2.25rem; /* 36px */
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const Title = styled.div`
@@ -40,4 +48,17 @@ export const FriendList = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 0.9375rem; /* 15px */
+`;
+
+export const EmptyBox = styled.div`
+  width: 100%;
+  padding: 4rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  letter-spacing: -0.28px;
 `;

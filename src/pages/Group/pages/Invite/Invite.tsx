@@ -19,7 +19,6 @@ import {
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 
-
 import * as S from "./Invite.styles";
 
 const EMPTY_FRIENDS: Friend[] = [];
@@ -52,7 +51,6 @@ export default function Invite() {
   );
   const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
 
-  const groupName = groupData?.name || "";
   const currentMembers = groupData?.members || EMPTY_FRIENDS;
   const friendsList = debouncedKeyword
     ? searchResult?.members || EMPTY_FRIENDS
@@ -111,13 +109,18 @@ export default function Invite() {
       <S.Container>
         {inviteTarget && (
           <ConfirmModal
-            nickname={inviteTarget.nickname}
-            question="님을"
-            nickname2={groupName}
-            question2="에 초대할까요?"
+            question=""
+            lines={[
+              `${inviteTarget.nickname}님을 그룹에`,
+              "초대하시겠어요?",
+            ]}
             onClose={() => setInviteTarget(null)}
             onConfirm={handleConfirmInvite}
             showOverlay={false}
+            cancelText="돌아가기"
+            confirmText="초대하기"
+            confirmColor="primary"
+            variant="card"
           />
         )}
         {showSuccessToast && (
@@ -126,6 +129,7 @@ export default function Invite() {
             isVisible={showSuccessToast}
             onClose={() => setShowSuccessToast(false)}
             showOverlay={false}
+            variant="snackbar"
           />
         )}
         {showErrorToast && (
@@ -136,6 +140,7 @@ export default function Invite() {
             text2="하여"
             text3="초대가 불가능합니다."
             showOverlay={false}
+            variant="snackbar"
             onClose={() => setShowErrorToast(false)}
           />
         )}
@@ -143,12 +148,12 @@ export default function Invite() {
           showBackBtn={false}
           showXBtn={true}
           title=""
-          backgroundColor="white"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate(`/group/${groupId}`)}
         />
         <S.Content>
           <Search
-            placeholder="검색"
+            placeholder="검색어를 입력해 주세요"
             desc={
               keyword && filteredFriends.length === 0
                 ? "검색 결과가 없습니다."
@@ -160,17 +165,22 @@ export default function Invite() {
           />
           <S.FriendList>
             <S.Title>친구</S.Title>
-            {filteredFriends.map((friend: Friend) => (
-              <UserListItem
-                key={friend.id}
-                friend={friend}
-                actionButton={{
-                  type: "invite",
-                  text: "초대",
-                  onClick: () => handleInviteFriend(friend.nickname, friend.id),
-                }}
-              />
-            ))}
+            {filteredFriends.length > 0 ? (
+              filteredFriends.map((friend: Friend) => (
+                <UserListItem
+                  key={friend.id}
+                  friend={friend}
+                  actionButton={{
+                    type: "invite",
+                    text: "초대",
+                    onClick: () =>
+                      handleInviteFriend(friend.nickname, friend.id),
+                  }}
+                />
+              ))
+            ) : (
+              <S.EmptyBox>초대할 수 있는 친구가 없습니다.</S.EmptyBox>
+            )}
           </S.FriendList>
         </S.Content>
       </S.Container>

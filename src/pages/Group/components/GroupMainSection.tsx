@@ -1,5 +1,4 @@
 import type { GroupJoinRequest } from "@/api/groupApi";
-import Button from "@/components/Button/Button";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
@@ -39,6 +38,8 @@ export default function GroupMainSection({
   onQuitGroup,
   onDeleteGroup,
 }: GroupMainSectionProps) {
+  const isGroupFull = members.length >= 5;
+
   return (
     <S.Main>
       <S.Section>
@@ -87,11 +88,23 @@ export default function GroupMainSection({
         />
       )}
       <S.BtnBox>
-        <Button title="그룹 초대하기" onClick={onInviteGroup} />
+        {isLeader && (
+          <S.InviteButton
+            type="button"
+            $isDisabled={isGroupFull}
+            onClick={onInviteGroup}
+          >
+            멤버 초대하기
+          </S.InviteButton>
+        )}
         {isLeader ? (
-          <S.QuitBtn onClick={onDeleteGroup}>그룹 삭제하기</S.QuitBtn>
+          <S.QuitBtn type="button" onClick={onDeleteGroup}>
+            그룹 해체하기
+          </S.QuitBtn>
         ) : (
-          <S.QuitBtn onClick={onQuitGroup}>그룹 탈퇴하기</S.QuitBtn>
+          <S.QuitBtn type="button" onClick={onQuitGroup}>
+            그룹 탈퇴하기
+          </S.QuitBtn>
         )}
       </S.BtnBox>
     </S.Main>
