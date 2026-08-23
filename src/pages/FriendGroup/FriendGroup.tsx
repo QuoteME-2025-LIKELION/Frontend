@@ -198,8 +198,7 @@ export default function FriendGroup() {
         />
         <S.Content>
           <Search
-            placeholder="검색"
-            desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
+            placeholder="검색어를 입력해 주세요"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => {

@@ -14,10 +14,10 @@ export const Container = styled.div`
 
 export const Content = styled.div`
   width: 100%;
-  padding: 0.9375rem 1.5rem; /* 15px 24px */
+  padding: 0.9375rem 1.5rem 2rem; /* 15px 24px 32px */
   display: flex;
   flex-direction: column;
-  gap: 2.25rem; /* 36px */
+  gap: 2.375rem; /* 38px */
   height: 100%;
   max-height: calc(100vh - 59px);
   overflow-y: scroll;
@@ -82,13 +82,15 @@ export const HeaderIconButton = styled.button`
 `;
 
 export const GroupContainer = styled.div`
-  width: 100%;
+  width: calc(100% + 3rem);
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
   white-space: nowrap;
   flex-wrap: nowrap;
   overflow-x: scroll;
-  gap: 1.25rem; /* 20px */
+  gap: 0.75rem; /* 12px */
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar {
@@ -97,38 +99,43 @@ export const GroupContainer = styled.div`
 `;
 
 export const GroupBox = styled.button`
-  padding: 0.875rem 0.9375rem; /* 14px 15px */
+  position: relative;
+  flex: 0 0 8.75rem; /* 140px */
+  width: 8.75rem;
+  height: 7.5rem; /* 120px */
+  padding: 0 1.5rem;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 0.625rem; /* 10px */
-  border-radius: 0 0 1.875rem 0; /* 0 0 30px 0 */
-  border-top: 0.5px solid #000;
-  border-bottom: 0.5px solid #000;
-  background-color: #fff;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.15);
-  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 1.5rem 0 1.5rem 0; /* 24px 0 24px 0 */
+  background-color: ${theme.colors.primary};
 `;
 
 export const GroupName = styled.div`
-  width: 2.5rem; /* 40px */
+  position: relative;
+  z-index: 1;
+  width: 4rem; /* 64px */
   font-family: "HCR Batang", serif;
-  line-height: 1;
+  line-height: 1.35;
   font-size: 0.875rem; /* 14px */
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: -0.28px;
-  color: #000;
+  color: #fff;
   word-break: keep-all;
   text-align: center;
   white-space: normal;
 `;
 
 export const GroupCount = styled.div`
+  position: absolute;
+  right: 1.125rem;
+  top: 2.125rem;
   ${theme.fonts.chonburi}
-  font-size: 6rem; /* 96px */
+  font-size: 4.25rem; /* 68px */
   font-weight: 400;
-  letter-spacing: -1.92px;
-  color: #ddd;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.18);
 `;
 
 export const FriendList = styled.div`
@@ -140,7 +147,7 @@ export const FriendList = styled.div`
 `;
 
 export const AddGuideText = styled.div`
-  margin: 3.5rem 0 4rem;
+  margin: 3rem 0 3.5rem;
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.875rem; /* 14px */
@@ -152,13 +159,13 @@ export const AddGuideText = styled.div`
 
 export const RequestItem = styled.div`
   width: 100%;
-  border-bottom: 1px solid ${theme.colors.secondary};
+  border-bottom: 1px solid #dedede;
   display: grid;
   grid-template-columns: 2.8125rem 1fr auto;
   gap: 0.6875rem; /* 11px */
   align-items: center;
-  padding: 0.625rem; /* 10px */
-  background-color: #fff;
+  padding: 0.625rem 0; /* 10px 0 */
+  background-color: transparent;
 `;
 
 export const RequestProfileImg = styled.img`
@@ -206,12 +213,16 @@ export const RequestActionBox = styled.div`
 
   button {
     ${theme.fonts.dotum}
-    color: #000;
+    color: ${theme.colors.territory};
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;
     letter-spacing: -0.26px;
     text-decoration-line: underline;
     text-underline-position: from-font;
+
+    &:last-of-type {
+      color: ${theme.colors.red};
+    }
 
     &:disabled {
       color: ${theme.colors.territory};

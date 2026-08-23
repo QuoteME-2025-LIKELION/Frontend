@@ -30,7 +30,7 @@ export default function FriendListSection({
 
   return (
     <S.Section>
-      {!keyword ? <S.Title>친구</S.Title> : <S.Title>유저</S.Title>}
+      {!keyword ? <S.Title>친구</S.Title> : <S.Title>사용자</S.Title>}
       <S.FriendList>
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {

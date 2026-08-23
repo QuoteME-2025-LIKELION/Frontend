@@ -13,14 +13,22 @@ export const Wrapper = styled.div`
 
 export const Container = styled.div`
   width: 100%;
-  padding: 0.4375rem; /* 7px */
+  height: 2.75rem; /* 44px */
+  padding: 0.625rem 0.9375rem; /* 10px 15px */
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: 0.5625rem; /* 9px */
   background-color: ${theme.colors.white};
 
+  &:focus-within {
+    border-radius: var(--spacing-radius-xs, 2px);
+    border: 0.5px solid var(--stroke-brand, ${theme.colors.primary});
+    background: var(--bg-white, #fafafa);
+  }
+
   button {
+    flex: 0 0 auto;
     width: 1rem; /* 16px */
     height: 1rem; /* 16px */
     display: flex;
@@ -32,6 +40,7 @@ export const Container = styled.div`
 
 export const SearchInput = styled.input`
   width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   outline: none;
