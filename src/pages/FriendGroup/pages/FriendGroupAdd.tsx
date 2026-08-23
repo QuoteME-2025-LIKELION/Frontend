@@ -13,12 +13,18 @@ import {
   useRejectFriendRequestMutation,
   useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
-import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import {
+  useAcceptGroupInvitationMutation,
+  useGroupInvitationsQuery,
+  useMyGroupsQuery,
+  useRejectGroupInvitationMutation,
+} from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
 import FriendListSection from "../components/FriendListSection";
 import FriendRequestSection from "../components/FriendRequestSection";
+import GroupInvitationSection from "../components/GroupInvitationSection";
 import GroupListSection from "../components/GroupListSection";
 import * as S from "../FriendGroup.styles";
 
@@ -49,11 +55,15 @@ export default function FriendGroupAdd() {
   const [pendingFriendRequestId, setPendingFriendRequestId] = useState<
     number | null
   >(null);
+  const [pendingGroupInvitationId, setPendingGroupInvitationId] = useState<
+    number | null
+  >(null);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const { data: groups = [] } = useMyGroupsQuery();
   const { data: friendRequests = [] } = useFriendRequestsQuery(!keyword);
+  const { data: groupInvitations = [] } = useGroupInvitationsQuery(!keyword);
   const { data: searchResult } = useFriendSearchQuery(
     debouncedKeyword,
     Boolean(debouncedKeyword)
@@ -63,6 +73,10 @@ export default function FriendGroupAdd() {
     useAcceptFriendRequestMutation();
   const { mutateAsync: rejectFriendRequest } =
     useRejectFriendRequestMutation();
+  const { mutateAsync: acceptGroupInvitation } =
+    useAcceptGroupInvitationMutation();
+  const { mutateAsync: rejectGroupInvitation } =
+    useRejectGroupInvitationMutation();
 
   const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
   const myGroupIdSet = useMemo(
@@ -131,6 +145,40 @@ export default function FriendGroupAdd() {
     [rejectFriendRequest]
   );
 
+  const handleAcceptGroupInvitation = useCallback(
+    async (requestId: number) => {
+      setPendingGroupInvitationId(requestId);
+
+      try {
+        await acceptGroupInvitation(requestId);
+      } catch (err) {
+        console.error("그룹 초대 수락 처리 중 오류:", err);
+        setErrorMessage("그룹 초대 수락에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingGroupInvitationId(null);
+      }
+    },
+    [acceptGroupInvitation]
+  );
+
+  const handleRejectGroupInvitation = useCallback(
+    async (requestId: number) => {
+      setPendingGroupInvitationId(requestId);
+
+      try {
+        await rejectGroupInvitation(requestId);
+      } catch (err) {
+        console.error("그룹 초대 거절 처리 중 오류:", err);
+        setErrorMessage("그룹 초대 거절에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingGroupInvitationId(null);
+      }
+    },
+    [rejectGroupInvitation]
+  );
+
   return (
     <>
       <PageTitle title="친구 및 그룹 추가" />
@@ -190,6 +238,12 @@ export default function FriendGroupAdd() {
                 pendingRequestId={pendingFriendRequestId}
                 onAccept={handleAcceptFriendRequest}
                 onReject={handleRejectFriendRequest}
+              />
+              <GroupInvitationSection
+                invitations={groupInvitations}
+                pendingInvitationId={pendingGroupInvitationId}
+                onAccept={handleAcceptGroupInvitation}
+                onReject={handleRejectGroupInvitation}
               />
             </>
           )}
