@@ -1,10 +1,9 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import Button from "@/components/Button/Button";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
@@ -16,6 +15,8 @@ import * as S from "./ChangeMessage.styles";
 
 export default function ChangeMessage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasPushedHistoryGuard = useRef(false);
   const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const { groupId } = useParams();
   const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
@@ -25,8 +26,14 @@ export default function ChangeMessage() {
   const { mutateAsync: updateGroupMotto } = useUpdateGroupMottoMutation();
 
   const [showErrorToast, setShowErrorToast] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [isMessageFocused, setIsMessageFocused] = useState(false);
+  const [hasStartedEditing, setHasStartedEditing] = useState(false);
+  const [allowNavigation, setAllowNavigation] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const message = draftMessage ?? groupData?.motto ?? "";
+  const shouldConfirmExit = hasStartedEditing || draftMessage !== null;
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -41,6 +48,37 @@ export default function ChangeMessage() {
     }
   }, [groupError, navigate]);
 
+  useEffect(() => {
+    const currentPath = `${location.pathname}${location.search}${location.hash}`;
+
+    if (!shouldConfirmExit || allowNavigation) {
+      hasPushedHistoryGuard.current = false;
+      return;
+    }
+
+    if (!hasPushedHistoryGuard.current) {
+      window.history.pushState({ changeMessageGuard: true }, "", currentPath);
+      hasPushedHistoryGuard.current = true;
+    }
+
+    const handlePopState = () => {
+      setShowExitModal(true);
+      window.history.pushState({ changeMessageGuard: true }, "", currentPath);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [
+    allowNavigation,
+    location.hash,
+    location.pathname,
+    location.search,
+    shouldConfirmExit,
+  ]);
+
   const handleSave = async () => {
     const newMotto = message.trim();
 
@@ -51,12 +89,33 @@ export default function ChangeMessage() {
     }
     try {
       await updateGroupMotto({ groupId: groupId!, motto: newMotto });
-      navigate(`/group/${groupId}`);
+      setAllowNavigation(true);
+      setShowSuccessToast(true);
+      setTimeout(() => {
+        navigate(`/group/${groupId}`);
+      }, 1500);
     } catch (err) {
       console.error("그룹 메시지 변경 오류:", err);
       setErrorMessage("그룹 메시지 변경에 실패했습니다.");
       setShowErrorToast(true);
     }
+  };
+
+  const handleClose = () => {
+    if (shouldConfirmExit) {
+      setShowExitModal(true);
+      return;
+    }
+    navigate(`/group/${groupId}`);
+  };
+
+  const handleExitModalClose = () => {
+    setShowExitModal(false);
+  };
+
+  const handleExitConfirm = () => {
+    setAllowNavigation(true);
+    navigate(`/group/${groupId}`);
   };
 
   return (
@@ -68,29 +127,64 @@ export default function ChangeMessage() {
             isVisible={showErrorToast}
             onClose={() => setShowErrorToast(false)}
             text={errorMessage}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
+        {showSuccessToast && (
+          <ToastModal
+            isVisible={showSuccessToast}
+            onClose={() => setShowSuccessToast(false)}
+            text="그룹 메시지가 저장되었습니다"
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
+        {showExitModal && (
+          <ConfirmModal
+            question=""
+            lines={["저장하지 않고 나가시겠어요?"]}
+            description="작성한 글은 저장되지 않습니다."
+            cancelText="돌아가기"
+            confirmText="나가기"
+            confirmColor="danger"
+            variant="card"
+            onClose={handleExitModalClose}
+            onConfirm={handleExitConfirm}
           />
         )}
         <Header
           showBackBtn={false}
           showXBtn={true}
-          title=""
-          backgroundColor="white"
-          onClickXBtn={() => navigate(`/group/${groupId}`)}
+          title="그룹 메시지 수정"
+          backgroundColor="secondary"
+          onClickXBtn={handleClose}
         />
         <S.Content>
-          <S.Title>그룹 메시지</S.Title>
-          <S.InputBox>
-            <Input
-              placeholder="메시지를 입력하세요"
+          <S.MessageField $isFocused={isMessageFocused}>
+            <S.QuoteMark aria-hidden="true">“</S.QuoteMark>
+            <S.MessageInput
+              $isFocused={isMessageFocused}
+              placeholder="어떤 이야기를 나눌까요?"
               name="message"
               value={message}
               onChange={(e) => setDraftMessage(e.target.value)}
+              onFocus={() => {
+                setIsMessageFocused(true);
+                setHasStartedEditing(true);
+              }}
+              onBlur={() => setIsMessageFocused(false)}
               maxLength={20}
             />
-            <S.Desc>20자 이내</S.Desc>
-          </S.InputBox>
-          <Button title="저장 완료" onClick={handleSave} />
+            <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
+          </S.MessageField>
+          <S.Desc>{message.length}/20자</S.Desc>
         </S.Content>
+        <S.BottomActionBar>
+          <S.ActionButton type="button" onClick={handleSave}>
+            저장하기
+          </S.ActionButton>
+        </S.BottomActionBar>
       </S.Container>
     </>
   );
