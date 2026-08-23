@@ -16,10 +16,11 @@ export const Container = styled.div`
 export const Content = styled.div`
   width: 100%;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
 
@@ -122,12 +123,13 @@ export const Count = styled.div`
 `;
 
 export const Main = styled(Content)`
-  flex: 0 0 auto;
+  flex: 1;
   width: 100%;
-  min-height: calc(100vh - 14.75rem);
+  min-height: 0;
   padding: 2.125rem 1.5rem 2rem; /* 34px 24px 32px */
   gap: 2.625rem; /* 42px */
   background-color: ${theme.colors.secondary};
+  overflow-y: auto;
 `;
 
 export const Section = styled.div`
@@ -203,7 +205,7 @@ export const EmptyMemberBox = styled.div`
 
 export const BtnBox = styled(Section)`
   margin-top: auto;
-  gap: 0.625rem; /* 10px */
+  gap: 0.5rem; /* 8px */
 `;
 
 export const InviteButton = styled.button<{ $isDisabled: boolean }>`
@@ -217,14 +219,14 @@ export const InviteButton = styled.button<{ $isDisabled: boolean }>`
   border-bottom: 0.5px solid
     ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
 
-  ${theme.fonts.batang}
+  ${theme.fonts.pretendard}
   color: ${({ $isDisabled }) =>
     $isDisabled ? "#c3c5c9" : theme.colors["fg-primary"]};
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.32px;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  letter-spacing: -0.28px;
 
-  &:active {
+  &:active:not(:disabled) {
     background-color: rgba(20, 56, 88, 0.08);
   }
 `;
@@ -317,12 +319,10 @@ export const QuitBtn = styled.button`
   align-items: center;
   background-color: transparent;
 
-  ${theme.fonts.batang}
-  color: ${theme.colors.territory};
-  font-size: 1rem;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.red};
+  font-size: 0.875rem; /* 14px */
   font-weight: 500;
-  letter-spacing: -0.32px;
-  text-decoration-line: underline;
+  letter-spacing: -0.28px;
   text-align: center;
-  text-underline-position: from-font;
 `;
