@@ -4,7 +4,6 @@ import type { Group } from "@/types/group.type";
 
 import * as S from "./GroupCard.styles";
 
-
 interface GroupCardProps {
   group: Group;
   onBtnClick: () => void;
@@ -17,7 +16,6 @@ interface GroupCardProps {
  * @param props
  * @param props.group 그룹 정보 객체
  * @param props.onBtnClick 하단 버튼 클릭 시 실행되는 함수
- * - join-group 페이지: 그룹 참여 요청 모달 띄우기 (텍스트도 "그룹 참여하기")
  * - my-groups 페이지: 그룹 탈퇴 확인 모달 띄우기 (텍스트도 "그룹 탈퇴하기")
  * @param props.isButton 그룹 카드가 버튼 형태인지 div인지 여부 (기본값 false) (my-groups 페이지에서만 true)
  * @param props.onCardClick 카드 클릭 시 실행되는 함수 (isButton이 true일 때만 사용 -> 해당 그룹 그룹 페이지로 이동)

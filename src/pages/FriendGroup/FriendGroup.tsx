@@ -11,7 +11,10 @@ import {
   useFriendsQuery,
   useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
-import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import {
+  useMyGroupsQuery,
+  useRequestJoinGroupMutation,
+} from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
@@ -56,6 +59,10 @@ export default function FriendGroup() {
   const [addTarget, setAddTarget] = useState<FriendActionTarget | null>(null);
   const [showAddToast, setShowAddToast] = useState(false);
 
+  const [groupJoinTarget, setGroupJoinTarget] = useState<Group | null>(null);
+  const [showGroupJoinRequestToast, setShowGroupJoinRequestToast] =
+    useState(false);
+
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -68,6 +75,7 @@ export default function FriendGroup() {
   );
   const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
   const { mutateAsync: requestFriend } = useRequestFriendMutation();
+  const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
 
   const friendList = useMemo(() => friends.filter(isValidFriend), [friends]);
   const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
@@ -146,6 +154,35 @@ export default function FriendGroup() {
     }
   }, [requestFriend, addTarget]);
 
+  const handleJoinGroup = useCallback(
+    (groupId: number) => {
+      const target = searchResultGroups.find((group) => group.id === groupId);
+
+      if (target) {
+        setGroupJoinTarget(target);
+      }
+    },
+    [searchResultGroups]
+  );
+
+  const handleConfirmGroupJoin = useCallback(async () => {
+    if (!groupJoinTarget) {
+      console.error("가입 요청을 보낼 그룹 ID가 유효하지 않습니다.");
+      return;
+    }
+
+    try {
+      await requestJoinGroup(groupJoinTarget.id);
+      setGroupJoinTarget(null);
+      setShowGroupJoinRequestToast(true);
+    } catch (err) {
+      console.error("그룹 참여 요청 처리 중 오류:", err);
+      setGroupJoinTarget(null);
+      setErrorMessage("그룹 참여 요청에 실패했습니다.");
+      setShowErrorToast(true);
+    }
+  }, [groupJoinTarget, requestJoinGroup]);
+
   return (
     <>
       <PageTitle title="친구 및 그룹" />
@@ -153,17 +190,24 @@ export default function FriendGroup() {
         <FriendGroupModals
           deleteTarget={deleteTarget}
           addTarget={addTarget}
+          groupJoinTarget={groupJoinTarget}
           showDeleteToast={showDeleteToast}
           deletedFriendName={deletedFriendName}
           showAddToast={showAddToast}
+          showGroupJoinRequestToast={showGroupJoinRequestToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
           onCloseDeleteModal={() => setDeleteTarget(null)}
           onConfirmDelete={handleConfirmDelete}
           onCloseAddModal={() => setAddTarget(null)}
           onConfirmAdd={handleConfirmAdd}
+          onCloseGroupJoinModal={() => setGroupJoinTarget(null)}
+          onConfirmGroupJoin={handleConfirmGroupJoin}
           onCloseDeleteToast={() => setShowDeleteToast(false)}
           onCloseAddToast={() => setShowAddToast(false)}
+          onCloseGroupJoinRequestToast={() =>
+            setShowGroupJoinRequestToast(false)
+          }
           onCloseErrorToast={() => setShowErrorToast(false)}
         />
         <Header
@@ -211,7 +255,7 @@ export default function FriendGroup() {
             myGroupIdSet={myGroupIdSet}
             onCreateGroup={() => navigate("/create-group")}
             onOpenGroup={(groupId) => navigate(`/group/${groupId}`)}
-            onJoinGroup={(groupId) => navigate(`/join-group/${groupId}`)}
+            onJoinGroup={handleJoinGroup}
           />
           <FriendListSection
             keyword={keyword}

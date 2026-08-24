@@ -1,5 +1,6 @@
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import type { Group } from "@/types/group.type";
 
 export type FriendActionTarget = {
   id: number;
@@ -9,17 +10,22 @@ export type FriendActionTarget = {
 interface FriendGroupModalsProps {
   deleteTarget: FriendActionTarget | null;
   addTarget: FriendActionTarget | null;
+  groupJoinTarget: Group | null;
   showDeleteToast: boolean;
   deletedFriendName: string;
   showAddToast: boolean;
+  showGroupJoinRequestToast: boolean;
   showErrorToast: boolean;
   errorMessage: string;
   onCloseDeleteModal: () => void;
   onConfirmDelete: () => void;
   onCloseAddModal: () => void;
   onConfirmAdd: () => void;
+  onCloseGroupJoinModal: () => void;
+  onConfirmGroupJoin: () => void;
   onCloseDeleteToast: () => void;
   onCloseAddToast: () => void;
+  onCloseGroupJoinRequestToast: () => void;
   onCloseErrorToast: () => void;
 }
 
@@ -29,17 +35,22 @@ interface FriendGroupModalsProps {
 export default function FriendGroupModals({
   deleteTarget,
   addTarget,
+  groupJoinTarget,
   showDeleteToast,
   deletedFriendName,
   showAddToast,
+  showGroupJoinRequestToast,
   showErrorToast,
   errorMessage,
   onCloseDeleteModal,
   onConfirmDelete,
   onCloseAddModal,
   onConfirmAdd,
+  onCloseGroupJoinModal,
+  onConfirmGroupJoin,
   onCloseDeleteToast,
   onCloseAddToast,
+  onCloseGroupJoinRequestToast,
   onCloseErrorToast,
 }: FriendGroupModalsProps) {
   return (
@@ -80,6 +91,31 @@ export default function FriendGroupModals({
           text="친구 요청을 보냈습니다"
           isVisible={showAddToast}
           onClose={onCloseAddToast}
+          showOverlay={false}
+          variant="snackbar"
+        />
+      )}
+      {groupJoinTarget && (
+        <ConfirmModal
+          question=""
+          lines={[
+            `${groupJoinTarget.name ?? "그룹"} 그룹에`,
+            "가입 요청을 보내시겠어요?",
+          ]}
+          onClose={onCloseGroupJoinModal}
+          onConfirm={onConfirmGroupJoin}
+          showOverlay={true}
+          cancelText="돌아가기"
+          confirmText="보내기"
+          confirmColor="primary"
+          variant="card"
+        />
+      )}
+      {showGroupJoinRequestToast && (
+        <ToastModal
+          text="참여 요청을 보냈습니다"
+          isVisible={showGroupJoinRequestToast}
+          onClose={onCloseGroupJoinRequestToast}
           showOverlay={false}
           variant="snackbar"
         />
