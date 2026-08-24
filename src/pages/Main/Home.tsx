@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
@@ -20,6 +20,7 @@ import * as S from "./Main.styles";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   const {
     active,
@@ -30,14 +31,17 @@ export default function Home() {
 
   const { date } = useParams();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-  const { data: quotesData, isLoading: isQuotesLoading } =
-    useQuotesByDateQuery(displayDate);
+  const { data: quotesData, isLoading: isQuotesLoading } = useQuotesByDateQuery(
+    displayDate,
+    selectedGroupId ?? undefined
+  );
   const { data: friendList = [], isLoading: isFriendsLoading } =
     useFriendsQuery();
   const { data: myProfile } = useMyProfileQuery();
+  const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
   const myQuote = quotesData?.myQuotes[0] || null;
   const otherQuotes = quotesData?.otherQuotes || [];
-  const isLoading = isQuotesLoading || isFriendsLoading;
+  const isLoading = isQuotesLoading || isFriendsLoading || isGroupsLoading;
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";
@@ -58,7 +62,6 @@ export default function Home() {
         return; // 유효하지 않으면 데이터 요청 등 아래 로직을 실행하지 않음
       }
     }
-
   }, [date, navigate]);
 
   return (
@@ -66,11 +69,7 @@ export default function Home() {
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
-      {date ? (
-        <XHeader />
-      ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
-      )}
+      {date ? <XHeader /> : <DateHeader onToggleMenu={toggleMenu} />}
 
       {isToggleVisible && (
         <HomeSideMenu
@@ -87,6 +86,10 @@ export default function Home() {
         date={date}
         otherQuotes={otherQuotes}
         friendList={friendList}
+        groups={groups}
+        selectedGroupId={selectedGroupId}
+        myNickname={profileNickname}
+        onSelectGroup={setSelectedGroupId}
         onShare={executeShare}
         isLoading={isLoading}
       />

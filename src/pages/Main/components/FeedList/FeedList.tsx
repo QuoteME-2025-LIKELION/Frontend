@@ -12,6 +12,7 @@ import {
 } from "@/hooks/useQuoteQueries";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
+import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./FeedList.styles";
@@ -26,6 +27,10 @@ type FeedListProps = {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
+  groups: Group[] | [];
+  selectedGroupId: number | null;
+  myNickname: string;
+  onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
 };
@@ -34,6 +39,10 @@ export default function FeedList({
   date,
   otherQuotes,
   friendList,
+  groups,
+  selectedGroupId,
+  myNickname,
+  onSelectGroup,
   onShare,
   isLoading,
 }: FeedListProps) {
@@ -52,13 +61,30 @@ export default function FeedList({
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
   const [toastMessage, setToastMessage] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const selectedGroup = groups.find((group) => group.id === selectedGroupId);
+  const selectedGroupMembers = useMemo(() => {
+    if (!selectedGroup?.members) {
+      return null;
+    }
+
+    return selectedGroup.members
+      .filter((member) => member.nickname !== myNickname)
+      .map((member) => ({
+        id: member.id,
+        nickname: member.nickname,
+        profileImage: member.profileImage,
+        introduction: member.introduction,
+      }));
+  }, [myNickname, selectedGroup]);
+  const visibleFriends = selectedGroupMembers ?? friendList;
 
   const quotes = useMemo<QuotesItem[]>(() => {
     const quotesMap = new Map(
       otherQuotes.map((quote) => [quote.authorNickname, quote])
     );
 
-    return friendList.map((friend) => {
+    return visibleFriends.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
         const quoteId = friendQuote.quoteId ?? friendQuote.id;
@@ -94,7 +120,7 @@ export default function FeedList({
         isFriendQuote: true,
       };
     });
-  }, [bookmarkOverrides, friendList, otherQuotes]);
+  }, [bookmarkOverrides, otherQuotes, visibleFriends]);
 
   const handleRequest = async (quoteId: number) => {
     try {
@@ -168,6 +194,55 @@ export default function FeedList({
           variant="snackbar"
         />
       )}
+      <S.FilterBox>
+        <S.FilterButton
+          type="button"
+          onClick={() => setIsFilterOpen((prev) => !prev)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+          >
+            <path
+              d="M2 3H10M3.5 6H8.5M5 9H7"
+              stroke="#21242B"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+          </svg>
+          {selectedGroup?.name ?? "전체보기"}
+        </S.FilterButton>
+        {isFilterOpen && (
+          <S.FilterMenu>
+            <S.FilterOption
+              type="button"
+              $active={selectedGroupId === null}
+              onClick={() => {
+                onSelectGroup(null);
+                setIsFilterOpen(false);
+              }}
+            >
+              전체보기
+            </S.FilterOption>
+            {groups.map((group) => (
+              <S.FilterOption
+                key={group.id}
+                type="button"
+                $active={selectedGroupId === group.id}
+                onClick={() => {
+                  onSelectGroup(group.id);
+                  setIsFilterOpen(false);
+                }}
+              >
+                {group.name ?? "그룹"}
+              </S.FilterOption>
+            ))}
+          </S.FilterMenu>
+        )}
+      </S.FilterBox>
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
@@ -186,9 +261,9 @@ export default function FeedList({
         ))
       ) : !isLoading ? (
         <S.NoFeedbox>
-          <S.NoFeedText>태그할 수 있는 친구가 없어요.</S.NoFeedText>
+          <S.NoFeedText>아직 함께 볼 친구 피드가 없어요.</S.NoFeedText>
           <S.NoFeedSubText>
-            친구를 추가하고 나중에 태그를 추가할 수 있어요.
+            친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요.
           </S.NoFeedSubText>
         </S.NoFeedbox>
       ) : null}

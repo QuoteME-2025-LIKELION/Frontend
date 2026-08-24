@@ -458,15 +458,7 @@ export const handlers = [
   }),
 
   http.get("/api/groups/me", () => {
-    return HttpResponse.json(
-      mockGroups.map(({ id, name, motto, memberCount, leaderNickname }) => ({
-        id,
-        name,
-        motto,
-        memberCount,
-        leaderNickname,
-      }))
-    );
+    return HttpResponse.json(mockGroups);
   }),
 
   http.get("/api/groups/invitations", () => {
@@ -645,7 +637,80 @@ export const handlers = [
     return HttpResponse.json(mockAiUsage);
   }),
 
-  http.get("/api/quotes", () => {
+  http.get("/api/quotes", ({ request }) => {
+    const url = new URL(request.url);
+    const groupId = Number(url.searchParams.get("groupId"));
+    const groupMemberNicknames = Number.isNaN(groupId)
+      ? null
+      : mockGroups
+          .find((group) => group.id === groupId)
+          ?.members.map((member) => member.nickname);
+    const otherQuotes = [
+      {
+        id: 2,
+        quoteId: 2,
+        authorNickname: "라라진",
+        authorIntroduction: "Seize the day",
+        content: "방귀 퀸 놈이 성낸다",
+        taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
+        taggedMembers: ["말랑이", "몰랑이", "규빈이"],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "19시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 3,
+        quoteId: 3,
+        authorNickname: "조니님",
+        authorIntroduction: "새 친구를 기다려요",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "내일의 나는 오늘의 기록에서 시작된다",
+        taggedNicknames: [],
+        taggedMembers: [],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "1시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 4,
+        quoteId: 4,
+        authorNickname: "말랑이",
+        authorIntroduction: "천천히 단단하게",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "느린 걸음도 방향이 있으면 충분하다",
+        taggedNicknames: ["라라진"],
+        taggedMembers: ["라라진"],
+        isLiked: false,
+        isBookmarked: true,
+        isFriendQuote: true,
+        timeAgo: "3시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 5,
+        quoteId: 5,
+        authorNickname: "몰랑이",
+        authorIntroduction: "좋은 문장을 모아요",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "잘 쉬는 마음이 오래 걷는다",
+        taggedNicknames: [],
+        taggedMembers: [],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "30분 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+    ].filter(
+      (quote) =>
+        !groupMemberNicknames ||
+        groupMemberNicknames.includes(quote.authorNickname)
+    );
+
     return HttpResponse.json({
       myQuotes: [
         {
@@ -658,37 +723,7 @@ export const handlers = [
           taggedNicknames: ["뮤랄라", "스페이스"],
         },
       ],
-      otherQuotes: [
-        {
-          id: 2,
-          quoteId: 2,
-          authorNickname: "라라진",
-          authorIntroduction: "Seize the day",
-          content: "방귀 퀸 놈이 성낸다",
-          taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
-          taggedMembers: ["말랑이", "몰랑이", "규빈이"],
-          isLiked: false,
-          isBookmarked: false,
-          isFriendQuote: true,
-          timeAgo: "19시간 전",
-          createDate: "2025-11-03T19:02:00",
-        },
-        {
-          id: 3,
-          quoteId: 3,
-          authorNickname: "조니님",
-          authorIntroduction: "새 친구를 기다려요",
-          authorProfileImage: MOCK_PROFILE_IMAGE,
-          content: "내일의 나는 오늘의 기록에서 시작된다",
-          taggedNicknames: [],
-          taggedMembers: [],
-          isLiked: false,
-          isBookmarked: false,
-          isFriendQuote: true,
-          timeAgo: "1시간 전",
-          createDate: "2025-11-03T19:02:00",
-        },
-      ],
+      otherQuotes,
     });
   }),
 
@@ -959,7 +994,8 @@ export const handlers = [
       category
         ? notifications.filter(
             (notification) =>
-              notification.type === category || notification.category === category
+              notification.type === category ||
+              notification.category === category
           )
         : notifications
     );
