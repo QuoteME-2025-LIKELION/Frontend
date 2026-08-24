@@ -183,6 +183,12 @@ export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`
   font-weight: 500;
   letter-spacing: -0.24px;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  &:disabled {
+    color: ${theme.colors.territory};
+    cursor: default;
+  }
 `;
 
 export const PokeBtn = styled(RequestBtn)``;

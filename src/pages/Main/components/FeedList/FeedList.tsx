@@ -6,6 +6,7 @@ import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
 import {
   useBookmarkQuoteMutation,
+  useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
@@ -177,41 +178,18 @@ export default function FeedList({
       )}
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
-          <QuoteFeed
+          <FeedListItem
             key={quote.id}
-            ref={(el: HTMLDivElement | null) => {
+            quote={quote}
+            index={index}
+            refCallback={(el) => {
               feedRefs.current[index] = el;
             }}
-            profileImageUrl={quote.authorProfileImage}
-            authorName={quote.authorNickname}
-            bio={quote.authorIntroduction}
-            createDate={quote.createDate}
-            content={quote.content}
-            tag={quote.taggedNicknames}
-            isBookmarked={quote.isBookmarked}
-            isBookmarkDisabled={
-              quote.isSilenced || Boolean(pendingBookmarkIds[quote.id])
-            }
-            onBookmark={() =>
-              handleBookmark(quote.id, Boolean(quote.isBookmarked))
-            }
-            // Quote가 있을 때만 공유 버튼 활성화
-            onShare={
-              !quote.isSilenced
-                ? () => handleShare(quote.authorNickname, index)
-                : undefined
-            }
-            onRequest={() => {
-              if (quote.quoteId) {
-                handleRequest(quote.quoteId);
-              }
-            }}
-            onPoke={() => {
-              handlePoke(quote.friendId);
-            }}
-            isInArchive={false}
-            isSilenced={quote.isSilenced}
-            timeAgo={quote.timeAgo}
+            isBookmarkPending={Boolean(pendingBookmarkIds[quote.id])}
+            onBookmark={handleBookmark}
+            onShare={handleShare}
+            onRequest={handleRequest}
+            onPoke={handlePoke}
           />
         ))
       ) : !isLoading ? (
@@ -223,5 +201,67 @@ export default function FeedList({
         </S.NoFeedbox>
       ) : null}
     </S.FeedList>
+  );
+}
+
+interface FeedListItemProps {
+  quote: QuotesItem;
+  index: number;
+  refCallback: (el: HTMLDivElement | null) => void;
+  isBookmarkPending: boolean;
+  onBookmark: (quoteId: number, isBookmarked: boolean) => void;
+  onShare: (authorNickname: string, index: number) => void;
+  onRequest: (quoteId: number) => void;
+  onPoke: (friendId: number) => void;
+}
+
+function FeedListItem({
+  quote,
+  index,
+  refCallback,
+  isBookmarkPending,
+  onBookmark,
+  onShare,
+  onRequest,
+  onPoke,
+}: FeedListItemProps) {
+  const shouldCheckTagRequest =
+    !quote.isSilenced &&
+    Boolean(quote.quoteId) &&
+    (!quote.taggedNicknames || quote.taggedNicknames.length === 0);
+  const { data: tagRequest } = useMyQuoteTagRequestQuery(
+    shouldCheckTagRequest ? quote.quoteId : undefined
+  );
+
+  return (
+    <QuoteFeed
+      ref={refCallback}
+      profileImageUrl={quote.authorProfileImage}
+      authorName={quote.authorNickname}
+      bio={quote.authorIntroduction}
+      createDate={quote.createDate}
+      content={quote.content}
+      tag={quote.taggedNicknames}
+      isBookmarked={quote.isBookmarked}
+      isBookmarkDisabled={quote.isSilenced || isBookmarkPending}
+      onBookmark={() => onBookmark(quote.id, Boolean(quote.isBookmarked))}
+      onShare={
+        !quote.isSilenced
+          ? () => onShare(quote.authorNickname, index)
+          : undefined
+      }
+      onRequest={() => {
+        if (quote.quoteId) {
+          onRequest(quote.quoteId);
+        }
+      }}
+      tagRequestStatus={tagRequest?.status ?? "NONE"}
+      onPoke={() => {
+        onPoke(quote.friendId);
+      }}
+      isInArchive={false}
+      isSilenced={quote.isSilenced}
+      timeAgo={quote.timeAgo}
+    />
   );
 }

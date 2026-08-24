@@ -178,6 +178,36 @@ const createFriendListItem = (id: number) => ({
     friendsListGroupMemberById[id as keyof typeof friendsListGroupMemberById],
 });
 
+const mockQuoteTagRequestsByQuoteId: Record<
+  number,
+  Array<{
+    requestId: number;
+    requesterNickname: string;
+    status: "NONE" | "PENDING" | "ACCEPTED" | "REJECTED";
+  }>
+> = {
+  1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
+};
+
+const mockMyTagRequestStatusByQuoteId: Record<
+  number,
+  "NONE" | "PENDING" | "ACCEPTED" | "REJECTED"
+> = {};
+
+const findQuoteTagRequest = (requestId: number) => {
+  for (const [quoteId, requests] of Object.entries(
+    mockQuoteTagRequestsByQuoteId
+  )) {
+    const request = requests.find((item) => item.requestId === requestId);
+
+    if (request) {
+      return { quoteId: Number(quoteId), request };
+    }
+  }
+
+  return null;
+};
+
 const searchableGroups = [
   {
     id: 20,
@@ -643,6 +673,21 @@ export const handlers = [
           timeAgo: "19시간 전",
           createDate: "2025-11-03T19:02:00",
         },
+        {
+          id: 3,
+          quoteId: 3,
+          authorNickname: "조니님",
+          authorIntroduction: "새 친구를 기다려요",
+          authorProfileImage: MOCK_PROFILE_IMAGE,
+          content: "내일의 나는 오늘의 기록에서 시작된다",
+          taggedNicknames: [],
+          taggedMembers: [],
+          isLiked: false,
+          isBookmarked: false,
+          isFriendQuote: true,
+          timeAgo: "1시간 전",
+          createDate: "2025-11-03T19:02:00",
+        },
       ],
     });
   }),
@@ -684,25 +729,55 @@ export const handlers = [
     return HttpResponse.json(body);
   }),
 
-  http.post("/api/quotes/:quoteId/tag-request", () => {
+  http.post("/api/quotes/:quoteId/tag-request", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+
+    mockMyTagRequestStatusByQuoteId[quoteId] = "PENDING";
+
     return new HttpResponse(null, { status: 201 });
   }),
 
-  http.get("/api/quotes/:quoteId/my-tag-request", () => {
-    return HttpResponse.json({ status: "PENDING" });
+  http.get("/api/quotes/:quoteId/my-tag-request", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+
+    return HttpResponse.json({
+      status: mockMyTagRequestStatusByQuoteId[quoteId] ?? "NONE",
+    });
   }),
 
-  http.get("/api/quotes/:quoteId/requests", () => {
-    return HttpResponse.json([
-      { requestId: 1, requesterNickname: "말랑이", status: "PENDING" },
-    ]);
+  http.get("/api/quotes/:quoteId/requests", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+
+    return HttpResponse.json(mockQuoteTagRequestsByQuoteId[quoteId] ?? []);
   }),
 
-  http.post("/api/quotes/requests/:requestId/accept", () => {
+  http.post("/api/quotes/requests/:requestId/accept", ({ params }) => {
+    const request = findQuoteTagRequest(Number(params.requestId));
+
+    if (!request) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 태그 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    request.request.status = "ACCEPTED";
+
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/quotes/requests/:requestId/reject", () => {
+  http.post("/api/quotes/requests/:requestId/reject", ({ params }) => {
+    const request = findQuoteTagRequest(Number(params.requestId));
+
+    if (!request) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 태그 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    request.request.status = "REJECTED";
+
     return new HttpResponse(null, { status: 200 });
   }),
 
@@ -784,13 +859,11 @@ export const handlers = [
   http.get("/api/notifications", ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
-    const notificationCategory = category || "GROUP";
-
-    return HttpResponse.json([
+    const notifications = [
       {
         id: 1,
-        category: notificationCategory,
-        type: notificationCategory,
+        category: "GROUP",
+        type: "GROUP",
         message: "무니니 그룹에서 초대가 왔습니다.",
         isRead: false,
         createdAt: "2025-11-07T10:00:00",
@@ -799,7 +872,40 @@ export const handlers = [
         targetId: 3,
         senderName: "라라진",
       },
-    ]);
+      {
+        id: 2,
+        category: "TAG",
+        type: "TAG_REQUEST",
+        message: "라라진님이 태그를 요청하였습니다.",
+        isRead: false,
+        createdAt: "2025-11-07T10:10:00",
+        createDate: "2025-11-03T19:02:00",
+        referenceId: 1,
+        targetId: 1,
+        senderName: "라라진",
+      },
+      {
+        id: 3,
+        category: "POKE",
+        type: "POKE",
+        message: "조니님이 콕 찔렀습니다.",
+        isRead: true,
+        createdAt: "2025-11-07T10:20:00",
+        createDate: "2025-11-07T10:20:00",
+        referenceId: 6,
+        targetId: 6,
+        senderName: "조니님",
+      },
+    ];
+
+    return HttpResponse.json(
+      category
+        ? notifications.filter(
+            (notification) =>
+              notification.type === category || notification.category === category
+          )
+        : notifications
+    );
   }),
 
   http.get("/api/notifications/unread-count", () => {

@@ -1,5 +1,6 @@
 import { forwardRef, type MouseEvent } from "react";
 
+import type { MyTagRequestStatus } from "@/api/quoteApi";
 import bookmarkFilledIcon from "@/assets/icons/quote-feed/bookmark-filled.svg";
 import bookmarkOutlineIcon from "@/assets/icons/quote-feed/bookmark-outline.svg";
 import nudgeOutlineIcon from "@/assets/icons/quote-feed/nudge-outline.svg";
@@ -23,6 +24,7 @@ interface QuoteFeedProps {
   onBookmark?: () => void;
   onShare?: () => void;
   onRequest?: () => void;
+  tagRequestStatus?: MyTagRequestStatus;
   onPoke?: () => void;
   isInArchive?: boolean;
   onArchiveClick?: () => void;
@@ -84,6 +86,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       onBookmark = () => {},
       onShare = () => {},
       onRequest = () => {},
+      tagRequestStatus = "NONE",
       onPoke = () => {},
       isInArchive = false,
       onArchiveClick,
@@ -99,6 +102,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         ? timeAgo
         : "";
     const isNotTagged = !tag || tag.length === 0 || isSilenced;
+    const isTagRequestPending = tagRequestStatus === "PENDING";
 
     // 아카이브 페이지에 있을 땐 피드 클릭 가능
     const handleArchiveClick = isInArchive ? onArchiveClick : undefined;
@@ -204,10 +208,15 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             ) : (
               <S.RequestBtn
                 type="button"
+                disabled={isTagRequestPending}
                 onClick={(event) => handleActionClick(event, onRequest)}
                 $isInArchive={isInArchive}
               >
-                {isInArchive ? "" : "태그 요청하기"}
+                {isInArchive
+                  ? ""
+                  : isTagRequestPending
+                    ? "태그 요청됨"
+                    : "태그 요청하기"}
               </S.RequestBtn>
             )}
           </S.TagBox>

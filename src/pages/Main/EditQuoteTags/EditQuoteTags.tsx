@@ -16,12 +16,19 @@ export default function EditQuoteTags() {
   const navigate = useNavigate();
   const location = useLocation();
   const date = location.state?.date as string | undefined;
+  const quoteId = location.state?.quoteId as number | undefined;
+  const requestedNickname = location.state?.requestedNickname as
+    | string
+    | undefined;
 
   const { active, toggle: toggleMenu, isVisible: isToggleVisible } = useAnimatedToggle();
 
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
-  const myQuote = quotesData?.myQuotes[0] || null;
+  const myQuote =
+    quotesData?.myQuotes.find((quote) => quote.id === quoteId) ||
+    quotesData?.myQuotes[0] ||
+    null;
 
   useEffect(() => {
     // date 파라미터 유효성 검사
@@ -76,6 +83,7 @@ export default function EditQuoteTags() {
             taggedNicknames: myQuote.taggedNicknames,
           }}
           mode="fix"
+          requestedNickname={requestedNickname}
         />
       )}
     </S.Container>

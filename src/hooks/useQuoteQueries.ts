@@ -140,8 +140,11 @@ export function useRequestQuoteTagMutation() {
 
   return useMutation({
     mutationFn: (quoteId: number) => quoteApi.requestTag(quoteId),
-    onSuccess: () => {
+    onSuccess: (_, quoteId) => {
       queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: quoteQueryKeys.myTagRequest(quoteId),
+      });
     },
   });
 }
@@ -190,6 +193,9 @@ export function useAcceptQuoteTagRequestMutation() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
       queryClient.invalidateQueries({
+        queryKey: [...quoteQueryKeys.all, "tag-request"],
+      });
+      queryClient.invalidateQueries({
         queryKey: quoteQueryKeys.tagRequests(variables.quoteId),
       });
     },
@@ -210,6 +216,9 @@ export function useRejectQuoteTagRequestMutation() {
       requestId: number;
     }) => quoteApi.rejectTagRequest(requestId),
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [...quoteQueryKeys.all, "tag-request"],
+      });
       queryClient.invalidateQueries({
         queryKey: quoteQueryKeys.tagRequests(variables.quoteId),
       });
