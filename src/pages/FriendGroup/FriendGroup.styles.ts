@@ -224,9 +224,17 @@ export const RequestActionBox = styled.div`
       color: ${theme.colors.red};
     }
 
+    &:active:not(:disabled) {
+      opacity: 0.55;
+    }
+
     &:disabled {
       color: ${theme.colors.territory};
       cursor: default;
+    }
+
+    &:last-of-type:disabled {
+      color: ${theme.colors.red};
     }
   }
 `;

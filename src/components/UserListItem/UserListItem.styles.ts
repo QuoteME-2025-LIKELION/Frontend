@@ -85,5 +85,5 @@ export const DeleteBtn = styled.button`
 `;
 
 export const AddBtn = styled.button`
-  color: #000;
+  color: ${theme.colors.territory};
 `;

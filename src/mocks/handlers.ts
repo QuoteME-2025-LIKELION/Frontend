@@ -116,6 +116,51 @@ const mockGroups = [
   },
 ];
 
+const searchableFriends = [
+  {
+    id: 6,
+    nickname: "조니님",
+    introduction: "새 친구를 기다려요",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  {
+    id: 7,
+    nickname: "초대친구",
+    introduction: "검색 결과 테스트",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  {
+    id: 8,
+    nickname: "기록친구",
+    introduction: "문장을 함께 모아요",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+];
+
+const searchableGroups = [
+  {
+    id: 20,
+    name: "무니니",
+    motto: "같이 쓰는 오늘",
+    memberCount: 3,
+    leaderNickname: "조니님",
+  },
+  {
+    id: 21,
+    name: "멋쟁이 사자처럼",
+    motto: "기록하는 사람들",
+    memberCount: 4,
+    leaderNickname: "검색친구",
+  },
+  {
+    id: 22,
+    name: "소이천 소이촌",
+    motto: "좋은 말을 모아요",
+    memberCount: 2,
+    leaderNickname: "기록친구",
+  },
+];
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -259,10 +304,24 @@ export const handlers = [
     return HttpResponse.json([
       {
         requestId: 10,
-        requesterId: 5,
-        requesterNickname: "라라진",
+        requesterId: 6,
+        requesterNickname: "조니님",
         requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
         createdAt: "2025-11-07T10:00:00",
+      },
+      {
+        requestId: 11,
+        requesterId: 7,
+        requesterNickname: "초대친구",
+        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+        createdAt: "2025-11-07T10:05:00",
+      },
+      {
+        requestId: 12,
+        requesterId: 8,
+        requesterNickname: "기록친구",
+        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+        createdAt: "2025-11-07T10:10:00",
       },
     ]);
   }),
@@ -308,10 +367,17 @@ export const handlers = [
     return HttpResponse.json([
       {
         requestId: 1,
-        groupId: 2,
+        groupId: 20,
         groupName: "무니니",
         inviterNickname: "라라진",
         createdAt: "2025-11-07T10:00:00",
+      },
+      {
+        requestId: 2,
+        groupId: 21,
+        groupName: "멋쟁이 사자처럼",
+        inviterNickname: "조니님",
+        createdAt: "2025-11-07T10:05:00",
       },
     ]);
   }),
@@ -648,34 +714,28 @@ export const handlers = [
   // ==========================================
   http.get("/api/settings/search", ({ request }) => {
     const url = new URL(request.url);
-    const keyword = url.searchParams.get("keyword") || "";
-    const searchableFriends = [
-      {
-        id: 2,
-        nickname: "라라진",
-        introduction: "Seize the day",
-        profileImage: MOCK_PROFILE_IMAGE,
-      },
-      {
-        id: 6,
-        nickname: "초대친구",
-        introduction: "새 그룹을 기다려요",
-        profileImage: MOCK_PROFILE_IMAGE,
-      },
-      {
-        id: 7,
-        nickname: "검색친구",
-        introduction: "검색 결과 테스트",
-        profileImage: MOCK_PROFILE_IMAGE,
-      },
-    ];
-    const members = keyword
-      ? searchableFriends.filter((friend) => friend.nickname.includes(keyword))
-      : searchableFriends;
+    const keyword = (url.searchParams.get("keyword") || "").trim();
+    const isEmptyScenario = ["없음", "empty", "no-result"].includes(
+      keyword.toLowerCase()
+    );
+    const matchedMembers = searchableFriends.filter((friend) =>
+      friend.nickname.includes(keyword)
+    );
+    const matchedGroups = searchableGroups.filter((group) =>
+      group.name.includes(keyword)
+    );
 
     return HttpResponse.json({
-      members,
-      groups: mockGroups.filter((group) => group.name.includes(keyword)),
+      members: isEmptyScenario
+        ? []
+        : matchedMembers.length > 0
+          ? matchedMembers
+          : searchableFriends,
+      groups: isEmptyScenario
+        ? []
+        : matchedGroups.length > 0
+          ? matchedGroups
+          : searchableGroups,
     });
   }),
 
