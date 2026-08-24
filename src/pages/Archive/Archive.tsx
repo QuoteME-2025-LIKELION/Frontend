@@ -219,10 +219,10 @@ export default function Archive() {
               나의 명언
             </S.Btn>
             <S.Btn
-              onClick={() => navigate("/archive/likes")}
-              $active={path === "likes"}
+              onClick={() => navigate("/archive/bookmarks")}
+              $active={path === "bookmarks"}
             >
-              좋아요
+              북마크
             </S.Btn>
           </S.Menu>
           <Outlet context={{ onShare: executeShare, selectedDateString }} />
