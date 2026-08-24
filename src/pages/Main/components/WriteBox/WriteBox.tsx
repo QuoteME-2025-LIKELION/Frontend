@@ -97,7 +97,7 @@ export default function WriteBox({
             placeholder={
               isResultMode
                 ? ""
-                : "오늘 있었던 일을 바탕으로\n나만의 명언을 남겨보세요"
+                : "오늘 있었던 일을 바탕으로\n나만의 명언을 남겨보세요."
             }
             maxLength={50}
           />
@@ -115,7 +115,7 @@ export default function WriteBox({
             <S.Guide>
               오늘의 명언을 직접 적고 <br />
               그대로 게시하거나 <br />
-              AI에게 명언을 추천 받을 수 있어요
+              AI에게 명언을 추천 받을 수 있어요.
             </S.Guide>
             <S.InfoWrap ref={infoWrapRef}>
               <S.InfoButton
@@ -129,7 +129,7 @@ export default function WriteBox({
               {showInfo && (
                 <S.InfoBubble role="status">
                   30자가 넘어가는 글은 AI추천 받기를 사용해야 등록할 수
-                  있습니다
+                  있습니다.
                 </S.InfoBubble>
               )}
             </S.InfoWrap>
@@ -159,7 +159,7 @@ export default function WriteBox({
           lines={["이대로 AI추천을", "받으시겠어요?"]}
           descriptionLines={[
             "15자 이하의 글은 추천이 제대로",
-            "나오지 않을 수 있습니다",
+            "나오지 않을 수 있습니다.",
           ]}
           cancelText="돌아가기"
           confirmText="추천 받기"

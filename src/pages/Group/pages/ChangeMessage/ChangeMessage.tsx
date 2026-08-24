@@ -149,7 +149,7 @@ export default function ChangeMessage() {
           <ToastModal
             isVisible={showSuccessToast}
             onClose={() => setShowSuccessToast(false)}
-            text="그룹 메시지가 저장되었습니다"
+            text="그룹 메시지가 저장되었습니다."
             showOverlay={false}
             variant="snackbar"
           />
@@ -158,7 +158,7 @@ export default function ChangeMessage() {
           <ConfirmModal
             question=""
             lines={["저장하지 않고 나가시겠어요?"]}
-            description="작성한 글은 저장되지 않습니다"
+            description="작성한 글은 저장되지 않습니다."
             cancelText="돌아가기"
             confirmText="나가기"
             confirmColor="danger"

@@ -99,7 +99,7 @@ export default function FeedList({
   const handleRequest = async (quoteId: number) => {
     try {
       await requestQuoteTag(quoteId);
-      setToastMessage("태그가 요청되었습니다");
+      setToastMessage("태그가 요청되었습니다.");
     } catch (err) {
       console.error("태그 요청 실패:", err);
       setToastMessage("태그 요청에 실패했습니다.");
@@ -186,9 +186,9 @@ export default function FeedList({
         ))
       ) : !isLoading ? (
         <S.NoFeedbox>
-          <S.NoFeedText>태그할 수 있는 친구가 없어요</S.NoFeedText>
+          <S.NoFeedText>태그할 수 있는 친구가 없어요.</S.NoFeedText>
           <S.NoFeedSubText>
-            친구를 추가하고 나중에 태그를 추가할 수 있어요
+            친구를 추가하고 나중에 태그를 추가할 수 있어요.
           </S.NoFeedSubText>
         </S.NoFeedbox>
       ) : null}

@@ -44,7 +44,7 @@ export default function Write() {
           <ConfirmModal
             question=""
             lines={["저장하지 않고 나가시겠어요?"]}
-            description="작성한 글은 저장되지 않습니다"
+            description="작성한 글은 저장되지 않습니다."
             cancelText="돌아가기"
             confirmText="나가기"
             confirmColor="danger"

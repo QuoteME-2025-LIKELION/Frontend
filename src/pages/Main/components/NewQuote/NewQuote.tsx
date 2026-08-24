@@ -167,7 +167,7 @@ export default function NewQuote({
       )}
       <S.TagBox>
         <S.Title>친구 태그</S.Title>
-        <S.Description>나중에 태그를 추가하거나 수정할 수 있어요</S.Description>
+        <S.Description>나중에 태그를 추가하거나 수정할 수 있어요.</S.Description>
         <Search
           placeholder="검색어를 입력해 주세요"
           value={keyword}
@@ -219,7 +219,7 @@ export default function NewQuote({
                   <S.Username>{friend.nickname}</S.Username>
                   <S.Intro>
                     {isPendingRequester
-                      ? "태그 요청을 보낸 친구예요"
+                      ? "태그 요청을 보낸 친구예요."
                       : friend.introduction}
                   </S.Intro>
                 </S.UserBox>

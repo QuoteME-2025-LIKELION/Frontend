@@ -28,7 +28,7 @@ export default function FriendListSection({
   const visibleUsers = keyword ? searchMembers : friends;
   const emptyText = keyword
     ? "검색 결과가 없습니다."
-    : "추가된 친구가 없습니다";
+    : "추가된 친구가 없습니다.";
 
   return (
     <S.Section>
@@ -64,7 +64,7 @@ export default function FriendListSection({
           <S.EmptyBox>
             <S.EmptyTitle>{emptyText}</S.EmptyTitle>
             {!keyword && (
-              <S.EmptyDescription>친구를 추가해 보세요</S.EmptyDescription>
+              <S.EmptyDescription>친구를 추가해 보세요.</S.EmptyDescription>
             )}
           </S.EmptyBox>
         )}

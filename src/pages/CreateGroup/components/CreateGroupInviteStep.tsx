@@ -46,10 +46,10 @@ export default function CreateGroupInviteStep({
         <S.TitleLine>
           <S.MTitle>
             함께할 멤버를 <br />
-            초대해 보세요
+            초대해 보세요.
           </S.MTitle>
         </S.TitleLine>
-        <S.Desc>그룹의 최대 정원은 5명이에요</S.Desc>
+        <S.Desc>그룹의 최대 정원은 5명이에요.</S.Desc>
       </S.TitleContainer>
       <Search
         placeholder="검색어를 입력해 주세요"

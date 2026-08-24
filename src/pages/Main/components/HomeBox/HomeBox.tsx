@@ -44,7 +44,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
     }
   } else {
     line1 = "오늘 있었던 일을 바탕으로";
-    line2 = "나만의 명언을 남겨보세요";
+    line2 = "나만의 명언을 남겨보세요.";
   }
 
   const handleShare = () => {

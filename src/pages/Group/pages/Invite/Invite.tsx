@@ -149,7 +149,7 @@ export default function Invite() {
         )}
         {showSuccessToast && (
           <ToastModal
-            text="초대 요청을 보냈습니다"
+            text="초대 요청을 보냈습니다."
             isVisible={showSuccessToast}
             onClose={() => setShowSuccessToast(false)}
             showOverlay={false}
@@ -160,7 +160,7 @@ export default function Invite() {
           <ToastModal
             isVisible={showFullGroupToast}
             text=""
-            redText="최대 인원(5명)에 도달하여 초대를 보낼 수 없어요"
+            redText="최대 인원(5명)에 도달하여 초대를 보낼 수 없어요."
             showOverlay={false}
             variant="snackbar"
             onClose={() => setShowFullGroupToast(false)}

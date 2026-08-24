@@ -70,7 +70,7 @@ export default function FriendGroupModals({
       )}
       {showDeleteToast && (
         <ToastModal
-          text={`${deletedFriendName}님이 친구에서 삭제되었습니다`}
+          text={`${deletedFriendName}님이 친구에서 삭제되었습니다.`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
           showOverlay={false}
@@ -88,7 +88,7 @@ export default function FriendGroupModals({
       )}
       {showAddToast && (
         <ToastModal
-          text="친구 요청을 보냈습니다"
+          text="친구 요청을 보냈습니다."
           isVisible={showAddToast}
           onClose={onCloseAddToast}
           showOverlay={false}
@@ -113,7 +113,7 @@ export default function FriendGroupModals({
       )}
       {showGroupJoinRequestToast && (
         <ToastModal
-          text="참여 요청을 보냈습니다"
+          text="참여 요청을 보냈습니다."
           isVisible={showGroupJoinRequestToast}
           onClose={onCloseGroupJoinRequestToast}
           showOverlay={false}
