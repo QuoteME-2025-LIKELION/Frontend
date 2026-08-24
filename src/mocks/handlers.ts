@@ -603,6 +603,11 @@ export const handlers = [
 
     return HttpResponse.json({
       summary: "오늘 못한 건 내일의 에너지로 남는다.",
+      summaries: [
+        "오늘 못한 건 내일의 에너지로 남는다.",
+        "쉬어간 하루도 나를 앞으로 데려간다.",
+        "오늘의 쉼은 내일의 시작이 된다.",
+      ],
     });
   }),
 

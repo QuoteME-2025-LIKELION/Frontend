@@ -45,6 +45,7 @@ export interface SummarizeQuoteRequest {
 
 export interface SummarizeQuoteResponse {
   summary: string;
+  summaries?: string[];
 }
 
 export interface AiUsageResponse {

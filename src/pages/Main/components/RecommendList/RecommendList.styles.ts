@@ -9,26 +9,30 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
+  padding-top: 1.75rem;
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;
 
 export const ComendList = styled.div`
-  padding: 20px 25px;
-  gap: 20px;
+  flex: 1;
+  padding: 1.125rem 1.5rem 2.4375rem;
+  gap: 0.875rem;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
+
 export const Head = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 26px;
+  gap: 0;
+  margin-top: 0;
 `;
 
 export const Text = styled.div`
@@ -38,27 +42,28 @@ export const Text = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 120%;
-  letter-spacing: -0.4px;
+  letter-spacing: 0;
   white-space: pre-line;
 `;
 
 export const TitleText = styled(Text)`
   font-size: 20px;
+  font-weight: 700;
+  line-height: 120%;
 `;
 
 export const QuoteText = styled(Text)`
-  width: 250px;
-  font-size: 16px;
-`;
-
-export const AuthorText = styled(Text)`
-  font-size: 12px;
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 135%;
 `;
 
 export const RefreshButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.375rem;
   padding: 0;
   border: 0;
   background-color: transparent;
@@ -70,19 +75,13 @@ export const RefreshButton = styled.button`
   }
 `;
 
-export const UsageRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-`;
-
-export const UsageText = styled.div`
+export const UsageText = styled.span`
   ${theme.fonts.pretendard}
   color: #0a4f83;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  line-height: 120%;
+  line-height: 135%;
+  letter-spacing: 0;
 `;
 
 export const Commend = styled.div<{ $isSelected: boolean }>`
@@ -90,24 +89,29 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  min-height: 3.625rem;
+  padding: 0.625rem 1rem;
   width: 100%;
-  border-radius: 10px;
-  border: 1px solid #143858;
+  border-radius: 0.125rem;
   background: #fff;
-  gap: 15px;
+  gap: 0.375rem;
   cursor: pointer;
 
   border: ${({ $isSelected }) =>
-    $isSelected ? "1px solid #143858;" : "1px solid #959595;"};
+    $isSelected ? "1px solid #143858" : "1px solid transparent"};
 `;
 
 export const FirstLine = styled.div`
   display: flex;
-  gap: 18px;
+  gap: 0.75rem;
   width: 100%;
   justify-content: center;
   align-items: center;
+
+  svg {
+    flex: 0 0 auto;
+    transform: translateY(-0.125rem);
+  }
 `;
 
 export const StatusText = styled(Text)`
@@ -121,10 +125,36 @@ export const StatusText = styled(Text)`
   font-size: 0.875rem;
 `;
 
-export const BtnBox = styled.div`
+export const ActionBar = styled.div`
+  width: 100%;
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+`;
+
+export const ActionButton = styled.button`
+  min-height: 2.75rem;
   display: flex;
-  justify-content: center;
   align-items: center;
-  align-self: stretch;
-  margin-top: 24px;
+  justify-content: center;
+  border-top: 0.5px solid ${theme.colors.primary};
+  border-bottom: 0.5px solid ${theme.colors.primary};
+  background-color: transparent;
+  ${theme.fonts.pretendard}
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 120%;
+  cursor: pointer;
+
+  &:disabled {
+    border-color: #dedede;
+    color: #c3c5c9;
+    cursor: default;
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(20, 56, 88, 0.08);
+  }
 `;

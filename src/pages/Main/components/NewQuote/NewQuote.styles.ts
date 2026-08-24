@@ -3,91 +3,233 @@ import styled from "@emotion/styled";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
-  background-color: ${() => theme.colors.secondary};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   max-width: 393px;
-  height: 100vh;
-  padding: 0 25px;
-`;
-
-export const Text = styled.div`
-  color: #000;
-  ${theme.fonts.batang}
-  text-align: center;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 100%;
-  letter-spacing: -0.4px;
-`;
-
-export const QuoteText = styled(Text)`
-  font-size: 16px;
-`;
-
-export const AuthorText = styled(Text)`
-  font-size: 12px;
-`;
-
-export const Commend = styled.div`
+  background-color: ${theme.colors.secondary};
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 18px;
-  background: #fff;
-  gap: 19px;
-  border-top: 0.5px solid #000;
-  border-bottom: 0.5px solid #000;
-  background: #fff;
-  width: 100%;
-  margin-top: 26px;
+  padding: 1.5rem 1.5rem 2.4375rem;
 `;
 
-export const FirstLine = styled.div`
-  display: flex;
-  gap: 18px;
-`;
-
-export const Text2 = styled.div`
-  color: #000;
-  text-align: center;
-  ${theme.fonts.pretendard}
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 100%; /* 16px */
-  letter-spacing: -0.32px;
-`;
 export const TagBox = styled.div`
   width: 100%;
   display: flex;
-  padding: 10px 0;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  border-top: 0.5px solid #000;
-  border-bottom: 0.5px solid #000;
-  background: #fff;
-  margin: 22px 25px;
+  gap: 0.25rem;
 `;
-export const Line = styled.div`
-  width: 313px;
-  height: 1px;
-  background-color: ${theme.colors.territory};
+
+export const Title = styled.div`
+  ${theme.fonts.batang}
+  color: #000;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0;
+  text-align: center;
 `;
-export const TagList = styled.div`
-  width: 100%;
-  & > * {
-    border-bottom: 1px solid #f3f3f3;
+
+export const Description = styled.p`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 135%;
+  letter-spacing: 0;
+  text-align: center;
+`;
+
+export const SelectedList = styled.div<{ $isEmpty: boolean }>`
+  width: calc(100% + 3rem);
+  min-height: 4.375rem;
+  margin: 0.125rem -1.5rem 0;
+  padding: 0.25rem 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  opacity: ${({ $isEmpty }) => ($isEmpty ? 0 : 1)};
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
 
-export const BtnBox = styled.div`
+export const SelectedUser = styled.div`
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 3.25rem;
+  min-height: 3.875rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  align-self: stretch;
-  padding-bottom: 20px;
+  justify-content: center;
+  gap: 0.25rem;
+  ${theme.fonts.dotum}
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0;
+`;
+
+export const SelectedAvatar = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  span {
+    ${theme.fonts.batang}
+    color: #fff;
+    font-size: 1rem;
+    line-height: 100%;
+  }
+`;
+
+export const RemoveSelectedButton = styled.button`
+  position: absolute;
+  top: 0.125rem;
+  right: 0.3125rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.territory};
+  color: #fff;
+  font-size: 0.625rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+export const TagList = styled.div`
+  width: 100%;
+  margin-top: 0.625rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const TagItem = styled.button<{ $showBorder: boolean }>`
+  width: 100%;
+  min-height: 3.625rem;
+  display: grid;
+  grid-template-columns: 2.8125rem minmax(0, 1fr) 1rem;
+  gap: 0.6875rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: ${({ $showBorder }) =>
+    $showBorder ? "1px solid #dedede" : "0"};
+  background-color: transparent;
+  cursor: pointer;
+`;
+
+export const ProfileImg = styled.img`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const DefaultProfileImg = styled.div`
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.batang}
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 100%;
+`;
+
+export const UserBox = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+`;
+
+export const Username = styled.div`
+  ${theme.fonts.dotum}
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0;
+`;
+
+export const Intro = styled.div`
+  ${theme.fonts.dotum}
+  color: ${theme.colors.territory};
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const Checkbox = styled.span<{ $isSelected: boolean }>`
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid
+    ${({ $isSelected }) => ($isSelected ? "#25282d" : theme.colors.territory)};
+  background-color: ${({ $isSelected }) =>
+    $isSelected ? "#25282d" : "transparent"};
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+`;
+
+export const ActionBar = styled.div<{ $single: boolean }>`
+  width: 100%;
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: ${({ $single }) =>
+    $single ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))"};
+  gap: 0.75rem;
+`;
+
+export const ActionButton = styled.button`
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 0.5px solid ${theme.colors.primary};
+  border-bottom: 0.5px solid ${theme.colors.primary};
+  background-color: transparent;
+  ${theme.fonts.pretendard}
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 120%;
+  cursor: pointer;
+
+  &:active {
+    background-color: rgba(20, 56, 88, 0.08);
+  }
 `;
