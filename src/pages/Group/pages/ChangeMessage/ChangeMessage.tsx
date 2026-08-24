@@ -144,7 +144,7 @@ export default function ChangeMessage() {
           <ConfirmModal
             question=""
             lines={["저장하지 않고 나가시겠어요?"]}
-            description="작성한 글은 저장되지 않습니다."
+            description="작성한 글은 저장되지 않습니다"
             cancelText="돌아가기"
             confirmText="나가기"
             confirmColor="danger"
@@ -178,7 +178,7 @@ export default function ChangeMessage() {
             />
             <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
           </S.MessageField>
-          <S.Desc>{message.length}/20자</S.Desc>
+          {isMessageFocused && <S.Desc>{message.length}자/20자</S.Desc>}
         </S.Content>
         <S.BottomActionBar>
           <S.ActionButton type="button" onClick={handleSave}>
