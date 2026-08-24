@@ -52,11 +52,12 @@ export const TitleText = styled(Text)`
   line-height: 120%;
 `;
 
-export const QuoteText = styled(Text)`
+export const QuoteText = styled(Text)<{ $isSelected?: boolean }>`
   flex: 1;
   min-width: 0;
   font-size: 15px;
   line-height: 135%;
+  color: ${({ $isSelected }) => ($isSelected ? "#fff" : "#000")};
 `;
 
 export const RefreshButton = styled.button`
@@ -93,15 +94,21 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
   padding: 0.625rem 1rem;
   width: 100%;
   border-radius: 0.125rem;
-  background: #fff;
+  background: ${({ $isSelected }) =>
+    $isSelected ? theme.colors.primary : "#fff"};
   gap: 0.375rem;
   cursor: pointer;
 
   border: ${({ $isSelected }) =>
     $isSelected ? "1px solid #143858" : "1px solid transparent"};
+
+  &:active {
+    background-color: ${({ $isSelected }) =>
+      $isSelected ? theme.colors.primary : "#d9dade"};
+  }
 `;
 
-export const FirstLine = styled.div`
+export const FirstLine = styled.div<{ $isSelected?: boolean }>`
   display: flex;
   gap: 0.75rem;
   width: 100%;
@@ -111,6 +118,10 @@ export const FirstLine = styled.div`
   svg {
     flex: 0 0 auto;
     transform: translateY(-0.125rem);
+  }
+
+  path {
+    fill: ${({ $isSelected }) => ($isSelected ? "#fff" : "#000")};
   }
 `;
 

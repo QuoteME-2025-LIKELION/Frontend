@@ -13,7 +13,7 @@ export const FeedList = styled.div`
   gap: 1.5rem;
 
   /* 명언 이미지 저장을 감안해 각 Feed에 padding 추가 */
-  & > div {
+  & > div:not([data-toast-overlay]) {
     width: 100%;
     padding: 0;
   }

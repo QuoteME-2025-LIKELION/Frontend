@@ -26,8 +26,6 @@ type FeedListProps = {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
-  onTagRequest?: () => void;
-  onPoke?: () => void;
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
 };
@@ -36,8 +34,6 @@ export default function FeedList({
   date,
   otherQuotes,
   friendList,
-  onTagRequest,
-  onPoke,
   onShare,
   isLoading,
 }: FeedListProps) {
@@ -55,8 +51,7 @@ export default function FeedList({
   const { mutateAsync: unbookmarkQuote } = useUnbookmarkQuoteMutation();
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const quotes = useMemo<QuotesItem[]>(() => {
     const quotesMap = new Map(
@@ -104,13 +99,10 @@ export default function FeedList({
   const handleRequest = async (quoteId: number) => {
     try {
       await requestQuoteTag(quoteId);
-      // API 호출 성공 후, 부모에게 받은 onTagRequest 함수 호출
-      onTagRequest?.();
+      setToastMessage("태그가 요청되었습니다");
     } catch (err) {
       console.error("태그 요청 실패:", err);
-      // 실패 시 사용자에게 알림
-      setErrorMessage("태그 요청에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("태그 요청에 실패했습니다.");
     }
   };
 
@@ -125,14 +117,15 @@ export default function FeedList({
     try {
       if (isBookmarked) {
         await unbookmarkQuote(quoteId);
+        setToastMessage("북마크가 해제되었습니다.");
       } else {
         await bookmarkQuote(quoteId);
+        setToastMessage("북마크에 추가되었습니다.");
       }
     } catch (err) {
       setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: isBookmarked }));
       console.error("북마크 처리 실패:", err);
-      setErrorMessage("북마크 처리에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("북마크 처리에 실패했습니다.");
     } finally {
       setPendingBookmarkIds((prev) => {
         const next = { ...prev };
@@ -155,25 +148,24 @@ export default function FeedList({
   const handlePoke = async (friendId: number) => {
     try {
       await pokeFriend(friendId);
-      // API 호출 성공 후, 부모에게 받은 onPoke 함수 호출
-      onPoke?.();
+      setToastMessage("콕 찔렀습니다.");
     } catch (err) {
       console.error("콕 찌르기 실패:", err);
-      // 실패 시 사용자에게 알림
-      setErrorMessage("콕 찌르기에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("콕 찌르기에 실패했습니다.");
     }
   };
 
   return (
     <S.FeedList>
-      {showErrorToast && (
+      {toastMessage && (
         <ToastModal
-          isVisible={showErrorToast}
+          isVisible={Boolean(toastMessage)}
           onClose={() => {
-            setShowErrorToast(false);
+            setToastMessage("");
           }}
-          text={errorMessage}
+          text={toastMessage}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
       {quotes.length > 0 ? (

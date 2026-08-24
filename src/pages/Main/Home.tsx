@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 
@@ -15,7 +15,6 @@ import DateHeader from "./components/DateHeader/DateHeader";
 import FeedList from "./components/FeedList/FeedList";
 import HomeBox from "./components/HomeBox/HomeBox";
 import HomeSideMenu from "./components/HomeSideMenu/HomeSideMenu";
-import RequestModal from "./components/Modal/RequestModal";
 import XHeader from "./components/XHeader/XHeader";
 import * as S from "./Main.styles";
 
@@ -30,8 +29,6 @@ export default function Home() {
   } = useAnimatedToggle();
 
   const { date } = useParams();
-  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-  const [requestType, setRequestType] = useState<"tag" | "poke">("tag");
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading: isQuotesLoading } =
     useQuotesByDateQuery(displayDate);
@@ -64,18 +61,6 @@ export default function Home() {
 
   }, [date, navigate]);
 
-  // 태그 요청
-  const handleTagRequest = () => {
-    setRequestType("tag");
-    setIsTagModalOpen(true);
-  };
-
-  // 콕 찌르기
-  const handlePoke = () => {
-    setRequestType("poke");
-    setIsTagModalOpen(true);
-  };
-
   return (
     <S.Container>
       {isLoading && <Spinner />}
@@ -102,18 +87,9 @@ export default function Home() {
         date={date}
         otherQuotes={otherQuotes}
         friendList={friendList}
-        onTagRequest={handleTagRequest}
-        onPoke={handlePoke}
         onShare={executeShare}
         isLoading={isLoading}
       />
-      {isTagModalOpen && (
-        <RequestModal
-          type={requestType}
-          onClose={() => setIsTagModalOpen(false)}
-          isVisible={isTagModalOpen}
-        />
-      )}
       {shareStatus !== "nothing" && (
         <ToastModal
           isVisible={true}
@@ -124,7 +100,8 @@ export default function Home() {
               : "명언 이미지를 저장했습니다."
           }
           isOnShare={shareStatus === "sharing"}
-          showOverlay={true}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
 
@@ -133,6 +110,8 @@ export default function Home() {
           isVisible={showShareErrorToast}
           onClose={closeShareErrorToast}
           text="이미지 저장에 실패했습니다."
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
     </S.Container>

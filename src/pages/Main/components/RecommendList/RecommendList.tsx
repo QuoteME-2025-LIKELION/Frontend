@@ -103,7 +103,7 @@ export default function RecommendList({
             $isSelected={selectedId === q.id}
             onClick={() => setSelectedId(q.id)}
           >
-            <S.FirstLine>
+            <S.FirstLine $isSelected={selectedId === q.id}>
               <svg
                 width="11"
                 height="10"
@@ -117,7 +117,9 @@ export default function RecommendList({
                   fill="black"
                 />
               </svg>
-              <S.QuoteText>{q.text}</S.QuoteText>
+              <S.QuoteText $isSelected={selectedId === q.id}>
+                {q.text}
+              </S.QuoteText>
               <svg
                 width="11"
                 height="10"
