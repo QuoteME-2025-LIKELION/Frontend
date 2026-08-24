@@ -98,7 +98,12 @@ export default function GroupMainSection({
           </S.InviteButton>
         )}
         {isLeader ? (
-          <S.QuitBtn type="button" onClick={onDeleteGroup}>
+          <S.QuitBtn
+            type="button"
+            $hasTopBorder
+            $isTopBorderDisabled={isGroupFull}
+            onClick={onDeleteGroup}
+          >
             그룹 해체하기
           </S.QuitBtn>
         ) : (

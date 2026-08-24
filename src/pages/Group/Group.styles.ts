@@ -205,7 +205,7 @@ export const EmptyMemberBox = styled.div`
 
 export const BtnBox = styled(Section)`
   margin-top: auto;
-  gap: 0.5rem; /* 8px */
+  gap: 0;
 `;
 
 export const InviteButton = styled.button<{ $isDisabled: boolean }>`
@@ -215,8 +215,6 @@ export const InviteButton = styled.button<{ $isDisabled: boolean }>`
   justify-content: center;
   align-items: center;
   border-top: 0.5px solid
-    ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
-  border-bottom: 0.5px solid
     ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
 
   ${theme.fonts.pretendard}
@@ -310,7 +308,10 @@ export const RequestActionBox = styled.div`
   }
 `;
 
-export const QuitBtn = styled.button`
+export const QuitBtn = styled.button<{
+  $hasTopBorder?: boolean;
+  $isTopBorderDisabled?: boolean;
+}>`
   width: 100%;
   min-height: 2.875rem; /* 46px */
   padding: 0.4375rem 0.625rem; /* 7px 10px */
@@ -325,4 +326,8 @@ export const QuitBtn = styled.button`
   font-weight: 500;
   letter-spacing: -0.28px;
   text-align: center;
+  border-top: ${({ $hasTopBorder }) =>
+    $hasTopBorder ? "0.5px solid" : 0};
+  border-top-color: ${({ $isTopBorderDisabled }) =>
+    $isTopBorderDisabled ? "#dedede" : theme.colors.primary};
 `;
