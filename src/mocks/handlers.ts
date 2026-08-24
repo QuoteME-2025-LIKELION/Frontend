@@ -202,6 +202,55 @@ const searchableGroups = [
   },
 ];
 
+type MockGroupJoinRequest = {
+  requestId: number;
+  requesterId: number;
+  requesterNickname: string;
+  requesterProfileImageUrl?: string;
+  createdAt: string;
+};
+
+const mockGroupJoinRequestsByGroupId: Record<number, MockGroupJoinRequest[]> = {
+  1: [
+    {
+      requestId: 5,
+      requesterId: 10,
+      requesterNickname: "신규신청자",
+      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      createdAt: "2025-11-07T10:00:00",
+    },
+  ],
+  3: [
+    {
+      requestId: 6,
+      requesterId: 11,
+      requesterNickname: "정원확인",
+      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      createdAt: "2025-11-07T10:10:00",
+    },
+  ],
+};
+
+const findGroupJoinRequest = (requestId: number) => {
+  for (const [groupId, requests] of Object.entries(
+    mockGroupJoinRequestsByGroupId
+  )) {
+    const requestIndex = requests.findIndex(
+      (requestItem) => requestItem.requestId === requestId
+    );
+
+    if (requestIndex >= 0) {
+      return {
+        groupId: Number(groupId),
+        requestIndex,
+        request: requests[requestIndex],
+      };
+    }
+  }
+
+  return null;
+};
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -441,23 +490,71 @@ export const handlers = [
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.get("/api/groups/:groupId/join-requests", () => {
-    return HttpResponse.json([
-      {
-        requestId: 5,
-        requesterId: 10,
-        requesterNickname: "신규신청자",
-        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-        createdAt: "2025-11-07T10:00:00",
-      },
-    ]);
+  http.get("/api/groups/:groupId/join-requests", ({ params }) => {
+    const groupId = Number(params.groupId);
+
+    return HttpResponse.json(mockGroupJoinRequestsByGroupId[groupId] ?? []);
   }),
 
-  http.post("/api/groups/join-requests/:requestId/accept", () => {
+  http.post("/api/groups/join-requests/:requestId/accept", ({ params }) => {
+    const requestId = Number(params.requestId);
+    const joinRequest = findGroupJoinRequest(requestId);
+
+    if (!joinRequest) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 가입 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    const group = mockGroups.find((item) => item.id === joinRequest.groupId);
+
+    if (!group) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 그룹입니다." },
+        { status: 404 }
+      );
+    }
+
+    if (group.members.length >= 5) {
+      return HttpResponse.json(
+        { message: "그룹 정원이 가득 찼습니다." },
+        { status: 400 }
+      );
+    }
+
+    group.members.push({
+      id: joinRequest.request.requesterId,
+      nickname: joinRequest.request.requesterNickname,
+      role: "MEMBER",
+      introduction: "그룹 가입 요청으로 합류했어요",
+      profileImage: joinRequest.request.requesterProfileImageUrl ?? "",
+    });
+    group.memberCount = group.members.length;
+    mockGroupJoinRequestsByGroupId[joinRequest.groupId].splice(
+      joinRequest.requestIndex,
+      1
+    );
+
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/groups/join-requests/:requestId/reject", () => {
+  http.post("/api/groups/join-requests/:requestId/reject", ({ params }) => {
+    const requestId = Number(params.requestId);
+    const joinRequest = findGroupJoinRequest(requestId);
+
+    if (!joinRequest) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 가입 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    mockGroupJoinRequestsByGroupId[joinRequest.groupId].splice(
+      joinRequest.requestIndex,
+      1
+    );
+
     return new HttpResponse(null, { status: 200 });
   }),
 

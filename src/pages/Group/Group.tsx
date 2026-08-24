@@ -51,6 +51,8 @@ export default function Group() {
     useState<GroupActionConfirm>(null);
 
   const [showFullGroupToast, setShowFullGroupToast] = useState(false);
+  const [showJoinRequestToast, setShowJoinRequestToast] = useState(false);
+  const [joinRequestToastMessage, setJoinRequestToastMessage] = useState("");
   const [pendingJoinRequestId, setPendingJoinRequestId] = useState<
     number | null
   >(null);
@@ -114,10 +116,20 @@ export default function Group() {
         return;
       }
 
+      const targetRequest = joinRequests.find(
+        (request) => request.requestId === requestId
+      );
+
       setPendingJoinRequestId(requestId);
 
       try {
         await acceptGroupJoinRequest({ groupId, requestId });
+        setJoinRequestToastMessage(
+          targetRequest
+            ? `${targetRequest.requesterNickname}님을 그룹에 추가했습니다`
+            : "가입 요청을 수락했습니다"
+        );
+        setShowJoinRequestToast(true);
       } catch (err) {
         console.error("그룹 가입 요청 수락 처리 중 오류:", err);
         setErrorMessage("그룹 가입 요청 수락에 실패했습니다.");
@@ -126,7 +138,13 @@ export default function Group() {
         setPendingJoinRequestId(null);
       }
     },
-    [acceptGroupJoinRequest, groupId, members.length, pendingJoinRequestId]
+    [
+      acceptGroupJoinRequest,
+      groupId,
+      joinRequests,
+      members.length,
+      pendingJoinRequestId,
+    ]
   );
 
   const handleRejectJoinRequest = useCallback(
@@ -136,10 +154,24 @@ export default function Group() {
         return;
       }
 
+      if (pendingJoinRequestId !== null) {
+        return;
+      }
+
+      const targetRequest = joinRequests.find(
+        (request) => request.requestId === requestId
+      );
+
       setPendingJoinRequestId(requestId);
 
       try {
         await rejectGroupJoinRequest({ groupId, requestId });
+        setJoinRequestToastMessage(
+          targetRequest
+            ? `${targetRequest.requesterNickname}님의 가입 요청을 거절했습니다`
+            : "가입 요청을 거절했습니다"
+        );
+        setShowJoinRequestToast(true);
       } catch (err) {
         console.error("그룹 가입 요청 거절 처리 중 오류:", err);
         setErrorMessage("그룹 가입 요청 거절에 실패했습니다.");
@@ -148,7 +180,7 @@ export default function Group() {
         setPendingJoinRequestId(null);
       }
     },
-    [groupId, rejectGroupJoinRequest]
+    [groupId, joinRequests, pendingJoinRequestId, rejectGroupJoinRequest]
   );
 
   const handleQuitGroup = useCallback(() => {
@@ -217,6 +249,8 @@ export default function Group() {
           deletedMemberName={deletedMemberName}
           groupActionConfirm={groupActionConfirm}
           showDeleteToast={showDeleteToast}
+          showJoinRequestToast={showJoinRequestToast}
+          joinRequestToastMessage={joinRequestToastMessage}
           showFullGroupToast={showFullGroupToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
@@ -226,6 +260,7 @@ export default function Group() {
           onConfirmQuitGroup={handleConfirmQuit}
           onConfirmDeleteGroup={handleConfirmDeleteGroup}
           onCloseDeleteToast={() => setShowDeleteToast(false)}
+          onCloseJoinRequestToast={() => setShowJoinRequestToast(false)}
           onCloseFullGroupToast={() => setShowFullGroupToast(false)}
           onCloseErrorToast={() => setShowErrorToast(false)}
         />

@@ -13,6 +13,8 @@ interface GroupActionModalsProps {
   deletedMemberName: string;
   groupActionConfirm: GroupActionConfirm;
   showDeleteToast: boolean;
+  showJoinRequestToast: boolean;
+  joinRequestToastMessage: string;
   showFullGroupToast: boolean;
   showErrorToast: boolean;
   errorMessage: string;
@@ -22,6 +24,7 @@ interface GroupActionModalsProps {
   onConfirmQuitGroup: () => void;
   onConfirmDeleteGroup: () => void;
   onCloseDeleteToast: () => void;
+  onCloseJoinRequestToast: () => void;
   onCloseFullGroupToast: () => void;
   onCloseErrorToast: () => void;
 }
@@ -34,6 +37,8 @@ export default function GroupActionModals({
   deletedMemberName,
   groupActionConfirm,
   showDeleteToast,
+  showJoinRequestToast,
+  joinRequestToastMessage,
   showFullGroupToast,
   showErrorToast,
   errorMessage,
@@ -43,6 +48,7 @@ export default function GroupActionModals({
   onConfirmQuitGroup,
   onConfirmDeleteGroup,
   onCloseDeleteToast,
+  onCloseJoinRequestToast,
   onCloseFullGroupToast,
   onCloseErrorToast,
 }: GroupActionModalsProps) {
@@ -69,6 +75,15 @@ export default function GroupActionModals({
           text={`${deletedMemberName}님을 탈퇴시켰습니다`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
+          showOverlay={false}
+          variant="snackbar"
+        />
+      )}
+      {showJoinRequestToast && (
+        <ToastModal
+          text={joinRequestToastMessage}
+          isVisible={showJoinRequestToast}
+          onClose={onCloseJoinRequestToast}
           showOverlay={false}
           variant="snackbar"
         />
@@ -101,7 +116,7 @@ export default function GroupActionModals({
       {showFullGroupToast && (
         <ToastModal
           text=""
-          redText="정원이 가득 차 더이상 초대할 수 없습니다"
+          redText="정원이 가득 차 더이상 멤버를 추가할 수 없습니다"
           isVisible={showFullGroupToast}
           onClose={onCloseFullGroupToast}
           showOverlay={false}

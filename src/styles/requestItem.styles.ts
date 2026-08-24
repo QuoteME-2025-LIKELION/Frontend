@@ -64,6 +64,7 @@ export const RequestActionBoxBase = styled.div`
     letter-spacing: -0.26px;
     text-decoration-line: underline;
     text-underline-position: from-font;
+    cursor: pointer;
 
     &:last-of-type {
       color: ${theme.colors.red};

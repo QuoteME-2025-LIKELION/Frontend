@@ -88,7 +88,6 @@ export default function GroupMainSection({
         <GroupJoinRequestSection
           requests={joinRequests}
           pendingRequestId={pendingJoinRequestId}
-          isGroupFull={isGroupFull}
           onAccept={onAcceptJoinRequest}
           onReject={onRejectJoinRequest}
         />
