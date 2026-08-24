@@ -251,6 +251,12 @@ const findGroupJoinRequest = (requestId: number) => {
   return null;
 };
 
+const mockAiUsage = {
+  usedCount: 1,
+  remainingCount: 2,
+  limitPerDay: 3,
+};
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -582,17 +588,26 @@ export const handlers = [
   }),
 
   http.post("/api/quotes/summarize", () => {
+    if (mockAiUsage.remainingCount <= 0) {
+      return HttpResponse.json(
+        { message: "하루 AI 추천 사용량을 초과했습니다." },
+        { status: 429 }
+      );
+    }
+
+    mockAiUsage.usedCount += 1;
+    mockAiUsage.remainingCount = Math.max(
+      mockAiUsage.limitPerDay - mockAiUsage.usedCount,
+      0
+    );
+
     return HttpResponse.json({
       summary: "오늘 못한 건 내일의 에너지로 남는다.",
     });
   }),
 
   http.get("/api/quotes/ai-usage", () => {
-    return HttpResponse.json({
-      usedCount: 1,
-      remainingCount: 2,
-      limitPerDay: 3,
-    });
+    return HttpResponse.json(mockAiUsage);
   }),
 
   http.get("/api/quotes", () => {

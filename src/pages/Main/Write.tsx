@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useAiUsageQuery } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
 
 import NewQuote from "./components/NewQuote/NewQuote";
@@ -15,6 +16,7 @@ export default function Write() {
   const [activeStep, setActiveStep] = useState<WriteStep>("write");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [diaryText, setDiaryText] = useState("");
+  const { data: aiUsage, isLoading: isAiUsageLoading } = useAiUsageQuery();
 
   return (
     <>
@@ -41,6 +43,8 @@ export default function Write() {
         {activeStep === "recommend" && (
           <RecommendList
             content={diaryText}
+            aiUsage={aiUsage}
+            isAiUsageLoading={isAiUsageLoading}
             onSelectComplete={(aiText) => {
               setCreatedQuote({
                 content: aiText,

@@ -1,21 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+
+import type { AiUsageResponse } from "@/api/quoteApi";
 import Button from "@/components/Button/Button";
-import { useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
+import {
+  quoteQueryKeys,
+  useQuoteSummaryQuery,
+} from "@/hooks/useQuoteQueries";
 
 import * as S from "./RecommendList.styles";
 
 interface RecommendListProps {
   onSelectComplete: (text: string) => void;
   content: string;
+  aiUsage?: AiUsageResponse;
+  isAiUsageLoading?: boolean;
 }
 
 export default function RecommendList({
   content,
+  aiUsage,
+  isAiUsageLoading = false,
   onSelectComplete,
 }: RecommendListProps) {
+  const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const { data: summaryData, refetch } = useQuoteSummaryQuery(content);
+  const {
+    data: summaryData,
+    dataUpdatedAt,
+    error,
+    isError,
+    isFetching,
+    refetch,
+  } = useQuoteSummaryQuery(content);
   const quotes = summaryData?.summary
     ? [
         {
@@ -25,37 +44,63 @@ export default function RecommendList({
         },
       ]
     : [];
+  const errorStatus = axios.isAxiosError(error) ? error.response?.status : null;
+  const errorMessage =
+    errorStatus === 429
+      ? "오늘 AI 추천 횟수를 모두 사용했어요"
+      : errorStatus === 503
+        ? "AI 추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요"
+        : "AI 추천을 불러오지 못했어요";
+  const usageText = isAiUsageLoading
+    ? "-/-"
+    : aiUsage
+      ? `${aiUsage.usedCount}/${aiUsage.limitPerDay}`
+      : "-/-";
+
+  useEffect(() => {
+    if (dataUpdatedAt === 0) return;
+
+    void queryClient.invalidateQueries({
+      queryKey: quoteQueryKeys.aiUsage(),
+    });
+  }, [dataUpdatedAt, queryClient]);
 
   return (
     <S.Container>
       <S.Head>
         <S.TitleText>QuoteMe의 추천</S.TitleText>
-        <S.RefreshButton
-          type="button"
-          onClick={() => {
-            setSelectedId(null);
-            if (content) {
-              void refetch();
-            }
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
+        <S.UsageRow>
+          <S.RefreshButton
+            type="button"
+            disabled={isFetching}
+            onClick={() => {
+              setSelectedId(null);
+              if (content) {
+                void refetch();
+              }
+            }}
           >
-            <path
-              d="M2 8C2 9.18669 2.35189 10.3467 3.01118 11.3334C3.67047 12.3201 4.60754 13.0892 5.7039 13.5433C6.80026 13.9974 8.00666 14.1162 9.17054 13.8847C10.3344 13.6532 11.4035 13.0818 12.2426 12.2426C13.0818 11.4035 13.6532 10.3344 13.8847 9.17054C14.1162 8.00666 13.9974 6.80026 13.5433 5.7039C13.0892 4.60754 12.3201 3.67047 11.3334 3.01118C10.3467 2.35189 9.18669 2 8 2C6.32263 2.00631 4.71265 2.66082 3.50667 3.82667L2 5.33333M2 5.33333V2M2 5.33333H5.33333"
-              stroke="#959595"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </S.RefreshButton>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <path
+                d="M2 8C2 9.18669 2.35189 10.3467 3.01118 11.3334C3.67047 12.3201 4.60754 13.0892 5.7039 13.5433C6.80026 13.9974 8.00666 14.1162 9.17054 13.8847C10.3344 13.6532 11.4035 13.0818 12.2426 12.2426C13.0818 11.4035 13.6532 10.3344 13.8847 9.17054C14.1162 8.00666 13.9974 6.80026 13.5433 5.7039C13.0892 4.60754 12.3201 3.67047 11.3334 3.01118C10.3467 2.35189 9.18669 2 8 2C6.32263 2.00631 4.71265 2.66082 3.50667 3.82667L2 5.33333M2 5.33333V2M2 5.33333H5.33333"
+                stroke="#0A4F83"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </S.RefreshButton>
+          <S.UsageText>{usageText}</S.UsageText>
+        </S.UsageRow>
       </S.Head>
       <S.ComendList>
+        {isFetching && <S.StatusText>AI 추천을 불러오는 중입니다</S.StatusText>}
+        {isError && !isFetching && <S.StatusText>{errorMessage}</S.StatusText>}
         {quotes.map((q) => (
           <S.Commend
             key={q.id}
@@ -95,6 +140,7 @@ export default function RecommendList({
         <S.BtnBox>
           <Button
             title="선택 완료"
+            disabled={selectedId === null || quotes.length === 0}
             onClick={() => {
               if (selectedId === null) return;
               const selected = quotes.find((q) => q.id === selectedId);

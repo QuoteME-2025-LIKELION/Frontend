@@ -61,6 +61,7 @@ export function useQuoteSummaryQuery(content: string) {
       return res.data;
     },
     enabled: Boolean(content),
+    retry: false,
   });
 }
 

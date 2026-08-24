@@ -24,9 +24,10 @@ export const ComendList = styled.div`
 `;
 export const Head = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 19px;
+  gap: 1rem;
   margin-top: 26px;
 `;
 
@@ -62,6 +63,26 @@ export const RefreshButton = styled.button`
   border: 0;
   background-color: transparent;
   cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+`;
+
+export const UsageRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+`;
+
+export const UsageText = styled.div`
+  ${theme.fonts.pretendard}
+  color: #0a4f83;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 120%;
 `;
 
 export const Commend = styled.div<{ $isSelected: boolean }>`
@@ -88,6 +109,18 @@ export const FirstLine = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const StatusText = styled(Text)`
+  width: 100%;
+  min-height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  color: ${theme.colors.territory};
+  font-size: 0.875rem;
+`;
+
 export const BtnBox = styled.div`
   display: flex;
   justify-content: center;

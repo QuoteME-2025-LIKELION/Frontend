@@ -54,6 +54,7 @@ export const Guide = styled.div`
   width: 100%;
   padding: 8px 33px 0;
 `;
+
 export const WriteBox = styled.div`
   padding-top: 26px;
   display: flex;
@@ -126,4 +127,11 @@ export const RecommendBtn = styled.button`
   border: 0.5px solid rgba(255, 255, 255, 0.7);
   margin-top: 20px;
   margin-bottom: 15px;
+  cursor: pointer;
+
+  &:disabled {
+    border-color: rgba(255, 255, 255, 0.35);
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
 `;
