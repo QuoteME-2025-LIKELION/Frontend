@@ -235,12 +235,25 @@ export const EmptyBox = styled.div`
   width: 100%;
   padding: 2rem 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 0.625rem; /* 10px */
+  text-align: center;
+`;
+
+export const EmptyTitle = styled.div`
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.9375rem; /* 15px */
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: -0.3px;
-  text-align: center;
+`;
+
+export const EmptyDescription = styled.div`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 400;
+  letter-spacing: -0.26px;
 `;

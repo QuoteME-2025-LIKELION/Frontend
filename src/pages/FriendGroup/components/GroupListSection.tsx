@@ -8,7 +8,6 @@ interface GroupListSectionProps {
   searchGroups: Group[];
   myGroupIdSet: Set<number>;
   onCreateGroup: () => void;
-  onManageGroups: () => void;
   onOpenGroup: (groupId: number) => void;
   onJoinGroup: (groupId: number) => void;
   showManagementButtons?: boolean;
@@ -23,13 +22,14 @@ export default function GroupListSection({
   searchGroups,
   myGroupIdSet,
   onCreateGroup,
-  onManageGroups,
   onOpenGroup,
   onJoinGroup,
   showManagementButtons = true,
 }: GroupListSectionProps) {
   const visibleGroups = keyword ? searchGroups : groups;
-  const emptyText = keyword ? "검색 결과가 없습니다." : "가입한 그룹이 없습니다.";
+  const emptyText = keyword
+    ? "검색 결과가 없습니다."
+    : "참여한 그룹이 없습니다";
 
   return (
     <S.Section>
@@ -38,7 +38,6 @@ export default function GroupListSection({
         {showManagementButtons && (
           <S.BtnBox>
             <button onClick={onCreateGroup}>그룹 만들기</button>
-            <button onClick={onManageGroups}>관리</button>
           </S.BtnBox>
         )}
       </S.Title>
@@ -59,7 +58,12 @@ export default function GroupListSection({
             );
           })
         ) : (
-          <S.EmptyBox>{emptyText}</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>{emptyText}</S.EmptyTitle>
+            {!keyword && (
+              <S.EmptyDescription>그룹에 참여해 보세요</S.EmptyDescription>
+            )}
+          </S.EmptyBox>
         )}
       </S.GroupContainer>
     </S.Section>

@@ -10,6 +10,7 @@ interface FriendGroupModalsProps {
   deleteTarget: FriendActionTarget | null;
   addTarget: FriendActionTarget | null;
   showDeleteToast: boolean;
+  deletedFriendName: string;
   showAddToast: boolean;
   showErrorToast: boolean;
   errorMessage: string;
@@ -29,6 +30,7 @@ export default function FriendGroupModals({
   deleteTarget,
   addTarget,
   showDeleteToast,
+  deletedFriendName,
   showAddToast,
   showErrorToast,
   errorMessage,
@@ -44,18 +46,24 @@ export default function FriendGroupModals({
     <>
       {deleteTarget && (
         <ConfirmModal
-          nickname={deleteTarget.nickname}
-          question="님을 삭제하시겠습니까?"
+          question=""
+          lines={[`${deleteTarget.nickname}님을 친구에서`, "삭제하시겠어요?"]}
           onClose={onCloseDeleteModal}
           onConfirm={onConfirmDelete}
           showOverlay={true}
+          cancelText="돌아가기"
+          confirmText="삭제하기"
+          confirmColor="danger"
+          variant="card"
         />
       )}
       {showDeleteToast && (
         <ToastModal
-          text="친구가 삭제되었습니다."
+          text={`${deletedFriendName}님이 친구에서 삭제되었습니다`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
       {addTarget && (
@@ -69,9 +77,11 @@ export default function FriendGroupModals({
       )}
       {showAddToast && (
         <ToastModal
-          text="친구 요청을 보냈습니다."
+          text="친구 요청을 보냈습니다"
           isVisible={showAddToast}
           onClose={onCloseAddToast}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
       {showErrorToast && (

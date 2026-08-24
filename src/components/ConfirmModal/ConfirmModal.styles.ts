@@ -140,7 +140,7 @@ export const Btn = styled.button<{
   min-width: 0;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 
-  ${theme.fonts.batang}
+  ${theme.fonts.pretendard}
   color: ${({ $confirmColor, $variant }) =>
     $confirmColor === "danger"
       ? theme.colors.red

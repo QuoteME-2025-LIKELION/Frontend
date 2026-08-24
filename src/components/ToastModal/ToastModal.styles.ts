@@ -73,7 +73,7 @@ export const Container = styled.div<{
           ${fadeIn} 0.3s ease-out, ${fadeOut} 0.3s ease-in 1.2s forwards
         `};
 
-  ${theme.fonts.batang}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.9375rem;
   letter-spacing: -0.3px;

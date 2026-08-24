@@ -29,9 +29,7 @@ const isValidFriend = (data: unknown): data is Friend => {
   }
 
   const friend = data as Partial<Friend>;
-  return (
-    typeof friend.id === "number" && typeof friend.nickname === "string"
-  );
+  return typeof friend.id === "number" && typeof friend.nickname === "string";
 };
 
 // 유효한 그룹 객체인지 확인하는 타입 가드 함수
@@ -49,8 +47,10 @@ export default function FriendGroup() {
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
 
-  const [deleteTarget, setDeleteTarget] =
-    useState<FriendActionTarget | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<FriendActionTarget | null>(
+    null
+  );
+  const [deletedFriendName, setDeletedFriendName] = useState("");
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
   const [addTarget, setAddTarget] = useState<FriendActionTarget | null>(null);
@@ -69,10 +69,7 @@ export default function FriendGroup() {
   const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
   const { mutateAsync: requestFriend } = useRequestFriendMutation();
 
-  const friendList = useMemo(
-    () => friends.filter(isValidFriend),
-    [friends]
-  );
+  const friendList = useMemo(() => friends.filter(isValidFriend), [friends]);
   const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
   const searchResultGroups = useMemo(
     () =>
@@ -115,6 +112,7 @@ export default function FriendGroup() {
     }
     try {
       await deleteFriend(deleteTarget.id);
+      setDeletedFriendName(deleteTarget.nickname);
       setDeleteTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
@@ -156,6 +154,7 @@ export default function FriendGroup() {
           deleteTarget={deleteTarget}
           addTarget={addTarget}
           showDeleteToast={showDeleteToast}
+          deletedFriendName={deletedFriendName}
           showAddToast={showAddToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
@@ -211,7 +210,6 @@ export default function FriendGroup() {
             searchGroups={searchResultGroups}
             myGroupIdSet={myGroupIdSet}
             onCreateGroup={() => navigate("/create-group")}
-            onManageGroups={() => navigate("/my-groups")}
             onOpenGroup={(groupId) => navigate(`/group/${groupId}`)}
             onJoinGroup={(groupId) => navigate(`/join-group/${groupId}`)}
           />

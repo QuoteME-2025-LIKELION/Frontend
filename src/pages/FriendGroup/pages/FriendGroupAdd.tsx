@@ -212,7 +212,6 @@ export default function FriendGroupAdd() {
                 searchGroups={searchResultGroups}
                 myGroupIdSet={myGroupIdSet}
                 onCreateGroup={() => navigate("/create-group")}
-                onManageGroups={() => navigate("/my-groups")}
                 onOpenGroup={(groupId) => navigate(`/group/${groupId}`)}
                 onJoinGroup={(groupId) => navigate(`/join-group/${groupId}`)}
                 showManagementButtons={false}

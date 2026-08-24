@@ -26,7 +26,7 @@ export default function FriendListSection({
   const visibleUsers = keyword ? searchMembers : friends;
   const emptyText = keyword
     ? "검색 결과가 없습니다."
-    : "명언을 나눌 친구가 없습니다.";
+    : "추가된 친구가 없습니다";
 
   return (
     <S.Section>
@@ -35,17 +35,18 @@ export default function FriendListSection({
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {
             const isFriend = friendIdSet.has(user.id);
-            const actionButton = keyword && !isFriend
-              ? {
-                  type: "add" as const,
-                  text: "추가",
-                  onClick: () => onAddFriend(user.nickname, user.id),
-                }
-              : {
-                  type: "delete" as const,
-                  text: "삭제",
-                  onClick: () => onDeleteFriend(user.nickname, user.id),
-                };
+            const actionButton =
+              keyword && !isFriend
+                ? {
+                    type: "add" as const,
+                    text: "추가",
+                    onClick: () => onAddFriend(user.nickname, user.id),
+                  }
+                : {
+                    type: "delete" as const,
+                    text: "삭제",
+                    onClick: () => onDeleteFriend(user.nickname, user.id),
+                  };
 
             return (
               <UserListItem
@@ -56,7 +57,12 @@ export default function FriendListSection({
             );
           })
         ) : (
-          <S.EmptyBox>{emptyText}</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>{emptyText}</S.EmptyTitle>
+            {!keyword && (
+              <S.EmptyDescription>친구를 추가해 보세요</S.EmptyDescription>
+            )}
+          </S.EmptyBox>
         )}
       </S.FriendList>
     </S.Section>
