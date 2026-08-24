@@ -16,10 +16,11 @@ export const Container = styled.div`
 export const Menu = styled.div`
   width: 100%;
   background-color: ${theme.colors.secondary};
-  padding: 1.25rem 3rem 1rem;
+  padding: 1.25rem 1.5rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 
   @media screen and (max-width: 360px) {
     padding: 1.25rem 1.5rem 1rem;
@@ -27,7 +28,8 @@ export const Menu = styled.div`
 `;
 
 export const Btn = styled.button<{ $active: boolean }>`
-  padding: 0.3125rem 0.9375rem;
+  min-width: 0;
+  padding: 0.3125rem 0.5rem;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -6,15 +6,16 @@ export const FeedList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px 17.5px;
+  padding: 1.5rem 1.5rem 0;
   max-width: 393px;
   background-color: ${theme.colors.secondary};
   height: 100%;
+  gap: 1.5rem;
 
   /* 명언 이미지 저장을 감안해 각 Feed에 padding 추가 */
   & > div {
     width: 100%;
-    padding: 10px 17.5px;
+    padding: 0;
   }
 `;
 

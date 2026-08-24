@@ -5,9 +5,9 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
 import {
-  useLikeQuoteMutation,
+  useBookmarkQuoteMutation,
   useRequestQuoteTagMutation,
-  useUnlikeQuoteMutation,
+  useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
@@ -43,15 +43,15 @@ export default function FeedList({
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
-  const [likeOverrides, setLikeOverrides] = useState<Record<number, boolean>>(
-    {}
-  );
-  const [pendingLikeIds, setPendingLikeIds] = useState<Record<number, boolean>>(
-    {}
-  );
+  const [bookmarkOverrides, setBookmarkOverrides] = useState<
+    Record<number, boolean>
+  >({});
+  const [pendingBookmarkIds, setPendingBookmarkIds] = useState<
+    Record<number, boolean>
+  >({});
   const { mutateAsync: requestQuoteTag } = useRequestQuoteTagMutation();
-  const { mutateAsync: likeQuote } = useLikeQuoteMutation();
-  const { mutateAsync: unlikeQuote } = useUnlikeQuoteMutation();
+  const { mutateAsync: bookmarkQuote } = useBookmarkQuoteMutation();
+  const { mutateAsync: unbookmarkQuote } = useUnbookmarkQuoteMutation();
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -65,14 +65,20 @@ export default function FeedList({
     return friendList.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
-        const quoteId = friendQuote.id;
+        const quoteId = friendQuote.quoteId ?? friendQuote.id;
+        const taggedNicknames =
+          friendQuote.taggedNicknames ?? friendQuote.taggedMembers ?? [];
 
         return {
           ...friendQuote,
+          id: quoteId,
           quoteId,
           friendId: friend.id,
           isSilenced: false,
-          isLiked: likeOverrides[quoteId] ?? friendQuote.isLiked,
+          taggedNicknames,
+          isLiked: Boolean(friendQuote.isLiked),
+          isBookmarked:
+            bookmarkOverrides[quoteId] ?? Boolean(friendQuote.isBookmarked),
         };
       }
 
@@ -87,11 +93,12 @@ export default function FeedList({
         taggedNicknames: [],
         timeAgo: "",
         isLiked: false,
+        isBookmarked: false,
         createDate: "",
         isFriendQuote: true,
       };
     });
-  }, [friendList, likeOverrides, otherQuotes]);
+  }, [bookmarkOverrides, friendList, otherQuotes]);
 
   const handleRequest = async (quoteId: number) => {
     try {
@@ -106,32 +113,27 @@ export default function FeedList({
     }
   };
 
-  const handleLike = async (quoteId: number, isLiked: boolean) => {
-    if (pendingLikeIds[quoteId]) {
+  const handleBookmark = async (quoteId: number, isBookmarked: boolean) => {
+    if (pendingBookmarkIds[quoteId]) {
       return;
     }
 
-    setPendingLikeIds((prev) => ({ ...prev, [quoteId]: true }));
-    setLikeOverrides((prev) => ({ ...prev, [quoteId]: !isLiked }));
+    setPendingBookmarkIds((prev) => ({ ...prev, [quoteId]: true }));
+    setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: !isBookmarked }));
 
     try {
-      if (isLiked) {
-        await unlikeQuote(quoteId);
+      if (isBookmarked) {
+        await unbookmarkQuote(quoteId);
       } else {
-        await likeQuote(quoteId);
+        await bookmarkQuote(quoteId);
       }
-      setLikeOverrides((prev) => {
-        const next = { ...prev };
-        delete next[quoteId];
-        return next;
-      });
     } catch (err) {
-      setLikeOverrides((prev) => ({ ...prev, [quoteId]: isLiked }));
-      console.error("좋아요 처리 실패:", err);
-      setErrorMessage("좋아요 처리에 실패했습니다.");
+      setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: isBookmarked }));
+      console.error("북마크 처리 실패:", err);
+      setErrorMessage("북마크 처리에 실패했습니다.");
       setShowErrorToast(true);
     } finally {
-      setPendingLikeIds((prev) => {
+      setPendingBookmarkIds((prev) => {
         const next = { ...prev };
         delete next[quoteId];
         return next;
@@ -186,9 +188,13 @@ export default function FeedList({
             createDate={quote.createDate}
             content={quote.content}
             tag={quote.taggedNicknames}
-            isLiked={quote.isLiked}
-            isLikeDisabled={Boolean(pendingLikeIds[quote.id])}
-            onLike={() => handleLike(quote.id, quote.isLiked)}
+            isBookmarked={quote.isBookmarked}
+            isBookmarkDisabled={
+              quote.isSilenced || Boolean(pendingBookmarkIds[quote.id])
+            }
+            onBookmark={() =>
+              handleBookmark(quote.id, Boolean(quote.isBookmarked))
+            }
             // Quote가 있을 때만 공유 버튼 활성화
             onShare={
               !quote.isSilenced

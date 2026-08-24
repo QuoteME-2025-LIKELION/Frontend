@@ -630,11 +630,18 @@ export const handlers = [
       ],
       otherQuotes: [
         {
+          id: 2,
           quoteId: 2,
           authorNickname: "라라진",
           authorIntroduction: "Seize the day",
           content: "방귀 퀸 놈이 성낸다",
+          taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
           taggedMembers: ["말랑이", "몰랑이", "규빈이"],
+          isLiked: false,
+          isBookmarked: false,
+          isFriendQuote: true,
+          timeAgo: "19시간 전",
+          createDate: "2025-11-03T19:02:00",
         },
       ],
     });

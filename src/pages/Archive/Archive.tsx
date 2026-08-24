@@ -70,6 +70,12 @@ export default function Archive() {
           >
             좋아요
           </S.Btn>
+          <S.Btn
+            onClick={() => navigate("/archive/bookmarks")}
+            $active={path === "bookmarks"}
+          >
+            북마크
+          </S.Btn>
         </S.Menu>
         <Outlet context={{ onShare: executeShare }} />
       </S.Container>

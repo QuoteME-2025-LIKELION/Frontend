@@ -3,14 +3,14 @@ import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
-import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
+import { useBookmarkedArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 
-import * as S from "./Likes.styles";
+import * as S from "../Likes/Likes.styles";
 
-export default function Likes() {
+export default function Bookmarks() {
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const {
@@ -19,7 +19,7 @@ export default function Likes() {
     closeDateNavigationConfirm,
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
-  const { data: likedFeeds = [] } = useLikedArchivesQuery();
+  const { data: bookmarkedFeeds = [] } = useBookmarkedArchivesQuery();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
 
@@ -43,25 +43,28 @@ export default function Likes() {
           showOverlay={true}
         />
       )}
-      {likedFeeds.map((data, index) => (
-        <QuoteFeed
-          ref={(el: HTMLDivElement | null) => {
-            feedRefs.current[index] = el;
-          }}
-          authorName={data.authorName}
-          year={data.authorBirthYear}
-          tag={data.taggedMemberNames}
-          content={data.content}
-          key={index}
-          isInArchive={true}
-          onArchiveClick={() =>
-            openDateNavigationConfirm(data.createDate.slice(0, 10))
-          }
-          onShare={() =>
-            handleShare(data.createDate.slice(0, 10), data.authorName, index)
-          }
-        />
-      ))}
+      {bookmarkedFeeds.map((data, index) => {
+        const date = (data.createDate ?? data.createdAt ?? "").slice(0, 10);
+        const authorName = data.authorName ?? data.authorNickname ?? "닉네임";
+        const taggedNames = data.taggedMemberNames ?? data.taggedMembers ?? [];
+
+        return (
+          <QuoteFeed
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            authorName={authorName}
+            year={data.authorBirthYear}
+            tag={taggedNames}
+            content={data.content}
+            key={data.quoteId ?? data.id}
+            isInArchive={true}
+            isBookmarked={true}
+            onArchiveClick={() => openDateNavigationConfirm(date)}
+            onShare={() => handleShare(date, authorName, index)}
+          />
+        );
+      })}
     </S.Container>
   );
 }
