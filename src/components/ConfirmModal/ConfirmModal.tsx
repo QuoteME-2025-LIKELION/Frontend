@@ -15,6 +15,7 @@ interface ConfirmModalProps {
   confirmColor?: "primary" | "danger";
   variant?: "default" | "card";
   description?: string;
+  descriptionLines?: string[];
   lines?: string[];
 }
 
@@ -52,6 +53,7 @@ export default function ConfirmModal({
   confirmColor,
   variant = "default",
   description,
+  descriptionLines,
   lines,
 }: ConfirmModalProps) {
   // 모달 영역을 클릭해도 onClose가 호출되지 않도록 이벤트 버블링을 막음
@@ -92,7 +94,13 @@ export default function ConfirmModal({
             </>
           )}
         </S.Question>
-        {description && <S.Description>{description}</S.Description>}
+        {(description || descriptionLines) && (
+          <S.Description>
+            {descriptionLines
+              ? descriptionLines.map((line) => <span key={line}>{line}</span>)
+              : description}
+          </S.Description>
+        )}
         <S.BtnBox $variant={variant}>
           <S.Btn type="button" $variant={variant} onClick={handleClose}>
             {cancelText}

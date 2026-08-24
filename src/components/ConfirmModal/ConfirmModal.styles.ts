@@ -166,6 +166,9 @@ export const Description = styled.div`
   width: 100%;
   margin-bottom: 0.5rem;
   padding: 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
   text-align: center;
 
   ${theme.fonts.pretendard}

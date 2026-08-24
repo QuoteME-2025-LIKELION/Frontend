@@ -9,10 +9,11 @@ interface CreateGroupInviteStepProps {
   keyword: string;
   friendList: Friend[];
   displayedFriends: Friend[];
-  selectedFriends: number[];
+  pendingInvites: Friend[];
   onChangeKeyword: (keyword: string) => void;
   onClearKeyword: () => void;
-  onSelectFriend: (id: number) => void;
+  onInviteFriend: (friend: Friend) => void;
+  onCancelPendingInvite: (id: number) => void;
   onMoveStep: (step: number) => void;
   onMoveToFriendGroup: () => void;
   onCreateGroup: () => void;
@@ -26,10 +27,11 @@ export default function CreateGroupInviteStep({
   keyword,
   friendList,
   displayedFriends,
-  selectedFriends,
+  pendingInvites,
   onChangeKeyword,
   onClearKeyword,
-  onSelectFriend,
+  onInviteFriend,
+  onCancelPendingInvite,
   onMoveStep,
   onMoveToFriendGroup,
   onCreateGroup,
@@ -69,9 +71,11 @@ export default function CreateGroupInviteStep({
               <UserListItem
                 key={friend.id}
                 friend={friend}
-                isSelectable={true}
-                isSelected={selectedFriends.includes(friend.id)}
-                onSelect={() => onSelectFriend(friend.id)}
+                actionButton={{
+                  type: "invite",
+                  text: "초대",
+                  onClick: () => onInviteFriend(friend),
+                }}
               />
             ))
           ) : (
@@ -97,13 +101,29 @@ export default function CreateGroupInviteStep({
             </S.EmptyFriendContainer>
           )}
         </S.FriendList>
+        {pendingInvites.length > 0 && (
+          <S.PendingList>
+            <S.PendingTitle>초대 대기</S.PendingTitle>
+            {pendingInvites.map((friend) => (
+              <UserListItem
+                key={friend.id}
+                friend={friend}
+                actionButton={{
+                  type: "delete",
+                  text: "취소",
+                  onClick: () => onCancelPendingInvite(friend.id),
+                }}
+              />
+            ))}
+          </S.PendingList>
+        )}
       </S.FriendListContainer>
       <S.BottomActionBar>
         <S.ActionButton type="button" onClick={() => onMoveStep(2)}>
           뒤로가기
         </S.ActionButton>
         <S.ActionButton type="button" onClick={onCreateGroup}>
-          {selectedFriends.length > 0 ? "그룹 만들기" : "건너뛰기"}
+          {pendingInvites.length > 0 ? "그룹 만들기" : "건너뛰기"}
         </S.ActionButton>
       </S.BottomActionBar>
     </S.Main>
