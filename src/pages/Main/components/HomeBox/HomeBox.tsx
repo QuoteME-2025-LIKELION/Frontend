@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import type { MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import bookmarkOutlineIcon from "@/assets/icons/archive/bookmark-outline.svg";
@@ -21,6 +21,7 @@ interface HomeBoxProps {
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const tagBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
@@ -66,15 +67,37 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
     navigate("/fix", { state: { date: displayDate } });
   };
 
-  const handleTagButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleTagButtonClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsTagMenuOpen((prev) => !prev);
   };
 
-  const handleTagEditClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleTagEditClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     handleEditTags();
   };
+
+  useEffect(() => {
+    if (!isTagMenuOpen) {
+      return;
+    }
+
+    const handleOutsidePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (tagBoxRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      setIsTagMenuOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsidePointerDown);
+    document.addEventListener("touchstart", handleOutsidePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsidePointerDown);
+      document.removeEventListener("touchstart", handleOutsidePointerDown);
+    };
+  }, [isTagMenuOpen]);
 
   return (
     <S.Container ref={containerRef} onClick={() => setIsTagMenuOpen(false)}>
@@ -103,20 +126,16 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       </S.Wrapper>
       <S.Bottom>
         {hasFeed && (
-          <S.TagBox>
+          <S.TagBox ref={tagBoxRef}>
             <S.TagButton type="button" onClick={handleTagButtonClick}>
               <img src={userIcon} alt="" />
               {taggedNicknames.length}
             </S.TagButton>
             {isTagMenuOpen && (
               <S.TagMenu>
-                {taggedNicknames.length > 0 ? (
-                  taggedNicknames.map((nickname) => (
-                    <S.TagName key={nickname}>{nickname}</S.TagName>
-                  ))
-                ) : (
-                  <S.TagName>추가하기</S.TagName>
-                )}
+                {taggedNicknames.map((nickname) => (
+                  <S.TagName key={nickname}>{nickname}</S.TagName>
+                ))}
                 <S.TagEditButton type="button" onClick={handleTagEditClick}>
                   {taggedNicknames.length > 0 ? "수정하기" : "추가하기"}
                 </S.TagEditButton>

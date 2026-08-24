@@ -7,7 +7,7 @@ export const FeedList = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.5rem 0;
+  padding: 1.5rem 1.5rem 2.5rem;
   max-width: 393px;
   background-color: ${theme.colors.secondary};
   height: 100%;
@@ -36,6 +36,11 @@ export const FilterButton = styled.button`
   font-weight: 500;
   line-height: 140%;
   cursor: pointer;
+
+  img {
+    width: 1rem;
+    height: 1rem;
+  }
 `;
 
 export const FilterMenu = styled.div`
@@ -54,7 +59,7 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   min-height: 2.75rem;
   padding: 0 0.5rem;
   border-bottom: 1px solid #dedede;
-  ${theme.fonts.batang}
+  ${theme.fonts.pretendard}
   color: ${({ $active }) => ($active ? "#000" : theme.colors.territory)};
   font-size: 0.875rem;
   font-weight: ${({ $active }) => ($active ? 700 : 500)};

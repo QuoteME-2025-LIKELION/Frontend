@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
@@ -48,6 +49,7 @@ export default function FeedList({
 }: FeedListProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const filterBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
@@ -181,6 +183,28 @@ export default function FeedList({
     }
   };
 
+  useEffect(() => {
+    if (!isFilterOpen) {
+      return;
+    }
+
+    const handleOutsidePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (filterBoxRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      setIsFilterOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsidePointerDown);
+    document.addEventListener("touchstart", handleOutsidePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsidePointerDown);
+      document.removeEventListener("touchstart", handleOutsidePointerDown);
+    };
+  }, [isFilterOpen]);
+
   return (
     <S.FeedList>
       {toastMessage && (
@@ -194,25 +218,12 @@ export default function FeedList({
           variant="snackbar"
         />
       )}
-      <S.FilterBox>
+      <S.FilterBox ref={filterBoxRef}>
         <S.FilterButton
           type="button"
           onClick={() => setIsFilterOpen((prev) => !prev)}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-          >
-            <path
-              d="M2 3H10M3.5 6H8.5M5 9H7"
-              stroke="#21242B"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-            />
-          </svg>
+          <img src={funnelIcon} alt="" />
           {selectedGroup?.name ?? "전체보기"}
         </S.FilterButton>
         {isFilterOpen && (
@@ -246,7 +257,7 @@ export default function FeedList({
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
-            key={quote.id}
+            key={`${quote.friendId}-${quote.quoteId ?? "empty"}`}
             quote={quote}
             index={index}
             refCallback={(el) => {
