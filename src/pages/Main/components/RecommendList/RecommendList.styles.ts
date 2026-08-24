@@ -11,7 +11,7 @@ export const Container = styled.div`
   max-width: 393px;
   flex: 1;
   min-height: 0;
-  padding-top: 1.75rem;
+  padding-top: 1.5rem;
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 `;

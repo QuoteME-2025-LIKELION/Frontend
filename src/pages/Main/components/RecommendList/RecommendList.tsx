@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 import type { AiUsageResponse } from "@/api/quoteApi";
-import {
-  quoteQueryKeys,
-  useQuoteSummaryQuery,
-} from "@/hooks/useQuoteQueries";
+import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
 
 import * as S from "./RecommendList.styles";
 
@@ -69,7 +65,7 @@ export default function RecommendList({
   return (
     <S.Container>
       <S.Head>
-        <S.TitleText>QuoteMe의 추천</S.TitleText>
+        <S.TitleText>AI 명언 추천</S.TitleText>
       </S.Head>
       <S.ComendList>
         <S.RefreshButton
