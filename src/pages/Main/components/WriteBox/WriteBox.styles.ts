@@ -9,12 +9,12 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  min-height: 244px;
+  min-height: 180px;
   padding-bottom: 1rem;
 `;
 
 export const Datebox = styled.div`
-  padding: 10px;
+  padding: 14px;
   padding-top: 0px;
   gap: 8px;
   align-items: center;
@@ -63,14 +63,15 @@ export const WriteBox = styled.div<{ $isResultMode: boolean }>`
   position: relative;
 
   width: 100%;
-  height: 7.625rem;
+  height: 5rem;
 `;
 
 export const LineWrap = styled.div<{ $isResultMode: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 1.875rem;
+  justify-content: space-between;
   width: 100%;
+  height: 100%;
   padding: 0 33px;
 `;
 
@@ -94,11 +95,11 @@ export const TextArea = styled.textarea<{
   border: none;
   outline: none;
   resize: none;
-  padding: 2rem 33px 0;
+  padding: 0 33px;
 
   color: #fff;
   font-size: 0.875rem;
-  line-height: 1.875rem !important;
+  line-height: 2.5rem !important;
   ${theme.fonts.batang}
   text-align: center;
 
@@ -112,7 +113,7 @@ export const TextArea = styled.textarea<{
 
 export const CountText = styled.div`
   align-self: center;
-  margin-top: 0.375rem;
+  margin-top: 0.75rem;
   ${theme.fonts.pretendard}
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.6875rem;

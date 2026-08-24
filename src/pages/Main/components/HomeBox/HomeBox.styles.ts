@@ -45,7 +45,7 @@ export const Weekday = styled.div`
 export const Wrapper = styled.button`
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.125rem;
   color: white;
   cursor: pointer;
@@ -59,13 +59,12 @@ export const Text = styled.div<{ hasFeed: boolean }>`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  padding: 0.8125rem 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  min-height: 2.5rem;
-
-  &:last-of-type {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  }
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border-top: 1px solid #fff;
 `;
 
 export const Day = styled.div`
@@ -75,9 +74,10 @@ export const Day = styled.div`
   font-size: 75px;
   font-style: normal;
   font-weight: 400;
-  line-height: 100%;
+  line-height: 95%;
   letter-spacing: -1.5px;
   flex: 0 0 4.125rem;
+  transform: translateY(-0.45rem);
 `;
 
 export const QuoteArea = styled.div`
@@ -90,12 +90,12 @@ export const Bottom = styled.div`
   position: relative;
   width: 100%;
   min-height: 2.25rem;
-  margin-top: 2.5rem;
+  margin-top: 0;
   padding-top: 0.75rem;
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr) auto;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-top: 1px solid #fff;
 `;
 
 export const TagBox = styled.div`
