@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
 import {
   useDeleteFriendMutation,
@@ -45,6 +46,10 @@ const isValidGroup = (data: unknown): data is Group => {
   return typeof group.id === "number" && typeof group.name === "string";
 };
 
+type FriendGroupLocationState = {
+  toastMessage?: string;
+} | null;
+
 export default function FriendGroup() {
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
@@ -65,8 +70,10 @@ export default function FriendGroup() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [routeToastMessage, setRouteToastMessage] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: friends = [] } = useFriendsQuery();
   const { data: groups = [] } = useMyGroupsQuery();
   const { data: searchResult } = useFriendSearchQuery(
@@ -105,6 +112,17 @@ export default function FriendGroup() {
     () => new Set(groupsList.map((group) => group.id)),
     [groupsList]
   );
+
+  useEffect(() => {
+    const state = location.state as FriendGroupLocationState;
+
+    if (!state?.toastMessage) {
+      return;
+    }
+
+    setRouteToastMessage(state.toastMessage);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
 
   const handleDeleteFriend = useCallback(
     (friendName: string, friendId: number) => {
@@ -210,6 +228,15 @@ export default function FriendGroup() {
           }
           onCloseErrorToast={() => setShowErrorToast(false)}
         />
+        {routeToastMessage && (
+          <ToastModal
+            text={routeToastMessage}
+            isVisible={Boolean(routeToastMessage)}
+            onClose={() => setRouteToastMessage("")}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}

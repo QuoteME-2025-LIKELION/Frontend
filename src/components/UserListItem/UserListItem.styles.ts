@@ -9,7 +9,7 @@ export const Container = styled.div<{
   width: 100%;
   border-bottom: 1px solid #dedede;
   display: grid;
-  grid-template-columns: 2.8125rem 1fr 1.4375rem;
+  grid-template-columns: 2.8125rem minmax(0, 1fr) auto;
   gap: 0.6875rem; /* 11px */
   align-items: center;
   padding: 0.625rem 0; /* 10px 0 */
@@ -40,11 +40,15 @@ export const UserBox = styled.div`
   justify-content: center;
   gap: 0.5rem; /* 8px */
   width: 100%;
+  min-width: 0;
 
   div {
     ${theme.fonts.dotum}
     font-size: 0.875rem; /* 14px */
     letter-spacing: -0.28px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 
@@ -61,11 +65,11 @@ export const Intro = styled.div`
 export const BtnBox = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 1.4375rem;
+  justify-content: flex-end;
+  width: auto;
 
   button {
-    width: 100%;
+    min-width: 1.4375rem;
     ${theme.fonts.dotum}
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;

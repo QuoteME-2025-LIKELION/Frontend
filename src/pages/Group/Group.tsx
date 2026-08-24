@@ -49,9 +49,7 @@ export default function Group() {
 
   const [groupActionConfirm, setGroupActionConfirm] =
     useState<GroupActionConfirm>(null);
-  const [showQuitToast, setShowQuitToast] = useState(false);
 
-  const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
   const [showFullGroupToast, setShowFullGroupToast] = useState(false);
   const [pendingJoinRequestId, setPendingJoinRequestId] = useState<
     number | null
@@ -155,11 +153,9 @@ export default function Group() {
       await removeGroupMember({ groupId, memberId: myId });
 
       setGroupActionConfirm(null);
-      setShowQuitToast(true);
-
-      setTimeout(() => {
-        navigate("/friend-group");
-      }, 1500);
+      navigate("/friend-group", {
+        state: { toastMessage: "그룹에서 탈퇴하였습니다" },
+      });
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setGroupActionConfirm(null);
@@ -190,11 +186,9 @@ export default function Group() {
     try {
       await deleteGroup(groupId);
       setGroupActionConfirm(null);
-      setShowGroupDeleteToast(true);
-
-      setTimeout(() => {
-        navigate("/friend-group");
-      }, 1500);
+      navigate("/friend-group", {
+        state: { toastMessage: "그룹이 해체되었습니다" },
+      });
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);
       setGroupActionConfirm(null);
@@ -211,8 +205,6 @@ export default function Group() {
           deletedMemberName={deletedMemberName}
           groupActionConfirm={groupActionConfirm}
           showDeleteToast={showDeleteToast}
-          showQuitToast={showQuitToast}
-          showGroupDeleteToast={showGroupDeleteToast}
           showFullGroupToast={showFullGroupToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
@@ -222,8 +214,6 @@ export default function Group() {
           onConfirmQuitGroup={handleConfirmQuit}
           onConfirmDeleteGroup={handleConfirmDeleteGroup}
           onCloseDeleteToast={() => setShowDeleteToast(false)}
-          onCloseQuitToast={() => setShowQuitToast(false)}
-          onCloseGroupDeleteToast={() => setShowGroupDeleteToast(false)}
           onCloseFullGroupToast={() => setShowFullGroupToast(false)}
           onCloseErrorToast={() => setShowErrorToast(false)}
         />

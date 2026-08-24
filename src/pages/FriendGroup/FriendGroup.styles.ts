@@ -83,6 +83,7 @@ export const HeaderIconButton = styled.button`
 
 export const GroupContainer = styled.div`
   width: calc(100% + 3rem);
+  min-height: 7.5rem; /* 120px */
   margin: 0 -1.5rem;
   padding: 0 1.5rem;
   display: flex;

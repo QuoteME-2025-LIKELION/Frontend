@@ -29,7 +29,6 @@ export default function CreateGroup() {
   const debouncedKeyword = useDebounce(keyword, 500);
 
   const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
-  const [showToast, setShowToast] = useState(false);
 
   const [isSubmitted, setIsSubmitted] = useState(false); // 그룹 생성 시도 여부 상태
 
@@ -133,12 +132,9 @@ export default function CreateGroup() {
         );
       }
 
-      // 모든 과정이 성공하면 토스트를 보여주고 페이지 이동
-      setShowToast(true);
-      setTimeout(() => {
-        // 만들어진 그룹 ID 받는다면 그 그룹 상세 페이지로 바로 이동하는 식도 고려
-        navigate("/friend-group");
-      }, 1500);
+      navigate("/friend-group", {
+        state: { toastMessage: "새로운 그룹을 만들었습니다" },
+      });
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);
       setErrorMessage("그룹 생성 또는 친구 초대에");
@@ -161,11 +157,9 @@ export default function CreateGroup() {
       <PageTitle title="그룹 만들기" />
       <S.Container>
         <CreateGroupToasts
-          showSuccessToast={showToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
           errorMessage3={errorMessage3}
-          onCloseSuccessToast={() => setShowToast(false)}
           onCloseErrorToast={() => {
             setShowErrorToast(false);
             setErrorMessage3("");

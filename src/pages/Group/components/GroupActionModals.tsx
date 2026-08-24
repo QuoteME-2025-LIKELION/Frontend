@@ -13,8 +13,6 @@ interface GroupActionModalsProps {
   deletedMemberName: string;
   groupActionConfirm: GroupActionConfirm;
   showDeleteToast: boolean;
-  showQuitToast: boolean;
-  showGroupDeleteToast: boolean;
   showFullGroupToast: boolean;
   showErrorToast: boolean;
   errorMessage: string;
@@ -24,8 +22,6 @@ interface GroupActionModalsProps {
   onConfirmQuitGroup: () => void;
   onConfirmDeleteGroup: () => void;
   onCloseDeleteToast: () => void;
-  onCloseQuitToast: () => void;
-  onCloseGroupDeleteToast: () => void;
   onCloseFullGroupToast: () => void;
   onCloseErrorToast: () => void;
 }
@@ -38,8 +34,6 @@ export default function GroupActionModals({
   deletedMemberName,
   groupActionConfirm,
   showDeleteToast,
-  showQuitToast,
-  showGroupDeleteToast,
   showFullGroupToast,
   showErrorToast,
   errorMessage,
@@ -49,8 +43,6 @@ export default function GroupActionModals({
   onConfirmQuitGroup,
   onConfirmDeleteGroup,
   onCloseDeleteToast,
-  onCloseQuitToast,
-  onCloseGroupDeleteToast,
   onCloseFullGroupToast,
   onCloseErrorToast,
 }: GroupActionModalsProps) {
@@ -94,15 +86,6 @@ export default function GroupActionModals({
           description="탈퇴해도 재가입 요청을 보낼 수 있어요."
         />
       )}
-      {showQuitToast && (
-        <ToastModal
-          text="그룹에서 탈퇴했습니다"
-          isVisible={showQuitToast}
-          onClose={onCloseQuitToast}
-          showOverlay={false}
-          variant="snackbar"
-        />
-      )}
       {groupActionConfirm === "delete" && (
         <ConfirmModal
           question=""
@@ -113,15 +96,6 @@ export default function GroupActionModals({
           confirmText="해체하기"
           confirmColor="danger"
           variant="card"
-        />
-      )}
-      {showGroupDeleteToast && (
-        <ToastModal
-          text="그룹을 해체했습니다"
-          isVisible={showGroupDeleteToast}
-          onClose={onCloseGroupDeleteToast}
-          showOverlay={false}
-          variant="snackbar"
         />
       )}
       {showFullGroupToast && (
