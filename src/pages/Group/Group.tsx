@@ -44,6 +44,7 @@ export default function Group() {
 
   const [deleteMemberTarget, setDeleteMemberTarget] =
     useState<GroupMemberActionTarget | null>(null);
+  const [deletedMemberName, setDeletedMemberName] = useState("");
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
   const [groupActionConfirm, setGroupActionConfirm] =
@@ -85,6 +86,7 @@ export default function Group() {
     try {
       await removeGroupMember({ groupId, memberId: deleteMemberTarget.id });
 
+      setDeletedMemberName(deleteMemberTarget.nickname);
       setDeleteMemberTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
@@ -206,6 +208,7 @@ export default function Group() {
       <S.Container>
         <GroupActionModals
           deleteMemberTarget={deleteMemberTarget}
+          deletedMemberName={deletedMemberName}
           groupActionConfirm={groupActionConfirm}
           showDeleteToast={showDeleteToast}
           showQuitToast={showQuitToast}
@@ -239,6 +242,7 @@ export default function Group() {
             joinRequests={joinRequests}
             pendingJoinRequestId={pendingJoinRequestId}
             isLeader={isLeader}
+            myMemberId={myProfile?.id}
             onEditMessage={() => navigate(`/group/${groupId}/change-message`)}
             onDeleteMember={handleDeleteMember}
             onAcceptJoinRequest={handleAcceptJoinRequest}

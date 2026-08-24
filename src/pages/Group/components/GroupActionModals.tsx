@@ -10,6 +10,7 @@ export type GroupActionConfirm = "quit" | "delete" | null;
 
 interface GroupActionModalsProps {
   deleteMemberTarget: GroupMemberActionTarget | null;
+  deletedMemberName: string;
   groupActionConfirm: GroupActionConfirm;
   showDeleteToast: boolean;
   showQuitToast: boolean;
@@ -34,6 +35,7 @@ interface GroupActionModalsProps {
  */
 export default function GroupActionModals({
   deleteMemberTarget,
+  deletedMemberName,
   groupActionConfirm,
   showDeleteToast,
   showQuitToast,
@@ -72,7 +74,7 @@ export default function GroupActionModals({
       )}
       {showDeleteToast && (
         <ToastModal
-          text="그룹에서 탈퇴시켰습니다"
+          text={`${deletedMemberName}님을 탈퇴시켰습니다`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
           showOverlay={false}

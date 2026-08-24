@@ -12,6 +12,7 @@ interface GroupMainSectionProps {
   joinRequests: GroupJoinRequest[];
   pendingJoinRequestId?: number | null;
   isLeader: boolean;
+  myMemberId?: number;
   onEditMessage: () => void;
   onDeleteMember: (nickname: string, id: number) => void;
   onAcceptJoinRequest: (requestId: number) => void;
@@ -30,6 +31,7 @@ export default function GroupMainSection({
   joinRequests,
   pendingJoinRequestId,
   isLeader,
+  myMemberId,
   onEditMessage,
   onDeleteMember,
   onAcceptJoinRequest,
@@ -57,21 +59,24 @@ export default function GroupMainSection({
       <S.Section>
         <S.Title>멤버</S.Title>
         {members.length > 0 ? (
-          members.map((friend) => (
-            <UserListItem
-              key={friend.id}
-              friend={friend}
-              actionButton={
-                isLeader
-                  ? {
-                      type: "delete",
-                      text: "탈퇴",
-                      onClick: () => onDeleteMember(friend.nickname, friend.id),
-                    }
-                  : undefined
-              }
-            />
-          ))
+          <S.MemberList>
+            {members.map((friend) => (
+              <UserListItem
+                key={friend.id}
+                friend={friend}
+                actionButton={
+                  isLeader && friend.id !== myMemberId
+                    ? {
+                        type: "delete",
+                        text: "탈퇴",
+                        onClick: () =>
+                          onDeleteMember(friend.nickname, friend.id),
+                      }
+                    : undefined
+                }
+              />
+            ))}
+          </S.MemberList>
         ) : (
           <S.EmptyMemberBox>
             <strong>멤버가 없어요</strong>

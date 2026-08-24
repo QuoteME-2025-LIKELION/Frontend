@@ -139,6 +139,12 @@ export const Section = styled.div`
   gap: 0.9375rem; /* 15px */
 `;
 
+export const MemberList = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const MessageBox = styled.button`
   width: 100%;
   display: flex;
