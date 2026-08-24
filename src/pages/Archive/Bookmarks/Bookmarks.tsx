@@ -2,13 +2,12 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import { useBookmarkedArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
-
-import * as S from "../Likes/Likes.styles";
+import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
+import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function Bookmarks() {
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -49,18 +48,17 @@ export default function Bookmarks() {
         const taggedNames = data.taggedMemberNames ?? data.taggedMembers ?? [];
 
         return (
-          <QuoteFeed
+          <ArchiveQuoteCard
             ref={(el: HTMLDivElement | null) => {
               feedRefs.current[index] = el;
             }}
-            authorName={authorName}
-            year={data.authorBirthYear}
-            tag={taggedNames}
-            content={data.content}
             key={data.quoteId ?? data.id}
-            isInArchive={true}
-            isBookmarked={true}
-            onArchiveClick={() => openDateNavigationConfirm(date)}
+            feed={{
+              ...data,
+              isBookmarked: true,
+              taggedMemberNames: taggedNames,
+            }}
+            onClick={() => openDateNavigationConfirm(date)}
             onShare={() => handleShare(date, authorName, index)}
           />
         );

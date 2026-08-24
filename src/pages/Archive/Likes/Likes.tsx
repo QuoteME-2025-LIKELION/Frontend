@@ -2,13 +2,12 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
-
-import * as S from "./Likes.styles";
+import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
+import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function Likes() {
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -43,25 +42,25 @@ export default function Likes() {
           showOverlay={true}
         />
       )}
-      {likedFeeds.map((data, index) => (
-        <QuoteFeed
-          ref={(el: HTMLDivElement | null) => {
-            feedRefs.current[index] = el;
-          }}
-          authorName={data.authorName}
-          year={data.authorBirthYear}
-          tag={data.taggedMemberNames}
-          content={data.content}
-          key={index}
-          isInArchive={true}
-          onArchiveClick={() =>
-            openDateNavigationConfirm(data.createDate.slice(0, 10))
-          }
-          onShare={() =>
-            handleShare(data.createDate.slice(0, 10), data.authorName, index)
-          }
-        />
-      ))}
+      {likedFeeds.length === 0 && (
+        <S.EmptyMessage>스크랩된 명언이 없습니다</S.EmptyMessage>
+      )}
+      {likedFeeds.map((feed, index) => {
+        const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);
+        const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
+
+        return (
+          <ArchiveQuoteCard
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            feed={feed}
+            key={feed.id ?? feed.quoteId}
+            onClick={() => openDateNavigationConfirm(date)}
+            onShare={() => handleShare(date, authorName, index)}
+          />
+        );
+      })}
     </S.Container>
   );
 }
