@@ -11,6 +11,7 @@ interface ToastModalProps {
   text2?: string;
   text3?: string;
   isOnShare?: boolean;
+  variant?: "default" | "snackbar";
 }
 
 /**
@@ -44,6 +45,7 @@ export default function ToastModal({
   text2,
   text3,
   isOnShare = false,
+  variant = "default",
 }: ToastModalProps) {
   useEffect(() => {
     if (isVisible && !isOnShare) {
@@ -60,7 +62,7 @@ export default function ToastModal({
   if (!isVisible) return null;
   return (
     <S.Overlay $showOverlay={showOverlay}>
-      <S.Container $isOnShare={isOnShare}>
+      <S.Container $isOnShare={isOnShare} $variant={variant}>
         <div>
           {text}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
           {text2 && text2}

@@ -10,6 +10,14 @@ interface ConfirmModalProps {
   nickname2?: string;
   question2?: string;
   showOverlay?: boolean;
+  cancelText?: string;
+  confirmText?: string;
+  confirmColor?: "primary" | "danger";
+  confirmDisabled?: boolean;
+  variant?: "default" | "card";
+  description?: string;
+  descriptionLines?: string[];
+  lines?: string[];
 }
 
 /**
@@ -41,6 +49,14 @@ export default function ConfirmModal({
   nickname2,
   question2,
   showOverlay = true,
+  cancelText = "취소",
+  confirmText = "확인",
+  confirmColor,
+  confirmDisabled = false,
+  variant = "default",
+  description,
+  descriptionLines,
+  lines,
 }: ConfirmModalProps) {
   // 모달 영역을 클릭해도 onClose가 호출되지 않도록 이벤트 버블링을 막음
   const stopPropagation = (e: React.MouseEvent) => {
@@ -50,6 +66,10 @@ export default function ConfirmModal({
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
+    if (isClosing) {
+      return;
+    }
+
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -57,6 +77,10 @@ export default function ConfirmModal({
   };
 
   const handleConfirm = () => {
+    if (confirmDisabled || isClosing) {
+      return;
+    }
+
     setIsClosing(true);
     setTimeout(() => {
       onConfirm();
@@ -64,19 +88,42 @@ export default function ConfirmModal({
   };
   return (
     <S.Overlay $showOverlay={showOverlay} onClick={handleClose}>
-      <S.Container $isClosing={isClosing} onClick={stopPropagation}>
-        <S.Question>
-          {nickname && <div>{nickname}</div>}
-          {question}&nbsp;{nickname2 && <div>{nickname2}</div>}
-          {question2 && question2}
+      <S.Container
+        $isClosing={isClosing}
+        $variant={variant}
+        onClick={stopPropagation}
+      >
+        <S.Question $variant={variant}>
+          {lines ? (
+            lines.map((line) => <span key={line}>{line}</span>)
+          ) : (
+            <>
+              {nickname && <div>{nickname}</div>}
+              {question}&nbsp;{nickname2 && <div>{nickname2}</div>}
+              {question2 && question2}
+            </>
+          )}
         </S.Question>
-        <S.BtnBox>
-          <S.Btn type="button" onClick={handleClose}>
-            취소
+        {(description || descriptionLines) && (
+          <S.Description>
+            {descriptionLines
+              ? descriptionLines.map((line) => <span key={line}>{line}</span>)
+              : description}
+          </S.Description>
+        )}
+        <S.BtnBox $variant={variant}>
+          <S.Btn type="button" $variant={variant} onClick={handleClose}>
+            {cancelText}
           </S.Btn>
-          <S.Div></S.Div>
-          <S.Btn type="button" onClick={handleConfirm}>
-            확인
+          <S.Div $variant={variant}></S.Div>
+          <S.Btn
+            type="button"
+            $variant={variant}
+            $confirmColor={confirmColor}
+            disabled={confirmDisabled}
+            onClick={handleConfirm}
+          >
+            {confirmText}
           </S.Btn>
         </S.BtnBox>
       </S.Container>

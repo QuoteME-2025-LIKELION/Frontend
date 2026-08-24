@@ -36,22 +36,42 @@ export const Overlay = styled.div<{ $showOverlay: boolean }>`
     $showOverlay ? "rgba(0, 0, 0, 0.55)" : "transparent"};
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: ${({ $showOverlay }) => ($showOverlay ? "center" : "flex-end")};
+  padding-bottom: ${({ $showOverlay }) => ($showOverlay ? "0" : "4.5rem")};
+  pointer-events: ${({ $showOverlay }) => ($showOverlay ? "auto" : "none")};
 `;
 
-export const Container = styled.div<{ $isOnShare: boolean }>`
+export const Container = styled.div<{
+  $isOnShare: boolean;
+  $variant: "default" | "snackbar";
+}>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: ${({ $variant }) =>
+    $variant === "snackbar" ? "flex-start" : "center"};
   gap: 0.125rem;
-  background-color: ${theme.colors.secondary};
-  border-radius: 1.875rem; /* 30px */
-  border: 1px solid ${theme.colors.territory};
-  width: 67%;
-  max-width: 16.625rem; /* 266px */
-  height: 3.8125rem; /* 61px */
-  white-space: nowrap;
+  padding: ${({ $variant }) => ($variant === "snackbar" ? "0 1.625rem" : "0")};
+  background-color: ${({ $variant }) =>
+    $variant === "snackbar" ? "#f8f8f8" : theme.colors.secondary};
+  border-radius: ${({ $variant }) =>
+    $variant === "snackbar" ? "0.25rem" : "1.875rem"};
+  border: ${({ $variant }) =>
+    $variant === "snackbar" ? "none" : `1px solid ${theme.colors.territory}`};
+  width: ${({ $variant }) => ($variant === "snackbar" ? "87%" : "67%")};
+  max-width: ${({ $variant }) =>
+    $variant === "snackbar" ? "21.5rem" : "16.625rem"};
+  height: ${({ $variant }) =>
+    $variant === "snackbar" ? "auto" : "3.8125rem"};
+  min-height: ${({ $variant }) =>
+    $variant === "snackbar" ? "3.25rem" : "3.8125rem"};
+  box-shadow: ${({ $variant }) =>
+    $variant === "snackbar" ? "0 2px 10px rgba(0, 0, 0, 0.12)" : "none"};
+  white-space: ${({ $variant }) =>
+    $variant === "snackbar" ? "normal" : "nowrap"};
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   animation: ${({ $isOnShare }) =>
     $isOnShare
       ? css`
@@ -61,7 +81,7 @@ export const Container = styled.div<{ $isOnShare: boolean }>`
           ${fadeIn} 0.3s ease-out, ${fadeOut} 0.3s ease-in 1.2s forwards
         `};
 
-  ${theme.fonts.batang}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.9375rem;
   letter-spacing: -0.3px;

@@ -10,6 +10,7 @@ interface FriendListSectionProps {
   friendIdSet: Set<number>;
   onDeleteFriend: (nickname: string, id: number) => void;
   onAddFriend: (nickname: string, id: number) => void;
+  hideExistingFriendAction?: boolean;
 }
 
 /**
@@ -22,30 +23,34 @@ export default function FriendListSection({
   friendIdSet,
   onDeleteFriend,
   onAddFriend,
+  hideExistingFriendAction = false,
 }: FriendListSectionProps) {
   const visibleUsers = keyword ? searchMembers : friends;
   const emptyText = keyword
     ? "검색 결과가 없습니다."
-    : "명언을 나눌 친구가 없습니다.";
+    : "추가된 친구가 없습니다";
 
   return (
     <S.Section>
-      {!keyword ? <S.Title>친구</S.Title> : <S.Title>유저</S.Title>}
+      {!keyword ? <S.Title>친구</S.Title> : <S.Title>사용자</S.Title>}
       <S.FriendList>
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {
             const isFriend = friendIdSet.has(user.id);
-            const actionButton = keyword && !isFriend
-              ? {
-                  type: "add" as const,
-                  text: "추가",
-                  onClick: () => onAddFriend(user.nickname, user.id),
-                }
-              : {
-                  type: "delete" as const,
-                  text: "삭제",
-                  onClick: () => onDeleteFriend(user.nickname, user.id),
-                };
+            const actionButton =
+              keyword && !isFriend
+                ? {
+                    type: "add" as const,
+                    text: "추가",
+                    onClick: () => onAddFriend(user.nickname, user.id),
+                  }
+                : keyword && hideExistingFriendAction
+                  ? undefined
+                : {
+                    type: "delete" as const,
+                    text: "삭제",
+                    onClick: () => onDeleteFriend(user.nickname, user.id),
+                  };
 
             return (
               <UserListItem
@@ -56,7 +61,12 @@ export default function FriendListSection({
             );
           })
         ) : (
-          <S.EmptyBox>{emptyText}</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>{emptyText}</S.EmptyTitle>
+            {!keyword && (
+              <S.EmptyDescription>친구를 추가해 보세요</S.EmptyDescription>
+            )}
+          </S.EmptyBox>
         )}
       </S.FriendList>
     </S.Section>

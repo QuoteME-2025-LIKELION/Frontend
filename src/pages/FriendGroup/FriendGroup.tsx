@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import useDebounce from "@/hooks/useDebounce";
 import {
   useDeleteFriendMutation,
@@ -11,15 +12,18 @@ import {
   useFriendsQuery,
   useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
-import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
+import {
+  useMyGroupsQuery,
+  useRequestJoinGroupMutation,
+} from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
-import FriendGroupListSection from "./components/FriendGroupListSection";
 import FriendGroupModals, {
   type FriendActionTarget,
 } from "./components/FriendGroupModals";
 import FriendListSection from "./components/FriendListSection";
+import GroupListSection from "./components/GroupListSection";
 import * as S from "./FriendGroup.styles";
 
 // 유효한 친구 객체인지 확인하는 타입 가드 함수
@@ -29,9 +33,7 @@ const isValidFriend = (data: unknown): data is Friend => {
   }
 
   const friend = data as Partial<Friend>;
-  return (
-    typeof friend.id === "number" && typeof friend.nickname === "string"
-  );
+  return typeof friend.id === "number" && typeof friend.nickname === "string";
 };
 
 // 유효한 그룹 객체인지 확인하는 타입 가드 함수
@@ -44,22 +46,37 @@ const isValidGroup = (data: unknown): data is Group => {
   return typeof group.id === "number" && typeof group.name === "string";
 };
 
+type FriendGroupLocationState = {
+  toastMessage?: string;
+} | null;
+
 export default function FriendGroup() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialLocationState = location.state as FriendGroupLocationState;
+
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
 
-  const [deleteTarget, setDeleteTarget] =
-    useState<FriendActionTarget | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<FriendActionTarget | null>(
+    null
+  );
+  const [deletedFriendName, setDeletedFriendName] = useState("");
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
   const [addTarget, setAddTarget] = useState<FriendActionTarget | null>(null);
   const [showAddToast, setShowAddToast] = useState(false);
 
+  const [groupJoinTarget, setGroupJoinTarget] = useState<Group | null>(null);
+  const [showGroupJoinRequestToast, setShowGroupJoinRequestToast] =
+    useState(false);
+
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const navigate = useNavigate();
+  const [routeToastMessage, setRouteToastMessage] = useState(
+    initialLocationState?.toastMessage ?? ""
+  );
   const { data: friends = [] } = useFriendsQuery();
   const { data: groups = [] } = useMyGroupsQuery();
   const { data: searchResult } = useFriendSearchQuery(
@@ -68,11 +85,9 @@ export default function FriendGroup() {
   );
   const { mutateAsync: deleteFriend } = useDeleteFriendMutation();
   const { mutateAsync: requestFriend } = useRequestFriendMutation();
+  const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
 
-  const friendList = useMemo(
-    () => friends.filter(isValidFriend),
-    [friends]
-  );
+  const friendList = useMemo(() => friends.filter(isValidFriend), [friends]);
   const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
   const searchResultGroups = useMemo(
     () =>
@@ -101,6 +116,16 @@ export default function FriendGroup() {
     [groupsList]
   );
 
+  useEffect(() => {
+    const state = location.state as FriendGroupLocationState;
+
+    if (!state?.toastMessage) {
+      return;
+    }
+
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate]);
+
   const handleDeleteFriend = useCallback(
     (friendName: string, friendId: number) => {
       setDeleteTarget({ id: friendId, nickname: friendName });
@@ -115,6 +140,7 @@ export default function FriendGroup() {
     }
     try {
       await deleteFriend(deleteTarget.id);
+      setDeletedFriendName(deleteTarget.nickname);
       setDeleteTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
@@ -148,6 +174,35 @@ export default function FriendGroup() {
     }
   }, [requestFriend, addTarget]);
 
+  const handleJoinGroup = useCallback(
+    (groupId: number) => {
+      const target = searchResultGroups.find((group) => group.id === groupId);
+
+      if (target) {
+        setGroupJoinTarget(target);
+      }
+    },
+    [searchResultGroups]
+  );
+
+  const handleConfirmGroupJoin = useCallback(async () => {
+    if (!groupJoinTarget) {
+      console.error("가입 요청을 보낼 그룹 ID가 유효하지 않습니다.");
+      return;
+    }
+
+    try {
+      await requestJoinGroup(groupJoinTarget.id);
+      setGroupJoinTarget(null);
+      setShowGroupJoinRequestToast(true);
+    } catch (err) {
+      console.error("그룹 참여 요청 처리 중 오류:", err);
+      setGroupJoinTarget(null);
+      setErrorMessage("그룹 참여 요청에 실패했습니다.");
+      setShowErrorToast(true);
+    }
+  }, [groupJoinTarget, requestJoinGroup]);
+
   return (
     <>
       <PageTitle title="친구 및 그룹" />
@@ -155,44 +210,82 @@ export default function FriendGroup() {
         <FriendGroupModals
           deleteTarget={deleteTarget}
           addTarget={addTarget}
+          groupJoinTarget={groupJoinTarget}
           showDeleteToast={showDeleteToast}
+          deletedFriendName={deletedFriendName}
           showAddToast={showAddToast}
+          showGroupJoinRequestToast={showGroupJoinRequestToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
           onCloseDeleteModal={() => setDeleteTarget(null)}
           onConfirmDelete={handleConfirmDelete}
           onCloseAddModal={() => setAddTarget(null)}
           onConfirmAdd={handleConfirmAdd}
+          onCloseGroupJoinModal={() => setGroupJoinTarget(null)}
+          onConfirmGroupJoin={handleConfirmGroupJoin}
           onCloseDeleteToast={() => setShowDeleteToast(false)}
           onCloseAddToast={() => setShowAddToast(false)}
+          onCloseGroupJoinRequestToast={() =>
+            setShowGroupJoinRequestToast(false)
+          }
           onCloseErrorToast={() => setShowErrorToast(false)}
         />
+        {routeToastMessage && (
+          <ToastModal
+            text={routeToastMessage}
+            isVisible={Boolean(routeToastMessage)}
+            onClose={() => setRouteToastMessage("")}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
         <Header
-          showBackBtn={false}
-          showXBtn={true}
+          showBackBtn={true}
+          showXBtn={false}
           title="친구 및 그룹"
           backgroundColor="secondary"
-          onClickXBtn={() => navigate("/home")}
+          onClickBackBtn={() => navigate("/home")}
+          rightElement={
+            <S.HeaderIconButton
+              type="button"
+              aria-label="친구 및 그룹 추가"
+              onClick={() => navigate("/friend-group/add")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M19 8V14M22 11H16M12.5 7C12.5 9.20914 10.7091 11 8.5 11C6.29086 11 4.5 9.20914 4.5 7C4.5 4.79086 6.29086 3 8.5 3C10.7091 3 12.5 4.79086 12.5 7Z"
+                  stroke="#000"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </S.HeaderIconButton>
+          }
         />
         <S.Content>
           <Search
-            placeholder="검색"
-            desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
+            placeholder="검색어를 입력해 주세요"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => {
               setKeyword("");
             }}
           />
-          <FriendGroupListSection
+          <GroupListSection
             keyword={keyword}
             groups={groupsList}
             searchGroups={searchResultGroups}
             myGroupIdSet={myGroupIdSet}
             onCreateGroup={() => navigate("/create-group")}
-            onManageGroups={() => navigate("/my-groups")}
             onOpenGroup={(groupId) => navigate(`/group/${groupId}`)}
-            onJoinGroup={(groupId) => navigate(`/join-group/${groupId}`)}
+            onJoinGroup={handleJoinGroup}
           />
           <FriendListSection
             keyword={keyword}

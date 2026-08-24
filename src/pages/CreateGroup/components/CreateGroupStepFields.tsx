@@ -1,4 +1,3 @@
-import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 
 import * as S from "../CreateGroup.styles";
@@ -34,14 +33,16 @@ export default function CreateGroupStepFields({
       <S.InputContainer>
         {step === 1 && (
           <>
-            <S.MTitle>
-              그룹의 이름을 <br />
-              설정해 주세요
-            </S.MTitle>
-            <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요</S.STitle>
+            <S.StepTitleContainer>
+              <S.MTitle>
+                그룹 이름을 <br />
+                설정해 주세요
+              </S.MTitle>
+              <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요</S.STitle>
+            </S.StepTitleContainer>
             <S.InputBox>
               <Input
-                placeholder="그룹명 설정"
+                placeholder="그룹 이름을 입력해 주세요"
                 required={true}
                 value={groupName}
                 onChange={(e) => onChangeGroupName(e.target.value)}
@@ -53,36 +54,50 @@ export default function CreateGroupStepFields({
                 <div>10자 이내</div>
               )}
             </S.InputBox>
-            <Button
-              title="다음으로"
-              onClick={() => onMoveStep(2)}
-              disabled={groupName.trim().length === 0}
-            />
           </>
         )}
         {step === 2 && (
           <>
-            <S.MTitle>
-              그룹의 메시지를 <br />
-              설정해 주세요
-            </S.MTitle>
-            <S.STitle>그룹 메시지는 누구나 언제든 수정할 수 있어요</S.STitle>
+            <S.StepTitleContainer>
+              <S.MTitle>
+                그룹 메시지를 <br />
+                설정해 주세요
+              </S.MTitle>
+              <S.STitle>그룹 메시지는 누구나 언제든 수정할 수 있어요</S.STitle>
+            </S.StepTitleContainer>
             <S.InputBox>
               <Input
-                placeholder="메시지 설정"
+                placeholder="그룹 메시지를 입력해 주세요"
                 value={motto}
                 onChange={(e) => onChangeMotto(e.target.value)}
                 maxLength={20}
               />
               <div>20자 이내</div>
             </S.InputBox>
-            <S.BtnBox>
-              <Button title="뒤로가기" onClick={() => onMoveStep(1)} />
-              <Button title="건너뛰기" onClick={() => onMoveStep(3)} />
-            </S.BtnBox>
           </>
         )}
       </S.InputContainer>
+      {step === 1 && (
+        <S.BottomActionBar>
+          <S.ActionButton
+            type="button"
+            disabled={groupName.trim().length === 0}
+            onClick={() => onMoveStep(2)}
+          >
+            다음으로
+          </S.ActionButton>
+        </S.BottomActionBar>
+      )}
+      {step === 2 && (
+        <S.BottomActionBar>
+          <S.ActionButton type="button" onClick={() => onMoveStep(1)}>
+            뒤로가기
+          </S.ActionButton>
+          <S.ActionButton type="button" onClick={() => onMoveStep(3)}>
+            다음으로
+          </S.ActionButton>
+        </S.BottomActionBar>
+      )}
     </S.NavyBox>
   );
 }

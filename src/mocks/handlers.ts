@@ -2,6 +2,206 @@ import { http, HttpResponse } from "msw";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
 
+const mockGroups = [
+  {
+    id: 1,
+    name: "야매철학자들",
+    motto: "오늘도 한 줄씩",
+    memberCount: 3,
+    leaderNickname: "손지수",
+    members: [
+      {
+        id: 1,
+        nickname: "손지수",
+        role: "LEADER",
+        introduction: "긍정의 힘을 믿어요",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 2,
+        nickname: "라라진",
+        role: "MEMBER",
+        introduction: "Seize the day",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 3,
+        nickname: "말랑이",
+        role: "MEMBER",
+        introduction: "천천히 단단하게",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "무니니",
+    motto: "화이팅",
+    memberCount: 4,
+    leaderNickname: "라라진",
+    members: [
+      {
+        id: 1,
+        nickname: "손지수",
+        role: "MEMBER",
+        introduction: "긍정의 힘을 믿어요",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 2,
+        nickname: "라라진",
+        role: "LEADER",
+        introduction: "Seize the day",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 4,
+        nickname: "몰랑이",
+        role: "MEMBER",
+        introduction: "좋은 문장을 모아요",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 5,
+        nickname: "규빈이",
+        role: "MEMBER",
+        introduction: "기록은 힘이 된다",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "문장수집가",
+    motto: "꽉 찬 마음으로",
+    memberCount: 5,
+    leaderNickname: "손지수",
+    members: [
+      {
+        id: 1,
+        nickname: "손지수",
+        role: "LEADER",
+        introduction: "긍정의 힘을 믿어요",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 2,
+        nickname: "라라진",
+        role: "MEMBER",
+        introduction: "Seize the day",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 3,
+        nickname: "말랑이",
+        role: "MEMBER",
+        introduction: "천천히 단단하게",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 4,
+        nickname: "몰랑이",
+        role: "MEMBER",
+        introduction: "좋은 문장을 모아요",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+      {
+        id: 5,
+        nickname: "규빈이",
+        role: "MEMBER",
+        introduction: "기록은 힘이 된다",
+        profileImage: MOCK_PROFILE_IMAGE,
+      },
+    ],
+  },
+];
+
+const mockMembersById = {
+  2: {
+    id: 2,
+    nickname: "라라진",
+    introduction: "Seize the day",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  6: {
+    id: 6,
+    nickname: "조니님",
+    introduction: "새 친구를 기다려요",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  7: {
+    id: 7,
+    nickname: "초대친구",
+    introduction: "검색 결과 테스트",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  8: {
+    id: 8,
+    nickname: "기록친구",
+    introduction: "문장을 함께 모아요",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+};
+
+const searchableFriends = [
+  mockMembersById[6],
+  mockMembersById[7],
+  mockMembersById[8],
+];
+
+const friendsListGroupMemberById = {
+  2: true,
+  6: false,
+  7: false,
+};
+
+const mockFriendRequestIds = [6, 7, 8];
+
+const getMockMember = (id: number) =>
+  mockMembersById[id as keyof typeof mockMembersById];
+
+const createFriendRequest = (requesterId: number, index: number) => {
+  const member = getMockMember(requesterId);
+
+  return {
+    requestId: 10 + index,
+    requesterId,
+    requesterNickname: member.nickname,
+    requesterProfileImageUrl: member.profileImage,
+    createdAt: `2025-11-07T10:${String(index * 5).padStart(2, "0")}:00`,
+  };
+};
+
+const createFriendListItem = (id: number) => ({
+  ...getMockMember(id),
+  groupMember:
+    friendsListGroupMemberById[id as keyof typeof friendsListGroupMemberById],
+});
+
+const searchableGroups = [
+  {
+    id: 20,
+    name: "무니니",
+    motto: "같이 쓰는 오늘",
+    memberCount: 3,
+    leaderNickname: "조니님",
+  },
+  {
+    id: 21,
+    name: "멋쟁이 사자처럼",
+    motto: "기록하는 사람들",
+    memberCount: 4,
+    leaderNickname: "검색친구",
+  },
+  {
+    id: 22,
+    name: "소이천 소이촌",
+    motto: "좋은 말을 모아요",
+    memberCount: 2,
+    leaderNickname: "기록친구",
+  },
+];
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -142,15 +342,9 @@ export const handlers = [
   }),
 
   http.get("/api/friends/requests", () => {
-    return HttpResponse.json([
-      {
-        requestId: 10,
-        requesterId: 5,
-        requesterNickname: "라라진",
-        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-        createdAt: "2025-11-07T10:00:00",
-      },
-    ]);
+    return HttpResponse.json(
+      mockFriendRequestIds.map((id, index) => createFriendRequest(id, index))
+    );
   }),
 
   http.post("/api/friends/requests/:requestId/accept", () => {
@@ -179,10 +373,15 @@ export const handlers = [
   }),
 
   http.get("/api/groups/me", () => {
-    return HttpResponse.json([
-      { id: 1, name: "야매철학자들", motto: "오늘도 한 줄씩", memberCount: 3 },
-      { id: 2, name: "무니니", motto: "화이팅", memberCount: 4 },
-    ]);
+    return HttpResponse.json(
+      mockGroups.map(({ id, name, motto, memberCount, leaderNickname }) => ({
+        id,
+        name,
+        motto,
+        memberCount,
+        leaderNickname,
+      }))
+    );
   }),
 
   http.get("/api/groups/invitations", () => {
@@ -194,19 +393,27 @@ export const handlers = [
         inviterNickname: "라라진",
         createdAt: "2025-11-07T10:00:00",
       },
+      {
+        requestId: 2,
+        groupId: 3,
+        groupName: "문장수집가",
+        inviterNickname: "조니님",
+        createdAt: "2025-11-07T10:05:00",
+      },
     ]);
   }),
 
   http.get("/api/groups/:groupId", ({ params }) => {
-    return HttpResponse.json({
-      id: Number(params.groupId),
-      name: "야매철학자들",
-      motto: "오늘도 한 줄씩",
-      members: [
-        { id: 1, nickname: "손지수", role: "LEADER" },
-        { id: 2, nickname: "라라진", role: "MEMBER" },
-      ],
-    });
+    const group = mockGroups.find((item) => item.id === Number(params.groupId));
+
+    if (!group) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 그룹입니다." },
+        { status: 404 }
+      );
+    }
+
+    return HttpResponse.json(group);
   }),
 
   http.delete("/api/groups/:groupId", () => {
@@ -528,31 +735,33 @@ export const handlers = [
   // ==========================================
   http.get("/api/settings/search", ({ request }) => {
     const url = new URL(request.url);
-    const keyword = url.searchParams.get("keyword") || "";
+    const keyword = (url.searchParams.get("keyword") || "").trim();
+    const isEmptyScenario = ["없음", "empty", "no-result"].includes(
+      keyword.toLowerCase()
+    );
+    const matchedMembers = searchableFriends.filter((friend) =>
+      friend.nickname.includes(keyword)
+    );
+    const matchedGroups = searchableGroups.filter((group) =>
+      group.name.includes(keyword)
+    );
 
     return HttpResponse.json({
-      members: [
-        {
-          id: 2,
-          nickname: keyword ? `${keyword}_유저` : "라라진",
-          introduction: "Seize the day",
-          profileImageUrl: MOCK_PROFILE_IMAGE,
-        },
-      ],
-      groups: [{ id: 1, name: "무니니", memberCount: 3 }],
+      members: isEmptyScenario
+        ? []
+        : matchedMembers.length > 0
+          ? matchedMembers
+          : searchableFriends,
+      groups: isEmptyScenario
+        ? []
+        : matchedGroups.length > 0
+          ? matchedGroups
+          : searchableGroups,
     });
   }),
 
   http.get("/api/settings/friends-list", () => {
-    return HttpResponse.json([
-      {
-        friendId: 2,
-        nickname: "라라진",
-        introduction: "Seize the day",
-        profileImageUrl: MOCK_PROFILE_IMAGE,
-        isGroupMember: true,
-      },
-    ]);
+    return HttpResponse.json([2, 6, 7].map(createFriendListItem));
   }),
 
   // ==========================================

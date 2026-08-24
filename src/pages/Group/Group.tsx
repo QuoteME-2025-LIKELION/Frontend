@@ -5,8 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
+  useAcceptGroupJoinRequestMutation,
   useDeleteGroupMutation,
+  useGroupJoinRequestsQuery,
   useGroupQuery,
+  useRejectGroupJoinRequestMutation,
   useRemoveGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
@@ -28,23 +31,33 @@ export default function Group() {
   );
   const { data: myProfile } = useMyProfileQuery();
   const myNickName = myProfile?.nickname || "";
+  const isLeader = groupData?.leaderNickname === myNickName;
+  const { data: joinRequests = [] } = useGroupJoinRequestsQuery(
+    isLeader ? groupId : undefined
+  );
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
   const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
+  const { mutateAsync: acceptGroupJoinRequest } =
+    useAcceptGroupJoinRequestMutation();
+  const { mutateAsync: rejectGroupJoinRequest } =
+    useRejectGroupJoinRequestMutation();
 
   const [deleteMemberTarget, setDeleteMemberTarget] =
     useState<GroupMemberActionTarget | null>(null);
+  const [deletedMemberName, setDeletedMemberName] = useState("");
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
   const [groupActionConfirm, setGroupActionConfirm] =
     useState<GroupActionConfirm>(null);
-  const [showQuitToast, setShowQuitToast] = useState(false);
 
-  const [showGroupDeleteToast, setShowGroupDeleteToast] = useState(false);
+  const [showFullGroupToast, setShowFullGroupToast] = useState(false);
+  const [pendingJoinRequestId, setPendingJoinRequestId] = useState<
+    number | null
+  >(null);
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
-  const isLeader = groupData?.leaderNickname === myNickName;
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -54,7 +67,10 @@ export default function Group() {
   }, [isValidGroupId, navigate]);
 
   useEffect(() => {
-    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+    if (
+      axios.isAxiosError(groupError) &&
+      [404, 500].includes(groupError.response?.status ?? 0)
+    ) {
       navigate("/not-found", { replace: true });
     }
   }, [groupError, navigate]);
@@ -71,6 +87,7 @@ export default function Group() {
     try {
       await removeGroupMember({ groupId, memberId: deleteMemberTarget.id });
 
+      setDeletedMemberName(deleteMemberTarget.nickname);
       setDeleteMemberTarget(null);
       setShowDeleteToast(true);
     } catch (err) {
@@ -80,6 +97,59 @@ export default function Group() {
       setShowErrorToast(true);
     }
   }, [deleteMemberTarget, groupId, removeGroupMember]);
+
+  const handleAcceptJoinRequest = useCallback(
+    async (requestId: number) => {
+      if (!groupId) {
+        console.error("그룹 ID가 유효하지 않습니다.");
+        return;
+      }
+
+      if (pendingJoinRequestId !== null) {
+        return;
+      }
+
+      if (members.length >= 5) {
+        setShowFullGroupToast(true);
+        return;
+      }
+
+      setPendingJoinRequestId(requestId);
+
+      try {
+        await acceptGroupJoinRequest({ groupId, requestId });
+      } catch (err) {
+        console.error("그룹 가입 요청 수락 처리 중 오류:", err);
+        setErrorMessage("그룹 가입 요청 수락에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingJoinRequestId(null);
+      }
+    },
+    [acceptGroupJoinRequest, groupId, members.length, pendingJoinRequestId]
+  );
+
+  const handleRejectJoinRequest = useCallback(
+    async (requestId: number) => {
+      if (!groupId) {
+        console.error("그룹 ID가 유효하지 않습니다.");
+        return;
+      }
+
+      setPendingJoinRequestId(requestId);
+
+      try {
+        await rejectGroupJoinRequest({ groupId, requestId });
+      } catch (err) {
+        console.error("그룹 가입 요청 거절 처리 중 오류:", err);
+        setErrorMessage("그룹 가입 요청 거절에 실패했습니다.");
+        setShowErrorToast(true);
+      } finally {
+        setPendingJoinRequestId(null);
+      }
+    },
+    [groupId, rejectGroupJoinRequest]
+  );
 
   const handleQuitGroup = useCallback(() => {
     setGroupActionConfirm("quit");
@@ -95,11 +165,9 @@ export default function Group() {
       await removeGroupMember({ groupId, memberId: myId });
 
       setGroupActionConfirm(null);
-      setShowQuitToast(true);
-
-      setTimeout(() => {
-        navigate("/friend-group");
-      }, 1500);
+      navigate("/friend-group", {
+        state: { toastMessage: "그룹에서 탈퇴하였습니다" },
+      });
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
       setGroupActionConfirm(null);
@@ -111,6 +179,15 @@ export default function Group() {
   const handleDeleteGroup = useCallback(() => {
     setGroupActionConfirm("delete");
   }, []);
+  const handleInviteGroup = useCallback(() => {
+    if (members.length >= 5) {
+      setShowFullGroupToast(true);
+      return;
+    }
+
+    navigate(`/group/${groupId}/invite`);
+  }, [groupId, members.length, navigate]);
+
   const handleConfirmDeleteGroup = useCallback(async () => {
     if (!groupId) {
       console.error("삭제할 그룹 ID가 유효하지 않습니다.");
@@ -121,11 +198,9 @@ export default function Group() {
     try {
       await deleteGroup(groupId);
       setGroupActionConfirm(null);
-      setShowGroupDeleteToast(true);
-
-      setTimeout(() => {
-        navigate("/friend-group");
-      }, 1500);
+      navigate("/friend-group", {
+        state: { toastMessage: "그룹이 해체되었습니다" },
+      });
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);
       setGroupActionConfirm(null);
@@ -139,10 +214,10 @@ export default function Group() {
       <S.Container>
         <GroupActionModals
           deleteMemberTarget={deleteMemberTarget}
+          deletedMemberName={deletedMemberName}
           groupActionConfirm={groupActionConfirm}
           showDeleteToast={showDeleteToast}
-          showQuitToast={showQuitToast}
-          showGroupDeleteToast={showGroupDeleteToast}
+          showFullGroupToast={showFullGroupToast}
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
           onCloseDeleteMember={() => setDeleteMemberTarget(null)}
@@ -151,15 +226,14 @@ export default function Group() {
           onConfirmQuitGroup={handleConfirmQuit}
           onConfirmDeleteGroup={handleConfirmDeleteGroup}
           onCloseDeleteToast={() => setShowDeleteToast(false)}
-          onCloseQuitToast={() => setShowQuitToast(false)}
-          onCloseGroupDeleteToast={() => setShowGroupDeleteToast(false)}
+          onCloseFullGroupToast={() => setShowFullGroupToast(false)}
           onCloseErrorToast={() => setShowErrorToast(false)}
         />
         <Header
           showBackBtn={true}
           showXBtn={false}
           title=""
-          backgroundColor="secondary"
+          backgroundColor="primary"
           onClickBackBtn={() => navigate("/friend-group")}
         />
         <S.Content>
@@ -167,10 +241,15 @@ export default function Group() {
           <GroupMainSection
             group={groupData}
             members={members}
+            joinRequests={joinRequests}
+            pendingJoinRequestId={pendingJoinRequestId}
             isLeader={isLeader}
+            myMemberId={myProfile?.id}
             onEditMessage={() => navigate(`/group/${groupId}/change-message`)}
             onDeleteMember={handleDeleteMember}
-            onInviteGroup={() => navigate(`/group/${groupId}/invite`)}
+            onAcceptJoinRequest={handleAcceptJoinRequest}
+            onRejectJoinRequest={handleRejectJoinRequest}
+            onInviteGroup={handleInviteGroup}
             onQuitGroup={handleQuitGroup}
             onDeleteGroup={handleDeleteGroup}
           />

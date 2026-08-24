@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import * as S from "./Header.styles";
 
 interface HeaderProps {
@@ -7,6 +9,7 @@ interface HeaderProps {
   backgroundColor: "primary" | "secondary" | "white";
   onClickBackBtn?: () => void;
   onClickXBtn?: () => void;
+  rightElement?: ReactNode;
 }
 
 /**
@@ -34,6 +37,7 @@ export default function Header({
   backgroundColor = "white",
   onClickBackBtn,
   onClickXBtn,
+  rightElement,
 }: HeaderProps) {
   return (
     <S.Wrapper $backgroundColor={backgroundColor}>
@@ -76,7 +80,7 @@ export default function Header({
           </button>
         ) : null}
         <div>{title}</div>
-        <S.Div></S.Div>
+        {rightElement ?? <S.Div></S.Div>}
       </S.Container>
     </S.Wrapper>
   );

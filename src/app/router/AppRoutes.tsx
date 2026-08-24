@@ -8,8 +8,7 @@ import Likes from "@/pages/Archive/Likes/Likes";
 import MyQuotes from "@/pages/Archive/MyQuotes/MyQuotes";
 import CreateGroup from "@/pages/CreateGroup/CreateGroup";
 import FriendGroup from "@/pages/FriendGroup/FriendGroup";
-import JoinGroup from "@/pages/FriendGroup/pages/JoinGroup";
-import MyGroups from "@/pages/FriendGroup/pages/MyGroups";
+import FriendGroupAdd from "@/pages/FriendGroup/pages/FriendGroupAdd";
 import Group from "@/pages/Group/Group";
 import ChangeMessage from "@/pages/Group/pages/ChangeMessage/ChangeMessage";
 import Invite from "@/pages/Group/pages/Invite/Invite";
@@ -56,10 +55,8 @@ export default function AppRoutes() {
         <Route path="/account-setting" element={<AccountSetting />} />
 
         <Route path="/friend-group" element={<FriendGroup />} />
-        <Route path="/my-groups" element={<MyGroups />} />
+        <Route path="/friend-group/add" element={<FriendGroupAdd />} />
         <Route path="/create-group" element={<CreateGroup />} />
-
-        <Route path="/join-group/:groupId" element={<JoinGroup />} />
 
         <Route path="/group/:groupId">
           <Route index element={<Group />} />

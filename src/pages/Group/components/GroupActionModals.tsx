@@ -10,10 +10,10 @@ export type GroupActionConfirm = "quit" | "delete" | null;
 
 interface GroupActionModalsProps {
   deleteMemberTarget: GroupMemberActionTarget | null;
+  deletedMemberName: string;
   groupActionConfirm: GroupActionConfirm;
   showDeleteToast: boolean;
-  showQuitToast: boolean;
-  showGroupDeleteToast: boolean;
+  showFullGroupToast: boolean;
   showErrorToast: boolean;
   errorMessage: string;
   onCloseDeleteMember: () => void;
@@ -22,8 +22,7 @@ interface GroupActionModalsProps {
   onConfirmQuitGroup: () => void;
   onConfirmDeleteGroup: () => void;
   onCloseDeleteToast: () => void;
-  onCloseQuitToast: () => void;
-  onCloseGroupDeleteToast: () => void;
+  onCloseFullGroupToast: () => void;
   onCloseErrorToast: () => void;
 }
 
@@ -32,10 +31,10 @@ interface GroupActionModalsProps {
  */
 export default function GroupActionModals({
   deleteMemberTarget,
+  deletedMemberName,
   groupActionConfirm,
   showDeleteToast,
-  showQuitToast,
-  showGroupDeleteToast,
+  showFullGroupToast,
   showErrorToast,
   errorMessage,
   onCloseDeleteMember,
@@ -44,54 +43,69 @@ export default function GroupActionModals({
   onConfirmQuitGroup,
   onConfirmDeleteGroup,
   onCloseDeleteToast,
-  onCloseQuitToast,
-  onCloseGroupDeleteToast,
+  onCloseFullGroupToast,
   onCloseErrorToast,
 }: GroupActionModalsProps) {
   return (
     <>
       {deleteMemberTarget && (
         <ConfirmModal
-          nickname={deleteMemberTarget.nickname}
-          question="님을 삭제하시겠습니까?"
+          question=""
+          lines={[
+            `${deleteMemberTarget.nickname}님을 그룹에서`,
+            "탈퇴시키겠어요?",
+          ]}
           onClose={onCloseDeleteMember}
           onConfirm={onConfirmDeleteMember}
           showOverlay={true}
+          cancelText="돌아가기"
+          confirmText="탈퇴시키기"
+          confirmColor="danger"
+          variant="card"
         />
       )}
       {showDeleteToast && (
         <ToastModal
-          text="그룹원이 삭제되었습니다."
+          text={`${deletedMemberName}님을 탈퇴시켰습니다`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
       {groupActionConfirm === "quit" && (
         <ConfirmModal
-          question="그룹을 탈퇴하시겠습니까?"
+          question=""
+          lines={["그룹에서", "탈퇴하시겠어요?"]}
           onClose={onCloseGroupAction}
           onConfirm={onConfirmQuitGroup}
-        />
-      )}
-      {showQuitToast && (
-        <ToastModal
-          text="그룹을 탈퇴하였습니다."
-          isVisible={showQuitToast}
-          onClose={onCloseQuitToast}
+          cancelText="돌아가기"
+          confirmText="탈퇴하기"
+          confirmColor="danger"
+          variant="card"
+          description="탈퇴해도 재가입 요청을 보낼 수 있어요."
         />
       )}
       {groupActionConfirm === "delete" && (
         <ConfirmModal
-          question="그룹을 삭제하시겠습니까?"
+          question=""
+          lines={["그룹을", "해체하시겠어요?"]}
           onClose={onCloseGroupAction}
           onConfirm={onConfirmDeleteGroup}
+          cancelText="돌아가기"
+          confirmText="해체하기"
+          confirmColor="danger"
+          variant="card"
         />
       )}
-      {showGroupDeleteToast && (
+      {showFullGroupToast && (
         <ToastModal
-          text="그룹이 삭제되었습니다."
-          isVisible={showGroupDeleteToast}
-          onClose={onCloseGroupDeleteToast}
+          text=""
+          redText="정원이 가득 차 더이상 초대할 수 없습니다"
+          isVisible={showFullGroupToast}
+          onClose={onCloseFullGroupToast}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
       {showErrorToast && (

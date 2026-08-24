@@ -19,7 +19,6 @@ import {
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 
-
 import * as S from "./Invite.styles";
 
 const EMPTY_FRIENDS: Friend[] = [];
@@ -27,6 +26,8 @@ const EMPTY_FRIENDS: Friend[] = [];
 type InviteTarget = {
   id: number;
   nickname: string;
+  introduction?: string;
+  profileImage?: string;
 };
 
 export default function Invite() {
@@ -37,8 +38,10 @@ export default function Invite() {
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스 적용
   const [inviteTarget, setInviteTarget] = useState<InviteTarget | null>(null);
+  const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorToastMessage, setErrorToastMessage] = useState("");
+  const [showFullGroupToast, setShowFullGroupToast] = useState(false);
 
   const { data: groupData, error: groupError } = useGroupQuery(
     isValidGroupId ? groupId : undefined
@@ -52,16 +55,19 @@ export default function Invite() {
   );
   const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
 
-  const groupName = groupData?.name || "";
   const currentMembers = groupData?.members || EMPTY_FRIENDS;
   const friendsList = debouncedKeyword
     ? searchResult?.members || EMPTY_FRIENDS
     : friends;
   const filteredFriends = useMemo(() => {
     const currentMemberIds = new Set(currentMembers.map((member) => member.id));
+    const pendingInviteIds = new Set(pendingInvites.map((friend) => friend.id));
 
-    return friendsList.filter((friend) => !currentMemberIds.has(friend.id));
-  }, [currentMembers, friendsList]);
+    return friendsList.filter(
+      (friend) =>
+        !currentMemberIds.has(friend.id) && !pendingInviteIds.has(friend.id)
+    );
+  }, [currentMembers, friendsList, pendingInvites]);
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -72,106 +78,155 @@ export default function Invite() {
   }, [isValidGroupId, navigate]);
 
   useEffect(() => {
-    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+    if (
+      axios.isAxiosError(groupError) &&
+      [404, 500].includes(groupError.response?.status ?? 0)
+    ) {
       navigate("/not-found", { replace: true });
     }
   }, [groupError, navigate]);
 
   const handleInviteFriend = useCallback(
-    (friendName: string, friendId: number) => {
-      setInviteTarget({ id: friendId, nickname: friendName });
+    (friend: Friend) => {
+      setInviteTarget(friend);
     },
     []
   );
   const handleConfirmInvite = useCallback(async () => {
     if (!inviteTarget || !groupId) {
       console.error("초대할 친구 또는 그룹 ID가 유효하지 않습니다.");
-      setShowErrorToast(true);
+      setErrorToastMessage("초대 정보를 확인할 수 없습니다.");
       return;
     }
 
-    if (currentMembers.length < 5) {
-      try {
-        await inviteGroupMember({ groupId, friendId: inviteTarget.id });
-        setInviteTarget(null);
-        setShowSuccessToast(true);
-      } catch (err) {
-        console.error("그룹원 초대 오류:", err);
-        setInviteTarget(null);
-        setShowErrorToast(true);
-      }
-    } else {
+    if (currentMembers.length >= 5) {
       setInviteTarget(null);
-      setShowErrorToast(true);
+      setShowFullGroupToast(true);
+      return;
+    }
+
+    try {
+      await inviteGroupMember({ groupId, friendId: inviteTarget.id });
+      setPendingInvites((prev) => {
+        if (prev.some((friend) => friend.id === inviteTarget.id)) {
+          return prev;
+        }
+
+        return [...prev, inviteTarget];
+      });
+      setInviteTarget(null);
+      setShowSuccessToast(true);
+    } catch (err) {
+      console.error("그룹원 초대 오류:", err);
+      setInviteTarget(null);
+      setErrorToastMessage("초대 요청 전송에 실패했습니다.");
     }
   }, [currentMembers.length, groupId, inviteGroupMember, inviteTarget]);
+
+  const handleCancelPendingInvite = useCallback((friendId: number) => {
+    setPendingInvites((prev) => prev.filter((friend) => friend.id !== friendId));
+  }, []);
+
   return (
     <>
       <PageTitle title="그룹 초대하기" />
       <S.Container>
         {inviteTarget && (
           <ConfirmModal
-            nickname={inviteTarget.nickname}
-            question="님을"
-            nickname2={groupName}
-            question2="에 초대할까요?"
+            question=""
+            lines={[
+              `${inviteTarget.nickname}님을 그룹에`,
+              "초대하시겠어요?",
+            ]}
             onClose={() => setInviteTarget(null)}
             onConfirm={handleConfirmInvite}
             showOverlay={false}
+            cancelText="돌아가기"
+            confirmText="초대하기"
+            confirmColor="primary"
+            variant="card"
           />
         )}
         {showSuccessToast && (
           <ToastModal
-            text="초대되었습니다."
+            text="초대 요청을 보냈습니다"
             isVisible={showSuccessToast}
             onClose={() => setShowSuccessToast(false)}
             showOverlay={false}
+            variant="snackbar"
           />
         )}
-        {showErrorToast && (
+        {showFullGroupToast && (
           <ToastModal
-            isVisible={showErrorToast}
-            text="그룹원이"
-            redText="5인을 초과"
-            text2="하여"
-            text3="초대가 불가능합니다."
+            isVisible={showFullGroupToast}
+            text=""
+            redText="최대 인원(5명)에 도달하여 초대를 보낼 수 없어요"
             showOverlay={false}
-            onClose={() => setShowErrorToast(false)}
+            variant="snackbar"
+            onClose={() => setShowFullGroupToast(false)}
+          />
+        )}
+        {errorToastMessage && (
+          <ToastModal
+            isVisible={Boolean(errorToastMessage)}
+            text={errorToastMessage}
+            showOverlay={false}
+            variant="snackbar"
+            onClose={() => setErrorToastMessage("")}
           />
         )}
         <Header
           showBackBtn={false}
           showXBtn={true}
-          title=""
-          backgroundColor="white"
+          title="멤버 초대하기"
+          backgroundColor="secondary"
           onClickXBtn={() => navigate(`/group/${groupId}`)}
         />
         <S.Content>
           <Search
-            placeholder="검색"
+            placeholder="검색어를 입력해 주세요"
             desc={
               keyword && filteredFriends.length === 0
                 ? "검색 결과가 없습니다."
-                : "나의 친구 중에서만 초대할 수 있어요."
+                : undefined
             }
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => setKeyword("")}
           />
           <S.FriendList>
-            <S.Title>친구</S.Title>
-            {filteredFriends.map((friend: Friend) => (
-              <UserListItem
-                key={friend.id}
-                friend={friend}
-                actionButton={{
-                  type: "invite",
-                  text: "초대",
-                  onClick: () => handleInviteFriend(friend.nickname, friend.id),
-                }}
-              />
-            ))}
+            {filteredFriends.length > 0 ? (
+              filteredFriends.map((friend: Friend) => (
+                <UserListItem
+                  key={friend.id}
+                  friend={friend}
+                  actionButton={{
+                    type: "invite",
+                    text: "초대",
+                    onClick: () => handleInviteFriend(friend),
+                  }}
+                />
+              ))
+            ) : (
+              <S.EmptyBox>초대할 수 있는 친구가 없습니다.</S.EmptyBox>
+            )}
           </S.FriendList>
+          {pendingInvites.length > 0 && (
+            <S.PendingList>
+              <S.Title>초대 대기</S.Title>
+              {pendingInvites.map((friend) => (
+                <UserListItem
+                  key={friend.id}
+                  friend={friend}
+                  actionButton={{
+                    type: "delete",
+                    text: "취소",
+                    onClick: () => handleCancelPendingInvite(friend.id),
+                  }}
+                />
+              ))}
+            </S.PendingList>
+          )}
         </S.Content>
       </S.Container>
     </>

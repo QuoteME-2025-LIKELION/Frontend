@@ -1,4 +1,3 @@
-import Button from "@/components/Button/Button";
 import Search from "@/components/Search/Search";
 import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
@@ -10,10 +9,12 @@ interface CreateGroupInviteStepProps {
   keyword: string;
   friendList: Friend[];
   displayedFriends: Friend[];
-  selectedFriends: number[];
+  pendingInvites: Friend[];
   onChangeKeyword: (keyword: string) => void;
   onClearKeyword: () => void;
-  onSelectFriend: (id: number) => void;
+  onInviteFriend: (friend: Friend) => void;
+  onCancelPendingInvite: (id: number) => void;
+  onMoveStep: (step: number) => void;
   onMoveToFriendGroup: () => void;
   onCreateGroup: () => void;
 }
@@ -26,10 +27,12 @@ export default function CreateGroupInviteStep({
   keyword,
   friendList,
   displayedFriends,
-  selectedFriends,
+  pendingInvites,
   onChangeKeyword,
   onClearKeyword,
-  onSelectFriend,
+  onInviteFriend,
+  onCancelPendingInvite,
+  onMoveStep,
   onMoveToFriendGroup,
   onCreateGroup,
 }: CreateGroupInviteStepProps) {
@@ -45,12 +48,11 @@ export default function CreateGroupInviteStep({
             함께할 멤버를 <br />
             초대해 보세요
           </S.MTitle>
-          <S.InviteCount>{selectedFriends.length}/4</S.InviteCount>
         </S.TitleLine>
         <S.Desc>그룹의 최대 정원은 5명이에요</S.Desc>
       </S.TitleContainer>
       <Search
-        placeholder="검색"
+        placeholder="검색어를 입력해 주세요"
         desc={
           friendList.length === 0
             ? "아직 추가된 친구가 없습니다."
@@ -69,9 +71,11 @@ export default function CreateGroupInviteStep({
               <UserListItem
                 key={friend.id}
                 friend={friend}
-                isSelectable={true}
-                isSelected={selectedFriends.includes(friend.id)}
-                onSelect={() => onSelectFriend(friend.id)}
+                actionButton={{
+                  type: "invite",
+                  text: "초대",
+                  onClick: () => onInviteFriend(friend),
+                }}
               />
             ))
           ) : (
@@ -94,11 +98,34 @@ export default function CreateGroupInviteStep({
                 <button onClick={onMoveToFriendGroup}>친구 추가</button>
                 <div>탭으로 이동</div>
               </S.EmptyFriendList>
-              <Button title="그룹 만들기" onClick={onCreateGroup} />
             </S.EmptyFriendContainer>
           )}
         </S.FriendList>
+        {pendingInvites.length > 0 && (
+          <S.PendingList>
+            <S.PendingTitle>초대 대기</S.PendingTitle>
+            {pendingInvites.map((friend) => (
+              <UserListItem
+                key={friend.id}
+                friend={friend}
+                actionButton={{
+                  type: "delete",
+                  text: "취소",
+                  onClick: () => onCancelPendingInvite(friend.id),
+                }}
+              />
+            ))}
+          </S.PendingList>
+        )}
       </S.FriendListContainer>
+      <S.BottomActionBar>
+        <S.ActionButton type="button" onClick={() => onMoveStep(2)}>
+          뒤로가기
+        </S.ActionButton>
+        <S.ActionButton type="button" onClick={onCreateGroup}>
+          {pendingInvites.length > 0 ? "그룹 만들기" : "건너뛰기"}
+        </S.ActionButton>
+      </S.BottomActionBar>
     </S.Main>
   );
 }
