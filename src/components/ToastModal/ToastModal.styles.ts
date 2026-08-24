@@ -38,6 +38,7 @@ export const Overlay = styled.div<{ $showOverlay: boolean }>`
   justify-content: center;
   align-items: ${({ $showOverlay }) => ($showOverlay ? "center" : "flex-end")};
   padding-bottom: ${({ $showOverlay }) => ($showOverlay ? "0" : "4.5rem")};
+  pointer-events: ${({ $showOverlay }) => ($showOverlay ? "auto" : "none")};
 `;
 
 export const Container = styled.div<{
@@ -60,10 +61,17 @@ export const Container = styled.div<{
   width: ${({ $variant }) => ($variant === "snackbar" ? "87%" : "67%")};
   max-width: ${({ $variant }) =>
     $variant === "snackbar" ? "21.5rem" : "16.625rem"};
-  height: ${({ $variant }) => ($variant === "snackbar" ? "3.25rem" : "3.8125rem")};
+  height: ${({ $variant }) =>
+    $variant === "snackbar" ? "auto" : "3.8125rem"};
+  min-height: ${({ $variant }) =>
+    $variant === "snackbar" ? "3.25rem" : "3.8125rem"};
   box-shadow: ${({ $variant }) =>
     $variant === "snackbar" ? "0 2px 10px rgba(0, 0, 0, 0.12)" : "none"};
-  white-space: nowrap;
+  white-space: ${({ $variant }) =>
+    $variant === "snackbar" ? "normal" : "nowrap"};
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   animation: ${({ $isOnShare }) =>
     $isOnShare
       ? css`

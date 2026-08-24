@@ -116,26 +116,67 @@ const mockGroups = [
   },
 ];
 
-const searchableFriends = [
-  {
+const mockMembersById = {
+  2: {
+    id: 2,
+    nickname: "라라진",
+    introduction: "Seize the day",
+    profileImage: MOCK_PROFILE_IMAGE,
+  },
+  6: {
     id: 6,
     nickname: "조니님",
     introduction: "새 친구를 기다려요",
     profileImage: MOCK_PROFILE_IMAGE,
   },
-  {
+  7: {
     id: 7,
     nickname: "초대친구",
     introduction: "검색 결과 테스트",
     profileImage: MOCK_PROFILE_IMAGE,
   },
-  {
+  8: {
     id: 8,
     nickname: "기록친구",
     introduction: "문장을 함께 모아요",
     profileImage: MOCK_PROFILE_IMAGE,
   },
+};
+
+const searchableFriends = [
+  mockMembersById[6],
+  mockMembersById[7],
+  mockMembersById[8],
 ];
+
+const friendsListGroupMemberById = {
+  2: true,
+  6: false,
+  7: false,
+};
+
+const mockFriendRequestIds = [6, 7, 8];
+
+const getMockMember = (id: number) =>
+  mockMembersById[id as keyof typeof mockMembersById];
+
+const createFriendRequest = (requesterId: number, index: number) => {
+  const member = getMockMember(requesterId);
+
+  return {
+    requestId: 10 + index,
+    requesterId,
+    requesterNickname: member.nickname,
+    requesterProfileImageUrl: member.profileImage,
+    createdAt: `2025-11-07T10:${String(index * 5).padStart(2, "0")}:00`,
+  };
+};
+
+const createFriendListItem = (id: number) => ({
+  ...getMockMember(id),
+  groupMember:
+    friendsListGroupMemberById[id as keyof typeof friendsListGroupMemberById],
+});
 
 const searchableGroups = [
   {
@@ -301,29 +342,9 @@ export const handlers = [
   }),
 
   http.get("/api/friends/requests", () => {
-    return HttpResponse.json([
-      {
-        requestId: 10,
-        requesterId: 6,
-        requesterNickname: "조니님",
-        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-        createdAt: "2025-11-07T10:00:00",
-      },
-      {
-        requestId: 11,
-        requesterId: 7,
-        requesterNickname: "초대친구",
-        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-        createdAt: "2025-11-07T10:05:00",
-      },
-      {
-        requestId: 12,
-        requesterId: 8,
-        requesterNickname: "기록친구",
-        requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
-        createdAt: "2025-11-07T10:10:00",
-      },
-    ]);
+    return HttpResponse.json(
+      mockFriendRequestIds.map((id, index) => createFriendRequest(id, index))
+    );
   }),
 
   http.post("/api/friends/requests/:requestId/accept", () => {
@@ -367,15 +388,15 @@ export const handlers = [
     return HttpResponse.json([
       {
         requestId: 1,
-        groupId: 20,
+        groupId: 2,
         groupName: "무니니",
         inviterNickname: "라라진",
         createdAt: "2025-11-07T10:00:00",
       },
       {
         requestId: 2,
-        groupId: 21,
-        groupName: "멋쟁이 사자처럼",
+        groupId: 3,
+        groupName: "문장수집가",
         inviterNickname: "조니님",
         createdAt: "2025-11-07T10:05:00",
       },
@@ -388,7 +409,7 @@ export const handlers = [
     if (!group) {
       return HttpResponse.json(
         { message: "존재하지 않는 그룹입니다." },
-        { status: 500 }
+        { status: 404 }
       );
     }
 
@@ -740,29 +761,7 @@ export const handlers = [
   }),
 
   http.get("/api/settings/friends-list", () => {
-    return HttpResponse.json([
-      {
-        id: 2,
-        nickname: "라라진",
-        introduction: "Seize the day",
-        profileImage: MOCK_PROFILE_IMAGE,
-        groupMember: true,
-      },
-      {
-        id: 6,
-        nickname: "초대친구",
-        introduction: "새 그룹을 기다려요",
-        profileImage: MOCK_PROFILE_IMAGE,
-        groupMember: false,
-      },
-      {
-        id: 7,
-        nickname: "검색친구",
-        introduction: "검색 결과 테스트",
-        profileImage: MOCK_PROFILE_IMAGE,
-        groupMember: false,
-      },
-    ]);
+    return HttpResponse.json([2, 6, 7].map(createFriendListItem));
   }),
 
   // ==========================================

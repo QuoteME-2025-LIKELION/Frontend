@@ -51,6 +51,10 @@ type FriendGroupLocationState = {
 } | null;
 
 export default function FriendGroup() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialLocationState = location.state as FriendGroupLocationState;
+
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스된 키워드로 사용
@@ -70,10 +74,9 @@ export default function FriendGroup() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [routeToastMessage, setRouteToastMessage] = useState("");
-
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [routeToastMessage, setRouteToastMessage] = useState(
+    initialLocationState?.toastMessage ?? ""
+  );
   const { data: friends = [] } = useFriendsQuery();
   const { data: groups = [] } = useMyGroupsQuery();
   const { data: searchResult } = useFriendSearchQuery(
@@ -120,7 +123,6 @@ export default function FriendGroup() {
       return;
     }
 
-    setRouteToastMessage(state.toastMessage);
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, navigate]);
 
@@ -246,6 +248,7 @@ export default function FriendGroup() {
           rightElement={
             <S.HeaderIconButton
               type="button"
+              aria-label="친구 및 그룹 추가"
               onClick={() => navigate("/friend-group/add")}
             >
               <svg

@@ -67,7 +67,10 @@ export default function Group() {
   }, [isValidGroupId, navigate]);
 
   useEffect(() => {
-    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+    if (
+      axios.isAxiosError(groupError) &&
+      [404, 500].includes(groupError.response?.status ?? 0)
+    ) {
       navigate("/not-found", { replace: true });
     }
   }, [groupError, navigate]);
@@ -102,6 +105,15 @@ export default function Group() {
         return;
       }
 
+      if (pendingJoinRequestId !== null) {
+        return;
+      }
+
+      if (members.length >= 5) {
+        setShowFullGroupToast(true);
+        return;
+      }
+
       setPendingJoinRequestId(requestId);
 
       try {
@@ -114,7 +126,7 @@ export default function Group() {
         setPendingJoinRequestId(null);
       }
     },
-    [acceptGroupJoinRequest, groupId]
+    [acceptGroupJoinRequest, groupId, members.length, pendingJoinRequestId]
   );
 
   const handleRejectJoinRequest = useCallback(

@@ -17,6 +17,9 @@ export default function ChangeMessage() {
   const navigate = useNavigate();
   const location = useLocation();
   const hasPushedHistoryGuard = useRef(false);
+  const successNavigationTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const { groupId } = useParams();
   const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
@@ -43,10 +46,21 @@ export default function ChangeMessage() {
   }, [isValidGroupId, navigate]);
 
   useEffect(() => {
-    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+    if (
+      axios.isAxiosError(groupError) &&
+      [404, 500].includes(groupError.response?.status ?? 0)
+    ) {
       navigate("/not-found", { replace: true });
     }
   }, [groupError, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (successNavigationTimer.current) {
+        clearTimeout(successNavigationTimer.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const currentPath = `${location.pathname}${location.search}${location.hash}`;
@@ -91,7 +105,7 @@ export default function ChangeMessage() {
       await updateGroupMotto({ groupId: groupId!, motto: newMotto });
       setAllowNavigation(true);
       setShowSuccessToast(true);
-      setTimeout(() => {
+      successNavigationTimer.current = setTimeout(() => {
         navigate(`/group/${groupId}`);
       }, 1500);
     } catch (err) {
@@ -165,14 +179,15 @@ export default function ChangeMessage() {
             <S.QuoteMark aria-hidden="true">“</S.QuoteMark>
             <S.MessageInput
               $isFocused={isMessageFocused}
+              aria-label="그룹 메시지"
               placeholder="어떤 이야기를 나눌까요?"
               name="message"
               value={message}
-              onChange={(e) => setDraftMessage(e.target.value)}
-              onFocus={() => {
-                setIsMessageFocused(true);
+              onChange={(e) => {
+                setDraftMessage(e.target.value);
                 setHasStartedEditing(true);
               }}
+              onFocus={() => setIsMessageFocused(true)}
               onBlur={() => setIsMessageFocused(false)}
               maxLength={20}
             />

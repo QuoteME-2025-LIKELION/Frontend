@@ -40,7 +40,8 @@ export default function Invite() {
   const [inviteTarget, setInviteTarget] = useState<InviteTarget | null>(null);
   const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorToastMessage, setErrorToastMessage] = useState("");
+  const [showFullGroupToast, setShowFullGroupToast] = useState(false);
 
   const { data: groupData, error: groupError } = useGroupQuery(
     isValidGroupId ? groupId : undefined
@@ -77,7 +78,10 @@ export default function Invite() {
   }, [isValidGroupId, navigate]);
 
   useEffect(() => {
-    if (axios.isAxiosError(groupError) && groupError.response?.status === 500) {
+    if (
+      axios.isAxiosError(groupError) &&
+      [404, 500].includes(groupError.response?.status ?? 0)
+    ) {
       navigate("/not-found", { replace: true });
     }
   }, [groupError, navigate]);
@@ -91,30 +95,31 @@ export default function Invite() {
   const handleConfirmInvite = useCallback(async () => {
     if (!inviteTarget || !groupId) {
       console.error("초대할 친구 또는 그룹 ID가 유효하지 않습니다.");
-      setShowErrorToast(true);
+      setErrorToastMessage("초대 정보를 확인할 수 없습니다.");
       return;
     }
 
-    if (currentMembers.length < 5) {
-      try {
-        await inviteGroupMember({ groupId, friendId: inviteTarget.id });
-        setPendingInvites((prev) => {
-          if (prev.some((friend) => friend.id === inviteTarget.id)) {
-            return prev;
-          }
-
-          return [...prev, inviteTarget];
-        });
-        setInviteTarget(null);
-        setShowSuccessToast(true);
-      } catch (err) {
-        console.error("그룹원 초대 오류:", err);
-        setInviteTarget(null);
-        setShowErrorToast(true);
-      }
-    } else {
+    if (currentMembers.length >= 5) {
       setInviteTarget(null);
-      setShowErrorToast(true);
+      setShowFullGroupToast(true);
+      return;
+    }
+
+    try {
+      await inviteGroupMember({ groupId, friendId: inviteTarget.id });
+      setPendingInvites((prev) => {
+        if (prev.some((friend) => friend.id === inviteTarget.id)) {
+          return prev;
+        }
+
+        return [...prev, inviteTarget];
+      });
+      setInviteTarget(null);
+      setShowSuccessToast(true);
+    } catch (err) {
+      console.error("그룹원 초대 오류:", err);
+      setInviteTarget(null);
+      setErrorToastMessage("초대 요청 전송에 실패했습니다.");
     }
   }, [currentMembers.length, groupId, inviteGroupMember, inviteTarget]);
 
@@ -151,14 +156,23 @@ export default function Invite() {
             variant="snackbar"
           />
         )}
-        {showErrorToast && (
+        {showFullGroupToast && (
           <ToastModal
-            isVisible={showErrorToast}
+            isVisible={showFullGroupToast}
             text=""
             redText="최대 인원(5명)에 도달하여 초대를 보낼 수 없어요"
             showOverlay={false}
             variant="snackbar"
-            onClose={() => setShowErrorToast(false)}
+            onClose={() => setShowFullGroupToast(false)}
+          />
+        )}
+        {errorToastMessage && (
+          <ToastModal
+            isVisible={Boolean(errorToastMessage)}
+            text={errorToastMessage}
+            showOverlay={false}
+            variant="snackbar"
+            onClose={() => setErrorToastMessage("")}
           />
         )}
         <Header

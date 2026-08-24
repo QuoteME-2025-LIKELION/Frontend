@@ -13,6 +13,7 @@ interface ConfirmModalProps {
   cancelText?: string;
   confirmText?: string;
   confirmColor?: "primary" | "danger";
+  confirmDisabled?: boolean;
   variant?: "default" | "card";
   description?: string;
   descriptionLines?: string[];
@@ -51,6 +52,7 @@ export default function ConfirmModal({
   cancelText = "취소",
   confirmText = "확인",
   confirmColor,
+  confirmDisabled = false,
   variant = "default",
   description,
   descriptionLines,
@@ -64,6 +66,10 @@ export default function ConfirmModal({
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
+    if (isClosing) {
+      return;
+    }
+
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -71,6 +77,10 @@ export default function ConfirmModal({
   };
 
   const handleConfirm = () => {
+    if (confirmDisabled || isClosing) {
+      return;
+    }
+
     setIsClosing(true);
     setTimeout(() => {
       onConfirm();
@@ -110,6 +120,7 @@ export default function ConfirmModal({
             type="button"
             $variant={variant}
             $confirmColor={confirmColor}
+            disabled={confirmDisabled}
             onClick={handleConfirm}
           >
             {confirmText}

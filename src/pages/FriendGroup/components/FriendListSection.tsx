@@ -10,6 +10,7 @@ interface FriendListSectionProps {
   friendIdSet: Set<number>;
   onDeleteFriend: (nickname: string, id: number) => void;
   onAddFriend: (nickname: string, id: number) => void;
+  hideExistingFriendAction?: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ export default function FriendListSection({
   friendIdSet,
   onDeleteFriend,
   onAddFriend,
+  hideExistingFriendAction = false,
 }: FriendListSectionProps) {
   const visibleUsers = keyword ? searchMembers : friends;
   const emptyText = keyword
@@ -42,6 +44,8 @@ export default function FriendListSection({
                     text: "추가",
                     onClick: () => onAddFriend(user.nickname, user.id),
                   }
+                : keyword && hideExistingFriendAction
+                  ? undefined
                 : {
                     type: "delete" as const,
                     text: "삭제",

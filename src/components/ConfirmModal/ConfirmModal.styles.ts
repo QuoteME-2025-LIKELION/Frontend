@@ -160,6 +160,11 @@ export const Btn = styled.button<{
     color: ${({ $confirmColor }) =>
       $confirmColor === "danger" ? theme.colors.red : "#000"};
   }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
 `;
 
 export const Description = styled.div`

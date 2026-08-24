@@ -40,7 +40,6 @@ export default function FriendRequestSection({
                   <S.RequestUsername>
                     {request.requesterNickname}
                   </S.RequestUsername>
-                  <S.RequestIntro>자기소개 문구가 적히는 자리</S.RequestIntro>
                 </S.RequestUserBox>
                 <S.RequestActionBox>
                   <button

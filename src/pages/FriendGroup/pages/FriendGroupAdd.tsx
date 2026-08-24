@@ -11,6 +11,7 @@ import {
   useAcceptFriendRequestMutation,
   useFriendRequestsQuery,
   useFriendSearchQuery,
+  useFriendsQuery,
   useRejectFriendRequestMutation,
   useRequestFriendMutation,
 } from "@/hooks/useFriendQueries";
@@ -70,6 +71,7 @@ export default function FriendGroupAdd() {
   const [responseToastMessage, setResponseToastMessage] = useState("");
 
   const { data: groups = [] } = useMyGroupsQuery();
+  const { data: friends = [] } = useFriendsQuery();
   const { data: friendRequests = [] } = useFriendRequestsQuery(!keyword);
   const { data: groupInvitations = [] } = useGroupInvitationsQuery(!keyword);
   const { data: searchResult } = useFriendSearchQuery(
@@ -86,6 +88,11 @@ export default function FriendGroupAdd() {
   const { mutateAsync: requestJoinGroup } = useRequestJoinGroupMutation();
 
   const groupsList = useMemo(() => groups.filter(isValidGroup), [groups]);
+  const friendList = useMemo(() => friends.filter(isValidFriend), [friends]);
+  const friendIdSet = useMemo(
+    () => new Set(friendList.map((friend) => friend.id)),
+    [friendList]
+  );
   const myGroupIdSet = useMemo(
     () => new Set(groupsList.map((group) => group.id)),
     [groupsList]
@@ -338,9 +345,10 @@ export default function FriendGroupAdd() {
                 keyword={keyword}
                 friends={[]}
                 searchMembers={searchResultMembers}
-                friendIdSet={new Set()}
+                friendIdSet={friendIdSet}
                 onDeleteFriend={() => undefined}
                 onAddFriend={handleRequestFriend}
+                hideExistingFriendAction
               />
             </>
           ) : (

@@ -1,5 +1,14 @@
 import styled from "@emotion/styled";
 
+import {
+  RequestActionBoxBase,
+  RequestDefaultProfileImgBase,
+  RequestIntroBase,
+  RequestItemBase,
+  RequestProfileImgBase,
+  RequestUserBoxBase,
+  RequestUsernameBase,
+} from "@/styles/requestItem.styles";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -158,87 +167,19 @@ export const AddGuideText = styled.div`
   text-align: center;
 `;
 
-export const RequestItem = styled.div`
-  width: 100%;
-  border-bottom: 1px solid #dedede;
-  display: grid;
-  grid-template-columns: 2.8125rem 1fr auto;
-  gap: 0.6875rem; /* 11px */
-  align-items: center;
-  padding: 0.625rem 0; /* 10px 0 */
-  background-color: transparent;
-`;
+export const RequestItem = styled(RequestItemBase)``;
 
-export const RequestProfileImg = styled.img`
-  width: 2.8125rem;
-  height: 2.8125rem;
-  border-radius: 50%;
-  object-fit: cover;
-`;
+export const RequestProfileImg = styled(RequestProfileImgBase)``;
 
-export const RequestDefaultProfileImg = styled.div`
-  width: 2.8125rem;
-  height: 2.8125rem;
-  border-radius: 50%;
-  background-color: ${theme.colors.territory};
-`;
+export const RequestDefaultProfileImg = styled(RequestDefaultProfileImgBase)``;
 
-export const RequestUserBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem; /* 8px */
-  min-width: 0;
+export const RequestUserBox = styled(RequestUserBoxBase)``;
 
-  div {
-    ${theme.fonts.dotum}
-    font-size: 0.875rem; /* 14px */
-    letter-spacing: -0.28px;
-  }
-`;
+export const RequestUsername = styled(RequestUsernameBase)``;
 
-export const RequestUsername = styled.div`
-  font-weight: 700;
-  color: #000;
-`;
+export const RequestIntro = styled(RequestIntroBase)``;
 
-export const RequestIntro = styled.div`
-  font-weight: 500;
-  color: ${theme.colors.territory};
-`;
-
-export const RequestActionBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* 8px */
-
-  button {
-    ${theme.fonts.dotum}
-    color: ${theme.colors.territory};
-    font-size: 0.8125rem; /* 13px */
-    font-weight: 500;
-    letter-spacing: -0.26px;
-    text-decoration-line: underline;
-    text-underline-position: from-font;
-
-    &:last-of-type {
-      color: ${theme.colors.red};
-    }
-
-    &:active:not(:disabled) {
-      opacity: 0.55;
-    }
-
-    &:disabled {
-      color: ${theme.colors.territory};
-      cursor: default;
-    }
-
-    &:last-of-type:disabled {
-      color: ${theme.colors.red};
-    }
-  }
-`;
+export const RequestActionBox = styled(RequestActionBoxBase)``;
 
 export const EmptyBox = styled.div`
   width: 100%;

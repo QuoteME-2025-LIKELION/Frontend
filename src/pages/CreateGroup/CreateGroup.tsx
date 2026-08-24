@@ -21,8 +21,10 @@ import * as S from "./CreateGroup.styles";
 export default function CreateGroup() {
   const navigate = useNavigate();
   const { data: friends = [] } = useFriendsQuery();
-  const { mutateAsync: createGroup } = useCreateGroupMutation();
-  const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
+  const { mutateAsync: createGroup, isPending: isCreatingGroup } =
+    useCreateGroupMutation();
+  const { mutateAsync: inviteGroupMember, isPending: isInvitingMember } =
+    useInviteGroupMemberMutation();
 
   const [groupName, setGroupName] = useState("");
   const [motto, setMotto] = useState("");
@@ -34,6 +36,7 @@ export default function CreateGroup() {
   const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
   const [showInviteToast, setShowInviteToast] = useState(false);
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
+  const [createdGroupId, setCreatedGroupId] = useState<number | null>(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false); // 그룹 생성 시도 여부 상태
 
@@ -93,6 +96,7 @@ export default function CreateGroup() {
   );
 
   const displayedFriends = filteredUnselectedFriends;
+  const isSubmittingGroup = isCreatingGroup || isInvitingMember;
 
   const validateCreateGroup = useCallback(() => {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
@@ -129,37 +133,58 @@ export default function CreateGroup() {
   }, [groupName, motto, pendingInvites.length]);
 
   const handleRequestCreateGroup = useCallback(() => {
+    if (isSubmittingGroup) {
+      return;
+    }
+
     if (!validateCreateGroup()) {
       return;
     }
 
     setShowCreateConfirm(true);
-  }, [validateCreateGroup]);
+  }, [isSubmittingGroup, validateCreateGroup]);
 
   // 그룹 생성 로직
   const handleCreateGroup = useCallback(async () => {
+    if (isSubmittingGroup) {
+      return;
+    }
+
     setShowCreateConfirm(false);
 
     try {
-      // 그룹 생성 API 호출하고 생성된 그룹 ID를 받음
-      const createGroupRes = await createGroup({
-        name: groupName,
-        motto: motto,
-      });
-      const newGroupId = createGroupRes.data.id;
+      const newGroupId =
+        createdGroupId ??
+        (
+          await createGroup({
+            name: groupName,
+            motto: motto,
+          })
+        ).data.id;
 
       if (!newGroupId) {
         throw new Error("그룹 ID를 받아오지 못했습니다.");
       }
 
-      // 선택된 친구가 있으면 초대 API 호출
+      setCreatedGroupId(newGroupId);
+
       if (pendingInvites.length > 0) {
-        // 모든 초대를 병렬로 처리
-        await Promise.all(
+        const invitationResults = await Promise.allSettled(
           pendingInvites.map((friend) =>
             inviteGroupMember({ groupId: newGroupId, friendId: friend.id })
           )
         );
+        const failedInvites = pendingInvites.filter(
+          (_, index) => invitationResults[index].status === "rejected"
+        );
+
+        if (failedInvites.length > 0) {
+          setPendingInvites(failedInvites);
+          setErrorMessage("일부 친구 초대에 실패했습니다.");
+          setErrorMessage3("다시 시도해 주세요.");
+          setShowErrorToast(true);
+          return;
+        }
       }
 
       navigate("/friend-group", {
@@ -173,8 +198,10 @@ export default function CreateGroup() {
     }
   }, [
     createGroup,
+    createdGroupId,
     groupName,
     inviteGroupMember,
+    isSubmittingGroup,
     motto,
     navigate,
     pendingInvites,
@@ -208,7 +235,7 @@ export default function CreateGroup() {
             lines={["이대로 그룹을 만들까요?"]}
             descriptionLines={[
               `그룹 이름: ${groupName.trim()}`,
-              ...(motto.trim() ? [`메시지 : ${motto.trim()}`] : []),
+              ...(motto.trim() ? [`메시지: ${motto.trim()}`] : []),
             ]}
             onClose={() => setShowCreateConfirm(false)}
             onConfirm={handleCreateGroup}
@@ -216,6 +243,7 @@ export default function CreateGroup() {
             cancelText="돌아가기"
             confirmText="만들기"
             confirmColor="primary"
+            confirmDisabled={isSubmittingGroup}
             variant="card"
           />
         )}

@@ -5,6 +5,7 @@ import * as S from "../Group.styles";
 interface GroupJoinRequestSectionProps {
   requests: GroupJoinRequest[];
   pendingRequestId?: number | null;
+  isGroupFull?: boolean;
   onAccept: (requestId: number) => void;
   onReject: (requestId: number) => void;
 }
@@ -15,6 +16,7 @@ interface GroupJoinRequestSectionProps {
 export default function GroupJoinRequestSection({
   requests,
   pendingRequestId = null,
+  isGroupFull = false,
   onAccept,
   onReject,
 }: GroupJoinRequestSectionProps) {
@@ -27,7 +29,7 @@ export default function GroupJoinRequestSection({
       <S.Title>가입 요청</S.Title>
       <S.RequestList>
         {requests.map((request) => {
-          const isPending = pendingRequestId === request.requestId;
+          const isProcessing = pendingRequestId !== null;
 
           return (
             <S.RequestItem key={request.requestId}>
@@ -48,14 +50,14 @@ export default function GroupJoinRequestSection({
               <S.RequestActionBox>
                 <button
                   type="button"
-                  disabled={isPending}
+                  disabled={isProcessing || isGroupFull}
                   onClick={() => onAccept(request.requestId)}
                 >
                   수락
                 </button>
                 <button
                   type="button"
-                  disabled={isPending}
+                  disabled={isProcessing}
                   onClick={() => onReject(request.requestId)}
                 >
                   거절
