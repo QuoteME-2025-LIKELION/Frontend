@@ -20,6 +20,7 @@ import Write from "@/pages/Main/Write";
 import NotFound from "@/pages/NotFound/NotFound";
 import Notification from "@/pages/Notification/Notification";
 import AccountSetting from "@/pages/Setting/AccountSetting/AccountSetting";
+import NotificationSetting from "@/pages/Setting/NotificationSetting/NotificationSetting";
 import SettingPage from "@/pages/Setting/SettingPage/SettingPage";
 import ProfileCenter from "@/pages/Setting-Profile/ProfileCenter/ProfileCenter";
 import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit/ProfileEdit";
@@ -55,6 +56,7 @@ export default function AppRoutes() {
         <Route path="/profile-edit" element={<ProfileEdit />} />
         <Route path="/setting-page" element={<SettingPage />} />
         <Route path="/account-setting" element={<AccountSetting />} />
+        <Route path="/notification-setting" element={<NotificationSetting />} />
 
         <Route path="/friend-group" element={<FriendGroup />} />
         <Route path="/friend-group/add" element={<FriendGroupAdd />} />

@@ -92,7 +92,7 @@ export default function SettingPage() {
             <S.SettingBtn onClick={() => navigate("/account-setting")}>
               계정
             </S.SettingBtn>
-            <S.SettingBtn onClick={() => setToastType("comingSoon")}>
+            <S.SettingBtn onClick={() => navigate("/notification-setting")}>
               알림
             </S.SettingBtn>
             <S.SettingBtn

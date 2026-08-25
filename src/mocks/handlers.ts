@@ -2,6 +2,16 @@ import { http, HttpResponse } from "msw";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
 
+let mockNotificationSettings = {
+  groupEnabled: true,
+  friendEnabled: true,
+  tagEnabled: true,
+  pokeEnabled: false,
+  likeEnabled: true,
+  quoteReminderEnabled: true,
+  marketingEnabled: false,
+};
+
 const mockGroups = [
   {
     id: 1,
@@ -1049,20 +1059,16 @@ export const handlers = [
   }),
 
   http.get("/api/notifications/settings", () => {
-    return HttpResponse.json({
-      groupEnabled: true,
-      friendEnabled: true,
-      tagEnabled: true,
-      pokeEnabled: false,
-      likeEnabled: true,
-      quoteReminderEnabled: true,
-      marketingEnabled: false,
-    });
+    return HttpResponse.json(mockNotificationSettings);
   }),
 
   http.put("/api/notifications/settings", async ({ request }) => {
     const body = await request.json();
-    return HttpResponse.json(body);
+    mockNotificationSettings = {
+      ...mockNotificationSettings,
+      ...(body as typeof mockNotificationSettings),
+    };
+    return HttpResponse.json(mockNotificationSettings);
   }),
 
   // ==========================================
