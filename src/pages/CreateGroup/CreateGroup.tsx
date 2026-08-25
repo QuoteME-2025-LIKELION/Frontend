@@ -188,7 +188,7 @@ export default function CreateGroup() {
       }
 
       navigate("/friend-group", {
-        state: { toastMessage: "새로운 그룹을 만들었습니다" },
+        state: { toastMessage: "새로운 그룹을 만들었습니다." },
       });
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);
@@ -249,7 +249,7 @@ export default function CreateGroup() {
         )}
         {showInviteToast && (
           <ToastModal
-            text="초대 요청을 보냈습니다"
+            text="초대 요청을 보냈습니다."
             isVisible={showInviteToast}
             onClose={() => setShowInviteToast(false)}
             showOverlay={false}

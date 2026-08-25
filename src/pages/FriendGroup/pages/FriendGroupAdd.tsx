@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Header from "@/components/Header/Header";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -177,7 +177,7 @@ export default function FriendGroupAdd() {
 
       try {
         await acceptFriendRequest(requestId);
-        setResponseToastMessage("친구 신청을 승인했습니다");
+        setResponseToastMessage("친구 신청을 승인했습니다.");
       } catch (err) {
         console.error("친구 요청 수락 처리 중 오류:", err);
         setErrorMessage("친구 요청 수락에 실패했습니다.");
@@ -195,7 +195,7 @@ export default function FriendGroupAdd() {
 
       try {
         await rejectFriendRequest(requestId);
-        setResponseToastMessage("친구 신청을 거절했습니다");
+        setResponseToastMessage("친구 신청을 거절했습니다.");
       } catch (err) {
         console.error("친구 요청 거절 처리 중 오류:", err);
         setErrorMessage("친구 요청 거절에 실패했습니다.");
@@ -213,7 +213,7 @@ export default function FriendGroupAdd() {
 
       try {
         await acceptGroupInvitation(requestId);
-        setResponseToastMessage("그룹 초대를 수락했습니다");
+        setResponseToastMessage("그룹 초대를 수락했습니다.");
       } catch (err) {
         console.error("그룹 초대 수락 처리 중 오류:", err);
         setErrorMessage("그룹 초대 수락에 실패했습니다.");
@@ -231,7 +231,7 @@ export default function FriendGroupAdd() {
 
       try {
         await rejectGroupInvitation(requestId);
-        setResponseToastMessage("그룹 초대를 거절했습니다");
+        setResponseToastMessage("그룹 초대를 거절했습니다.");
       } catch (err) {
         console.error("그룹 초대 거절 처리 중 오류:", err);
         setErrorMessage("그룹 초대 거절에 실패했습니다.");
@@ -281,7 +281,7 @@ export default function FriendGroupAdd() {
         )}
         {showFriendRequestToast && (
           <ToastModal
-            text="친구 신청을 보냈습니다"
+            text="친구 신청을 보냈습니다."
             isVisible={showFriendRequestToast}
             onClose={() => setShowFriendRequestToast(false)}
             showOverlay={false}
@@ -290,7 +290,7 @@ export default function FriendGroupAdd() {
         )}
         {showGroupJoinRequestToast && (
           <ToastModal
-            text="참여 요청을 보냈습니다"
+            text="참여 요청을 보냈습니다."
             isVisible={showGroupJoinRequestToast}
             onClose={() => setShowGroupJoinRequestToast(false)}
             showOverlay={false}
@@ -356,7 +356,7 @@ export default function FriendGroupAdd() {
               <S.AddGuideText>
                 닉네임이나 그룹 이름을 검색하여
                 <br />
-                친구를 추가하거나 그룹에 가입해 보세요
+                친구를 추가하거나 그룹에 가입해 보세요.
               </S.AddGuideText>
               <FriendRequestSection
                 requests={friendRequests}

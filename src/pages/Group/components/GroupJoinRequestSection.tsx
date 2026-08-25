@@ -43,7 +43,7 @@ export default function GroupJoinRequestSection({
                 <S.RequestUsername>
                   {request.requesterNickname}
                 </S.RequestUsername>
-                <S.RequestIntro>그룹 가입을 요청했어요</S.RequestIntro>
+                <S.RequestIntro>그룹 가입을 요청했어요.</S.RequestIntro>
               </S.RequestUserBox>
               <S.RequestActionBox>
                 <button

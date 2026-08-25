@@ -178,6 +178,38 @@ const createFriendListItem = (id: number) => ({
     friendsListGroupMemberById[id as keyof typeof friendsListGroupMemberById],
 });
 
+const mockQuoteTagRequestsByQuoteId: Record<
+  number,
+  Array<{
+    requestId: number;
+    requesterNickname: string;
+    status: "NONE" | "PENDING" | "ACCEPTED" | "REJECTED";
+  }>
+> = {
+  1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
+};
+let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
+let mockMyQuoteIsBookmarked = false;
+
+const mockMyTagRequestStatusByQuoteId: Record<
+  number,
+  "NONE" | "PENDING" | "ACCEPTED" | "REJECTED"
+> = {};
+
+const findQuoteTagRequest = (requestId: number) => {
+  for (const [quoteId, requests] of Object.entries(
+    mockQuoteTagRequestsByQuoteId
+  )) {
+    const request = requests.find((item) => item.requestId === requestId);
+
+    if (request) {
+      return { quoteId: Number(quoteId), request };
+    }
+  }
+
+  return null;
+};
+
 const searchableGroups = [
   {
     id: 20,
@@ -249,6 +281,12 @@ const findGroupJoinRequest = (requestId: number) => {
   }
 
   return null;
+};
+
+const mockAiUsage = {
+  usedCount: 1,
+  remainingCount: 2,
+  limitPerDay: 3,
 };
 
 export const handlers = [
@@ -422,15 +460,7 @@ export const handlers = [
   }),
 
   http.get("/api/groups/me", () => {
-    return HttpResponse.json(
-      mockGroups.map(({ id, name, motto, memberCount, leaderNickname }) => ({
-        id,
-        name,
-        motto,
-        memberCount,
-        leaderNickname,
-      }))
-    );
+    return HttpResponse.json(mockGroups);
   }),
 
   http.get("/api/groups/invitations", () => {
@@ -568,34 +598,131 @@ export const handlers = [
   http.post("/api/quotes", async ({ request }) => {
     const body = (await request.json()) as {
       content: string;
+      originalContent?: string | null;
+      summary?: string | null;
       taggedMemberIds?: number[];
     };
+    const taggedMemberNames = (body.taggedMemberIds || [])
+      .map((id) => getMockMember(id)?.nickname)
+      .filter(Boolean);
+
     return HttpResponse.json(
       {
-        quoteId: Date.now(),
+        id: Date.now(),
         content: body.content,
-        taggedMembers: (body.taggedMemberIds || []).map((id) => `멤버_${id}`),
-        createdAt: new Date().toISOString(),
+        originalContent: body.originalContent ?? null,
+        summary: body.summary ?? null,
+        authorName: null,
+        authorBirthYear: 2000,
+        taggedMemberNames,
+        createDate: new Date().toISOString(),
       },
       { status: 201 }
     );
   }),
 
   http.post("/api/quotes/summarize", () => {
+    if (mockAiUsage.remainingCount <= 0) {
+      return HttpResponse.json(
+        { message: "하루 AI 추천 사용량을 초과했습니다." },
+        { status: 429 }
+      );
+    }
+
+    mockAiUsage.usedCount += 1;
+    mockAiUsage.remainingCount = Math.max(
+      mockAiUsage.limitPerDay - mockAiUsage.usedCount,
+      0
+    );
+
     return HttpResponse.json({
       summary: "오늘 못한 건 내일의 에너지로 남는다.",
+      summaries: [
+        "오늘 못한 건 내일의 에너지로 남는다.",
+        "쉬어간 하루도 나를 앞으로 데려간다.",
+        "오늘의 쉼은 내일의 시작이 된다.",
+      ],
     });
   }),
 
   http.get("/api/quotes/ai-usage", () => {
-    return HttpResponse.json({
-      usedCount: 1,
-      remainingCount: 2,
-      limitPerDay: 3,
-    });
+    return HttpResponse.json(mockAiUsage);
   }),
 
-  http.get("/api/quotes", () => {
+  http.get("/api/quotes", ({ request }) => {
+    const url = new URL(request.url);
+    const groupId = Number(url.searchParams.get("groupId"));
+    const groupMemberNicknames = Number.isNaN(groupId)
+      ? null
+      : mockGroups
+          .find((group) => group.id === groupId)
+          ?.members.map((member) => member.nickname);
+    const otherQuotes = [
+      {
+        id: 2,
+        quoteId: 2,
+        authorNickname: "라라진",
+        authorIntroduction: "Seize the day",
+        content: "방귀 퀸 놈이 성낸다",
+        taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
+        taggedMembers: ["말랑이", "몰랑이", "규빈이"],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "19시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 3,
+        quoteId: 3,
+        authorNickname: "조니님",
+        authorIntroduction: "새 친구를 기다려요",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "내일의 나는 오늘의 기록에서 시작된다",
+        taggedNicknames: [],
+        taggedMembers: [],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "1시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 4,
+        quoteId: 4,
+        authorNickname: "말랑이",
+        authorIntroduction: "천천히 단단하게",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "느린 걸음도 방향이 있으면 충분하다",
+        taggedNicknames: ["라라진"],
+        taggedMembers: ["라라진"],
+        isLiked: false,
+        isBookmarked: true,
+        isFriendQuote: true,
+        timeAgo: "3시간 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+      {
+        id: 5,
+        quoteId: 5,
+        authorNickname: "몰랑이",
+        authorIntroduction: "좋은 문장을 모아요",
+        authorProfileImage: MOCK_PROFILE_IMAGE,
+        content: "잘 쉬는 마음이 오래 걷는다",
+        taggedNicknames: [],
+        taggedMembers: [],
+        isLiked: false,
+        isBookmarked: false,
+        isFriendQuote: true,
+        timeAgo: "30분 전",
+        createDate: "2025-11-03T19:02:00",
+      },
+    ].filter(
+      (quote) =>
+        !groupMemberNicknames ||
+        groupMemberNicknames.includes(quote.authorNickname)
+    );
+
     return HttpResponse.json({
       myQuotes: [
         {
@@ -605,18 +732,11 @@ export const handlers = [
           authorNickname: "손지수",
           birthYear: 2000,
           originalContent: null,
-          taggedNicknames: ["뮤랄라", "스페이스"],
+          taggedNicknames: mockMyQuoteTaggedNicknames,
+          isBookmarked: mockMyQuoteIsBookmarked,
         },
       ],
-      otherQuotes: [
-        {
-          quoteId: 2,
-          authorNickname: "라라진",
-          authorIntroduction: "Seize the day",
-          content: "방귀 퀸 놈이 성낸다",
-          taggedMembers: ["말랑이", "몰랑이", "규빈이"],
-        },
-      ],
+      otherQuotes,
     });
   }),
 
@@ -653,74 +773,171 @@ export const handlers = [
   // 6. 태그 요청 (Tag Requests)
   // ==========================================
   http.patch("/api/quotes/:quoteId/tags", async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as { taggedMemberIds?: number[] };
+    mockMyQuoteTaggedNicknames = (body.taggedMemberIds ?? [])
+      .map((id) => getMockMember(id)?.nickname)
+      .filter(Boolean);
+
     return HttpResponse.json(body);
   }),
 
-  http.post("/api/quotes/:quoteId/tag-request", () => {
+  http.post("/api/quotes/:quoteId/tag-request", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+    const currentStatus = mockMyTagRequestStatusByQuoteId[quoteId];
+
+    if (currentStatus === "PENDING" || currentStatus === "ACCEPTED") {
+      return HttpResponse.json(
+        { message: "이미 태그를 요청했습니다." },
+        { status: 409 }
+      );
+    }
+
+    mockMyTagRequestStatusByQuoteId[quoteId] = "PENDING";
+
     return new HttpResponse(null, { status: 201 });
   }),
 
-  http.get("/api/quotes/:quoteId/my-tag-request", () => {
-    return HttpResponse.json({ status: "PENDING" });
+  http.get("/api/quotes/:quoteId/my-tag-request", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+
+    return HttpResponse.json({
+      status: mockMyTagRequestStatusByQuoteId[quoteId] ?? "NONE",
+    });
   }),
 
-  http.get("/api/quotes/:quoteId/requests", () => {
-    return HttpResponse.json([
-      { requestId: 1, requesterNickname: "말랑이", status: "PENDING" },
-    ]);
+  http.get("/api/quotes/:quoteId/requests", ({ params }) => {
+    const quoteId = Number(params.quoteId);
+
+    return HttpResponse.json(mockQuoteTagRequestsByQuoteId[quoteId] ?? []);
   }),
 
-  http.post("/api/quotes/requests/:requestId/accept", () => {
+  http.post("/api/quotes/requests/:requestId/accept", ({ params }) => {
+    const request = findQuoteTagRequest(Number(params.requestId));
+
+    if (!request) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 태그 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    request.request.status = "ACCEPTED";
+    mockMyQuoteTaggedNicknames = Array.from(
+      new Set([
+        ...mockMyQuoteTaggedNicknames,
+        request.request.requesterNickname,
+      ])
+    );
+
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/quotes/requests/:requestId/reject", () => {
+  http.post("/api/quotes/requests/:requestId/reject", ({ params }) => {
+    const request = findQuoteTagRequest(Number(params.requestId));
+
+    if (!request) {
+      return HttpResponse.json(
+        { message: "존재하지 않는 태그 요청입니다." },
+        { status: 404 }
+      );
+    }
+
+    request.request.status = "REJECTED";
+
     return new HttpResponse(null, { status: 200 });
   }),
 
   // ==========================================
   // 7. 북마크 (Bookmark)
   // ==========================================
-  http.post("/api/quotes/:quoteId/bookmark", () => {
+  http.post("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    if (Number(params.quoteId) === 1) {
+      mockMyQuoteIsBookmarked = true;
+    }
+
     return HttpResponse.json(
       { resultCode: "201", message: "북마크에 추가되었습니다." },
       { status: 201 }
     );
   }),
 
-  http.delete("/api/quotes/:quoteId/bookmark", () => {
+  http.delete("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    if (Number(params.quoteId) === 1) {
+      mockMyQuoteIsBookmarked = false;
+    }
+
     return new HttpResponse(null, { status: 200 });
   }),
 
   // ==========================================
   // 8. 아카이브 (Archive)
   // ==========================================
-  http.get("/api/archives", () => {
-    return HttpResponse.json([
+  http.get("/api/archives", ({ request }) => {
+    const url = new URL(request.url);
+    const date = url.searchParams.get("date");
+    const archives = [
       {
         id: 1,
         content: "방귀 퀸 놈이 성낸다",
-        originalContent: "오늘 말랑이랑 몰랑이랑 같이 카공을 했는데...",
+        originalContent:
+          "사용자가 적은 원문이 보이는 자리 사용자가 적은 원문이 보이는 자리",
         createDate: "2025-10-31",
         authorName: "라라진",
-        authorBirthYear: 2000,
+        authorBirthYear: 1999,
         taggedMemberNames: ["말랑이", "몰랑이"],
         isBookmarked: true,
         isLiked: false,
       },
-    ]);
+      {
+        id: 2,
+        content: "방귀 뀐 놈이 성낸다",
+        originalContent:
+          "사용자가 적은 원문이 보이는 자리 사용자가 적은 원문이 보이는 자리",
+        createDate: "2025-11-07",
+        authorName: "닉네임",
+        authorBirthYear: 1999,
+        taggedMemberNames: ["라라진", "말랑이", "물렁이"],
+        isBookmarked: true,
+        isLiked: true,
+      },
+      {
+        id: 3,
+        content: "오늘의 마음은 오늘 정리한다",
+        originalContent:
+          "오늘 있었던 일을 바탕으로 나만의 문장을 남겨두었습니다.",
+        createDate: "2025-11-07",
+        authorName: "몰랑이",
+        authorBirthYear: 1999,
+        taggedMemberNames: ["라라진"],
+        isBookmarked: false,
+        isLiked: false,
+      },
+    ];
+
+    return HttpResponse.json(
+      date
+        ? archives.filter((archive) => archive.createDate.startsWith(date))
+        : archives
+    );
   }),
 
   http.get("/api/archives/me", () => {
     return HttpResponse.json([
       {
-        quoteId: 1,
-        content: "내 명언 예시",
-        taggedMembers: [],
+        id: 4,
+        quoteId: 4,
+        content: "방귀 뀐 놈이 성낸다",
+        originalContent:
+          "사용자가 적은 원문이 보이는 자리 사용자가 적은 원문이 보이는 자리사용자가 적은 원문이 보이는 자리",
+        createDate: "2025-11-02",
+        createdAt: "2025-11-02",
+        authorName: "닉네임",
+        authorNickname: "닉네임",
+        authorBirthYear: 1999,
+        taggedMemberNames: ["라라진", "말랑이", "물렁이"],
+        taggedMembers: ["라라진", "말랑이", "물렁이"],
         isBookmarked: false,
         isLiked: true,
-        createdAt: "2025-11-01",
       },
     ]);
   }),
@@ -728,12 +945,20 @@ export const handlers = [
   http.get("/api/archives/likes", () => {
     return HttpResponse.json([
       {
-        quoteId: 2,
-        content: "좋아요한 명언",
-        taggedMembers: ["라라진"],
+        id: 5,
+        quoteId: 5,
+        content: "방귀 뀐 놈이 성낸다",
+        originalContent:
+          "사용자가 적은 원문이 보이는 자리 사용자가 적은 원문이 보이는 자리",
+        createDate: "2025-11-03",
+        createdAt: "2025-11-03",
+        authorName: "닉네임",
+        authorNickname: "닉네임",
+        authorBirthYear: 1999,
+        taggedMemberNames: ["라라진", "말랑이", "물렁이"],
+        taggedMembers: ["라라진", "말랑이", "물렁이"],
         isBookmarked: true,
         isLiked: true,
-        createdAt: "2025-11-02",
       },
     ]);
   }),
@@ -741,12 +966,20 @@ export const handlers = [
   http.get("/api/archives/bookmarks", () => {
     return HttpResponse.json([
       {
-        quoteId: 3,
-        content: "북마크한 명언",
-        taggedMembers: [],
+        id: 6,
+        quoteId: 6,
+        content: "오늘의 마음은 오늘 정리한다",
+        originalContent:
+          "오늘 있었던 일을 바탕으로 나만의 문장을 남겨두었습니다.",
+        createDate: "2025-11-04",
+        createdAt: "2025-11-04",
+        authorName: "라라진",
+        authorNickname: "라라진",
+        authorBirthYear: 1999,
+        taggedMemberNames: ["말랑이"],
+        taggedMembers: ["말랑이"],
         isBookmarked: true,
         isLiked: false,
-        createdAt: "2025-11-03",
       },
     ]);
   }),
@@ -757,13 +990,11 @@ export const handlers = [
   http.get("/api/notifications", ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
-    const notificationCategory = category || "GROUP";
-
-    return HttpResponse.json([
+    const notifications = [
       {
         id: 1,
-        category: notificationCategory,
-        type: notificationCategory,
+        category: "GROUP",
+        type: "GROUP",
         message: "무니니 그룹에서 초대가 왔습니다.",
         isRead: false,
         createdAt: "2025-11-07T10:00:00",
@@ -772,7 +1003,41 @@ export const handlers = [
         targetId: 3,
         senderName: "라라진",
       },
-    ]);
+      {
+        id: 2,
+        category: "TAG",
+        type: "TAG_REQUEST",
+        message: "라라진님이 태그를 요청하였습니다.",
+        isRead: false,
+        createdAt: "2025-11-07T10:10:00",
+        createDate: "2025-11-03T19:02:00",
+        referenceId: 1,
+        targetId: 1,
+        senderName: "라라진",
+      },
+      {
+        id: 3,
+        category: "POKE",
+        type: "POKE",
+        message: "조니님이 콕 찔렀습니다.",
+        isRead: true,
+        createdAt: "2025-11-07T10:20:00",
+        createDate: "2025-11-07T10:20:00",
+        referenceId: 6,
+        targetId: 6,
+        senderName: "조니님",
+      },
+    ];
+
+    return HttpResponse.json(
+      category
+        ? notifications.filter(
+            (notification) =>
+              notification.type === category ||
+              notification.category === category
+          )
+        : notifications
+    );
   }),
 
   http.get("/api/notifications/unread-count", () => {

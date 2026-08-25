@@ -15,16 +15,13 @@ export interface Group {
   motto?: string;
   name?: string;
   memberCount?: number;
-  members?:
-    | [
-        {
-          id: number;
-          nickname: string;
-          profileImage: string;
-          introduction: string;
-        },
-      ]
-    | [];
+  members?: {
+    id: number;
+    nickname: string;
+    profileImage?: string;
+    introduction?: string;
+    role?: "LEADER" | "MEMBER";
+  }[];
   totalQuoteCount?: number;
   createdAt?: string;
   leaderNickname?: string;

@@ -29,7 +29,7 @@ export default function GroupListSection({
   const visibleGroups = keyword ? searchGroups : groups;
   const emptyText = keyword
     ? "검색 결과가 없습니다."
-    : "참여한 그룹이 없습니다";
+    : "참여한 그룹이 없습니다.";
 
   return (
     <S.Section>
@@ -61,7 +61,7 @@ export default function GroupListSection({
           <S.EmptyBox>
             <S.EmptyTitle>{emptyText}</S.EmptyTitle>
             {!keyword && (
-              <S.EmptyDescription>그룹에 참여해 보세요</S.EmptyDescription>
+              <S.EmptyDescription>그룹에 참여해 보세요.</S.EmptyDescription>
             )}
           </S.EmptyBox>
         )}

@@ -72,7 +72,7 @@ export default function GroupActionModals({
       )}
       {showDeleteToast && (
         <ToastModal
-          text={`${deletedMemberName}님을 탈퇴시켰습니다`}
+          text={`${deletedMemberName}님을 탈퇴시켰습니다.`}
           isVisible={showDeleteToast}
           onClose={onCloseDeleteToast}
           showOverlay={false}
@@ -116,7 +116,7 @@ export default function GroupActionModals({
       {showFullGroupToast && (
         <ToastModal
           text=""
-          redText="정원이 가득 차 더이상 멤버를 추가할 수 없습니다"
+          redText="정원이 가득 차 더이상 멤버를 추가할 수 없습니다."
           isVisible={showFullGroupToast}
           onClose={onCloseFullGroupToast}
           showOverlay={false}

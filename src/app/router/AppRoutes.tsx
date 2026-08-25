@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "@/layouts/ProtectedRoute";
 import OAuthCallback from "@/OAuthCallback";
 import Archive from "@/pages/Archive/Archive";
+import Bookmarks from "@/pages/Archive/Bookmarks/Bookmarks";
 import CalendarPage from "@/pages/Archive/Calendar/CalendarPage";
 import Likes from "@/pages/Archive/Likes/Likes";
 import MyQuotes from "@/pages/Archive/MyQuotes/MyQuotes";
@@ -46,6 +47,7 @@ export default function AppRoutes() {
           <Route index element={<CalendarPage />} />
           <Route path="my-quotes" element={<MyQuotes />} />
           <Route path="likes" element={<Likes />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
         </Route>
         <Route path="/notification" element={<Notification />} />
 

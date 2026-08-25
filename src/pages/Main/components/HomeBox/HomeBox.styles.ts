@@ -9,15 +9,16 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
+  padding: 1.5rem 1.5rem 1.25rem;
 `;
 
-export const textbox = styled.div`
-  padding: 10px 0;
+export const DateBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 0.25rem;
+  margin-bottom: 0.875rem;
 `;
 export const Month = styled.div`
   color: #fff;
@@ -30,10 +31,10 @@ export const Month = styled.div`
   letter-spacing: -0.72px;
 `;
 
-export const weekend = styled.div`
+export const Weekday = styled.div`
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
-  font-family: KoPubWorldBatang;
+  ${theme.fonts.batang}
   font-size: 12px;
   font-style: normal;
   font-weight: 500;
@@ -42,23 +43,12 @@ export const weekend = styled.div`
 `;
 
 export const Wrapper = styled.button`
-  display: flex;
   width: 100%;
-  max-width: 393px;
-  background-color: ${theme.colors.primary};
-  padding: 20px 25px;
-  padding-right: 0px;
-  padding-top: 0px;
+  display: flex;
   align-items: flex-start;
+  gap: 1.125rem;
   color: white;
-  padding-bottom: 0px;
-`;
-
-export const Line = styled.div`
-  width: calc(100% + 65px);
-  height: 1px;
-  background: rgba(255, 255, 255, 0.5);
-  margin-left: -65px;
+  cursor: pointer;
 `;
 
 export const Text = styled.div<{ hasFeed: boolean }>`
@@ -69,81 +59,153 @@ export const Text = styled.div<{ hasFeed: boolean }>`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  padding: 9px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  min-height: 2.0625rem; /* 33px */
-  max-height: 40px;
-  max-width: 250px;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border-top: 1px solid #fff;
 `;
 
-export const Left = styled.div`
+export const Day = styled.div`
   color: #fff;
   text-align: center;
   ${theme.fonts.chonburi}
   font-size: 75px;
   font-style: normal;
   font-weight: 400;
-  line-height: 100%;
-  margin-right: 4%;
+  line-height: 95%;
   letter-spacing: -1.5px;
-  width: 5.625rem; /* 90px */
+  flex: 0 0 4.125rem;
+  transform: translateY(-0.45rem);
 `;
 
-export const Right = styled.div`
+export const QuoteArea = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  display: flex;
-  width: 100%;
-  max-width: 393px;
-  background-color: ${theme.colors.primary};
-  padding: 20px 50px;
-  align-items: flex-start;
-  color: white;
-  padding-bottom: 0px;
-  padding-left: 10px;
 `;
 
-export const bottom = styled.div`
+export const Bottom = styled.div`
+  position: relative;
   width: 100%;
-  padding: 16px 50px 0 50px;
-`;
-export const Text2 = styled.div`
-  color: #fff;
-  ${theme.fonts.batang}
-  text-align: center;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-`;
-
-export const TagList = styled.div`
-  display: flex;
-  gap: 0.3125rem; /* 5px */
-  word-break: keep-all;
-`;
-export const BottomTextBox = styled.div`
-  display: flex;
-  justify-content: space-between;
+  min-height: 2.25rem;
+  margin-top: 0;
+  padding-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
   align-items: center;
-  width: 100%;
-`;
-export const BottomBtn = styled.div`
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  padding: 20px 0 10px;
+  border-top: 1px solid #fff;
 `;
 
-export const ShareButton = styled.button`
+export const TagBox = styled.div`
+  position: relative;
   display: flex;
-  padding: 0;
-  border: 0;
-  background-color: transparent;
+  align-items: center;
+`;
+
+export const TagButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #fff;
+  ${theme.fonts.pretendard}
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
+
+  img {
+    width: 1rem;
+    height: 1rem;
+  }
+`;
+
+export const TagMenu = styled.div`
+  position: absolute;
+  top: 1.75rem;
+  left: 0;
+  width: 8.25rem;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  z-index: 3;
+`;
+
+export const TagName = styled.div`
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #dedede;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: center;
+`;
+
+export const TagEditButton = styled.button`
+  width: 100%;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.pretendard}
+  color: #000;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+`;
+
+export const AuthorBox = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  justify-content: center;
+`;
+
+export const AuthorDivider = styled.span`
+  width: 1.5rem;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.72);
+`;
+
+export const AuthorText = styled.div`
+  min-width: 0;
+  ${theme.fonts.batang}
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.26px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const BottomActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+`;
+
+export const IconButton = styled.button<{ $hidden?: boolean }>`
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  img {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 
   &:disabled {
     cursor: default;
+    opacity: ${({ $hidden }) => ($hidden ? 0 : 0.45)};
   }
 `;

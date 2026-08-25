@@ -10,6 +10,7 @@
  * @property {number} birthYear: 명언 작성자 출생 연도
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  * @property {string[]} taggedNicknames: 명언에 태그된 닉네임 배열 (선택적)
+ * @property {boolean} isBookmarked: 현재 사용자가 이 명언을 북마크했는지 여부 (선택적)
  */
 export interface MyQuote {
   id?: number;
@@ -19,6 +20,7 @@ export interface MyQuote {
   birthYear: number;
   createDate?: string;
   taggedNicknames?: string[];
+  isBookmarked?: boolean;
 }
 
 /**
@@ -31,18 +33,22 @@ export interface MyQuote {
  * @property {string} [authorIntroduction]: 명언 작성자 소개글 (선택적)
  * @property {string} timeAgo: 명언 작성 시간 (예: "2시간 전")
  * @property {boolean} isLiked: 현재 사용자가 이 명언을 좋아요했는지 여부
+ * @property {boolean} [isBookmarked]: 현재 사용자가 이 명언을 북마크했는지 여부
  * @property {boolean} isFriendQuote: 작성자가 친구인지 여부
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  */
 export interface OtherQuote {
   id: number;
+  quoteId?: number;
   content: string;
   taggedNicknames: string[];
+  taggedMembers?: string[];
   authorNickname: string;
   authorProfileImage?: string;
   authorIntroduction?: string;
   timeAgo: string;
   isLiked: boolean;
+  isBookmarked?: boolean;
   isFriendQuote: boolean;
   createDate?: string;
 }
@@ -74,6 +80,8 @@ export interface QuoteDraft {
 export interface CreatedQuote {
   id?: number;
   content: string;
+  originalContent?: string | null;
+  summary?: string | null;
   authorName: string;
   authorBirthYear?: number | null;
   taggedNicknames?: string[];

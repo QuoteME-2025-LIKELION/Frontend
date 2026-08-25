@@ -27,8 +27,8 @@ export default function NotificationList({
   if (isEmpty) {
     return (
       <S.Message>
-        <S.MessageText>도착한 알림이 없어요</S.MessageText>
-        <S.MessageText>알림이 오면 바로 알려드릴게요</S.MessageText>
+        <S.MessageText>도착한 알림이 없어요.</S.MessageText>
+        <S.MessageText>알림이 오면 바로 알려드릴게요.</S.MessageText>
       </S.Message>
     );
   }

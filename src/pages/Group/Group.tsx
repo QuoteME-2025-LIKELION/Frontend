@@ -126,8 +126,8 @@ export default function Group() {
         await acceptGroupJoinRequest({ groupId, requestId });
         setJoinRequestToastMessage(
           targetRequest
-            ? `${targetRequest.requesterNickname}님을 그룹에 추가했습니다`
-            : "가입 요청을 수락했습니다"
+            ? `${targetRequest.requesterNickname}님을 그룹에 추가했습니다.`
+            : "가입 요청을 수락했습니다."
         );
         setShowJoinRequestToast(true);
       } catch (err) {
@@ -168,8 +168,8 @@ export default function Group() {
         await rejectGroupJoinRequest({ groupId, requestId });
         setJoinRequestToastMessage(
           targetRequest
-            ? `${targetRequest.requesterNickname}님의 가입 요청을 거절했습니다`
-            : "가입 요청을 거절했습니다"
+            ? `${targetRequest.requesterNickname}님의 가입 요청을 거절했습니다.`
+            : "가입 요청을 거절했습니다."
         );
         setShowJoinRequestToast(true);
       } catch (err) {
@@ -198,7 +198,7 @@ export default function Group() {
 
       setGroupActionConfirm(null);
       navigate("/friend-group", {
-        state: { toastMessage: "그룹에서 탈퇴하였습니다" },
+        state: { toastMessage: "그룹에서 탈퇴하였습니다." },
       });
     } catch (err) {
       console.error("그룹 탈퇴 처리 중 오류:", err);
@@ -231,7 +231,7 @@ export default function Group() {
       await deleteGroup(groupId);
       setGroupActionConfirm(null);
       navigate("/friend-group", {
-        state: { toastMessage: "그룹이 해체되었습니다" },
+        state: { toastMessage: "그룹이 해체되었습니다." },
       });
     } catch (err) {
       console.error("그룹 삭제 처리 중 오류:", err);

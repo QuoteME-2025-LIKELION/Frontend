@@ -12,9 +12,10 @@ export const Container = styled.div`
   height: 60px;
 `;
 
-export const Header = styled.div`
+export const Header = styled.div<{ $showHomeButton: boolean }>`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ $showHomeButton }) =>
+    $showHomeButton ? "space-between" : "flex-end"};
   align-self: stretch;
   height: 60px;
   padding: 20px 25px;

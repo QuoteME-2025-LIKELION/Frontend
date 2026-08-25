@@ -84,10 +84,10 @@ export default function Profile() {
               <S.TextBox>
                 <S.ExText>
                   쿼트미에서 사용할 <br />
-                  닉네임을 설정해 주세요
+                  닉네임을 설정해 주세요.
                 </S.ExText>
 
-                <S.exText>닉네임은 언제든 수정할 수 있어요</S.exText>
+                <S.exText>닉네임은 언제든 수정할 수 있어요.</S.exText>
               </S.TextBox>
 
               <Input
@@ -109,10 +109,10 @@ export default function Profile() {
               <S.TextBox>
                 <S.ExText>
                   다른 사람들에게 보여줄 <br />
-                  자기소개를 설정해 주세요
+                  자기소개를 설정해 주세요.
                 </S.ExText>
 
-                <S.exText>자기소개는 언제든 수정할 수 있어요</S.exText>
+                <S.exText>자기소개는 언제든 수정할 수 있어요.</S.exText>
               </S.TextBox>
 
               <Input
@@ -136,10 +136,10 @@ export default function Profile() {
               <S.TextBox>
                 <S.ExText>
                   다른 사람들에게 보여줄 <br />
-                  프로필 이미지를 설정해 주세요
+                  프로필 이미지를 설정해 주세요.
                 </S.ExText>
 
-                <S.exText>이미지는 언제든 수정할 수 있어요</S.exText>
+                <S.exText>이미지는 언제든 수정할 수 있어요.</S.exText>
               </S.TextBox>
 
               <S.ProfileWrapper>

@@ -6,9 +6,8 @@ import { useMyArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
-import MyQuoteFeed from "@/pages/Archive/MyQuotes/MyQuoteFeed/MyQuoteFeed";
-
-import * as S from "./MyQuotes.styles";
+import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
+import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function MyQuotes() {
   const { data: myQuotes = [] } = useMyArchivesQuery();
@@ -44,21 +43,26 @@ export default function MyQuotes() {
           showOverlay={true}
         />
       )}
-      {myQuotes.map((feed, index) => (
-        <MyQuoteFeed
-          key={feed.id}
-          ref={(el: HTMLDivElement | null) => {
-            feedRefs.current[index] = el;
-          }}
-          archiveFeed={feed}
-          onClick={() =>
-            openDateNavigationConfirm(feed.createDate.slice(0, 10))
-          }
-          onShare={() =>
-            handleShare(feed.createDate.slice(0, 10), feed.authorName, index)
-          }
-        />
-      ))}
+      {myQuotes.length === 0 && (
+        <S.EmptyMessage>작성된 명언이 없습니다</S.EmptyMessage>
+      )}
+      {myQuotes.map((feed, index) => {
+        const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);
+        const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
+
+        return (
+          <ArchiveQuoteCard
+            key={feed.id ?? feed.quoteId}
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            feed={feed}
+            showOriginalContent={true}
+            onClick={() => openDateNavigationConfirm(date)}
+            onShare={() => handleShare(date, authorName, index)}
+          />
+        );
+      })}
     </S.Container>
   );
 }

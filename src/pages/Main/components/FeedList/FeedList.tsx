@@ -1,16 +1,21 @@
-import { useMemo, useRef, useState } from "react";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
 import {
-  useLikeQuoteMutation,
+  useBookmarkQuoteMutation,
+  useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
-  useUnlikeQuoteMutation,
+  useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
+import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./FeedList.styles";
@@ -25,8 +30,10 @@ type FeedListProps = {
   date?: string;
   otherQuotes: OtherQuote[] | [];
   friendList: Friend[] | [];
-  onTagRequest?: () => void;
-  onPoke?: () => void;
+  groups: Group[] | [];
+  selectedGroupId: number | null;
+  myNickname: string;
+  onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
 };
@@ -35,44 +42,72 @@ export default function FeedList({
   date,
   otherQuotes,
   friendList,
-  onTagRequest,
-  onPoke,
+  groups,
+  selectedGroupId,
+  myNickname,
+  onSelectGroup,
   onShare,
   isLoading,
 }: FeedListProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const filterBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
-  const [likeOverrides, setLikeOverrides] = useState<Record<number, boolean>>(
-    {}
-  );
-  const [pendingLikeIds, setPendingLikeIds] = useState<Record<number, boolean>>(
-    {}
-  );
+  const [bookmarkOverrides, setBookmarkOverrides] = useState<
+    Record<number, boolean>
+  >({});
+  const [pendingBookmarkIds, setPendingBookmarkIds] = useState<
+    Record<number, boolean>
+  >({});
   const { mutateAsync: requestQuoteTag } = useRequestQuoteTagMutation();
-  const { mutateAsync: likeQuote } = useLikeQuoteMutation();
-  const { mutateAsync: unlikeQuote } = useUnlikeQuoteMutation();
+  const { mutateAsync: bookmarkQuote } = useBookmarkQuoteMutation();
+  const { mutateAsync: unbookmarkQuote } = useUnbookmarkQuoteMutation();
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [tagRequestQuoteId, setTagRequestQuoteId] = useState<number | null>(
+    null
+  );
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const selectedGroup = groups.find((group) => group.id === selectedGroupId);
+  const selectedGroupMembers = useMemo(() => {
+    if (!selectedGroup?.members) {
+      return null;
+    }
+
+    return selectedGroup.members
+      .filter((member) => member.nickname !== myNickname)
+      .map((member) => ({
+        id: member.id,
+        nickname: member.nickname,
+        profileImage: member.profileImage,
+        introduction: member.introduction,
+      }));
+  }, [myNickname, selectedGroup]);
+  const visibleFriends = selectedGroupMembers ?? friendList;
 
   const quotes = useMemo<QuotesItem[]>(() => {
     const quotesMap = new Map(
       otherQuotes.map((quote) => [quote.authorNickname, quote])
     );
 
-    return friendList.map((friend) => {
+    return visibleFriends.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
-        const quoteId = friendQuote.id;
+        const quoteId = friendQuote.quoteId ?? friendQuote.id;
+        const taggedNicknames =
+          friendQuote.taggedNicknames ?? friendQuote.taggedMembers ?? [];
 
         return {
           ...friendQuote,
+          id: quoteId,
           quoteId,
           friendId: friend.id,
           isSilenced: false,
-          isLiked: likeOverrides[quoteId] ?? friendQuote.isLiked,
+          taggedNicknames,
+          isLiked: Boolean(friendQuote.isLiked),
+          isBookmarked:
+            bookmarkOverrides[quoteId] ?? Boolean(friendQuote.isBookmarked),
         };
       }
 
@@ -87,51 +122,82 @@ export default function FeedList({
         taggedNicknames: [],
         timeAgo: "",
         isLiked: false,
+        isBookmarked: false,
         createDate: "",
         isFriendQuote: true,
       };
     });
-  }, [friendList, likeOverrides, otherQuotes]);
+  }, [bookmarkOverrides, otherQuotes, visibleFriends]);
 
-  const handleRequest = async (quoteId: number) => {
-    try {
-      await requestQuoteTag(quoteId);
-      // API 호출 성공 후, 부모에게 받은 onTagRequest 함수 호출
-      onTagRequest?.();
-    } catch (err) {
-      console.error("태그 요청 실패:", err);
-      // 실패 시 사용자에게 알림
-      setErrorMessage("태그 요청에 실패했습니다.");
-      setShowErrorToast(true);
-    }
+  const tagRequestQuote = quotes.find(
+    (quote) => quote.quoteId === tagRequestQuoteId
+  );
+
+  const openTagRequestConfirm = (quoteId: number) => {
+    setTagRequestQuoteId(quoteId);
   };
 
-  const handleLike = async (quoteId: number, isLiked: boolean) => {
-    if (pendingLikeIds[quoteId]) {
+  const closeTagRequestConfirm = () => {
+    setTagRequestQuoteId(null);
+  };
+
+  const handleRequest = async () => {
+    if (tagRequestQuoteId === null) {
       return;
     }
 
-    setPendingLikeIds((prev) => ({ ...prev, [quoteId]: true }));
-    setLikeOverrides((prev) => ({ ...prev, [quoteId]: !isLiked }));
+    try {
+      await requestQuoteTag(tagRequestQuoteId);
+      setToastMessage("태그가 요청되었습니다.");
+    } catch (err) {
+      console.error("태그 요청 실패:", err);
+      const status = axios.isAxiosError(err) ? err.response?.status : null;
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.message
+        : "";
+
+      if (status === 409 || String(message).includes("이미")) {
+        setToastMessage("이미 태그를 요청했습니다.");
+      } else {
+        setToastMessage("태그 요청에 실패했습니다.");
+      }
+    } finally {
+      closeTagRequestConfirm();
+    }
+  };
+
+  const handleBookmark = async (quoteId: number, isBookmarked: boolean) => {
+    if (pendingBookmarkIds[quoteId]) {
+      return;
+    }
+
+    setPendingBookmarkIds((prev) => ({ ...prev, [quoteId]: true }));
+    setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: !isBookmarked }));
 
     try {
-      if (isLiked) {
-        await unlikeQuote(quoteId);
+      if (isBookmarked) {
+        await unbookmarkQuote(quoteId);
+        setBookmarkOverrides((prev) => {
+          const next = { ...prev };
+          delete next[quoteId];
+          return next;
+        });
+        setToastMessage("북마크가 해제되었습니다.");
       } else {
-        await likeQuote(quoteId);
+        await bookmarkQuote(quoteId);
+        setBookmarkOverrides((prev) => {
+          const next = { ...prev };
+          delete next[quoteId];
+          return next;
+        });
+        setToastMessage("북마크에 추가되었습니다.");
       }
-      setLikeOverrides((prev) => {
-        const next = { ...prev };
-        delete next[quoteId];
-        return next;
-      });
     } catch (err) {
-      setLikeOverrides((prev) => ({ ...prev, [quoteId]: isLiked }));
-      console.error("좋아요 처리 실패:", err);
-      setErrorMessage("좋아요 처리에 실패했습니다.");
-      setShowErrorToast(true);
+      setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: isBookmarked }));
+      console.error("북마크 처리 실패:", err);
+      setToastMessage("북마크 처리에 실패했습니다.");
     } finally {
-      setPendingLikeIds((prev) => {
+      setPendingBookmarkIds((prev) => {
         const next = { ...prev };
         delete next[quoteId];
         return next;
@@ -152,70 +218,189 @@ export default function FeedList({
   const handlePoke = async (friendId: number) => {
     try {
       await pokeFriend(friendId);
-      // API 호출 성공 후, 부모에게 받은 onPoke 함수 호출
-      onPoke?.();
+      setToastMessage("콕 찔렀습니다.");
     } catch (err) {
       console.error("콕 찌르기 실패:", err);
-      // 실패 시 사용자에게 알림
-      setErrorMessage("콕 찌르기에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("콕 찌르기에 실패했습니다.");
     }
   };
 
+  useEffect(() => {
+    if (!isFilterOpen) {
+      return;
+    }
+
+    const handleOutsidePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (filterBoxRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      setIsFilterOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsidePointerDown);
+    document.addEventListener("touchstart", handleOutsidePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsidePointerDown);
+      document.removeEventListener("touchstart", handleOutsidePointerDown);
+    };
+  }, [isFilterOpen]);
+
   return (
     <S.FeedList>
-      {showErrorToast && (
+      {toastMessage && (
         <ToastModal
-          isVisible={showErrorToast}
+          isVisible={Boolean(toastMessage)}
           onClose={() => {
-            setShowErrorToast(false);
+            setToastMessage("");
           }}
-          text={errorMessage}
+          text={toastMessage}
+          showOverlay={false}
+          variant="snackbar"
         />
       )}
+      {tagRequestQuoteId !== null && (
+        <ConfirmModal
+          variant="card"
+          question=""
+          lines={[
+            `${tagRequestQuote?.authorNickname ?? "친구"}님의 명언에`,
+            "태그를 요청할까요?",
+          ]}
+          cancelText="취소"
+          confirmText="요청하기"
+          confirmColor="primary"
+          onClose={closeTagRequestConfirm}
+          onConfirm={handleRequest}
+        />
+      )}
+      <S.FilterBox ref={filterBoxRef}>
+        <S.FilterButton
+          type="button"
+          onClick={() => setIsFilterOpen((prev) => !prev)}
+        >
+          <img src={funnelIcon} alt="" />
+          {selectedGroup?.name ?? "전체보기"}
+        </S.FilterButton>
+        {isFilterOpen && (
+          <S.FilterMenu>
+            <S.FilterOption
+              type="button"
+              $active={selectedGroupId === null}
+              onClick={() => {
+                onSelectGroup(null);
+                setIsFilterOpen(false);
+              }}
+            >
+              전체보기
+            </S.FilterOption>
+            {groups.map((group) => (
+              <S.FilterOption
+                key={group.id}
+                type="button"
+                $active={selectedGroupId === group.id}
+                onClick={() => {
+                  onSelectGroup(group.id);
+                  setIsFilterOpen(false);
+                }}
+              >
+                {group.name ?? "그룹"}
+              </S.FilterOption>
+            ))}
+          </S.FilterMenu>
+        )}
+      </S.FilterBox>
       {quotes.length > 0 ? (
         quotes.map((quote, index) => (
-          <QuoteFeed
-            key={quote.id}
-            ref={(el: HTMLDivElement | null) => {
+          <FeedListItem
+            key={`${quote.friendId}-${quote.quoteId ?? "empty"}`}
+            quote={quote}
+            index={index}
+            refCallback={(el) => {
               feedRefs.current[index] = el;
             }}
-            profileImageUrl={quote.authorProfileImage}
-            authorName={quote.authorNickname}
-            bio={quote.authorIntroduction}
-            createDate={quote.createDate}
-            content={quote.content}
-            tag={quote.taggedNicknames}
-            isLiked={quote.isLiked}
-            isLikeDisabled={Boolean(pendingLikeIds[quote.id])}
-            onLike={() => handleLike(quote.id, quote.isLiked)}
-            // Quote가 있을 때만 공유 버튼 활성화
-            onShare={
-              !quote.isSilenced
-                ? () => handleShare(quote.authorNickname, index)
-                : undefined
-            }
-            onRequest={() => {
-              if (quote.quoteId) {
-                handleRequest(quote.quoteId);
-              }
-            }}
-            onPoke={() => {
-              handlePoke(quote.friendId);
-            }}
-            isInArchive={false}
-            isSilenced={quote.isSilenced}
-            timeAgo={quote.timeAgo}
+            isBookmarkPending={Boolean(pendingBookmarkIds[quote.id])}
+            onBookmark={handleBookmark}
+            onShare={handleShare}
+            onRequest={openTagRequestConfirm}
+            onPoke={handlePoke}
+            myNickname={myNickname}
           />
         ))
       ) : !isLoading ? (
         <S.NoFeedbox>
-          <S.NoFeedText>태그할 수 있는 친구가 없어요</S.NoFeedText>
+          <S.NoFeedText>아직 함께 볼 친구 피드가 없어요.</S.NoFeedText>
           <S.NoFeedSubText>
-            친구를 추가하고 나중에 태그를 추가할 수 있어요
+            친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요.
           </S.NoFeedSubText>
         </S.NoFeedbox>
       ) : null}
     </S.FeedList>
+  );
+}
+
+interface FeedListItemProps {
+  quote: QuotesItem;
+  index: number;
+  refCallback: (el: HTMLDivElement | null) => void;
+  isBookmarkPending: boolean;
+  onBookmark: (quoteId: number, isBookmarked: boolean) => void;
+  onShare: (authorNickname: string, index: number) => void;
+  onRequest: (quoteId: number) => void;
+  onPoke: (friendId: number) => void;
+  myNickname: string;
+}
+
+function FeedListItem({
+  quote,
+  index,
+  refCallback,
+  isBookmarkPending,
+  onBookmark,
+  onShare,
+  onRequest,
+  onPoke,
+  myNickname,
+}: FeedListItemProps) {
+  const isAlreadyTagged = Boolean(quote.taggedNicknames?.includes(myNickname));
+  const canRequestTag =
+    !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
+  const shouldCheckTagRequest = canRequestTag && quote.quoteId !== undefined;
+  const { data: tagRequest } = useMyQuoteTagRequestQuery(
+    shouldCheckTagRequest ? quote.quoteId : undefined
+  );
+
+  return (
+    <QuoteFeed
+      ref={refCallback}
+      profileImageUrl={quote.authorProfileImage}
+      authorName={quote.authorNickname}
+      bio={quote.authorIntroduction}
+      createDate={quote.createDate}
+      content={quote.content}
+      tag={quote.taggedNicknames}
+      isBookmarked={quote.isBookmarked}
+      isBookmarkDisabled={quote.isSilenced || isBookmarkPending}
+      onBookmark={() => onBookmark(quote.id, Boolean(quote.isBookmarked))}
+      onShare={
+        !quote.isSilenced
+          ? () => onShare(quote.authorNickname, index)
+          : undefined
+      }
+      onRequest={() => {
+        if (canRequestTag && quote.quoteId !== undefined) {
+          onRequest(quote.quoteId);
+        }
+      }}
+      canRequestTag={canRequestTag}
+      tagRequestStatus={tagRequest?.status ?? "NONE"}
+      onPoke={() => {
+        onPoke(quote.friendId);
+      }}
+      isInArchive={false}
+      isSilenced={quote.isSilenced}
+      timeAgo={quote.timeAgo}
+    />
   );
 }

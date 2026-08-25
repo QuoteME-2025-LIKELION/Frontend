@@ -1,24 +1,15 @@
-import { Global } from "@emotion/react";
-import { useMemo, useRef, useState } from "react";
-import Calendar from "react-calendar";
+import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
-
-import * as S from "./CalendarPage.styles";
-
-type ValuePiece = Date | null;
-
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+import * as List from "@/pages/Archive/components/ArchiveFeedList.styles";
+import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function CalendarPage() {
-  const [value, onChange] = useState<Value>(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const {
@@ -28,18 +19,8 @@ export default function CalendarPage() {
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
 
-  const { onShare } = useOutletContext<ArchiveOutletContext>();
-  const selectedDateString = useMemo(() => {
-    if (value instanceof Date) {
-      return formatDateToYYYYMMDD(value);
-    }
-
-    if (Array.isArray(value) && value.length > 0 && value[0] instanceof Date) {
-      return formatDateToYYYYMMDD(value[0]);
-    }
-
-    return null;
-  }, [value]);
+  const { onShare, selectedDateString } =
+    useOutletContext<ArchiveOutletContext>();
   const { data: filteredFeeds = [] } =
     useArchivesByDateQuery(selectedDateString);
 
@@ -54,7 +35,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <S.Container>
+    <List.Container>
       {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
@@ -63,84 +44,25 @@ export default function CalendarPage() {
           showOverlay={true}
         />
       )}
-      <Global styles={S.CalendarStyles} />
-      <Calendar
-        onChange={onChange}
-        value={value}
-        showNavigation={true}
-        showNeighboringMonth={true}
-        formatMonthYear={(_, date) => {
-          const year = date.getFullYear();
-          const month = date.getMonth() + 1;
-          return `${year}. ${String(month).padStart(2, "0")}`;
-        }}
-        formatShortWeekday={(_, date) => {
-          const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
-          // 캘린더는 기본적으로 일요일부터 시작하므로 date.getDay()를 사용해 인덱싱
-          return weekdays[date.getDay()];
-        }}
-        formatDay={(_, date) => date.toLocaleString("en", { day: "numeric" })}
-        nextLabel={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M6 12L10 8L6 4"
-              stroke="#143858"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        }
-        prevLabel={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M10 12L6 8L10 4"
-              stroke="#143858"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        }
-      />
-      <S.FeedContainer>
-        {filteredFeeds.length > 0 &&
-          filteredFeeds.map((feed, index) => (
-            <QuoteFeed
-              key={feed.id}
-              ref={(el: HTMLDivElement | null) => {
-                feedRefs.current[index] = el;
-              }}
-              authorName={feed.authorName}
-              year={feed.authorBirthYear}
-              content={feed.content}
-              tag={feed.taggedMemberNames}
-              isInArchive={true}
-              onArchiveClick={() =>
-                openDateNavigationConfirm(feed.createDate.slice(0, 10))
-              }
-              onShare={() =>
-                handleShare(
-                  feed.createDate.slice(0, 10),
-                  feed.authorName,
-                  index
-                )
-              }
-            />
-          ))}
-      </S.FeedContainer>
-    </S.Container>
+      {filteredFeeds.length === 0 && (
+        <List.EmptyMessage>작성된 명언이 없습니다</List.EmptyMessage>
+      )}
+      {filteredFeeds.map((feed, index) => {
+        const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);
+        const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
+
+        return (
+          <ArchiveQuoteCard
+            key={feed.id ?? feed.quoteId}
+            ref={(el: HTMLDivElement | null) => {
+              feedRefs.current[index] = el;
+            }}
+            feed={feed}
+            onClick={() => openDateNavigationConfirm(date)}
+            onShare={() => handleShare(date, authorName, index)}
+          />
+        );
+      })}
+    </List.Container>
   );
 }

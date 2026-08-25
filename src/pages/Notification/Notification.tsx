@@ -9,7 +9,6 @@ import {
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
-import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
 import NotificationFilterTabs, {
   type NotificationFilter,
@@ -26,7 +25,7 @@ function groupByDate(list: Notification[]) {
   );
 
   sortedList.forEach((item) => {
-    const groupKey = formatTimeAgo(item.createDate);
+    const groupKey = item.createDate.slice(0, 10);
     if (!map[groupKey]) {
       map[groupKey] = [];
     }
@@ -103,11 +102,15 @@ export default function Notification() {
           navigate(`/home/${notification.createDate.slice(0, 10)}`);
           break;
         case "TAG_REQUEST":
-          // id로 명언 찾는 API가 아직 미비해서 일단 home으로 이동
-          navigate("/home");
+          navigate("/fix", {
+            state: {
+              date: notification.createDate.slice(0, 10),
+              quoteId: notification.targetId,
+              requestedNickname: notification.senderName,
+            },
+          });
           break;
       }
-
     },
     [navigate, markNotificationRead]
   );

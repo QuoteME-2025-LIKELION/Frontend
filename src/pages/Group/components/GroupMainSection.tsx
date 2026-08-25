@@ -79,8 +79,8 @@ export default function GroupMainSection({
           </S.MemberList>
         ) : (
           <S.EmptyMemberBox>
-            <strong>멤버가 없어요</strong>
-            <span>함께할 멤버를 초대해 보세요</span>
+            <strong>멤버가 없어요.</strong>
+            <span>함께할 멤버를 초대해 보세요.</span>
           </S.EmptyMemberBox>
         )}
       </S.Section>

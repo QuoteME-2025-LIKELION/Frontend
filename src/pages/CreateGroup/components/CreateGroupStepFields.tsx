@@ -36,9 +36,9 @@ export default function CreateGroupStepFields({
             <S.StepTitleContainer>
               <S.MTitle>
                 그룹 이름을 <br />
-                설정해 주세요
+                설정해 주세요.
               </S.MTitle>
-              <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요</S.STitle>
+              <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요.</S.STitle>
             </S.StepTitleContainer>
             <S.InputBox>
               <Input
@@ -61,9 +61,9 @@ export default function CreateGroupStepFields({
             <S.StepTitleContainer>
               <S.MTitle>
                 그룹 메시지를 <br />
-                설정해 주세요
+                설정해 주세요.
               </S.MTitle>
-              <S.STitle>그룹 메시지는 누구나 언제든 수정할 수 있어요</S.STitle>
+              <S.STitle>그룹 메시지는 누구나 언제든 수정할 수 있어요.</S.STitle>
             </S.StepTitleContainer>
             <S.InputBox>
               <Input

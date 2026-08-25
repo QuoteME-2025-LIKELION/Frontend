@@ -4,12 +4,12 @@ import theme from "@/styles/theme";
 
 export const Container = styled.div<{ $isInArchive?: boolean }>`
   background-color: ${({ $isInArchive }) =>
-    $isInArchive ? `${theme.colors.primary}` : "#fff"};
+    $isInArchive ? `${theme.colors.primary}` : "transparent"};
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.75rem; /* 28px */
+  gap: 1.25rem;
   cursor: ${({ $isInArchive }) => ($isInArchive ? "pointer" : "default")};
 `;
 
@@ -27,23 +27,23 @@ export const ArchiveContainer = styled.div`
 
 export const ProfileContainer = styled.div`
   display: grid;
-  grid-template-columns: 2.8125rem 1fr;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
   justify-content: space-between;
   align-items: center;
-  gap: 0.6875rem; /* 11px */
+  gap: 0.625rem;
   width: 100%;
 `;
 
 export const ProfileImg = styled.img`
-  width: 2.8125rem;
-  height: 2.8125rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   object-fit: cover;
 `;
 
 export const DefaultProfileImg = styled.div`
-  width: 2.8125rem;
-  height: 2.8125rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   background-color: ${theme.colors.territory};
 `;
@@ -52,7 +52,8 @@ export const ProfileInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.5rem; /* 8px */
+  gap: 0.25rem;
+  min-width: 0;
   width: 100%;
 `;
 
@@ -60,8 +61,8 @@ export const Username = styled.div<{ $isInArchive?: boolean }>`
   ${theme.fonts.dotum}
   color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
   font-weight: 700;
-  font-size: 0.9375rem; /* 15px */
-  letter-spacing: -0.3px;
+  font-size: 0.8125rem;
+  letter-spacing: 0;
   width: 100%;
 `;
 
@@ -75,9 +76,17 @@ export const IntroTimeBox = styled.div<{ $isInArchive?: boolean }>`
     ${theme.fonts.dotum}
     color: ${({ $isInArchive }) =>
       $isInArchive ? "#fff" : theme.colors.territory};
-    font-size: 0.875rem; /* 14px */
+    font-size: 0.6875rem;
     font-weight: 500;
-    letter-spacing: -0.28px;
+    line-height: 120%;
+    letter-spacing: 0;
+
+    &:first-of-type {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 `;
 
@@ -88,7 +97,7 @@ export const TextContainer = styled.div<{
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 1.125rem; /* 18px */
+  gap: 1rem;
   height: 1rem;
   justify-content: ${({ $isInArchive }) =>
     $isInArchive ? "center" : "flex-start"};
@@ -109,7 +118,7 @@ export const TextContainer = styled.div<{
 
 export const Quotation = styled.div`
   font-size: 2.5rem; /* 40px */
-  letter-spacing: -0.8px;
+  letter-spacing: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,7 +127,7 @@ export const Quotation = styled.div`
 
 export const Text = styled.div`
   font-size: 1rem; /* 16px */
-  letter-spacing: -0.28px;
+  letter-spacing: 0;
   line-height: 1.05 !important;
 `;
 
@@ -136,6 +145,7 @@ export const TagContainer = styled.div<{ $isInArchive?: boolean }>`
 `;
 
 export const TagBox = styled.div`
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.3125rem; /* 5px */
@@ -173,6 +183,12 @@ export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`
   font-weight: 500;
   letter-spacing: -0.24px;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  &:disabled {
+    color: ${theme.colors.territory};
+    cursor: default;
+  }
 `;
 
 export const PokeBtn = styled(RequestBtn)``;
@@ -182,19 +198,32 @@ export const PlusBtn = styled(RequestBtn)``;
 export const BtnBox = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.3125rem; /* 5px */
+  gap: 0.75rem;
+  flex: 0 0 auto;
 
   button {
     background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 
     &:active {
       background-color: rgba(0, 0, 0, 0.1);
     }
+
+    &:disabled {
+      cursor: default;
+    }
   }
+`;
+
+export const IconImg = styled.img<{ $isInArchive?: boolean }>`
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+  filter: ${({ $isInArchive }) =>
+    $isInArchive ? "brightness(0) invert(1)" : "none"};
 `;
