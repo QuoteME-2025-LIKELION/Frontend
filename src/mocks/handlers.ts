@@ -597,14 +597,24 @@ export const handlers = [
   http.post("/api/quotes", async ({ request }) => {
     const body = (await request.json()) as {
       content: string;
+      originalContent?: string | null;
+      summary?: string | null;
       taggedMemberIds?: number[];
     };
+    const taggedMemberNames = (body.taggedMemberIds || [])
+      .map((id) => getMockMember(id)?.nickname)
+      .filter(Boolean);
+
     return HttpResponse.json(
       {
-        quoteId: Date.now(),
+        id: Date.now(),
         content: body.content,
-        taggedMembers: (body.taggedMemberIds || []).map((id) => `멤버_${id}`),
-        createdAt: new Date().toISOString(),
+        originalContent: body.originalContent ?? null,
+        summary: body.summary ?? null,
+        authorName: null,
+        authorBirthYear: 2000,
+        taggedMemberNames,
+        createDate: new Date().toISOString(),
       },
       { status: 201 }
     );

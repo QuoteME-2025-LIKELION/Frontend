@@ -171,6 +171,8 @@ export default function NewQuote({
       try {
         await createQuote({
           content: quote.content,
+          originalContent: quote.originalContent,
+          summary: quote.summary,
           authorName: quote.authorName,
           authorBirthYear: quote.authorBirthYear,
           taggedMemberIds: selectedIds,

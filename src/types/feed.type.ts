@@ -78,6 +78,8 @@ export interface QuoteDraft {
 export interface CreatedQuote {
   id?: number;
   content: string;
+  originalContent?: string | null;
+  summary?: string | null;
   authorName: string;
   authorBirthYear?: number | null;
   taggedNicknames?: string[];

@@ -88,6 +88,8 @@ export default function Write() {
             onSelectComplete={(aiText) => {
               setCreatedQuote({
                 content: aiText,
+                originalContent: diaryText,
+                summary: aiText,
                 authorName: "QuoteMe AI",
                 authorBirthYear: null,
               });
@@ -101,9 +103,7 @@ export default function Write() {
             quote={createdQuote}
             onBack={() =>
               setActiveStep(
-                createdQuote.authorName === "QuoteMe AI"
-                  ? "recommend"
-                  : "write"
+                createdQuote.authorName === "QuoteMe AI" ? "recommend" : "write"
               )
             }
           />
