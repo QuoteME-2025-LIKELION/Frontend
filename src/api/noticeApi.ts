@@ -1,11 +1,12 @@
 import api from "@/api/api";
 
-export type NoticeType = "NOTICE" | "EVENT" | "UPDATE";
+export type NoticeType = "IMPORTANT" | "UPDATE" | "NOTICE" | "EVENT";
 
 export interface NoticeSummary {
   noticeId: number;
   type: NoticeType;
   title: string;
+  content?: string;
   createdAt: string;
 }
 

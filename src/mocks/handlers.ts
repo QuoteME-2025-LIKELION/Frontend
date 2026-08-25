@@ -1076,16 +1076,52 @@ export const handlers = [
   // ==========================================
   http.get("/api/notices", ({ request }) => {
     const url = new URL(request.url);
-    const type = url.searchParams.get("type") || "NOTICE";
+    const type = url.searchParams.get("type");
 
-    return HttpResponse.json([
+    const notices = [
       {
         noticeId: 1,
-        type,
+        type: "IMPORTANT",
         title: "QuoteMe 서비스 업데이트 안내",
-        createdAt: "2025-11-07T10:00:00",
+        content: "QuoteMe 신규 기능이 순차적으로 적용됩니다.",
+        createdAt: "2026-02-02T10:00:00",
       },
-    ]);
+      {
+        noticeId: 2,
+        type: "IMPORTANT",
+        title: "개인정보 처리방침 개정 안내",
+        content: "개인정보 처리방침 일부 항목이 개정됩니다.",
+        createdAt: "2026-02-02T09:00:00",
+      },
+      {
+        noticeId: 3,
+        type: "UPDATE",
+        title: "소식 제목",
+        content:
+          "소식 내용이 들어가는 자리입니다. QuoteMe에서 달라진 기능과 안내 사항을 전해드려요.",
+        createdAt: "2026-02-01T10:00:00",
+      },
+      {
+        noticeId: 4,
+        type: "UPDATE",
+        title: "소식 제목",
+        content:
+          "소식 내용이 들어가는 자리입니다. 친구와 그룹 기능의 변경 사항을 확인해 주세요.",
+        createdAt: "2026-02-01T09:00:00",
+      },
+      {
+        noticeId: 5,
+        type: "UPDATE",
+        title: "소식 제목",
+        content:
+          "소식 내용이 들어가는 자리입니다. 알림과 공지사항 화면이 업데이트되었습니다.",
+        createdAt: "2026-02-01T08:00:00",
+      },
+    ];
+
+    return HttpResponse.json(
+      type ? notices.filter((notice) => notice.type === type) : notices
+    );
   }),
 
   http.get("/api/notices/:noticeId", ({ params }) => {

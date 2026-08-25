@@ -97,7 +97,7 @@ export default function SettingPage() {
             </S.SettingBtn>
             <S.SettingBtn
               style={{ borderBottom: "1px solid #DDD" }}
-              onClick={() => setToastType("comingSoon")}
+              onClick={() => navigate("/notices")}
             >
               공지사항
             </S.SettingBtn>
