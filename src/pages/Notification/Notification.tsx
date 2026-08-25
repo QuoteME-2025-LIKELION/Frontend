@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
@@ -15,26 +15,6 @@ import NotificationFilterTabs, {
 } from "./components/NotificationFilterTabs";
 import NotificationList from "./components/NotificationList";
 import * as S from "./Notification.styles";
-// 날짜별 그룹핑
-function groupByDate(list: Notification[]) {
-  const map: Record<string, Notification[]> = {};
-  // 최신순으로 먼저 정렬
-  const sortedList = [...list].sort(
-    (a, b) =>
-      new Date(b.createDate).getTime() - new Date(a.createDate).getTime()
-  );
-
-  sortedList.forEach((item) => {
-    const groupKey = item.createDate.slice(0, 10);
-    if (!map[groupKey]) {
-      map[groupKey] = [];
-    }
-    map[groupKey].push(item);
-  });
-
-  // map의 생성 순서가 그룹의 시간 순서를 보장
-  return Object.entries(map);
-}
 
 export default function Notification() {
   const [selectedFilter, setSelectedFilter] =
@@ -44,7 +24,9 @@ export default function Notification() {
   const { setHasUnread } = useNotificationStore();
 
   // 알림 목록 조회와 읽음 처리 mutation을 React Query로 관리
-  const { data: notifications = [], isError } = useNotificationsQuery();
+  const { data: notifications = [], isError } = useNotificationsQuery(
+    selectedFilter ?? undefined
+  );
   const { mutateAsync: markNotificationRead } =
     useMarkNotificationReadMutation();
 
@@ -58,22 +40,9 @@ export default function Notification() {
     setHasUnread(notifications.some((notification) => !notification.isRead));
   }, [isError, notifications, setHasUnread]);
 
-  // 필터 적용된 배열
-  const filtered = useMemo(() => {
-    if (selectedFilter === "TAGS") {
-      return notifications.filter(
-        (n) => n.type === "TAG" || n.type === "TAG_REQUEST"
-      );
-    }
-    return selectedFilter
-      ? notifications.filter((n) => n.type === selectedFilter)
-      : notifications;
-  }, [selectedFilter, notifications]);
-
-  // 날짜 그룹핑 (필터 없을 때만 사용)
-  const grouped = useMemo(
-    () => (selectedFilter === null ? groupByDate(filtered) : []),
-    [filtered, selectedFilter]
+  const sortedNotifications = [...notifications].sort(
+    (a, b) =>
+      new Date(b.createDate).getTime() - new Date(a.createDate).getTime()
   );
 
   const handleNotificationClick = useCallback(
@@ -131,9 +100,7 @@ export default function Notification() {
           onChangeFilter={setSelectedFilter}
         />
         <NotificationList
-          selectedFilter={selectedFilter}
-          groupedNotifications={grouped}
-          filteredNotifications={filtered}
+          notifications={sortedNotifications}
           onNotificationClick={handleNotificationClick}
         />
       </S.Container>

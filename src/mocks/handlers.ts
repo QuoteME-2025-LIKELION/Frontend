@@ -1017,7 +1017,7 @@ export const handlers = [
       },
       {
         id: 3,
-        category: "POKE",
+        category: "FRIEND",
         type: "POKE",
         message: "조니님이 콕 찔렀습니다.",
         isRead: true,

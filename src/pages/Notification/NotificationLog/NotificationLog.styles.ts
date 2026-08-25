@@ -4,14 +4,14 @@ import theme from "@/styles/theme";
 
 export const Container = styled.button`
   display: grid;
-  grid-template-columns: 1rem 1fr;
-  align-items: center;
+  grid-template-columns: 2.75rem 1fr;
+  align-items: start;
   width: 100%;
-  max-width: 18.5625rem; /* 297px */
-  background-color: #fff;
-  gap: 0.75rem; /* 12px */
-  padding: 0.3125rem 0; /* 5px 0 */
-  border-bottom: 0.5px solid #000;
+  background-color: transparent;
+  gap: 0.75rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
 `;
 
 export const Wrapper = styled.div`
@@ -19,13 +19,16 @@ export const Wrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  height: 100%;
   gap: 0.75rem; /* 12px */
   overflow: hidden;
 `;
 
 export const TextBox = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   justify-self: flex-start;
   flex-grow: 1;
   flex-shrink: 1;
@@ -34,20 +37,43 @@ export const TextBox = styled.div`
   ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.875rem; /* 14px */
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.28px;
   overflow: hidden;
 `;
 
-export const Nickname = styled.div`
-  font-weight: 600;
+export const Icon = styled.span<{ $variant: "group" | "friend" | "tag" }>`
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ $variant }) =>
+    $variant === "friend" ? "#fff" : theme.colors.primary};
+  border: ${({ $variant }) =>
+    $variant === "friend" ? "1px solid #ddd" : "none"};
+  color: ${({ $variant }) => ($variant === "friend" ? "#000" : "#fff")};
+  ${theme.fonts.batang};
+  font-size: 1.5rem;
+  font-weight: 700;
   flex-shrink: 0;
+`;
+
+export const Category = styled.span`
+  margin-bottom: 0.25rem;
+  ${theme.fonts.pretendard};
+  color: #4f7fa5;
+  font-size: 0.75rem;
+  font-weight: 500;
 `;
 
 export const Message = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.35;
 `;
 
 export const Timestamp = styled.div`
