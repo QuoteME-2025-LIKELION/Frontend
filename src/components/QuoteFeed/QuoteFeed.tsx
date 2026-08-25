@@ -24,6 +24,7 @@ interface QuoteFeedProps {
   onBookmark?: () => void;
   onShare?: () => void;
   onRequest?: () => void;
+  canRequestTag?: boolean;
   tagRequestStatus?: MyTagRequestStatus;
   onPoke?: () => void;
   isInArchive?: boolean;
@@ -86,6 +87,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       onBookmark = () => {},
       onShare = () => {},
       onRequest = () => {},
+      canRequestTag = true,
       tagRequestStatus = "NONE",
       onPoke = () => {},
       isInArchive = false,
@@ -103,6 +105,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         : "";
     const isNotTagged = !tag || tag.length === 0 || isSilenced;
     const isTagRequestPending = tagRequestStatus === "PENDING";
+    const isTagRequestDisabled = !canRequestTag || isTagRequestPending;
 
     // 아카이브 페이지에 있을 땐 피드 클릭 가능
     const handleArchiveClick = isInArchive ? onArchiveClick : undefined;
@@ -176,26 +179,32 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                     {name}
                   </S.Name>
                 ))}
-                <S.PlusBtn
-                  type="button"
-                  onClick={(event) => handleActionClick(event, onRequest)}
-                  $isInArchive={isInArchive}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="8"
-                    height="8"
-                    viewBox="0 0 8 8"
-                    fill="none"
+                {canRequestTag && (
+                  <S.PlusBtn
+                    type="button"
+                    aria-label={
+                      isTagRequestPending ? "태그 요청됨" : "태그 요청하기"
+                    }
+                    disabled={isTagRequestDisabled}
+                    onClick={(event) => handleActionClick(event, onRequest)}
+                    $isInArchive={isInArchive}
                   >
-                    <path
-                      d="M1.66675 3.99999H6.33341M4.00008 1.66666V6.33332"
-                      stroke={isInArchive ? "#FFF" : "#959595"}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </S.PlusBtn>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="8"
+                      height="8"
+                      viewBox="0 0 8 8"
+                      fill="none"
+                    >
+                      <path
+                        d="M1.66675 3.99999H6.33341M4.00008 1.66666V6.33332"
+                        stroke={isInArchive ? "#FFF" : "#959595"}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </S.PlusBtn>
+                )}
               </S.Tag>
             ) : isSilenced ? (
               <S.PokeBtn
@@ -208,7 +217,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             ) : (
               <S.RequestBtn
                 type="button"
-                disabled={isTagRequestPending}
+                disabled={isTagRequestDisabled}
                 onClick={(event) => handleActionClick(event, onRequest)}
                 $isInArchive={isInArchive}
               >

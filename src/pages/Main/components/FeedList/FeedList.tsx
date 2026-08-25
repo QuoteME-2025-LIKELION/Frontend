@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import axios from "axios";
 
 import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
@@ -63,6 +65,9 @@ export default function FeedList({
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
   const [toastMessage, setToastMessage] = useState("");
+  const [tagRequestQuoteId, setTagRequestQuoteId] = useState<number | null>(
+    null
+  );
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const selectedGroup = groups.find((group) => group.id === selectedGroupId);
   const selectedGroupMembers = useMemo(() => {
@@ -124,13 +129,40 @@ export default function FeedList({
     });
   }, [bookmarkOverrides, otherQuotes, visibleFriends]);
 
-  const handleRequest = async (quoteId: number) => {
+  const tagRequestQuote = quotes.find(
+    (quote) => quote.quoteId === tagRequestQuoteId
+  );
+
+  const openTagRequestConfirm = (quoteId: number) => {
+    setTagRequestQuoteId(quoteId);
+  };
+
+  const closeTagRequestConfirm = () => {
+    setTagRequestQuoteId(null);
+  };
+
+  const handleRequest = async () => {
+    if (!tagRequestQuoteId) {
+      return;
+    }
+
     try {
-      await requestQuoteTag(quoteId);
+      await requestQuoteTag(tagRequestQuoteId);
       setToastMessage("태그가 요청되었습니다.");
     } catch (err) {
       console.error("태그 요청 실패:", err);
-      setToastMessage("태그 요청에 실패했습니다.");
+      const status = axios.isAxiosError(err) ? err.response?.status : null;
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.message
+        : "";
+
+      if (status === 409 || String(message).includes("이미")) {
+        setToastMessage("이미 태그를 요청했습니다.");
+      } else {
+        setToastMessage("태그 요청에 실패했습니다.");
+      }
+    } finally {
+      closeTagRequestConfirm();
     }
   };
 
@@ -218,6 +250,21 @@ export default function FeedList({
           variant="snackbar"
         />
       )}
+      {tagRequestQuoteId && (
+        <ConfirmModal
+          variant="card"
+          question=""
+          lines={[
+            `${tagRequestQuote?.authorNickname ?? "친구"}님의 명언에`,
+            "태그를 요청할까요?",
+          ]}
+          cancelText="취소"
+          confirmText="요청하기"
+          confirmColor="primary"
+          onClose={closeTagRequestConfirm}
+          onConfirm={handleRequest}
+        />
+      )}
       <S.FilterBox ref={filterBoxRef}>
         <S.FilterButton
           type="button"
@@ -266,8 +313,9 @@ export default function FeedList({
             isBookmarkPending={Boolean(pendingBookmarkIds[quote.id])}
             onBookmark={handleBookmark}
             onShare={handleShare}
-            onRequest={handleRequest}
+            onRequest={openTagRequestConfirm}
             onPoke={handlePoke}
+            myNickname={myNickname}
           />
         ))
       ) : !isLoading ? (
@@ -291,6 +339,7 @@ interface FeedListItemProps {
   onShare: (authorNickname: string, index: number) => void;
   onRequest: (quoteId: number) => void;
   onPoke: (friendId: number) => void;
+  myNickname: string;
 }
 
 function FeedListItem({
@@ -302,11 +351,12 @@ function FeedListItem({
   onShare,
   onRequest,
   onPoke,
+  myNickname,
 }: FeedListItemProps) {
-  const shouldCheckTagRequest =
-    !quote.isSilenced &&
-    Boolean(quote.quoteId) &&
-    (!quote.taggedNicknames || quote.taggedNicknames.length === 0);
+  const isAlreadyTagged = Boolean(quote.taggedNicknames?.includes(myNickname));
+  const canRequestTag =
+    !quote.isSilenced && Boolean(quote.quoteId) && !isAlreadyTagged;
+  const shouldCheckTagRequest = canRequestTag && Boolean(quote.quoteId);
   const { data: tagRequest } = useMyQuoteTagRequestQuery(
     shouldCheckTagRequest ? quote.quoteId : undefined
   );
@@ -329,10 +379,11 @@ function FeedListItem({
           : undefined
       }
       onRequest={() => {
-        if (quote.quoteId) {
+        if (canRequestTag && quote.quoteId) {
           onRequest(quote.quoteId);
         }
       }}
+      canRequestTag={canRequestTag}
       tagRequestStatus={tagRequest?.status ?? "NONE"}
       onPoke={() => {
         onPoke(quote.friendId);
