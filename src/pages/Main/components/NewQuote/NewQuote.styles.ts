@@ -12,14 +12,31 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 1.5rem 2.4375rem;
+  overflow: hidden;
 `;
 
 export const TagBox = styled.div`
   width: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+`;
+
+export const TagScrollArea = styled.div`
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const Title = styled.div`
@@ -332,6 +349,7 @@ export const Checkbox = styled.span<{ $isSelected: boolean }>`
 export const ActionBar = styled.div<{ $single: boolean }>`
   width: 100%;
   margin-top: auto;
+  padding-top: 1.5rem;
   display: grid;
   grid-template-columns: ${({ $single }) =>
     $single ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))"};

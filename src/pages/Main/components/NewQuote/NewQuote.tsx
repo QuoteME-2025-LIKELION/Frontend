@@ -254,124 +254,126 @@ export default function NewQuote({
           onChange={(e) => setKeyword(e.target.value)}
           onClear={() => setKeyword("")}
         />
-        {mode === "fix" && pendingRequestItems.length > 0 && (
-          <S.TagRequestSection>
-            <S.TagRequestHeader>
-              <S.TagRequestTitle>태그 요청</S.TagRequestTitle>
-              <S.TagRequestCount>
-                {pendingRequestItems.length}
-              </S.TagRequestCount>
-            </S.TagRequestHeader>
-            <S.TagRequestList>
-              {pendingRequestItems.map((request) => (
-                <S.TagRequestItem key={request.requestId}>
-                  {request.requester?.profileImage ? (
-                    <S.RequestProfileImg
-                      src={request.requester.profileImage}
-                      alt=""
-                    />
+        <S.TagScrollArea>
+          {mode === "fix" && pendingRequestItems.length > 0 && (
+            <S.TagRequestSection>
+              <S.TagRequestHeader>
+                <S.TagRequestTitle>태그 요청</S.TagRequestTitle>
+                <S.TagRequestCount>
+                  {pendingRequestItems.length}
+                </S.TagRequestCount>
+              </S.TagRequestHeader>
+              <S.TagRequestList>
+                {pendingRequestItems.map((request) => (
+                  <S.TagRequestItem key={request.requestId}>
+                    {request.requester?.profileImage ? (
+                      <S.RequestProfileImg
+                        src={request.requester.profileImage}
+                        alt=""
+                      />
+                    ) : (
+                      <S.RequestDefaultProfileImg>Q</S.RequestDefaultProfileImg>
+                    )}
+                    <S.TagRequestUserBox>
+                      <S.TagRequestUsername>
+                        {request.requesterNickname}
+                      </S.TagRequestUsername>
+                      <S.TagRequestState $decision={request.decision}>
+                        {request.decision === "accept"
+                          ? "수락 예정"
+                          : "거절 예정"}
+                      </S.TagRequestState>
+                    </S.TagRequestUserBox>
+                    <S.TagRequestActions>
+                      <S.TagRequestButton
+                        type="button"
+                        $active={request.decision === "accept"}
+                        onClick={() =>
+                          decideTagRequest(
+                            request.requestId,
+                            request.requesterNickname,
+                            "accept"
+                          )
+                        }
+                      >
+                        수락
+                      </S.TagRequestButton>
+                      <S.TagRequestButton
+                        type="button"
+                        $active={request.decision === "reject"}
+                        onClick={() =>
+                          decideTagRequest(
+                            request.requestId,
+                            request.requesterNickname,
+                            "reject"
+                          )
+                        }
+                      >
+                        거절
+                      </S.TagRequestButton>
+                    </S.TagRequestActions>
+                  </S.TagRequestItem>
+                ))}
+              </S.TagRequestList>
+            </S.TagRequestSection>
+          )}
+          <S.SelectedList $isEmpty={selectedFriends.length === 0}>
+            {selectedFriends.map((friend) => (
+              <S.SelectedUser key={friend.id}>
+                <S.SelectedAvatar>
+                  {friend.profileImage ? (
+                    <img src={friend.profileImage} alt="" />
                   ) : (
-                    <S.RequestDefaultProfileImg>Q</S.RequestDefaultProfileImg>
+                    <span>Q</span>
                   )}
-                  <S.TagRequestUserBox>
-                    <S.TagRequestUsername>
-                      {request.requesterNickname}
-                    </S.TagRequestUsername>
-                    <S.TagRequestState $decision={request.decision}>
-                      {request.decision === "accept"
-                        ? "수락 예정"
-                        : "거절 예정"}
-                    </S.TagRequestState>
-                  </S.TagRequestUserBox>
-                  <S.TagRequestActions>
-                    <S.TagRequestButton
-                      type="button"
-                      $active={request.decision === "accept"}
-                      onClick={() =>
-                        decideTagRequest(
-                          request.requestId,
-                          request.requesterNickname,
-                          "accept"
-                        )
-                      }
-                    >
-                      수락
-                    </S.TagRequestButton>
-                    <S.TagRequestButton
-                      type="button"
-                      $active={request.decision === "reject"}
-                      onClick={() =>
-                        decideTagRequest(
-                          request.requestId,
-                          request.requesterNickname,
-                          "reject"
-                        )
-                      }
-                    >
-                      거절
-                    </S.TagRequestButton>
-                  </S.TagRequestActions>
-                </S.TagRequestItem>
-              ))}
-            </S.TagRequestList>
-          </S.TagRequestSection>
-        )}
-        <S.SelectedList $isEmpty={selectedFriends.length === 0}>
-          {selectedFriends.map((friend) => (
-            <S.SelectedUser key={friend.id}>
-              <S.SelectedAvatar>
-                {friend.profileImage ? (
-                  <img src={friend.profileImage} alt="" />
-                ) : (
-                  <span>Q</span>
-                )}
-              </S.SelectedAvatar>
-              <S.RemoveSelectedButton
-                type="button"
-                aria-label={`${friend.nickname} 태그 제거`}
-                onClick={() => toggleSelect(friend.id)}
-              >
-                ×
-              </S.RemoveSelectedButton>
-              <span>{friend.nickname}</span>
-            </S.SelectedUser>
-          ))}
-        </S.SelectedList>
-        <S.TagList>
-          {filteredFriends.map((friend, index) => {
-            const isSelected = selectedIds.includes(friend.id);
-            const isLast = index === filteredFriends.length - 1;
-            const isPendingRequester = pendingRequesterNames.has(
-              friend.nickname
-            );
+                </S.SelectedAvatar>
+                <S.RemoveSelectedButton
+                  type="button"
+                  aria-label={`${friend.nickname} 태그 제거`}
+                  onClick={() => toggleSelect(friend.id)}
+                >
+                  ×
+                </S.RemoveSelectedButton>
+                <span>{friend.nickname}</span>
+              </S.SelectedUser>
+            ))}
+          </S.SelectedList>
+          <S.TagList>
+            {filteredFriends.map((friend, index) => {
+              const isSelected = selectedIds.includes(friend.id);
+              const isLast = index === filteredFriends.length - 1;
+              const isPendingRequester = pendingRequesterNames.has(
+                friend.nickname
+              );
 
-            return (
-              <S.TagItem
-                key={friend.id}
-                type="button"
-                $showBorder={!isLast}
-                onClick={() => toggleSelect(friend.id)}
-              >
-                {friend.profileImage ? (
-                  <S.ProfileImg src={friend.profileImage} alt="" />
-                ) : (
-                  <S.DefaultProfileImg>Q</S.DefaultProfileImg>
-                )}
-                <S.UserBox>
-                  <S.Username>{friend.nickname}</S.Username>
-                  <S.Intro>
-                    {isPendingRequester
-                      ? "태그 요청을 보낸 친구예요."
-                      : friend.introduction}
-                  </S.Intro>
-                </S.UserBox>
-                <S.Checkbox $isSelected={isSelected}>
-                  {isSelected && "✓"}
-                </S.Checkbox>
-              </S.TagItem>
-            );
-          })}
-        </S.TagList>
+              return (
+                <S.TagItem
+                  key={friend.id}
+                  type="button"
+                  $showBorder={!isLast}
+                  onClick={() => toggleSelect(friend.id)}
+                >
+                  {friend.profileImage ? (
+                    <S.ProfileImg src={friend.profileImage} alt="" />
+                  ) : (
+                    <S.DefaultProfileImg>Q</S.DefaultProfileImg>
+                  )}
+                  <S.UserBox>
+                    <S.Username>{friend.nickname}</S.Username>
+                    <S.Intro>
+                      {isPendingRequester
+                        ? "태그 요청을 보낸 친구예요."
+                        : friend.introduction}
+                    </S.Intro>
+                  </S.UserBox>
+                  <S.Checkbox $isSelected={isSelected}>
+                    {isSelected && "✓"}
+                  </S.Checkbox>
+                </S.TagItem>
+              );
+            })}
+          </S.TagList>
+        </S.TagScrollArea>
       </S.TagBox>
       <S.ActionBar $single={mode === "fix"}>
         {mode === "create" && (
