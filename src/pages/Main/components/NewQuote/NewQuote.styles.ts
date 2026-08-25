@@ -42,6 +42,130 @@ export const Description = styled.p`
   text-align: center;
 `;
 
+export const TagRequestSection = styled.section`
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+`;
+
+export const TagRequestHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+`;
+
+export const TagRequestTitle = styled.div`
+  ${theme.fonts.dotum}
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0;
+`;
+
+export const TagRequestCount = styled.span`
+  min-width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.primary};
+  ${theme.fonts.pretendard}
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.125rem;
+  text-align: center;
+`;
+
+export const TagRequestList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const TagRequestItem = styled.div`
+  min-height: 3.375rem;
+  display: grid;
+  grid-template-columns: 2.375rem minmax(0, 1fr) auto;
+  gap: 0.625rem;
+  align-items: center;
+`;
+
+export const RequestProfileImg = styled.img`
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const RequestDefaultProfileImg = styled.div`
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 50%;
+  background-color: ${theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.batang}
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 100%;
+`;
+
+export const TagRequestUserBox = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+export const TagRequestUsername = styled.div`
+  ${theme.fonts.dotum}
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0;
+`;
+
+export const TagRequestState = styled.div<{
+  $decision: "accept" | "reject";
+}>`
+  ${theme.fonts.dotum}
+  color: ${({ $decision }) =>
+    $decision === "accept" ? theme.colors.primary : theme.colors.territory};
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: 0;
+`;
+
+export const TagRequestActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+`;
+
+export const TagRequestButton = styled.button<{ $active: boolean }>`
+  min-width: 2.75rem;
+  min-height: 1.875rem;
+  padding: 0 0.625rem;
+  border: 1px solid
+    ${({ $active }) => ($active ? theme.colors.primary : "#dedede")};
+  background-color: ${({ $active }) =>
+    $active ? theme.colors.primary : "transparent"};
+  ${theme.fonts.pretendard}
+  color: ${({ $active }) => ($active ? "#fff" : "#000")};
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 120%;
+  cursor: pointer;
+`;
+
 export const SelectedList = styled.div<{ $isEmpty: boolean }>`
   width: calc(100% + 3rem);
   min-height: 4.375rem;

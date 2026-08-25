@@ -188,6 +188,7 @@ const mockQuoteTagRequestsByQuoteId: Record<
 > = {
   1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
 };
+let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
 
 const mockMyTagRequestStatusByQuoteId: Record<
   number,
@@ -720,7 +721,7 @@ export const handlers = [
           authorNickname: "손지수",
           birthYear: 2000,
           originalContent: null,
-          taggedNicknames: ["뮤랄라", "스페이스"],
+          taggedNicknames: mockMyQuoteTaggedNicknames,
         },
       ],
       otherQuotes,
@@ -760,7 +761,11 @@ export const handlers = [
   // 6. 태그 요청 (Tag Requests)
   // ==========================================
   http.patch("/api/quotes/:quoteId/tags", async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as { taggedMemberIds?: number[] };
+    mockMyQuoteTaggedNicknames = (body.taggedMemberIds ?? [])
+      .map((id) => getMockMember(id)?.nickname)
+      .filter(Boolean);
+
     return HttpResponse.json(body);
   }),
 
@@ -797,6 +802,12 @@ export const handlers = [
     }
 
     request.request.status = "ACCEPTED";
+    mockMyQuoteTaggedNicknames = Array.from(
+      new Set([
+        ...mockMyQuoteTaggedNicknames,
+        request.request.requesterNickname,
+      ])
+    );
 
     return new HttpResponse(null, { status: 200 });
   }),
