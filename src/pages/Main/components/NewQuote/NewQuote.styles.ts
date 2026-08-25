@@ -77,12 +77,12 @@ export const TagRequestHeader = styled.div`
 `;
 
 export const TagRequestTitle = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const TagRequestCount = styled.span`
@@ -141,24 +141,24 @@ export const TagRequestUserBox = styled.div`
 `;
 
 export const TagRequestUsername = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const TagRequestState = styled.div<{
   $decision: "accept" | "reject";
 }>`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: ${({ $decision }) =>
     $decision === "accept" ? theme.colors.primary : theme.colors.territory};
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const TagRequestActions = styled.div`
@@ -211,12 +211,12 @@ export const SelectedUser = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const SelectedAvatar = styled.div`
@@ -311,21 +311,21 @@ export const UserBox = styled.div`
 `;
 
 export const Username = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const Intro = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

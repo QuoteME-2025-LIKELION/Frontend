@@ -6,7 +6,7 @@
  * @example
  * // 컴포넌트 스타일 파일 내부
  * const Container = style.div`
- *  ${theme.fonts.dotum} // 폰트는 이렇게만 써도 됨
+ *  ${theme.fonts.pretendard} // 폰트는 이렇게만 써도 됨
  *  color: ${theme.colors.primary};
  * `
  */
@@ -22,8 +22,6 @@ const theme = {
   },
   // 아예 font-family 자체를 관리
   fonts: {
-    dotum:
-      "font-family: 'KoPubWorldDotum', 'Noto Sans KR', sans-serif; line-height: 1;",
     batang: "font-family: 'KoPubWorldBatang', serif; line-height: 1;",
     pretendard:
       "font-family: 'Pretendard Variable','Noto Sans KR', sans-serif; line-height: 1;",

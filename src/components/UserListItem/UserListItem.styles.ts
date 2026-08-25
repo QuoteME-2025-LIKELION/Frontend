@@ -43,7 +43,7 @@ export const UserBox = styled.div`
   min-width: 0;
 
   div {
-    ${theme.fonts.dotum}
+    ${theme.fonts.pretendard}
     font-size: 0.875rem; /* 14px */
     letter-spacing: -0.28px;
     overflow: hidden;
@@ -70,10 +70,10 @@ export const BtnBox = styled.div`
 
   button {
     min-width: 1.4375rem;
-    ${theme.fonts.dotum}
+    ${theme.fonts.pretendard}
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;
-    letter-spacing: -0.26px;
+    letter-spacing: -0.28px;
     text-decoration-line: underline;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     text-underline-position: from-font;

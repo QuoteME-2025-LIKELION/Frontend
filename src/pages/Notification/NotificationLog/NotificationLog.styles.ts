@@ -78,7 +78,7 @@ export const Message = styled.div`
 
 export const Timestamp = styled.div`
   flex-shrink: 0;
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.8125rem; /* 13px */
   font-weight: 500;

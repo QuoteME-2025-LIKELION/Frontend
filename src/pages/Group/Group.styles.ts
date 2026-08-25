@@ -96,7 +96,7 @@ export const InfoLine = styled.div`
   align-items: center;
   gap: 0.5rem; /* 8px */
 
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #fff;
   font-size: 0.875rem; /* 14px */
   letter-spacing: -0.28px;
