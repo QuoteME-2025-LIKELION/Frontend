@@ -54,7 +54,7 @@ export const Guide = styled.div`
   width: 100%;
 `;
 
-export const WriteBox = styled.div<{ $isResultMode: boolean }>`
+export const WriteBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,7 +66,7 @@ export const WriteBox = styled.div<{ $isResultMode: boolean }>`
   height: 5rem;
 `;
 
-export const LineWrap = styled.div<{ $isResultMode: boolean }>`
+export const LineWrap = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -81,9 +81,7 @@ export const Line = styled.div`
   background: #fff;
 `;
 
-export const TextArea = styled.textarea<{
-  $isResultMode: boolean;
-}>`
+export const TextArea = styled.textarea`
   position: absolute;
   top: 0;
   left: 0;

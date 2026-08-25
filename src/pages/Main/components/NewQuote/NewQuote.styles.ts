@@ -371,7 +371,13 @@ export const ActionButton = styled.button`
   line-height: 120%;
   cursor: pointer;
 
-  &:active {
+  &:disabled {
+    border-color: #dedede;
+    color: #c3c5c9;
+    cursor: default;
+  }
+
+  &:active:not(:disabled) {
     background-color: rgba(20, 56, 88, 0.08);
   }
 `;

@@ -2,10 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
+import bookmarkFilledIcon from "@/assets/icons/archive/bookmark-filled.svg";
 import bookmarkOutlineIcon from "@/assets/icons/archive/bookmark-outline.svg";
 import shareIcon from "@/assets/icons/archive/share.svg";
 import userIcon from "@/assets/icons/archive/user.svg";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import {
+  useBookmarkQuoteMutation,
+  useUnbookmarkQuoteMutation,
+} from "@/hooks/useQuoteQueries";
 import type { MyQuote } from "@/types/feed.type";
 import { formatCustomDate } from "@/utils/formatCustomDate";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
@@ -24,11 +29,24 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const tagBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
+  const [bookmarkOverrides, setBookmarkOverrides] = useState<
+    Record<number, boolean>
+  >({});
+  const { mutateAsync: bookmarkQuote, isPending: isBookmarking } =
+    useBookmarkQuoteMutation();
+  const { mutateAsync: unbookmarkQuote, isPending: isUnbookmarking } =
+    useUnbookmarkQuoteMutation();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
 
   const hasFeed = !!myQuote;
+  const quoteId = myQuote?.id;
+  const isBookmarkPending = isBookmarking || isUnbookmarking;
+  const isBookmarked =
+    quoteId !== undefined
+      ? (bookmarkOverrides[quoteId] ?? Boolean(myQuote?.isBookmarked))
+      : false;
   const taggedNicknames = myQuote?.taggedNicknames ?? [];
   let line1: string, line2: string;
 
@@ -63,6 +81,28 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
 
     onShare?.(shareProcess); // 부모의 executeShare 함수 실행
   };
+
+  const handleBookmark = async (event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+
+    if (quoteId === undefined || isBookmarkPending) {
+      return;
+    }
+
+    const nextBookmarked = !isBookmarked;
+    setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: nextBookmarked }));
+
+    try {
+      if (isBookmarked) {
+        await unbookmarkQuote(quoteId);
+      } else {
+        await bookmarkQuote(quoteId);
+      }
+    } catch {
+      setBookmarkOverrides((prev) => ({ ...prev, [quoteId]: isBookmarked }));
+    }
+  };
+
   const handleEditTags = () => {
     navigate("/fix", { state: { date: displayDate } });
   };
@@ -154,12 +194,22 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
           )}
         </S.AuthorBox>
         <S.BottomActions>
-          <S.IconButton type="button" aria-label="북마크" disabled={!hasFeed}>
-            <img src={bookmarkOutlineIcon} alt="" />
+          <S.IconButton
+            type="button"
+            aria-label={isBookmarked ? "북마크 취소" : "북마크"}
+            $hidden={!hasFeed}
+            disabled={!hasFeed || quoteId === undefined || isBookmarkPending}
+            onClick={handleBookmark}
+          >
+            <img
+              src={isBookmarked ? bookmarkFilledIcon : bookmarkOutlineIcon}
+              alt=""
+            />
           </S.IconButton>
           <S.IconButton
             type="button"
             aria-label="공유하기"
+            $hidden={!hasFeed}
             onClick={handleShare}
             disabled={!hasFeed}
           >

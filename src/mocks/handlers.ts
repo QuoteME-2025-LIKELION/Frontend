@@ -189,6 +189,7 @@ const mockQuoteTagRequestsByQuoteId: Record<
   1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
 };
 let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
+let mockMyQuoteIsBookmarked = false;
 
 const mockMyTagRequestStatusByQuoteId: Record<
   number,
@@ -732,6 +733,7 @@ export const handlers = [
           birthYear: 2000,
           originalContent: null,
           taggedNicknames: mockMyQuoteTaggedNicknames,
+          isBookmarked: mockMyQuoteIsBookmarked,
         },
       ],
       otherQuotes,
@@ -848,14 +850,22 @@ export const handlers = [
   // ==========================================
   // 7. 북마크 (Bookmark)
   // ==========================================
-  http.post("/api/quotes/:quoteId/bookmark", () => {
+  http.post("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    if (Number(params.quoteId) === 1) {
+      mockMyQuoteIsBookmarked = true;
+    }
+
     return HttpResponse.json(
       { resultCode: "201", message: "북마크에 추가되었습니다." },
       { status: 201 }
     );
   }),
 
-  http.delete("/api/quotes/:quoteId/bookmark", () => {
+  http.delete("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    if (Number(params.quoteId) === 1) {
+      mockMyQuoteIsBookmarked = false;
+    }
+
     return new HttpResponse(null, { status: 200 });
   }),
 

@@ -207,26 +207,26 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                 )}
               </S.Tag>
             ) : isSilenced ? (
-              <S.PokeBtn
-                type="button"
-                onClick={(event) => handleActionClick(event, onPoke)}
-                $isInArchive={isInArchive}
-              >
-                {isInArchive ? "" : "콕 찌르기"}
-              </S.PokeBtn>
+              !isInArchive && (
+                <S.PokeBtn
+                  type="button"
+                  onClick={(event) => handleActionClick(event, onPoke)}
+                  $isInArchive={isInArchive}
+                >
+                  콕 찌르기
+                </S.PokeBtn>
+              )
             ) : (
-              <S.RequestBtn
-                type="button"
-                disabled={isTagRequestDisabled}
-                onClick={(event) => handleActionClick(event, onRequest)}
-                $isInArchive={isInArchive}
-              >
-                {isInArchive
-                  ? ""
-                  : isTagRequestPending
-                    ? "태그 요청됨"
-                    : "태그 요청하기"}
-              </S.RequestBtn>
+              !isInArchive && (
+                <S.RequestBtn
+                  type="button"
+                  disabled={isTagRequestDisabled}
+                  onClick={(event) => handleActionClick(event, onRequest)}
+                  $isInArchive={isInArchive}
+                >
+                  {isTagRequestPending ? "태그 요청됨" : "태그 요청하기"}
+                </S.RequestBtn>
+              )
             )}
           </S.TagBox>
           <S.BtnBox>

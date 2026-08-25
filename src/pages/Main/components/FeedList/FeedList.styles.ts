@@ -11,6 +11,7 @@ export const FeedList = styled.div`
   max-width: 393px;
   background-color: ${theme.colors.secondary};
   height: 100%;
+  overflow-y: auto;
   gap: 1.25rem;
 
   /* 명언 이미지 저장을 감안해 각 Feed에 padding 추가 */

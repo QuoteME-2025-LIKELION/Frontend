@@ -191,7 +191,7 @@ export const BottomActions = styled.div`
   gap: 0.875rem;
 `;
 
-export const IconButton = styled.button`
+export const IconButton = styled.button<{ $hidden?: boolean }>`
   width: 1.25rem;
   height: 1.25rem;
   display: flex;
@@ -206,6 +206,6 @@ export const IconButton = styled.button`
 
   &:disabled {
     cursor: default;
-    opacity: 0;
+    opacity: ${({ $hidden }) => ($hidden ? 0 : 0.45)};
   }
 `;

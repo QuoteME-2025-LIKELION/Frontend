@@ -9,7 +9,6 @@ import {
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
-import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
 import NotificationFilterTabs, {
   type NotificationFilter,
@@ -26,7 +25,7 @@ function groupByDate(list: Notification[]) {
   );
 
   sortedList.forEach((item) => {
-    const groupKey = formatTimeAgo(item.createDate);
+    const groupKey = item.createDate.slice(0, 10);
     if (!map[groupKey]) {
       map[groupKey] = [];
     }
@@ -112,7 +111,6 @@ export default function Notification() {
           });
           break;
       }
-
     },
     [navigate, markNotificationRead]
   );

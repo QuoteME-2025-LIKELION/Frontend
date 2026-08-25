@@ -25,6 +25,11 @@ function getCalendarDates(monthDate: Date) {
   });
 }
 
+function getDateInMonth(baseDate: Date, year: number, month: number) {
+  const lastDate = new Date(year, month + 1, 0).getDate();
+  return new Date(year, month, Math.min(baseDate.getDate(), lastDate));
+}
+
 export default function Archive() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,16 +57,20 @@ export default function Archive() {
 
   const moveMonth = (amount: number) => {
     setCurrentMonth((prev) => {
-      const next = new Date(prev);
-      next.setMonth(prev.getMonth() + amount);
+      const next = new Date(prev.getFullYear(), prev.getMonth() + amount, 1);
+      setSelectedDate((selected) =>
+        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+      );
       return next;
     });
   };
 
   const movePickerYear = (amount: number) => {
     setCurrentMonth((prev) => {
-      const next = new Date(prev);
-      next.setFullYear(prev.getFullYear() + amount);
+      const next = new Date(prev.getFullYear() + amount, prev.getMonth(), 1);
+      setSelectedDate((selected) =>
+        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+      );
       return next;
     });
   };
@@ -72,7 +81,13 @@ export default function Archive() {
   };
 
   const handleSelectMonth = (month: number) => {
-    setCurrentMonth((prev) => new Date(prev.getFullYear(), month - 1, 1));
+    setCurrentMonth((prev) => {
+      const next = new Date(prev.getFullYear(), month - 1, 1);
+      setSelectedDate((selected) =>
+        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+      );
+      return next;
+    });
     setIsMonthPickerOpen(false);
   };
 
@@ -126,60 +141,65 @@ export default function Archive() {
           <S.HeaderTitle>아카이브</S.HeaderTitle>
           <span />
         </S.TopBar>
-        <S.MonthBar>
-          <S.MonthButton
-            type="button"
-            aria-label="이전 달"
-            onClick={() => moveMonth(-1)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
+        {isCalendarTab && (
+          <S.MonthBar>
+            <S.MonthButton
+              type="button"
+              aria-label="이전 달"
+              onClick={() => moveMonth(-1)}
             >
-              <path
-                d="M15 18L9 12L15 6"
-                stroke="#21242B"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </S.MonthButton>
-          <S.MonthText type="button" onClick={() => setIsMonthPickerOpen(true)}>
-            {currentMonthText}
-          </S.MonthText>
-          <S.MonthButton
-            type="button"
-            aria-label="다음 달"
-            onClick={() => moveMonth(1)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="#21242B"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </S.MonthButton>
+            <S.MonthText
+              type="button"
+              onClick={() => setIsMonthPickerOpen(true)}
             >
-              <path
-                d="M9 18L15 12L9 6"
-                stroke="#21242B"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </S.MonthButton>
-          <S.CalendarButton
-            type="button"
-            aria-label="월 선택"
-            onClick={() => setIsMonthPickerOpen(true)}
-          >
-            <img src={calendarIcon} alt="" width={24} height={24} />
-          </S.CalendarButton>
-        </S.MonthBar>
+              {currentMonthText}
+            </S.MonthText>
+            <S.MonthButton
+              type="button"
+              aria-label="다음 달"
+              onClick={() => moveMonth(1)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M9 18L15 12L9 6"
+                  stroke="#21242B"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </S.MonthButton>
+            <S.CalendarButton
+              type="button"
+              aria-label="월 선택"
+              onClick={() => setIsMonthPickerOpen(true)}
+            >
+              <img src={calendarIcon} alt="" width={24} height={24} />
+            </S.CalendarButton>
+          </S.MonthBar>
+        )}
         {isCalendarTab && (
           <S.CalendarGrid>
             {WEEKDAYS.map((weekday, index) => (
@@ -227,7 +247,7 @@ export default function Archive() {
           </S.Menu>
           <Outlet context={{ onShare: executeShare, selectedDateString }} />
         </S.ContentArea>
-        {isMonthPickerOpen && (
+        {isCalendarTab && isMonthPickerOpen && (
           <S.MonthPickerOverlay onClick={() => setIsMonthPickerOpen(false)}>
             <S.MonthPicker onClick={(event) => event.stopPropagation()}>
               <S.PickerHeader>

@@ -21,14 +21,18 @@ export default function EditQuoteTags() {
     | string
     | undefined;
 
-  const { active, toggle: toggleMenu, isVisible: isToggleVisible } = useAnimatedToggle();
+  const {
+    active,
+    toggle: toggleMenu,
+    isVisible: isToggleVisible,
+  } = useAnimatedToggle();
 
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
   const myQuote =
-    quotesData?.myQuotes.find((quote) => quote.id === quoteId) ||
-    quotesData?.myQuotes[0] ||
-    null;
+    quoteId !== undefined
+      ? (quotesData?.myQuotes.find((quote) => quote.id === quoteId) ?? null)
+      : (quotesData?.myQuotes[0] ?? null);
 
   useEffect(() => {
     // date 파라미터 유효성 검사
@@ -46,11 +50,7 @@ export default function EditQuoteTags() {
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
-      {date ? (
-        <XHeader />
-      ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
-      )}
+      {date ? <XHeader /> : <DateHeader onToggleMenu={toggleMenu} />}
 
       {isToggleVisible && (
         <S.Toggle $active={active}>

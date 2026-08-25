@@ -23,7 +23,10 @@ export default function RecommendList({
   onSelectComplete,
 }: RecommendListProps) {
   const queryClient = useQueryClient();
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selection, setSelection] = useState<{
+    id: number;
+    dataUpdatedAt: number;
+  } | null>(null);
   const {
     data: summaryData,
     dataUpdatedAt,
@@ -41,6 +44,8 @@ export default function RecommendList({
     id: index + 1,
     text,
   }));
+  const selectedId =
+    selection?.dataUpdatedAt === dataUpdatedAt ? selection.id : null;
   const errorStatus = axios.isAxiosError(error) ? error.response?.status : null;
   const errorMessage =
     errorStatus === 429
@@ -73,7 +78,7 @@ export default function RecommendList({
           aria-label="AI 추천 다시 받기"
           disabled={isFetching}
           onClick={() => {
-            setSelectedId(null);
+            setSelection(null);
             if (content) {
               void refetch();
             }
@@ -95,13 +100,15 @@ export default function RecommendList({
           </svg>
           <S.UsageText>{usageText}</S.UsageText>
         </S.RefreshButton>
-        {isFetching && <S.StatusText>AI 추천을 불러오는 중입니다.</S.StatusText>}
+        {isFetching && (
+          <S.StatusText>AI 추천을 불러오는 중입니다.</S.StatusText>
+        )}
         {isError && !isFetching && <S.StatusText>{errorMessage}</S.StatusText>}
         {quotes.map((q) => (
           <S.Commend
             key={q.id}
             $isSelected={selectedId === q.id}
-            onClick={() => setSelectedId(q.id)}
+            onClick={() => setSelection({ id: q.id, dataUpdatedAt })}
           >
             <S.FirstLine $isSelected={selectedId === q.id}>
               <svg

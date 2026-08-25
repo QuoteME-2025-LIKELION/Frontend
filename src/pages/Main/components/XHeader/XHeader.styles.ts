@@ -15,7 +15,7 @@ export const Container = styled.div`
 export const Header = styled.div<{ $showHomeButton: boolean }>`
   display: flex;
   justify-content: ${({ $showHomeButton }) =>
-    $showHomeButton ? "space-between" : "flex-start"};
+    $showHomeButton ? "space-between" : "flex-end"};
   align-self: stretch;
   height: 60px;
   padding: 20px 25px;

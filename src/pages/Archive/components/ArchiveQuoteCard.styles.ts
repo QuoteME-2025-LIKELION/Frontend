@@ -9,6 +9,18 @@ export const Container = styled.article`
   flex-direction: column;
   gap: 1rem;
   color: #fff;
+`;
+
+export const OpenButton = styled.button`
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: inherit;
+  text-align: inherit;
   cursor: pointer;
 `;
 

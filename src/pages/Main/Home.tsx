@@ -37,11 +37,12 @@ export default function Home() {
   );
   const { data: friendList = [], isLoading: isFriendsLoading } =
     useFriendsQuery();
-  const { data: myProfile } = useMyProfileQuery();
+  const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
   const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
   const myQuote = quotesData?.myQuotes[0] || null;
   const otherQuotes = quotesData?.otherQuotes || [];
-  const isLoading = isQuotesLoading || isFriendsLoading || isGroupsLoading;
+  const isLoading =
+    isQuotesLoading || isFriendsLoading || isGroupsLoading || isProfileLoading;
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";

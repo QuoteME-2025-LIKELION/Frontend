@@ -142,7 +142,7 @@ export default function FeedList({
   };
 
   const handleRequest = async () => {
-    if (!tagRequestQuoteId) {
+    if (tagRequestQuoteId === null) {
       return;
     }
 
@@ -177,9 +177,19 @@ export default function FeedList({
     try {
       if (isBookmarked) {
         await unbookmarkQuote(quoteId);
+        setBookmarkOverrides((prev) => {
+          const next = { ...prev };
+          delete next[quoteId];
+          return next;
+        });
         setToastMessage("북마크가 해제되었습니다.");
       } else {
         await bookmarkQuote(quoteId);
+        setBookmarkOverrides((prev) => {
+          const next = { ...prev };
+          delete next[quoteId];
+          return next;
+        });
         setToastMessage("북마크에 추가되었습니다.");
       }
     } catch (err) {
@@ -250,7 +260,7 @@ export default function FeedList({
           variant="snackbar"
         />
       )}
-      {tagRequestQuoteId && (
+      {tagRequestQuoteId !== null && (
         <ConfirmModal
           variant="card"
           question=""
@@ -355,8 +365,8 @@ function FeedListItem({
 }: FeedListItemProps) {
   const isAlreadyTagged = Boolean(quote.taggedNicknames?.includes(myNickname));
   const canRequestTag =
-    !quote.isSilenced && Boolean(quote.quoteId) && !isAlreadyTagged;
-  const shouldCheckTagRequest = canRequestTag && Boolean(quote.quoteId);
+    !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
+  const shouldCheckTagRequest = canRequestTag && quote.quoteId !== undefined;
   const { data: tagRequest } = useMyQuoteTagRequestQuery(
     shouldCheckTagRequest ? quote.quoteId : undefined
   );
@@ -379,7 +389,7 @@ function FeedListItem({
           : undefined
       }
       onRequest={() => {
-        if (canRequestTag && quote.quoteId) {
+        if (canRequestTag && quote.quoteId !== undefined) {
           onRequest(quote.quoteId);
         }
       }}

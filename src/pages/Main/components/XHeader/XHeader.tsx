@@ -7,7 +7,10 @@ interface XHeaderProps {
   onClose?: () => void;
 }
 
-export default function XHeader({ showHomeButton = true, onClose }: XHeaderProps) {
+export default function XHeader({
+  showHomeButton = true,
+  onClose,
+}: XHeaderProps) {
   const navigate = useNavigate();
   const handleClose = onClose ?? (() => navigate("/home"));
 
@@ -34,7 +37,7 @@ export default function XHeader({ showHomeButton = true, onClose }: XHeaderProps
           </S.IconButton>
         )}
         <S.IconBox>
-          <S.IconButton type="button" onClick={() => navigate("/home")}>
+          <S.IconButton type="button" onClick={handleClose}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

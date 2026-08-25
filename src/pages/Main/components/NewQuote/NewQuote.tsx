@@ -43,10 +43,14 @@ export default function NewQuote({
   const { data: tagRequests = [] } = useQuoteTagRequestsQuery(
     mode === "fix" ? quote.id : undefined
   );
-  const { mutateAsync: createQuote } = useCreateQuoteMutation();
-  const { mutateAsync: updateQuoteTags } = useUpdateQuoteTagsMutation();
-  const { mutateAsync: acceptTagRequest } = useAcceptQuoteTagRequestMutation();
-  const { mutateAsync: rejectTagRequest } = useRejectQuoteTagRequestMutation();
+  const { mutateAsync: createQuote, isPending: isCreatingQuote } =
+    useCreateQuoteMutation();
+  const { mutateAsync: updateQuoteTags, isPending: isUpdatingQuoteTags } =
+    useUpdateQuoteTagsMutation();
+  const { mutateAsync: acceptTagRequest, isPending: isAcceptingTagRequest } =
+    useAcceptQuoteTagRequestMutation();
+  const { mutateAsync: rejectTagRequest, isPending: isRejectingTagRequest } =
+    useRejectQuoteTagRequestMutation();
   const pendingTagRequests = useMemo(
     () => tagRequests.filter((request) => request.status === "PENDING"),
     [tagRequests]
@@ -106,6 +110,11 @@ export default function NewQuote({
 
       return aPending ? -1 : 1;
     });
+  const isSubmitting =
+    isCreatingQuote ||
+    isUpdatingQuoteTags ||
+    isAcceptingTagRequest ||
+    isRejectingTagRequest;
 
   const toggleSelect = (id: number) => {
     const targetFriend = friends.find((friend) => friend.id === id);
@@ -184,7 +193,7 @@ export default function NewQuote({
       }
     } else {
       // fix mode
-      if (!quote.id) {
+      if (quote.id === undefined) {
         setErrorMessage("유효하지 않은 명언입니다.");
         setShowErrorToast(true);
         return;
@@ -223,7 +232,9 @@ export default function NewQuote({
         );
 
         if (requestResults.some((result) => result.status === "rejected")) {
-          throw new Error("태그 요청 처리에 실패했습니다.");
+          setErrorMessage("태그 요청 처리에 실패했습니다.");
+          setShowErrorToast(true);
+          return;
         }
 
         navigate("/home");
@@ -381,7 +392,11 @@ export default function NewQuote({
             뒤로가기
           </S.ActionButton>
         )}
-        <S.ActionButton type="button" onClick={handleSubmit}>
+        <S.ActionButton
+          type="button"
+          disabled={isSubmitting}
+          onClick={handleSubmit}
+        >
           {mode === "create" ? "게시하기" : "수정하기"}
         </S.ActionButton>
       </S.ActionBar>

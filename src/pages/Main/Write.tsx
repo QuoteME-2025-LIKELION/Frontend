@@ -13,10 +13,12 @@ import XHeader from "./components/XHeader/XHeader";
 import * as S from "./Main.styles";
 
 type WriteStep = "write" | "recommend" | "tag";
+type QuoteSource = "direct" | "ai";
 
 export default function Write() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<WriteStep>("write");
+  const [quoteSource, setQuoteSource] = useState<QuoteSource>("direct");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [draftText, setDraftText] = useState("");
   const [diaryText, setDiaryText] = useState("");
@@ -65,6 +67,7 @@ export default function Write() {
           isRecommendMode={activeStep === "recommend"}
           isResultMode={activeStep === "tag"}
           onComplete={(data) => {
+            setQuoteSource("direct");
             setCreatedQuote({
               content: data.content,
               authorName: data.authorName || "",
@@ -86,6 +89,7 @@ export default function Write() {
             isAiUsageLoading={isAiUsageLoading}
             onBack={() => setActiveStep("write")}
             onSelectComplete={(aiText) => {
+              setQuoteSource("ai");
               setCreatedQuote({
                 content: aiText,
                 originalContent: diaryText,
@@ -102,9 +106,7 @@ export default function Write() {
           <NewQuote
             quote={createdQuote}
             onBack={() =>
-              setActiveStep(
-                createdQuote.authorName === "QuoteMe AI" ? "recommend" : "write"
-              )
+              setActiveStep(quoteSource === "ai" ? "recommend" : "write")
             }
           />
         )}

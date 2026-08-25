@@ -12,28 +12,36 @@ type ArchiveQuoteCardProps = {
   feed: ArchiveFeed;
   showOriginalContent?: boolean;
   onClick?: () => void;
+  onBookmark?: () => void;
   onShare?: () => void;
 };
 
 const ArchiveQuoteCard = forwardRef<HTMLDivElement, ArchiveQuoteCardProps>(
-  ({ feed, showOriginalContent = false, onClick, onShare }, ref) => {
+  (
+    { feed, showOriginalContent = false, onClick, onBookmark, onShare },
+    ref
+  ) => {
     const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
-    const birthYear = feed.authorBirthYear ? `${feed.authorBirthYear}~` : "1999~";
+    const birthYear = feed.authorBirthYear
+      ? `${feed.authorBirthYear}~`
+      : "1999~";
     const taggedNames = feed.taggedMemberNames ?? feed.taggedMembers ?? [];
 
     return (
-      <S.Container ref={ref} onClick={onClick}>
-        <S.Author>
-          {authorName} ({birthYear})
-        </S.Author>
-        <S.QuoteBox>
-          <S.QuoteMark aria-hidden="true">“</S.QuoteMark>
-          <S.Content>{feed.content}</S.Content>
-          <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
-        </S.QuoteBox>
-        {showOriginalContent && feed.originalContent && (
-          <S.OriginalContent>{feed.originalContent}</S.OriginalContent>
-        )}
+      <S.Container ref={ref}>
+        <S.OpenButton type="button" onClick={onClick}>
+          <S.Author>
+            {authorName} ({birthYear})
+          </S.Author>
+          <S.QuoteBox>
+            <S.QuoteMark aria-hidden="true">“</S.QuoteMark>
+            <S.Content>{feed.content}</S.Content>
+            <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
+          </S.QuoteBox>
+          {showOriginalContent && feed.originalContent && (
+            <S.OriginalContent>{feed.originalContent}</S.OriginalContent>
+          )}
+        </S.OpenButton>
         <S.ActionRow>
           <S.TagBox>
             <img src={userIcon} alt="" width={16} height={16} />
@@ -45,7 +53,14 @@ const ArchiveQuoteCard = forwardRef<HTMLDivElement, ArchiveQuoteCardProps>(
             </S.TagText>
           </S.TagBox>
           <S.IconBox>
-            <S.IconButton type="button" aria-label="북마크">
+            <S.IconButton
+              type="button"
+              aria-label="북마크"
+              onClick={(event) => {
+                event.stopPropagation();
+                onBookmark?.();
+              }}
+            >
               <img
                 src={
                   feed.isBookmarked ? bookmarkFilledIcon : bookmarkOutlineIcon

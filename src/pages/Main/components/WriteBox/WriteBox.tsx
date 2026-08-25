@@ -42,7 +42,7 @@ export default function WriteBox({
   const day = dayNames[today.getDay()];
   const trimmedText = value.trim();
   const canUseAi = trimmedText.length > 0;
-  const canGoNext = trimmedText.length > 0 && value.length <= 30;
+  const canGoNext = trimmedText.length > 0 && trimmedText.length <= 30;
   const isShortAiText = trimmedText.length <= 15;
   const handleAiClick = () => {
     if (!canUseAi) return;
@@ -56,7 +56,7 @@ export default function WriteBox({
   };
   const handleSubmit = () => {
     onComplete({
-      content: value,
+      content: trimmedText,
       authorName: "", // 서버 저장 전이므로 비워도 됨
       authorBirthYear: undefined,
     });
@@ -88,9 +88,8 @@ export default function WriteBox({
           </S.Month>
           <S.Weekend>{day}</S.Weekend>
         </S.Datebox>
-        <S.WriteBox $isResultMode={isResultMode}>
+        <S.WriteBox>
           <S.TextArea
-            $isResultMode={isResultMode}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             readOnly={isRecommendMode || isResultMode}
@@ -101,7 +100,7 @@ export default function WriteBox({
             }
             maxLength={50}
           />
-          <S.LineWrap $isResultMode={isResultMode}>
+          <S.LineWrap>
             <S.Line />
             <S.Line />
             <S.Line />

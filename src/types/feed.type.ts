@@ -10,6 +10,7 @@
  * @property {number} birthYear: 명언 작성자 출생 연도
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  * @property {string[]} taggedNicknames: 명언에 태그된 닉네임 배열 (선택적)
+ * @property {boolean} isBookmarked: 현재 사용자가 이 명언을 북마크했는지 여부 (선택적)
  */
 export interface MyQuote {
   id?: number;
@@ -19,6 +20,7 @@ export interface MyQuote {
   birthYear: number;
   createDate?: string;
   taggedNicknames?: string[];
+  isBookmarked?: boolean;
 }
 
 /**
