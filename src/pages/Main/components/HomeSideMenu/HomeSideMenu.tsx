@@ -11,6 +11,8 @@ type HomeSideMenuProps = {
   onClose: () => void;
 };
 
+const CONTACT_EMAIL = "abc123456@gmail.com";
+
 export default function HomeSideMenu({
   active,
   profileImage,
@@ -19,15 +21,41 @@ export default function HomeSideMenu({
   onClose,
 }: HomeSideMenuProps) {
   const navigate = useNavigate();
-  const [isCopied, setIsCopied] = useState(false);
+  const [copyToastMessage, setCopyToastMessage] = useState("");
 
   const handleCopyMail = async () => {
-    await navigator.clipboard.writeText("aaaa@gmail.com");
-    setIsCopied(true);
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(CONTACT_EMAIL);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = CONTACT_EMAIL;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const didCopy = document.execCommand("copy");
+        document.body.removeChild(textArea);
 
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 2000);
+        if (!didCopy) {
+          throw new Error("document.execCommand('copy') returned false");
+        }
+      }
+
+      setCopyToastMessage("메일 주소가 복사되었습니다.");
+
+      setTimeout(() => {
+        setCopyToastMessage("");
+      }, 2000);
+    } catch (error) {
+      console.error("메일 주소 복사 실패:", error);
+      setCopyToastMessage("메일 주소 복사에 실패했습니다.");
+
+      setTimeout(() => {
+        setCopyToastMessage("");
+      }, 2000);
+    }
   };
 
   return (
@@ -98,16 +126,15 @@ export default function HomeSideMenu({
             <S.ToggleInfoText>이용약관 및 개인정보 처리</S.ToggleInfoText>
             <S.ToggleInfoRow>
               <S.ToggleInfoText>문의</S.ToggleInfoText>
-              <S.CopyMailText onClick={handleCopyMail}>
-                aaaa@gmail.com
+              <S.CopyMailText type="button" onClick={handleCopyMail}>
+                {CONTACT_EMAIL}
               </S.CopyMailText>
             </S.ToggleInfoRow>
             <S.ToggleInfoText>버전 1.0</S.ToggleInfoText>
           </S.ToggleInfoBox>
         </S.Toggle>
+        {copyToastMessage && <S.CopyToast>{copyToastMessage}</S.CopyToast>}
       </S.ToggleWrapper>
-
-      {isCopied && <S.CopyToast>복사되었습니다.</S.CopyToast>}
     </>
   );
 }

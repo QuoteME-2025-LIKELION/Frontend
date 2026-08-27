@@ -25,6 +25,28 @@ const fadeOut = keyframes`
   }
 `;
 
+const toastIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const toastOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+`;
+
 export const ToggleWrapper = styled.div`
   position: absolute;
   inset: 0;
@@ -165,25 +187,43 @@ export const ToggleInfoText = styled.div`
   letter-spacing: -0.24px;
 `;
 
-export const CopyMailText = styled(ToggleInfoText)`
+export const CopyMailText = styled.button`
+  color: var(--fg-subtle, #9599a1);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: var(--font-size-t1, 12px);
+  font-style: normal;
+  font-weight: var(--font-weight-medium, 500);
+  line-height: var(--line-height-t1, 18px);
+  letter-spacing: -0.24px;
   cursor: pointer;
 `;
 
 export const CopyToast = styled.div`
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
   display: flex;
-  bottom: 50px;
-  width: 343px;
+  justify-content: center;
+  bottom: 58px;
   padding: var(--spacing-padding-lg, 16px) var(--spacing-padding-xl, 24px);
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--spacing-gap-xl, 24px);
+  min-height: 3.25rem;
 
   border-radius: var(--spacing-radius-sm, 4px);
-  background: var(--bg-neutral, #e9eaec);
+  background: #f8f8f8;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  animation:
+    ${toastIn} 0.3s ease-out,
+    ${toastOut} 0.3s ease-in 1.7s forwards;
 
-  /* global-shadow */
-  box-shadow: 0 0 10px 0 rgba(20, 56, 88, 0.16);
+  ${theme.fonts.pretendard};
+  color: #000;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.3px;
+  word-break: keep-all;
 `;
