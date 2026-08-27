@@ -13,7 +13,7 @@
 const theme = {
   colors: {
     primary: "#143858",
-    secondary: "#f3f3f3",
+    secondary: "#e9eaec",
     territory: "#959595",
     red: "#de1c1c",
     "fg-primary": "#21242b",
