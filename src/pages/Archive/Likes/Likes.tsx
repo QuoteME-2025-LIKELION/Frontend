@@ -43,7 +43,7 @@ export default function Likes() {
         />
       )}
       {likedFeeds.length === 0 && (
-        <S.EmptyMessage>스크랩된 명언이 없습니다</S.EmptyMessage>
+        <S.EmptyMessage>스크랩된 명언이 없습니다.</S.EmptyMessage>
       )}
       {likedFeeds.map((feed, index) => {
         const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);

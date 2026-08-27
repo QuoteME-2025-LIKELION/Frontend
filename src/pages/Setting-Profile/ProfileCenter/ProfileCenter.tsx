@@ -136,7 +136,7 @@ export default function ProfileCenter() {
       <S.Container>
         {showToast && (
           <ToastModal
-            text="변경사항이 저장되었습니다"
+            text="변경사항이 저장되었습니다."
             isVisible={showToast}
             onClose={() => setShowToast(false)}
             showOverlay={false}
@@ -147,7 +147,7 @@ export default function ProfileCenter() {
           <ConfirmModal
             question=""
             lines={["저장하지 않고", "나가시겠어요?"]}
-            description="변경된 정보는 저장되지 않아요"
+            description="변경된 정보는 저장되지 않아요."
             cancelText="돌아가기"
             confirmText="나가기"
             confirmColor="danger"
@@ -171,7 +171,9 @@ export default function ProfileCenter() {
             onClick={handleClickUpload}
             aria-label="프로필 이미지"
             style={{
-              backgroundImage: currentPreview ? `url(${currentPreview})` : "none",
+              backgroundImage: currentPreview
+                ? `url(${currentPreview})`
+                : "none",
             }}
           />
           <input
@@ -211,7 +213,7 @@ export default function ProfileCenter() {
             <S.InfoBox>{currentNickname}</S.InfoBox>
           )}
           <S.FieldMeta $error={isNicknameEmpty} $hidden={!isEditing}>
-            {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요</span>}
+            {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요.</span>}
             <span>{currentNickname.length}자/20자</span>
           </S.FieldMeta>
           <S.TextName>자기소개</S.TextName>

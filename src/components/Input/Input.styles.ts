@@ -6,7 +6,6 @@ interface InputStyleProps {
   $hideSpin?: boolean;
 }
 
-/* 가로 길이는 padding으로 맞추기. 일단 100%로 뒀음. */
 export const Input = styled.input<InputStyleProps>`
   width: 100%;
   height: 3.25rem; /* 52px */
@@ -31,7 +30,7 @@ export const Input = styled.input<InputStyleProps>`
     background: var(--bg-white, #fafafa);
   }
 
-  /*Spin 감추려고 코드 추가하였습니다!*/
+  /* Spin 감추려고 코드 추가 */
   ${({ $hideSpin }) =>
     $hideSpin &&
     `

@@ -79,7 +79,7 @@ export default function AccountDelete() {
           <S.Description>
             계정을 삭제하면 모든 계정 정보와
             <br />
-            작성한 글이 삭제되며 복구가 불가능 합니다
+            작성한 글이 삭제되며 복구가 불가능 합니다.
           </S.Description>
 
           <S.ReasonTitle>서비스 탈퇴 사유</S.ReasonTitle>

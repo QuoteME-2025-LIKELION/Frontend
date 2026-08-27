@@ -43,7 +43,7 @@ export default function Bookmarks() {
         />
       )}
       {bookmarkedFeeds.length === 0 && (
-        <S.EmptyMessage>북마크한 명언이 없습니다</S.EmptyMessage>
+        <S.EmptyMessage>북마크한 명언이 없습니다.</S.EmptyMessage>
       )}
       {bookmarkedFeeds.map((data, index) => {
         const date = (data.createDate ?? data.createdAt ?? "").slice(0, 10);

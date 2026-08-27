@@ -40,23 +40,23 @@ const SETTING_ITEMS: Array<{
   {
     key: "quoteReminderEnabled",
     title: "오늘의 명언 남기기 알림",
-    description: "명언을 작성하지 않았을 때 알림을 보내요",
+    description: "명언을 작성하지 않았을 때 알림을 보내요.",
     valueText: "오후 9:00",
   },
   {
     key: "groupEnabled",
     title: "그룹 알림 받기",
-    description: "그룹 참여 요청, 그룹 메시지가 변경되었을 때 알림을 보내요",
+    description: "그룹 참여 요청, 그룹 메시지가 변경되었을 때 알림을 보내요.",
   },
   {
     key: "tagEnabled",
     title: "태그 알림 받기",
-    description: "누군가 나를 태그했을 때, 태그요청을 받았을 때 알림을 보내요",
+    description: "누군가 나를 태그했을 때, 태그요청을 받았을 때 알림을 보내요.",
   },
   {
     key: "friendEnabled",
     title: "친구 알림 받기",
-    description: "친구가 명언을 올렸을 때 알림을 보내요",
+    description: "친구가 명언을 올렸을 때 알림을 보내요.",
   },
   {
     key: "marketingEnabled",

@@ -1046,7 +1046,7 @@ export const handlers = [
       {
         noticeId: 3,
         type: "UPDATE",
-        title: "오늘의 QuoteMe 작성 화면이 개선되었어요",
+        title: "오늘의 QuoteMe 작성 화면이 개선되었어요.",
         content:
           "친구 태그와 AI 추천 결과를 더 자연스럽게 확인할 수 있도록 작성 흐름을 다듬었어요.",
         createdAt: "2026-02-01T10:00:00",
@@ -1054,7 +1054,7 @@ export const handlers = [
       {
         noticeId: 4,
         type: "UPDATE",
-        title: "친구와 그룹 화면 사용성이 좋아졌어요",
+        title: "친구와 그룹 화면 사용성이 좋아졌어요.",
         content:
           "친구 요청, 그룹 초대, 참여 요청을 한 화면에서 더 쉽게 확인할 수 있도록 정리했어요.",
         createdAt: "2026-02-01T09:00:00",
@@ -1062,7 +1062,7 @@ export const handlers = [
       {
         noticeId: 5,
         type: "UPDATE",
-        title: "공지사항 화면이 추가되었어요",
+        title: "공지사항 화면이 추가되었어요.",
         content:
           "서비스 안내와 업데이트 소식을 환경설정의 공지사항 메뉴에서 확인할 수 있어요.",
         createdAt: "2026-02-01T08:00:00",

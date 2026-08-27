@@ -161,9 +161,9 @@ export default function NewQuote({
         </S.Description>
         {friends.length === 0 ? (
           <S.EmptyBox>
-            <S.EmptyTitle>태그할 수 있는 친구가 없어요</S.EmptyTitle>
+            <S.EmptyTitle>태그할 수 있는 친구가 없어요.</S.EmptyTitle>
             <S.EmptyDescription>
-              친구를 추가하고 나중에 태그를 추가할 수 있어요
+              친구를 추가하고 나중에 태그를 추가할 수 있어요.
             </S.EmptyDescription>
           </S.EmptyBox>
         ) : (
