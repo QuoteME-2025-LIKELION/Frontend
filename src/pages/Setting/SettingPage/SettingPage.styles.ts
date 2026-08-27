@@ -45,7 +45,7 @@ export const SettingBtn = styled.button`
 `;
 
 export const InputBtn = styled.div`
-  ${theme.fonts.chonburi};
+  ${theme.fonts.bombaram};
   border-top: 0.5px solid ${theme.colors.territory};
   border-bottom: 0.5px solid ${theme.colors.territory};
   background: #fff;

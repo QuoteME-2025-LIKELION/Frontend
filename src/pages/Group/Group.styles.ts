@@ -124,7 +124,7 @@ export const Count = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   color: rgba(255, 255, 255, 0.22);
   font-size: 6rem; /* 96px */
   font-weight: 400;

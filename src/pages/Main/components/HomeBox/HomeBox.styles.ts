@@ -17,13 +17,13 @@ export const DateBox = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   margin-bottom: 0.875rem;
 `;
 export const Month = styled.div`
   color: #fff;
   text-align: center;
-  ${theme.fonts.chonburi};
+  ${theme.fonts.bombaram};
   font-size: 36px;
   font-style: normal;
   font-weight: 400;
@@ -70,7 +70,7 @@ export const Text = styled.div<{ hasFeed: boolean }>`
 export const Day = styled.div`
   color: #fff;
   text-align: center;
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   font-size: 75px;
   font-style: normal;
   font-weight: 400;

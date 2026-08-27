@@ -39,7 +39,7 @@ export const SorryBox = styled.div`
   background-color: #fff;
   padding-right: 0.6125rem; /* 10px */
 
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   color: ${theme.colors.primary};
   text-align: center;
   font-weight: 400;

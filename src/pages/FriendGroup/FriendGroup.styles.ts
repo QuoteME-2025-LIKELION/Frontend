@@ -141,7 +141,7 @@ export const GroupCount = styled.div`
   position: absolute;
   right: 1.125rem;
   top: 2.125rem;
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   font-size: 4.25rem; /* 68px */
   font-weight: 400;
   letter-spacing: 0;
