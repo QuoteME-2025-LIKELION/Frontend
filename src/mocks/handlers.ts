@@ -206,20 +206,6 @@ const mockMyTagRequestStatusByQuoteId: Record<
   "NONE" | "PENDING" | "ACCEPTED" | "REJECTED"
 > = {};
 
-const findQuoteTagRequest = (requestId: number) => {
-  for (const [quoteId, requests] of Object.entries(
-    mockQuoteTagRequestsByQuoteId
-  )) {
-    const request = requests.find((item) => item.requestId === requestId);
-
-    if (request) {
-      return { quoteId: Number(quoteId), request };
-    }
-  }
-
-  return null;
-};
-
 const searchableGroups = [
   {
     id: 20,
@@ -819,42 +805,6 @@ export const handlers = [
     const quoteId = Number(params.quoteId);
 
     return HttpResponse.json(mockQuoteTagRequestsByQuoteId[quoteId] ?? []);
-  }),
-
-  http.post("/api/quotes/requests/:requestId/accept", ({ params }) => {
-    const request = findQuoteTagRequest(Number(params.requestId));
-
-    if (!request) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 태그 요청입니다." },
-        { status: 404 }
-      );
-    }
-
-    request.request.status = "ACCEPTED";
-    mockMyQuoteTaggedNicknames = Array.from(
-      new Set([
-        ...mockMyQuoteTaggedNicknames,
-        request.request.requesterNickname,
-      ])
-    );
-
-    return new HttpResponse(null, { status: 200 });
-  }),
-
-  http.post("/api/quotes/requests/:requestId/reject", ({ params }) => {
-    const request = findQuoteTagRequest(Number(params.requestId));
-
-    if (!request) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 태그 요청입니다." },
-        { status: 404 }
-      );
-    }
-
-    request.request.status = "REJECTED";
-
-    return new HttpResponse(null, { status: 200 });
   }),
 
   // ==========================================
