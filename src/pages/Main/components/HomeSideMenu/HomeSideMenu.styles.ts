@@ -6,30 +6,30 @@ import theme from "@/styles/theme";
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(100%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 `;
 
 const fadeOut = keyframes`
   from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(100%);
   }
 `;
 
 export const ToggleWrapper = styled.div`
   position: absolute;
-  background: rgba(0, 0, 0, 0.3);
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.45);
 `;
 
 export const Toggle = styled.div<{ $active: boolean }>`
