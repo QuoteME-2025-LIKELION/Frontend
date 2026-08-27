@@ -24,7 +24,6 @@ import Notice from "@/pages/Setting/Notice/Notice";
 import NotificationSetting from "@/pages/Setting/NotificationSetting/NotificationSetting";
 import SettingPage from "@/pages/Setting/SettingPage/SettingPage";
 import ProfileCenter from "@/pages/Setting-Profile/ProfileCenter/ProfileCenter";
-import ProfileEdit from "@/pages/Setting-Profile/ProfileEdit/ProfileEdit";
 import Profile from "@/pages/SignUp/Profile/Profile";
 import Start from "@/pages/Start/Start";
 
@@ -54,7 +53,6 @@ export default function AppRoutes() {
         <Route path="/notification" element={<Notification />} />
 
         <Route path="/profile-center" element={<ProfileCenter />} />
-        <Route path="/profile-edit" element={<ProfileEdit />} />
         <Route path="/setting-page" element={<SettingPage />} />
         <Route path="/account-setting" element={<AccountSetting />} />
         <Route path="/notification-setting" element={<NotificationSetting />} />
