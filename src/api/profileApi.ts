@@ -1,9 +1,14 @@
 import api from "@/api/api";
 
-export interface SetupProfileRequest {
+export interface UpdateSettingsProfileRequest {
   nickname: string;
   introduction: string;
+  birthYear?: number;
   image?: File | null;
+}
+
+export interface SetupProfileRequest extends UpdateSettingsProfileRequest {
+  birthYear: number;
 }
 
 export interface UpdateAccountRequest {
@@ -14,6 +19,7 @@ export interface UpdateAccountRequest {
 export interface AccountProfileResponse {
   gender: string;
   birthYear: number;
+  email?: string;
 }
 
 export interface MyProfileResponse {
@@ -34,8 +40,9 @@ export type SettingsProfileResponse = MyProfileResponse;
 function createProfileFormData({
   nickname,
   introduction,
+  birthYear,
   image,
-}: SetupProfileRequest) {
+}: UpdateSettingsProfileRequest) {
   const formData = new FormData();
 
   if (image) {
@@ -44,7 +51,7 @@ function createProfileFormData({
 
   formData.append(
     "data",
-    new Blob([JSON.stringify({ nickname, introduction })], {
+    new Blob([JSON.stringify({ nickname, introduction, birthYear })], {
       type: "application/json",
     })
   );
@@ -62,7 +69,7 @@ export const profileApi = {
   getOtherProfile: (memberId: number | string) =>
     api.get<MyProfileResponse>(`/api/profile/${memberId}`),
   getSettingsProfile: () => api.get<SettingsProfileResponse>("/api/profile"),
-  updateSettingsProfile: (payload: SetupProfileRequest) =>
+  updateSettingsProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
   getAccountProfile: () =>
     api.get<AccountProfileResponse>("/api/profile/account"),

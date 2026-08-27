@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   profileApi,
   type SetupProfileRequest,
+  type UpdateSettingsProfileRequest,
   type UpdateAccountRequest,
 } from "@/api/profileApi";
 
@@ -62,7 +63,7 @@ export function useUpdateSettingsProfileMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: SetupProfileRequest) =>
+    mutationFn: (payload: UpdateSettingsProfileRequest) =>
       profileApi.updateSettingsProfile(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() });

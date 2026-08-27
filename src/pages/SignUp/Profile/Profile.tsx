@@ -9,17 +9,24 @@ import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 
 import * as S from "./Profile.styles";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Profile() {
   const navigate = useNavigate();
   const { mutateAsync: setupProfile } = useSetupProfileMutation();
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [intro, setIntro] = useState("");
   const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("프로필 저장에 실패했습니다.");
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const birthYearNumber = Number(birthYear);
+  const isValidBirthYear =
+    /^\d{4}$/.test(birthYear) && birthYearNumber <= CURRENT_YEAR;
 
   const handleClickUpload = () => {
     fileRef.current?.click();
@@ -47,18 +54,26 @@ export default function Profile() {
       await setupProfile({
         nickname: nickname,
         introduction: intro,
+        birthYear: Number(birthYear),
         image: selectedFile,
       });
 
       navigate("/home");
     } catch (error) {
       console.error("프로필 저장 실패:", error);
+      setErrorMessage("프로필 저장에 실패했습니다.");
       setShowErrorToast(true);
     }
   };
 
   const handleNext = () => {
-    if (step < 3) {
+    if (step === 3 && !isValidBirthYear) {
+      setErrorMessage("올바른 출생연도를 입력해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+
+    if (step < 4) {
       setStep(step + 1);
     } else {
       handleSignUp();
@@ -73,7 +88,7 @@ export default function Profile() {
           <ToastModal
             isVisible={showErrorToast}
             onClose={() => setShowErrorToast(false)}
-            text="프로필 저장에 실패했습니다."
+            text={errorMessage}
           />
         )}
         <S.InputBox>
@@ -131,7 +146,35 @@ export default function Profile() {
 
           {step === 3 && (
             <>
-              <S.StepText>3/3</S.StepText>
+              <S.StepText>3/4</S.StepText>
+
+              <S.TextBox>
+                <S.ExText>
+                  명언 카드에 표시할 <br />
+                  출생연도를 입력해 주세요.
+                </S.ExText>
+
+                <S.exText>출생연도는 계정 관리에서 수정할 수 있어요.</S.exText>
+              </S.TextBox>
+
+              <Input
+                value={birthYear}
+                onChange={(e) =>
+                  setBirthYear(e.target.value.replace(/\D/g, "").slice(0, 4))
+                }
+                placeholder="출생연도(yyyy) 입력"
+                type="text"
+                name="birthYear"
+                maxLength={4}
+                inputMode="numeric"
+                required
+              />
+            </>
+          )}
+
+          {step === 4 && (
+            <>
+              <S.StepText>4/4</S.StepText>
 
               <S.TextBox>
                 <S.ExText>
@@ -186,7 +229,7 @@ export default function Profile() {
         </S.InputBox>
         <S.BtnBox>
           <Button
-            title={step === 3 ? "쿼트미 시작하기" : "다음으로"}
+            title={step === 4 ? "쿼트미 시작하기" : "다음으로"}
             onClick={handleNext}
           />
         </S.BtnBox>

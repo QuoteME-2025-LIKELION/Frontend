@@ -11,6 +11,7 @@ interface InputProps {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
   hideSpin?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -51,6 +52,7 @@ export default function Input({
   required,
   minLength,
   maxLength,
+  inputMode,
   hideSpin,
   onKeyDown,
 }: InputProps) {
@@ -66,6 +68,7 @@ export default function Input({
       required={required}
       minLength={minLength}
       maxLength={maxLength}
+      inputMode={inputMode}
       $hideSpin={hideSpin}
       onKeyDown={onKeyDown}
     />
