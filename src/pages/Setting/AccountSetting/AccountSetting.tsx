@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Button from "@/components/Button/Button";
+import googleIcon from "@/assets/icons/account/google.png";
+import kakaoIcon from "@/assets/icons/account/kakao.png";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
-import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
@@ -16,6 +16,28 @@ import useAuthStore from "@/stores/useAuthStore";
 
 import * as S from "./AccountSetting.styles";
 
+type SheetType = "gender" | "birth" | null;
+
+const GENDER_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: "FEMALE", label: "여성" },
+  { value: "MALE", label: "남성" },
+  { value: "", label: "선택 안 함" },
+];
+
+const CURRENT_YEAR = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from(
+  { length: 121 },
+  (_, index) => CURRENT_YEAR - index
+);
+
+function formatGender(gender: string) {
+  return GENDER_OPTIONS.find((option) => option.value === gender)?.label ?? "";
+}
+
+function formatBirthYear(year: number | null) {
+  return year ? `${year}년` : "";
+}
+
 export default function AccountSetting() {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
@@ -26,48 +48,78 @@ export default function AccountSetting() {
   } = useAccountProfileQuery();
   const updateAccountMutation = useUpdateAccountMutation();
   const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
-  const [birthDraft, setBirthDraft] = useState<string | null>(null);
   const [genderDraft, setGenderDraft] = useState<string | null>(null);
-  const isNumeric = (value: string) => /^\d+$/.test(value);
-
-  const [showToast, setShowToast] = useState(false);
+  const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
+  const [sheetType, setSheetType] = useState<SheetType>(null);
+  const [toastMessage, setToastMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showDeleteToast, setShowDeleteToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const birth = birthDraft ?? String(accountProfile?.birthYear ?? "");
-  const gender = genderDraft ?? accountProfile?.gender ?? "";
+  const selectedYearRef = useRef<HTMLButtonElement | null>(null);
+  const currentGender = genderDraft ?? accountProfile?.gender ?? "";
+  const currentBirthYear: number | null =
+    birthYearDraft ??
+    (Number.isFinite(accountProfile?.birthYear)
+      ? (accountProfile?.birthYear ?? null)
+      : null);
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (sheetType !== "birth") {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      selectedYearRef.current?.scrollIntoView({
+        block: "center",
+        behavior: "auto",
+      });
+    });
+  }, [sheetType]);
+
+  const saveAccount = async (
+    nextGender = currentGender,
+    nextBirthYear = currentBirthYear
+  ) => {
     if (isAccountProfilePending || !accountProfile) {
-      setErrorMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
-      setShowErrorToast(true);
+      setToastMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
       return;
     }
 
-    if (!isNumeric(birth) || birth.length !== 4) {
-      setErrorMessage("출생년도를 4자리 숫자로 입력해 주세요.");
-      setShowErrorToast(true);
+    if (!nextBirthYear) {
+      setToastMessage("출생연도를 선택해 주세요.");
       return;
     }
-
-    const payload = {
-      gender,
-      birthYear: Number(birth),
-    };
 
     try {
-      await updateAccountMutation.mutateAsync(payload);
-
-      setShowToast(true);
-      setTimeout(() => {
-        navigate("/setting-page");
-      }, 1500);
+      await updateAccountMutation.mutateAsync({
+        gender: nextGender,
+        birthYear: nextBirthYear,
+      });
+      setToastMessage("계정 정보가 저장되었습니다.");
     } catch (e) {
       console.error("계정 정보 저장 실패", e);
-      setErrorMessage("계정 정보 저장에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("계정 정보 저장에 실패했습니다.");
     }
+  };
+
+  const handleGenderDone = () => {
+    setSheetType(null);
+    void saveAccount(currentGender);
+  };
+
+  const handleBirthDone = () => {
+    setSheetType(null);
+    void saveAccount(currentGender, currentBirthYear);
+  };
+
+  const centerSelectedOption = (element: HTMLButtonElement) => {
+    element.scrollIntoView({
+      block: "center",
+      behavior: "smooth",
+    });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   const handleConfirmDelete = async () => {
@@ -75,31 +127,28 @@ export default function AccountSetting() {
       await deleteAccount();
       logout();
       setShowDeleteModal(false);
-      setShowDeleteToast(true);
+      setToastMessage("계정이 삭제되었습니다.");
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (e) {
       console.error("계정 삭제 실패", e);
       setShowDeleteModal(false);
-      setErrorMessage("계정 삭제에 실패했습니다.");
-      setShowErrorToast(true);
+      setToastMessage("계정 삭제에 실패했습니다.");
     }
-  };
-
-  const handleDelete = () => {
-    setShowDeleteModal(true);
   };
 
   return (
     <>
-      <PageTitle title="계정 설정" />
+      <PageTitle title="계정 관리" />
       <S.Container>
-        {showToast && (
+        {toastMessage && (
           <ToastModal
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
-            text="계정 정보가 저장되었습니다."
+            isVisible={Boolean(toastMessage)}
+            onClose={() => setToastMessage("")}
+            text={toastMessage}
+            showOverlay={false}
+            variant="snackbar"
           />
         )}
         {showDeleteModal && (
@@ -109,62 +158,113 @@ export default function AccountSetting() {
             onConfirm={handleConfirmDelete}
           />
         )}
-        {showDeleteToast && (
-          <ToastModal
-            isVisible={showDeleteToast}
-            onClose={() => setShowDeleteToast(false)}
-            text="계정이 삭제되었습니다."
-          />
-        )}
-        {showErrorToast && (
-          <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
-            text={errorMessage}
-          />
-        )}
         <Header
-          showBackBtn={false}
-          showXBtn={true}
-          title="계정 설정"
-          backgroundColor="white"
-          onClickXBtn={() => navigate("/setting-page")}
+          showBackBtn={true}
+          showXBtn={false}
+          title="계정 관리"
+          backgroundColor="secondary"
+          onClickBackBtn={() => navigate("/setting-page")}
         />
-        <S.InputBox>
-          <S.Select
-            value={gender}
-            onChange={(e) => setGenderDraft(e.target.value)}
-            name="gender"
-          >
-            <option value="FEMALE">여성</option>
-            <option value="MALE">남성</option>
-            <option value="">선택 안함</option>
-          </S.Select>
-          <Input
-            value={birth}
-            onChange={(e) => setBirthDraft(e.target.value)}
-            placeholder="출생년도(yyyy) 입력"
-            type="text  "
-            name="birth"
-            required
-          />
-          {birth.length > 0 && (!isNumeric(birth) || birth.length !== 4) && (
-            <S.WarningMessage>유효하지 않은 숫자입니다.</S.WarningMessage>
-          )}
-          {isAccountProfileError && (
-            <S.WarningMessage>
-              계정 정보를 불러오지 못했습니다.
-            </S.WarningMessage>
-          )}
-          <Button
-            title="저장하기"
-            onClick={handleSave}
-            disabled={
-              isAccountProfilePending || updateAccountMutation.isPending
-            }
-          />
-          <S.DeleteBtn onClick={handleDelete}>계정 삭제하기</S.DeleteBtn>
-        </S.InputBox>
+        <S.Content>
+          <S.Section>
+            <S.SectionTitle>계정 정보</S.SectionTitle>
+            <S.InfoList>
+              <S.InfoRow type="button" onClick={() => setSheetType("gender")}>
+                <S.RowLabel>성별</S.RowLabel>
+                <S.RowValue>{formatGender(currentGender)}</S.RowValue>
+              </S.InfoRow>
+              <S.InfoRow type="button" onClick={() => setSheetType("birth")}>
+                <S.RowLabel>출생연도</S.RowLabel>
+                <S.RowValue>{formatBirthYear(currentBirthYear)}</S.RowValue>
+              </S.InfoRow>
+            </S.InfoList>
+            {isAccountProfileError && (
+              <S.WarningMessage>
+                계정 정보를 불러오지 못했습니다.
+              </S.WarningMessage>
+            )}
+          </S.Section>
+
+          <S.Section>
+            <S.SectionTitle>계정 연동</S.SectionTitle>
+            <S.LinkedList>
+              <S.LinkedRow>
+                <S.ProviderIconFrame>
+                  <S.ProviderIcon src={googleIcon} alt="" />
+                </S.ProviderIconFrame>
+                <S.ProviderName>Google 계정</S.ProviderName>
+                <S.ProviderStatus>연동됨</S.ProviderStatus>
+              </S.LinkedRow>
+              <S.LinkedActionRow
+                type="button"
+                onClick={() => setToastMessage("아직 구현되지 않은 기능입니다.")}
+              >
+                <S.ProviderIconFrame>
+                  <S.ProviderIcon src={kakaoIcon} alt="" />
+                </S.ProviderIconFrame>
+                <S.ProviderName>카카오</S.ProviderName>
+                <S.ProviderStatus>연동하기</S.ProviderStatus>
+              </S.LinkedActionRow>
+            </S.LinkedList>
+          </S.Section>
+        </S.Content>
+
+        <S.BottomActions>
+          <S.LogoutButton type="button" onClick={handleLogout}>
+            로그아웃
+          </S.LogoutButton>
+          <S.DeleteButton type="button" onClick={() => setShowDeleteModal(true)}>
+            계정삭제
+          </S.DeleteButton>
+        </S.BottomActions>
+
+        {sheetType === "gender" && (
+          <S.SheetOverlay onClick={() => setSheetType(null)}>
+            <S.Sheet onClick={(event) => event.stopPropagation()}>
+              <S.GenderList>
+                {GENDER_OPTIONS.map((option) => (
+                  <S.GenderOption
+                    key={option.label}
+                    type="button"
+                    onClick={() => setGenderDraft(option.value)}
+                  >
+                    <span>{option.label}</span>
+                    {currentGender === option.value && <S.CheckMark />}
+                  </S.GenderOption>
+                ))}
+              </S.GenderList>
+              <S.SheetDoneButton type="button" onClick={handleGenderDone}>
+                완료
+              </S.SheetDoneButton>
+            </S.Sheet>
+          </S.SheetOverlay>
+        )}
+
+        {sheetType === "birth" && (
+          <S.SheetOverlay onClick={() => setSheetType(null)}>
+            <S.Sheet onClick={(event) => event.stopPropagation()}>
+              <S.YearPicker>
+                {YEAR_OPTIONS.map((year) => (
+                  <S.PickerOption
+                    key={year}
+                    ref={currentBirthYear === year ? selectedYearRef : undefined}
+                    type="button"
+                    $selected={currentBirthYear === year}
+                    onClick={(event) => {
+                      setBirthYearDraft(year);
+                      centerSelectedOption(event.currentTarget);
+                    }}
+                  >
+                    {year}년
+                  </S.PickerOption>
+                ))}
+              </S.YearPicker>
+              <S.SheetDoneButton type="button" onClick={handleBirthDone}>
+                완료
+              </S.SheetDoneButton>
+            </S.Sheet>
+          </S.SheetOverlay>
+        )}
       </S.Container>
     </>
   );
