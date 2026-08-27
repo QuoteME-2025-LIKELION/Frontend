@@ -19,7 +19,7 @@ export default function ProfileCenter() {
   const location = useLocation();
   const fromPath = location.state?.from || "default";
   const showXBtn = fromPath === "/home";
-  const showBackBtn = fromPath === "/setting-page" || fromPath === "default";
+  const showBackBtn = !showXBtn;
 
   const { data } = useSettingsProfileQuery();
   const updateSettingsProfile = useUpdateSettingsProfileMutation();
@@ -162,7 +162,7 @@ export default function ProfileCenter() {
           title="프로필 관리"
           backgroundColor="secondary"
           onClickXBtn={() => handleRequestExit("/home")}
-          onClickBackBtn={() => handleRequestExit("/setting-page")}
+          onClickBackBtn={() => handleRequestExit("/home")}
         />
         <S.ProfileWrapper>
           <S.ImgPreview

@@ -250,7 +250,7 @@ export default function NotificationSetting() {
           showXBtn={false}
           title="알림설정"
           backgroundColor="secondary"
-          onClickBackBtn={() => navigate("/setting-page")}
+          onClickBackBtn={() => navigate("/home")}
         />
         <S.List>
           <S.MasterRow type="button" onClick={handleToggleAll}>

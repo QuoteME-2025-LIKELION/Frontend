@@ -66,8 +66,8 @@ export default function EditQuoteTags() {
           >
             프로필 관리
           </S.ToggleBtn>
-          <S.ToggleBtn onClick={() => navigate("/setting-page")}>
-            환경 설정
+          <S.ToggleBtn onClick={() => navigate("/notification-setting")}>
+            알림 설정
           </S.ToggleBtn>
         </S.Toggle>
       )}

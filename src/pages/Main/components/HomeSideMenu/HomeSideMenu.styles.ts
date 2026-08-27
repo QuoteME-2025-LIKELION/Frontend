@@ -62,6 +62,7 @@ export const ImgBox = styled.div`
 `;
 
 export const ImgPreview = styled.div<{ $profileImage?: string }>`
+  position: relative;
   width: 80px;
   height: 80px;
   border-radius: 80px;
@@ -71,6 +72,26 @@ export const ImgPreview = styled.div<{ $profileImage?: string }>`
   background-size: cover; /* 이미지 크기 조절 */
   background-position: center; /* 이미지 위치 조절 */
   display: flex;
+`;
+
+export const ProfileSettingButton = styled.button`
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: ${theme.colors.secondary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
 `;
 
 export const UserName = styled.div`

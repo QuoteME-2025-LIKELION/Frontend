@@ -42,7 +42,7 @@ export default function Notice() {
           showXBtn={false}
           title="공지사항"
           backgroundColor="primary"
-          onClickBackBtn={() => navigate("/setting-page")}
+          onClickBackBtn={() => navigate("/home")}
         />
         <S.TopSection>
           <S.SectionTitle $light>중요 공지</S.SectionTitle>

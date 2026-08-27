@@ -163,7 +163,7 @@ export default function AccountSetting() {
           showXBtn={false}
           title="계정 관리"
           backgroundColor="secondary"
-          onClickBackBtn={() => navigate("/setting-page")}
+          onClickBackBtn={() => navigate("/home")}
         />
         <S.Content>
           <S.Section>
