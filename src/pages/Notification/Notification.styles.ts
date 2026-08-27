@@ -84,6 +84,10 @@ export const NotificationWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+
+  > button:last-of-type {
+    border-bottom: none;
+  }
 `;
 
 export const Message = styled.div`
