@@ -76,12 +76,12 @@ export const ImgPreview = styled.div<{ $profileImage?: string }>`
 
 export const ProfileSettingButton = styled.button`
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  top: 0;
+  right: -24px;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background-color: ${theme.colors.secondary};
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +111,7 @@ export const UserIntro = styled.div`
   font-style: normal;
   font-weight: 400;
   letter-spacing: -0.24px;
-  margin-top: 4px;
+  margin-top: 10px;
 `;
 
 export const ToggleBtnBox = styled.div`
@@ -133,10 +133,15 @@ export const ToggleBtn = styled.div`
   text-align: center;
   width: 240px;
   border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
 `;
 
 export const ToggleInfoBox = styled.div`
-  margin-top: 240px;
+  margin-top: auto;
+  margin-bottom: 52px;
   gap: 12px;
   display: flex;
   flex-direction: column;
