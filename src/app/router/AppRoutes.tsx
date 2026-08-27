@@ -19,6 +19,8 @@ import Home from "@/pages/Main/Home";
 import Write from "@/pages/Main/Write";
 import NotFound from "@/pages/NotFound/NotFound";
 import Notification from "@/pages/Notification/Notification";
+import AccountDelete from "@/pages/Setting/AccountDelete/AccountDelete";
+import AccountDeleteComplete from "@/pages/Setting/AccountDelete/AccountDeleteComplete";
 import AccountSetting from "@/pages/Setting/AccountSetting/AccountSetting";
 import Notice from "@/pages/Setting/Notice/Notice";
 import NotificationSetting from "@/pages/Setting/NotificationSetting/NotificationSetting";
@@ -37,6 +39,10 @@ export default function AppRoutes() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/login" element={<Login />} />
       <Route path="/oauth2/callback" element={<OAuthCallback />} />
+      <Route
+        path="/account-delete-complete"
+        element={<AccountDeleteComplete />}
+      />
 
       {/* 로그인 상태가 필요한 화면 */}
       <Route element={<ProtectedRoute />}>
@@ -53,6 +59,7 @@ export default function AppRoutes() {
 
         <Route path="/profile-center" element={<ProfileCenter />} />
         <Route path="/account-setting" element={<AccountSetting />} />
+        <Route path="/account-delete" element={<AccountDelete />} />
         <Route path="/notification-setting" element={<NotificationSetting />} />
         <Route path="/notices" element={<Notice />} />
 

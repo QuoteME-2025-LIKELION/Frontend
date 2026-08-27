@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import googleIcon from "@/assets/icons/account/google.png";
 import kakaoIcon from "@/assets/icons/account/kakao.png";
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useAccountProfileQuery,
-  useDeleteAccountMutation,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
 import useAuthStore from "@/stores/useAuthStore";
@@ -47,12 +45,10 @@ export default function AccountSetting() {
     isPending: isAccountProfilePending,
   } = useAccountProfileQuery();
   const updateAccountMutation = useUpdateAccountMutation();
-  const { mutateAsync: deleteAccount } = useDeleteAccountMutation();
   const [genderDraft, setGenderDraft] = useState<string | null>(null);
   const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
   const [sheetType, setSheetType] = useState<SheetType>(null);
   const [toastMessage, setToastMessage] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
   const currentGender = genderDraft ?? accountProfile?.gender ?? "";
   const currentBirthYear: number | null =
@@ -122,22 +118,6 @@ export default function AccountSetting() {
     navigate("/");
   };
 
-  const handleConfirmDelete = async () => {
-    try {
-      await deleteAccount();
-      logout();
-      setShowDeleteModal(false);
-      setToastMessage("계정이 삭제되었습니다.");
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
-    } catch (e) {
-      console.error("계정 삭제 실패", e);
-      setShowDeleteModal(false);
-      setToastMessage("계정 삭제에 실패했습니다.");
-    }
-  };
-
   return (
     <>
       <PageTitle title="계정 관리" />
@@ -149,13 +129,6 @@ export default function AccountSetting() {
             text={toastMessage}
             showOverlay={false}
             variant="snackbar"
-          />
-        )}
-        {showDeleteModal && (
-          <ConfirmModal
-            onClose={() => setShowDeleteModal(false)}
-            question="정말로 계정을 삭제하시겠습니까?"
-            onConfirm={handleConfirmDelete}
           />
         )}
         <Header
@@ -213,7 +186,10 @@ export default function AccountSetting() {
           <S.LogoutButton type="button" onClick={handleLogout}>
             로그아웃
           </S.LogoutButton>
-          <S.DeleteButton type="button" onClick={() => setShowDeleteModal(true)}>
+          <S.DeleteButton
+            type="button"
+            onClick={() => navigate("/account-delete")}
+          >
             계정삭제
           </S.DeleteButton>
         </S.BottomActions>
