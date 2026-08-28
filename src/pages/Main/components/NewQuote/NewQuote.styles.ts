@@ -59,128 +59,36 @@ export const Description = styled.p`
   text-align: center;
 `;
 
-export const TagRequestSection = styled.section`
+export const EmptyBox = styled.div`
   width: 100%;
-  margin-top: 0.75rem;
-  padding: 0.75rem 0;
-  border-top: 1px solid #dedede;
-  border-bottom: 1px solid #dedede;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
-`;
-
-export const TagRequestHeader = styled.div`
-  display: flex;
   align-items: center;
-  gap: 0.375rem;
+  justify-content: center;
+  padding-bottom: 6.5rem;
 `;
 
-export const TagRequestTitle = styled.div`
-  ${theme.fonts.dotum}
-  color: #000;
-  font-size: 0.875rem;
+export const EmptyTitle = styled.div`
+  ${theme.fonts.batang}
+  color: ${theme.colors.territory};
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
-`;
-
-export const TagRequestCount = styled.span`
-  min-width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 50%;
-  background-color: ${theme.colors.primary};
-  ${theme.fonts.pretendard}
-  color: #fff;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  line-height: 1.125rem;
+  letter-spacing: -0.36px;
   text-align: center;
 `;
 
-export const TagRequestList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-export const TagRequestItem = styled.div`
-  min-height: 3.375rem;
-  display: grid;
-  grid-template-columns: 2.375rem minmax(0, 1fr) auto;
-  gap: 0.625rem;
-  align-items: center;
-`;
-
-export const RequestProfileImg = styled.img`
-  width: 2.375rem;
-  height: 2.375rem;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-
-export const RequestDefaultProfileImg = styled.div`
-  width: 2.375rem;
-  height: 2.375rem;
-  border-radius: 50%;
-  background-color: ${theme.colors.primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ${theme.fonts.batang}
-  color: #fff;
-  font-size: 1.25rem;
-  line-height: 100%;
-`;
-
-export const TagRequestUserBox = styled.div`
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
-
-export const TagRequestUsername = styled.div`
-  ${theme.fonts.dotum}
-  color: #000;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 120%;
-  letter-spacing: 0;
-`;
-
-export const TagRequestState = styled.div<{
-  $decision: "accept" | "reject";
-}>`
-  ${theme.fonts.dotum}
-  color: ${({ $decision }) =>
-    $decision === "accept" ? theme.colors.primary : theme.colors.territory};
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 120%;
-  letter-spacing: 0;
-`;
-
-export const TagRequestActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-`;
-
-export const TagRequestButton = styled.button<{ $active: boolean }>`
-  min-width: 2.75rem;
-  min-height: 1.875rem;
-  padding: 0 0.625rem;
-  border: 1px solid
-    ${({ $active }) => ($active ? theme.colors.primary : "#dedede")};
-  background-color: ${({ $active }) =>
-    $active ? theme.colors.primary : "transparent"};
+export const EmptyDescription = styled.div`
   ${theme.fonts.pretendard}
-  color: ${({ $active }) => ($active ? "#fff" : "#000")};
+  margin-top: 0.875rem;
+  color: ${theme.colors.territory};
   font-size: 0.75rem;
   font-weight: 500;
-  line-height: 120%;
-  cursor: pointer;
+  line-height: 135%;
+  letter-spacing: 0;
+  text-align: center;
 `;
 
 export const SelectedList = styled.div<{ $isEmpty: boolean }>`
@@ -211,12 +119,12 @@ export const SelectedUser = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const SelectedAvatar = styled.div`
@@ -260,23 +168,38 @@ export const RemoveSelectedButton = styled.button`
   cursor: pointer;
 `;
 
+export const TagRequestListTitle = styled.div`
+  margin-top: 0.75rem;
+  ${theme.fonts.batang}
+  color: #000;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: -0.36px;
+`;
+
 export const TagList = styled.div`
   width: 100%;
-  margin-top: 0.625rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
 `;
 
-export const TagItem = styled.button<{ $showBorder: boolean }>`
+export const TagItem = styled.button<{
+  $showBorder: boolean;
+  $separateAfter?: boolean;
+}>`
   width: 100%;
   min-height: 3.625rem;
   display: grid;
-  grid-template-columns: 2.8125rem minmax(0, 1fr) 1rem;
+  grid-template-columns: 2.8125rem minmax(0, 1fr) 1.5rem;
   gap: 0.6875rem;
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: ${({ $showBorder }) =>
     $showBorder ? "1px solid #dedede" : "0"};
+  margin-bottom: ${({ $separateAfter }) =>
+    $separateAfter ? "1.375rem" : "0"};
   background-color: transparent;
   cursor: pointer;
 `;
@@ -311,39 +234,38 @@ export const UserBox = styled.div`
 `;
 
 export const Username = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #000;
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
 `;
 
 export const Intro = styled.div`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 120%;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
 
-export const Checkbox = styled.span<{ $isSelected: boolean }>`
-  width: 1rem;
-  height: 1rem;
-  border: 1.5px solid
-    ${({ $isSelected }) => ($isSelected ? "#25282d" : theme.colors.territory)};
-  background-color: ${({ $isSelected }) =>
-    $isSelected ? "#25282d" : "transparent"};
-  color: #fff;
+export const Checkbox = styled.span`
+  width: 1.5rem;
+  height: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.625rem;
-  font-weight: 700;
+
+  img {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+  }
 `;
 
 export const ActionBar = styled.div<{ $single: boolean }>`

@@ -6,14 +6,14 @@
  * @example
  * // 컴포넌트 스타일 파일 내부
  * const Container = style.div`
- *  ${theme.fonts.dotum} // 폰트는 이렇게만 써도 됨
+ *  ${theme.fonts.pretendard} // 폰트는 이렇게만 써도 됨
  *  color: ${theme.colors.primary};
  * `
  */
 const theme = {
   colors: {
     primary: "#143858",
-    secondary: "#f3f3f3",
+    secondary: "#e9eaec",
     territory: "#959595",
     red: "#de1c1c",
     "fg-primary": "#21242b",
@@ -22,12 +22,10 @@ const theme = {
   },
   // 아예 font-family 자체를 관리
   fonts: {
-    dotum:
-      "font-family: 'KoPubWorldDotum', 'Noto Sans KR', sans-serif; line-height: 1;",
     batang: "font-family: 'KoPubWorldBatang', serif; line-height: 1;",
     pretendard:
       "font-family: 'Pretendard Variable','Noto Sans KR', sans-serif; line-height: 1;",
-    chonburi: "font-family: 'Chonburi', serif; line-height: 1;",
+    bombaram: "font-family: 'HSBombaram', serif; line-height: 1;",
   },
 } as const;
 

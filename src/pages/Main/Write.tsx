@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -17,6 +17,7 @@ type QuoteSource = "direct" | "ai";
 
 export default function Write() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeStep, setActiveStep] = useState<WriteStep>("write");
   const [quoteSource, setQuoteSource] = useState<QuoteSource>("direct");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
@@ -24,6 +25,7 @@ export default function Write() {
   const [diaryText, setDiaryText] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
   const { data: aiUsage, isLoading: isAiUsageLoading } = useAiUsageQuery();
+  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const hasDraft =
     draftText.trim().length > 0 ||
     diaryText.trim().length > 0 ||
@@ -35,7 +37,7 @@ export default function Write() {
       return;
     }
 
-    navigate("/home");
+    navigate(returnTo);
   };
 
   return (
@@ -52,7 +54,7 @@ export default function Write() {
             confirmColor="danger"
             variant="card"
             onClose={() => setShowExitModal(false)}
-            onConfirm={() => navigate("/home")}
+            onConfirm={() => navigate(returnTo)}
           />
         )}
         <XHeader showHomeButton={false} onClose={handleClose} />

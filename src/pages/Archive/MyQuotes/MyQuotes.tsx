@@ -44,7 +44,7 @@ export default function MyQuotes() {
         />
       )}
       {myQuotes.length === 0 && (
-        <S.EmptyMessage>작성된 명언이 없습니다</S.EmptyMessage>
+        <S.EmptyMessage>작성된 명언이 없습니다.</S.EmptyMessage>
       )}
       {myQuotes.map((feed, index) => {
         const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);

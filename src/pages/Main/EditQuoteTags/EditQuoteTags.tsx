@@ -20,6 +20,7 @@ export default function EditQuoteTags() {
   const requestedNickname = location.state?.requestedNickname as
     | string
     | undefined;
+  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
 
   const {
     active,
@@ -50,7 +51,11 @@ export default function EditQuoteTags() {
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
-      {date ? <XHeader /> : <DateHeader onToggleMenu={toggleMenu} />}
+      {date ? (
+        <XHeader onClose={() => navigate(returnTo)} />
+      ) : (
+        <DateHeader onToggleMenu={toggleMenu} />
+      )}
 
       {isToggleVisible && (
         <S.Toggle $active={active}>
@@ -66,8 +71,8 @@ export default function EditQuoteTags() {
           >
             프로필 관리
           </S.ToggleBtn>
-          <S.ToggleBtn onClick={() => navigate("/setting-page")}>
-            환경 설정
+          <S.ToggleBtn onClick={() => navigate("/notification-setting")}>
+            알림 설정
           </S.ToggleBtn>
         </S.Toggle>
       )}

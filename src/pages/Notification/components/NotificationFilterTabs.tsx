@@ -1,6 +1,6 @@
 import * as S from "../Notification.styles";
 
-export type NotificationFilter = "GROUP" | "POKE" | "TAGS";
+export type NotificationFilter = "GROUP" | "FRIEND" | "TAG";
 
 interface NotificationFilterTabsProps {
   selectedFilter: NotificationFilter | null;
@@ -12,9 +12,9 @@ const FILTER_TABS: Array<{
   value: NotificationFilter | null;
 }> = [
   { label: "전체보기", value: null },
-  { label: "그룹 알림", value: "GROUP" },
-  { label: "콕 찌르기", value: "POKE" },
-  { label: "태그", value: "TAGS" },
+  { label: "그룹", value: "GROUP" },
+  { label: "친구", value: "FRIEND" },
+  { label: "태그", value: "TAG" },
 ];
 
 /**

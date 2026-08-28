@@ -11,19 +11,21 @@ export const Container = styled.div`
   max-width: 393px;
   background-color: ${theme.colors.secondary};
   height: 100vh;
+  overflow: hidden;
 `;
 
 export const Menu = styled.div`
   width: 100%;
   background-color: ${theme.colors.secondary};
-  padding: 1.875rem 1.4rem;
+  padding: 1.875rem 1.5rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
 export const Btn = styled.button<{ $active: boolean }>`
-  padding: 0.3125rem 0.9375rem;
+  min-width: 4.25rem;
+  padding: 0.5rem 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,10 +43,10 @@ export const Btn = styled.button<{ $active: boolean }>`
   ${({ $active }) =>
     $active
       ? css`
-          border-top: 1px solid rgba(0, 0, 0, 0.55);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+          border-top: 1px solid rgba(20, 56, 88, 0.65);
+          border-bottom: 1px solid rgba(20, 56, 88, 0.65);
           background-color: ${theme.colors.secondary};
-          color: #000;
+          color: ${theme.colors.primary};
         `
       : css`
           /* border 유무로 인한 미세한 height 차이 방지 */
@@ -58,32 +60,23 @@ export const Btn = styled.button<{ $active: boolean }>`
 /* 모든 알림 보여줄 때 날짜별 알림을 감싸는 전체 리스트 */
 export const NotificationList = styled.div`
   width: 100%;
-  padding: 0.875rem 3rem; /* 14px 48px */
-  /* Menu padding과 일치시킴 */
+  flex: 1;
+  min-height: 0;
+  padding: 1.25rem 1.5rem 5rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   @media screen and (max-width: 360px) {
-    padding: 0.775rem 1.5rem; /* 14px 24px */
+    padding: 1rem 1rem 5rem;
   }
 
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 30px */
-`;
-
-/* 모든 알림 보여줄 때 각 날짜와 알림들을 감싸는 박스 */
-export const NotificationBox = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9375rem; /* 15px */
-`;
-
-/* 모든 알림 보여줄 때 각 날짜 타이틀 */
-export const TimeStamp = styled.div`
-  color: #000;
-  ${theme.fonts.batang}
-  font-size: 1rem; /* 16px */
-  font-weight: 700;
-  letter-spacing: -0.32px;
+  gap: 1.25rem;
 `;
 
 /* 알림들 감싸는 래퍼 (모든 상황에서 쓰임) */
@@ -91,22 +84,33 @@ export const NotificationWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.3125rem; /* 21px */
+
+  > button:last-of-type {
+    border-bottom: none;
+  }
 `;
 
 export const Message = styled.div`
-  margin-top: 50%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 8rem;
+  gap: 0.875rem;
 `;
 
 export const MessageText = styled.div`
   color: ${theme.colors["fg-subtle"]};
   text-align: center;
   ${theme.fonts.batang};
-  font-weight: var(--font-weight-regular, 400);
-  line-height: var(--line-height-t2, 21px); /* 150% */
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
   letter-spacing: -0.28px;
+
+  & + & {
+    ${theme.fonts.pretendard};
+    font-size: 0.875rem;
+  }
 `;

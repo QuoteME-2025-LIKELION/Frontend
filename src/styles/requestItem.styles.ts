@@ -35,7 +35,7 @@ export const RequestUserBoxBase = styled.div`
   min-width: 0;
 
   div {
-    ${theme.fonts.dotum}
+    ${theme.fonts.pretendard}
     font-size: 0.875rem; /* 14px */
     letter-spacing: -0.28px;
   }
@@ -57,11 +57,11 @@ export const RequestActionBoxBase = styled.div`
   gap: 0.5rem; /* 8px */
 
   button {
-    ${theme.fonts.dotum}
+    ${theme.fonts.pretendard}
     color: ${theme.colors.territory};
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;
-    letter-spacing: -0.26px;
+    letter-spacing: -0.28px;
     text-decoration-line: underline;
     text-underline-position: from-font;
     cursor: pointer;

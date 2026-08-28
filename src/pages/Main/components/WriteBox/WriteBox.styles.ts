@@ -22,7 +22,7 @@ export const Datebox = styled.div`
 export const Month = styled.div`
   color: #fff;
   text-align: center;
-  ${theme.fonts.chonburi};
+  ${theme.fonts.bombaram};
   font-size: 36px;
   font-style: normal;
   font-weight: 400;

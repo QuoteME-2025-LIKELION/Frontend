@@ -45,7 +45,7 @@ export default function CalendarPage() {
         />
       )}
       {filteredFeeds.length === 0 && (
-        <List.EmptyMessage>작성된 명언이 없습니다</List.EmptyMessage>
+        <List.EmptyMessage>작성된 명언이 없습니다.</List.EmptyMessage>
       )}
       {filteredFeeds.map((feed, index) => {
         const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);

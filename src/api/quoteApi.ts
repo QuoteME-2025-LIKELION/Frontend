@@ -110,10 +110,6 @@ export const quoteApi = {
     api.get<MyTagRequestResponse>(`/api/quotes/${quoteId}/my-tag-request`),
   getTagRequests: (quoteId: number) =>
     api.get<QuoteTagRequest[]>(`/api/quotes/${quoteId}/requests`),
-  acceptTagRequest: (requestId: number) =>
-    api.post(`/api/quotes/requests/${requestId}/accept`),
-  rejectTagRequest: (requestId: number) =>
-    api.post(`/api/quotes/requests/${requestId}/reject`),
   likeQuote: (quoteId: number) => api.post(`/api/quotes/${quoteId}/like`),
   unlikeQuote: (quoteId: number) => api.delete(`/api/quotes/${quoteId}/like`),
   bookmarkQuote: (quoteId: number) =>

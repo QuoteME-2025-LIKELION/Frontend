@@ -96,7 +96,7 @@ export const InfoLine = styled.div`
   align-items: center;
   gap: 0.5rem; /* 8px */
 
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: #fff;
   font-size: 0.875rem; /* 14px */
   letter-spacing: -0.28px;
@@ -124,7 +124,7 @@ export const Count = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   color: rgba(255, 255, 255, 0.22);
   font-size: 6rem; /* 96px */
   font-weight: 400;

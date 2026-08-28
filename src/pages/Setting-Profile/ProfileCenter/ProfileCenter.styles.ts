@@ -3,89 +3,132 @@ import styled from "@emotion/styled";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   max-width: 393px;
-  height: 100vh;
-`;
-
-export const InputBox = styled.div`
-  width: 100%;
-  padding: 0 2.5rem; /* 0 40px */
-  display: flex;
-  flex-direction: column;
-  margin-top: 26px;
-  gap: 9px;
-`;
-
-export const InfoBox = styled.div`
-  width: 100%;
-  height: 2.1875rem; /* 35px */
-  padding: 0.625rem 0.9375rem; /* 10px 15px */
+  min-height: 100vh;
   background-color: ${theme.colors.secondary};
-  border-top: 0.5px solid ${theme.colors.territory};
-  border-bottom: 0.5px solid ${theme.colors.territory};
-  display: flex;
-  align-items: center;
-  outline: none;
-
-  ${theme.fonts.pretendard}
-  color: #000;
-  font-size: 0.875rem; /* 14px */
-  font-weight: 500;
-  letter-spacing: -0.28px;
-`;
-
-export const InputBtn = styled.div`
-  ${theme.fonts.batang};
-  border-top: 0.5px solid ${theme.colors.territory};
-  border-bottom: 0.5px solid ${theme.colors.territory};
-  background: #fff;
-  display: flex;
-  padding: 7px 10px;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  align-self: stretch;
-  margin-top: 10px;
-  cursor: pointer;
 `;
 
 export const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 43px;
+  gap: 0.875rem;
+  margin-top: 3rem;
 `;
 
-export const ImgPreview = styled.div`
+export const ImgPreview = styled.button`
   width: 80px;
   height: 80px;
-  border-radius: 80px;
+  border-radius: 50%;
   background-color: #e0e0e0;
-  background-size: cover; /* 이미지 크기 조절 */
-  background-position: center; /* 이미지 위치 조절 */
+  background-size: cover;
+  background-position: center;
+  flex: 0 0 80px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
 `;
 
-export const ImgInput = styled.div`
+export const ImgInput = styled.button<{ $hidden?: boolean }>`
   ${theme.fonts.pretendard};
-  color: ${theme.colors.territory};
-  font-size: 14px;
+  color: #a4a9b0;
+  font-size: 0.875rem;
   font-weight: 500;
-  text-decoration: underline;
-  text-underline-position: from-font;
-  cursor: pointer;
+  line-height: 1.35;
+  letter-spacing: -0.28px;
+  cursor: ${({ $hidden }) => ($hidden ? "default" : "pointer")};
+  visibility: ${({ $hidden }) => ($hidden ? "hidden" : "visible")};
+`;
+
+export const InputBox = styled.div`
+  width: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  margin-top: 2.125rem;
+  gap: 0.875rem;
+`;
+
+export const InfoBox = styled.div`
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.625rem 0.9375rem;
+  background-color: ${theme.colors.white};
+  display: flex;
+  align-items: center;
+
+  ${theme.fonts.pretendard};
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.28px;
+  word-break: break-word;
 `;
 
 export const TextName = styled.div`
-  color: #000;
-  font-family: Pretendard;
-  font-size: 14px;
+  ${theme.fonts.batang};
+  color: #21242b;
+  font-size: 1.125rem;
   font-style: normal;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.36px;
+  margin-top: 0.75rem;
+`;
+
+export const Field = styled.div<{ $error?: boolean }>`
+  width: 100%;
+
+  input {
+    border: 0.5px solid
+      ${({ $error }) => ($error ? theme.colors.red : "transparent")};
+    background-color: ${theme.colors.white};
+  }
+
+  input:focus {
+    border: 0.5px solid
+      ${({ $error }) => ($error ? theme.colors.red : theme.colors.primary)};
+    background: var(--bg-white, #fafafa);
+  }
+`;
+
+export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
+  min-height: 1.125rem;
+  margin-top: -0.625rem;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: ${({ $error }) => ($error ? "space-between" : "flex-end")};
+  gap: 0.75rem;
+  ${theme.fonts.pretendard};
+  color: ${({ $error }) => ($error ? theme.colors.red : "#9599a1")};
+  font-size: 0.75rem;
   font-weight: 500;
-  line-height: 100%;
-  letter-spacing: -0.28px;
+  line-height: 1.35;
+  letter-spacing: -0.24px;
+  visibility: ${({ $hidden }) => ($hidden ? "hidden" : "visible")};
+
+  span:last-of-type {
+    margin-left: auto;
+    color: #9599a1;
+  }
+`;
+
+export const BtnBox = styled.div`
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 2.5rem;
+
+  button:disabled {
+    background-color: ${theme.colors.secondary};
+  }
 `;

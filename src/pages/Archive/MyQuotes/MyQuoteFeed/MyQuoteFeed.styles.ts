@@ -27,7 +27,7 @@ export const DateBox = styled.div`
 `;
 
 export const Date = styled.div`
-  ${theme.fonts.chonburi}
+  ${theme.fonts.bombaram}
   color: #fff;
   font-size: 1.25rem; /* 20px */
   font-weight: 400;

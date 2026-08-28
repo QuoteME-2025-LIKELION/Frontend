@@ -31,6 +31,6 @@ export const notificationApi = {
     api.patch(`/api/notifications/${notificationId}/read`),
   getSettings: () =>
     api.get<NotificationSettings>("/api/notifications/settings"),
-  updateSettings: (payload: NotificationSettings) =>
+  updateSettings: (payload: Partial<NotificationSettings>) =>
     api.put<NotificationSettings>("/api/notifications/settings", payload),
 };

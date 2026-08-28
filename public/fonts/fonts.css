@@ -61,11 +61,19 @@
   font-display: swap;
 }
 
-/* Chonburi */
+/* HS Bombaram */
 @font-face {
-  font-family: "Chonburi";
-  src: url("./Chonburi-Regular.woff") format("woff");
-  font-weight: 100 900;
+  font-family: HSBombaram;
+  src: url("./HSBombaram5.0-Bold.woff") format("woff");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: HSBombaram;
+  src: url("./HSBombaram5.0-BigBold.woff") format("woff");
+  font-weight: 800 900;
   font-style: normal;
   font-display: swap;
 }

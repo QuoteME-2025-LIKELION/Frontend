@@ -58,11 +58,11 @@ export const ProfileInfo = styled.div`
 `;
 
 export const Username = styled.div<{ $isInArchive?: boolean }>`
-  ${theme.fonts.dotum}
+  ${theme.fonts.pretendard}
   color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
   font-weight: 700;
   font-size: 0.8125rem;
-  letter-spacing: 0;
+  letter-spacing: -0.28px;
   width: 100%;
 `;
 
@@ -73,13 +73,13 @@ export const IntroTimeBox = styled.div<{ $isInArchive?: boolean }>`
   width: 100%;
 
   div {
-    ${theme.fonts.dotum}
+    ${theme.fonts.pretendard}
     color: ${({ $isInArchive }) =>
       $isInArchive ? "#fff" : theme.colors.territory};
     font-size: 0.6875rem;
     font-weight: 500;
     line-height: 120%;
-    letter-spacing: 0;
+    letter-spacing: -0.28px;
 
     &:first-of-type {
       min-width: 0;

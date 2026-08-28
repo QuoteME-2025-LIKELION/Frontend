@@ -4,27 +4,18 @@ import * as S from "../Notification.styles";
 import NotificationLog from "../NotificationLog/NotificationLog";
 
 interface NotificationListProps {
-  selectedFilter: string | null;
-  groupedNotifications: Array<[string, Notification[]]>;
-  filteredNotifications: Notification[];
+  notifications: Notification[];
   onNotificationClick: (notification: Notification) => void;
 }
 
 /**
- * 선택된 필터 상태에 따라 빈 상태, 날짜별 알림 목록, 필터 결과 목록을 렌더링
+ * 알림 목록 또는 빈 상태를 렌더링
  */
 export default function NotificationList({
-  selectedFilter,
-  groupedNotifications,
-  filteredNotifications,
+  notifications,
   onNotificationClick,
 }: NotificationListProps) {
-  const isEmpty =
-    selectedFilter === null
-      ? groupedNotifications.length === 0
-      : filteredNotifications.length === 0;
-
-  if (isEmpty) {
+  if (notifications.length === 0) {
     return (
       <S.Message>
         <S.MessageText>도착한 알림이 없어요.</S.MessageText>
@@ -33,31 +24,10 @@ export default function NotificationList({
     );
   }
 
-  if (selectedFilter === null) {
-    return (
-      <S.NotificationList>
-        {groupedNotifications.map(([dateKey, items]) => (
-          <S.NotificationBox key={dateKey}>
-            <S.TimeStamp>{dateKey}</S.TimeStamp>
-            <S.NotificationWrapper>
-              {items.map((item) => (
-                <NotificationLog
-                  key={item.id}
-                  notification={item}
-                  onClick={() => onNotificationClick(item)}
-                />
-              ))}
-            </S.NotificationWrapper>
-          </S.NotificationBox>
-        ))}
-      </S.NotificationList>
-    );
-  }
-
   return (
     <S.NotificationList>
       <S.NotificationWrapper>
-        {filteredNotifications.map((item) => (
+        {notifications.map((item) => (
           <NotificationLog
             key={item.id}
             notification={item}

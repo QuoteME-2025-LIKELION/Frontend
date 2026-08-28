@@ -1,6 +1,104 @@
 import { http, HttpResponse } from "msw";
 
+import type { Notification } from "@/types/notification.type";
+
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
+
+let mockNotificationSettings = {
+  groupEnabled: true,
+  friendEnabled: true,
+  tagEnabled: true,
+  pokeEnabled: false,
+  likeEnabled: true,
+  quoteReminderEnabled: true,
+  marketingEnabled: false,
+};
+
+type MockNotification = Notification & {
+  category: "GROUP" | "FRIEND" | "TAG";
+  createdAt: string;
+  referenceId: number;
+};
+
+let mockNotifications: MockNotification[] = [
+  {
+    id: 1,
+    category: "GROUP",
+    type: "GROUP",
+    message: "무니니 그룹에서 초대가 왔습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:00:00",
+    createDate: "2025-11-07T10:00:00",
+    referenceId: 3,
+    targetId: 3,
+    senderName: "라라진",
+  },
+  {
+    id: 2,
+    category: "TAG",
+    type: "TAG_REQUEST",
+    message: "라라진님이 태그를 요청하였습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:10:00",
+    createDate: "2025-11-03T19:02:00",
+    referenceId: 1,
+    targetId: 1,
+    senderName: "라라진",
+  },
+  {
+    id: 3,
+    category: "FRIEND",
+    type: "POKE",
+    message: "조니님이 콕 찔렀습니다.",
+    isRead: true,
+    createdAt: "2025-11-07T10:20:00",
+    createDate: "2025-11-07T10:20:00",
+    referenceId: 6,
+    targetId: 6,
+    senderName: "조니님",
+  },
+];
+
+const mockNotices = [
+  {
+    noticeId: 1,
+    type: "IMPORTANT",
+    title: "QuoteMe 베타 서비스 운영 안내",
+    content: "베타 기간 동안 일부 기능이 예고 없이 변경될 수 있습니다.",
+    createdAt: "2026-02-02T10:00:00",
+  },
+  {
+    noticeId: 2,
+    type: "IMPORTANT",
+    title: "알림 수신 설정 변경 안내",
+    content: "알림 설정 화면에서 수신 항목을 직접 조정할 수 있습니다.",
+    createdAt: "2026-02-02T09:00:00",
+  },
+  {
+    noticeId: 3,
+    type: "UPDATE",
+    title: "오늘의 QuoteMe 작성 화면이 개선되었어요.",
+    content:
+      "친구 태그와 AI 추천 결과를 더 자연스럽게 확인할 수 있도록 작성 흐름을 다듬었어요.",
+    createdAt: "2026-02-01T10:00:00",
+  },
+  {
+    noticeId: 4,
+    type: "UPDATE",
+    title: "친구와 그룹 화면 사용성이 좋아졌어요.",
+    content:
+      "친구 요청, 그룹 초대, 참여 요청을 한 화면에서 더 쉽게 확인할 수 있도록 정리했어요.",
+    createdAt: "2026-02-01T09:00:00",
+  },
+  {
+    noticeId: 5,
+    type: "UPDATE",
+    title: "공지사항 화면이 추가되었어요.",
+    content:
+      "서비스 안내와 업데이트 소식을 환경설정의 공지사항 메뉴에서 확인할 수 있어요.",
+    createdAt: "2026-02-01T08:00:00",
+  },
+];
 
 const mockGroups = [
   {
@@ -195,20 +293,6 @@ const mockMyTagRequestStatusByQuoteId: Record<
   number,
   "NONE" | "PENDING" | "ACCEPTED" | "REJECTED"
 > = {};
-
-const findQuoteTagRequest = (requestId: number) => {
-  for (const [quoteId, requests] of Object.entries(
-    mockQuoteTagRequestsByQuoteId
-  )) {
-    const request = requests.find((item) => item.requestId === requestId);
-
-    if (request) {
-      return { quoteId: Number(quoteId), request };
-    }
-  }
-
-  return null;
-};
 
 const searchableGroups = [
   {
@@ -811,42 +895,6 @@ export const handlers = [
     return HttpResponse.json(mockQuoteTagRequestsByQuoteId[quoteId] ?? []);
   }),
 
-  http.post("/api/quotes/requests/:requestId/accept", ({ params }) => {
-    const request = findQuoteTagRequest(Number(params.requestId));
-
-    if (!request) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 태그 요청입니다." },
-        { status: 404 }
-      );
-    }
-
-    request.request.status = "ACCEPTED";
-    mockMyQuoteTaggedNicknames = Array.from(
-      new Set([
-        ...mockMyQuoteTaggedNicknames,
-        request.request.requesterNickname,
-      ])
-    );
-
-    return new HttpResponse(null, { status: 200 });
-  }),
-
-  http.post("/api/quotes/requests/:requestId/reject", ({ params }) => {
-    const request = findQuoteTagRequest(Number(params.requestId));
-
-    if (!request) {
-      return HttpResponse.json(
-        { message: "존재하지 않는 태그 요청입니다." },
-        { status: 404 }
-      );
-    }
-
-    request.request.status = "REJECTED";
-
-    return new HttpResponse(null, { status: 200 });
-  }),
-
   // ==========================================
   // 7. 북마크 (Bookmark)
   // ==========================================
@@ -990,79 +1038,55 @@ export const handlers = [
   http.get("/api/notifications", ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
-    const notifications = [
-      {
-        id: 1,
-        category: "GROUP",
-        type: "GROUP",
-        message: "무니니 그룹에서 초대가 왔습니다.",
-        isRead: false,
-        createdAt: "2025-11-07T10:00:00",
-        createDate: "2025-11-07T10:00:00",
-        referenceId: 3,
-        targetId: 3,
-        senderName: "라라진",
-      },
-      {
-        id: 2,
-        category: "TAG",
-        type: "TAG_REQUEST",
-        message: "라라진님이 태그를 요청하였습니다.",
-        isRead: false,
-        createdAt: "2025-11-07T10:10:00",
-        createDate: "2025-11-03T19:02:00",
-        referenceId: 1,
-        targetId: 1,
-        senderName: "라라진",
-      },
-      {
-        id: 3,
-        category: "POKE",
-        type: "POKE",
-        message: "조니님이 콕 찔렀습니다.",
-        isRead: true,
-        createdAt: "2025-11-07T10:20:00",
-        createDate: "2025-11-07T10:20:00",
-        referenceId: 6,
-        targetId: 6,
-        senderName: "조니님",
-      },
-    ];
 
     return HttpResponse.json(
       category
-        ? notifications.filter(
+        ? mockNotifications.filter(
             (notification) =>
               notification.type === category ||
               notification.category === category
           )
-        : notifications
+        : mockNotifications
     );
   }),
 
   http.get("/api/notifications/unread-count", () => {
-    return HttpResponse.json({ count: 4 });
+    return HttpResponse.json({
+      count: mockNotifications.filter((notification) => !notification.isRead)
+        .length,
+    });
   }),
 
-  http.patch("/api/notifications/:id/read", () => {
+  http.patch("/api/notifications/:id/read", ({ params }) => {
+    const notificationId = Number(params.id);
+    const targetNotification = mockNotifications.find(
+      (notification) => notification.id === notificationId
+    );
+
+    if (!targetNotification) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    mockNotifications = mockNotifications.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, isRead: true }
+        : notification
+    );
+
     return new HttpResponse(null, { status: 200 });
   }),
 
   http.get("/api/notifications/settings", () => {
-    return HttpResponse.json({
-      groupEnabled: true,
-      friendEnabled: true,
-      tagEnabled: true,
-      pokeEnabled: false,
-      likeEnabled: true,
-      quoteReminderEnabled: true,
-      marketingEnabled: false,
-    });
+    return HttpResponse.json(mockNotificationSettings);
   }),
 
   http.put("/api/notifications/settings", async ({ request }) => {
     const body = await request.json();
-    return HttpResponse.json(body);
+    mockNotificationSettings = {
+      ...mockNotificationSettings,
+      ...(body as typeof mockNotificationSettings),
+    };
+    return HttpResponse.json(mockNotificationSettings);
   }),
 
   // ==========================================
@@ -1070,26 +1094,22 @@ export const handlers = [
   // ==========================================
   http.get("/api/notices", ({ request }) => {
     const url = new URL(request.url);
-    const type = url.searchParams.get("type") || "NOTICE";
+    const type = url.searchParams.get("type");
 
-    return HttpResponse.json([
-      {
-        noticeId: 1,
-        type,
-        title: "QuoteMe 서비스 업데이트 안내",
-        createdAt: "2025-11-07T10:00:00",
-      },
-    ]);
+    return HttpResponse.json(
+      type ? mockNotices.filter((notice) => notice.type === type) : mockNotices
+    );
   }),
 
   http.get("/api/notices/:noticeId", ({ params }) => {
-    return HttpResponse.json({
-      noticeId: Number(params.noticeId),
-      type: "NOTICE",
-      title: "QuoteMe 서비스 업데이트 안내",
-      content: "신규 API 명세에 맞춘 기능이 순차적으로 적용됩니다.",
-      createdAt: "2025-11-07T10:00:00",
-    });
+    const noticeId = Number(params.noticeId);
+    const notice = mockNotices.find((item) => item.noticeId === noticeId);
+
+    if (!notice) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json(notice);
   }),
 
   // ==========================================

@@ -178,55 +178,6 @@ export function useQuoteTagRequestsQuery(quoteId: number | undefined) {
 }
 
 /**
- * 태그 요청 수락 후 명언과 태그 요청 캐시 갱신
- */
-export function useAcceptQuoteTagRequestMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      requestId,
-    }: {
-      quoteId: number;
-      requestId: number;
-    }) => quoteApi.acceptTagRequest(requestId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: [...quoteQueryKeys.all, "tag-request"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: quoteQueryKeys.tagRequests(variables.quoteId),
-      });
-    },
-  });
-}
-
-/**
- * 태그 요청 거절 후 태그 요청 캐시 갱신
- */
-export function useRejectQuoteTagRequestMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      requestId,
-    }: {
-      quoteId: number;
-      requestId: number;
-    }) => quoteApi.rejectTagRequest(requestId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: [...quoteQueryKeys.all, "tag-request"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: quoteQueryKeys.tagRequests(variables.quoteId),
-      });
-    },
-  });
-}
-
-/**
  * 명언 좋아요 후 명언 조회 캐시 갱신
  */
 export function useLikeQuoteMutation() {

@@ -51,7 +51,7 @@ export default function RecommendList({
     errorStatus === 429
       ? "오늘 AI 추천 횟수를 모두 사용했어요."
       : errorStatus === 503
-        ? "AI 추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요"
+        ? "AI 추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         : "AI 추천을 불러오지 못했어요.";
   const usageText = isAiUsageLoading
     ? "-/-"
