@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import googleIcon from "@/assets/icons/account/google.png";
 import kakaoIcon from "@/assets/icons/account/kakao.png";
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -49,6 +50,7 @@ export default function AccountSetting() {
   const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
   const [sheetType, setSheetType] = useState<SheetType>(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
   const currentGender = genderDraft ?? accountProfile?.gender ?? "";
   const currentBirthYear: number | null =
@@ -131,6 +133,14 @@ export default function AccountSetting() {
             variant="snackbar"
           />
         )}
+        {showLogoutConfirm && (
+          <ConfirmModal
+            question="로그아웃하시겠어요?"
+            variant="card"
+            onClose={() => setShowLogoutConfirm(false)}
+            onConfirm={handleLogout}
+          />
+        )}
         <Header
           showBackBtn={true}
           showXBtn={false}
@@ -165,12 +175,14 @@ export default function AccountSetting() {
                 <S.ProviderIconFrame>
                   <S.ProviderIcon src={googleIcon} alt="" />
                 </S.ProviderIconFrame>
-                <S.ProviderName>Google 계정</S.ProviderName>
+                <S.ProviderName>구글</S.ProviderName>
                 <S.ProviderStatus>연동됨</S.ProviderStatus>
               </S.LinkedRow>
               <S.LinkedActionRow
                 type="button"
-                onClick={() => setToastMessage("아직 구현되지 않은 기능입니다.")}
+                onClick={() =>
+                  setToastMessage("아직 구현되지 않은 기능입니다.")
+                }
               >
                 <S.ProviderIconFrame>
                   <S.ProviderIcon src={kakaoIcon} alt="" />
@@ -183,7 +195,10 @@ export default function AccountSetting() {
         </S.Content>
 
         <S.BottomActions>
-          <S.LogoutButton type="button" onClick={handleLogout}>
+          <S.LogoutButton
+            type="button"
+            onClick={() => setShowLogoutConfirm(true)}
+          >
             로그아웃
           </S.LogoutButton>
           <S.DeleteButton
@@ -223,7 +238,9 @@ export default function AccountSetting() {
                 {YEAR_OPTIONS.map((year) => (
                   <S.PickerOption
                     key={year}
-                    ref={currentBirthYear === year ? selectedYearRef : undefined}
+                    ref={
+                      currentBirthYear === year ? selectedYearRef : undefined
+                    }
                     type="button"
                     $selected={currentBirthYear === year}
                     onClick={(event) => {
