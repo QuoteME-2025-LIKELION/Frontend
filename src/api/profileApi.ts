@@ -16,6 +16,11 @@ export interface UpdateAccountRequest {
   birthYear: number;
 }
 
+export interface DeleteAccountRequest {
+  selectedReasons: string[];
+  otherReason?: string;
+}
+
 export interface AccountProfileResponse {
   gender: string;
   birthYear: number;
@@ -75,5 +80,6 @@ export const profileApi = {
     api.get<AccountProfileResponse>("/api/profile/account"),
   updateAccount: (payload: UpdateAccountRequest) =>
     api.put("/api/profile/account", payload),
-  deleteAccount: () => api.delete("/api/profile/account"),
+  deleteAccount: (payload: DeleteAccountRequest) =>
+    api.delete("/api/profile/account", { data: payload }),
 };

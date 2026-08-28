@@ -74,6 +74,8 @@ export default function NotificationSetting() {
     useUpdateNotificationSettingsMutation();
   const [draftSettings, setDraftSettings] =
     useState<NotificationSettingsType>(DEFAULT_SETTINGS);
+  const [isNotificationPermissionEnabled, setIsNotificationPermissionEnabled] =
+    useState(true);
   const [toastMessage, setToastMessage] = useState("");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
   const [reminderTime, setReminderTime] = useState({
@@ -87,22 +89,25 @@ export default function NotificationSetting() {
   }, [settings]);
 
   const isAllEnabled = useMemo(
-    () => SETTING_ITEMS.some((item) => draftSettings[item.key]),
-    [draftSettings]
+    () => isNotificationPermissionEnabled,
+    [isNotificationPermissionEnabled]
   );
 
   const saveSettings = async (
     nextSettings: NotificationSettingsType,
-    successMessage = "알림 설정이 저장되었습니다."
+    successMessage = "알림 설정이 저장되었습니다.",
+    payload: Partial<NotificationSettingsType> = nextSettings
   ) => {
     const previousSettings = draftSettings;
+    const previousNotificationPermission = isNotificationPermissionEnabled;
     setDraftSettings(nextSettings);
 
     try {
-      await updateSettings(nextSettings);
+      await updateSettings(payload);
       setToastMessage(successMessage);
     } catch (err) {
       setDraftSettings(previousSettings);
+      setIsNotificationPermissionEnabled(previousNotificationPermission);
       console.error("알림 설정 저장 실패:", err);
       setToastMessage("알림 설정 저장에 실패했습니다.");
     }
@@ -114,6 +119,7 @@ export default function NotificationSetting() {
     }
 
     const nextValue = !isAllEnabled;
+    setIsNotificationPermissionEnabled(nextValue);
     void saveSettings(
       {
         groupEnabled: nextValue,
@@ -122,9 +128,17 @@ export default function NotificationSetting() {
         pokeEnabled: nextValue,
         likeEnabled: nextValue,
         quoteReminderEnabled: nextValue,
-        marketingEnabled: nextValue,
+        marketingEnabled: draftSettings.marketingEnabled,
       },
-      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요."
+      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요.",
+      {
+        groupEnabled: nextValue,
+        friendEnabled: nextValue,
+        tagEnabled: nextValue,
+        pokeEnabled: nextValue,
+        likeEnabled: nextValue,
+        quoteReminderEnabled: nextValue,
+      }
     );
   };
 
@@ -133,7 +147,7 @@ export default function NotificationSetting() {
       return;
     }
 
-    if (!isAllEnabled) {
+    if (key !== "marketingEnabled" && !isAllEnabled) {
       setToastMessage("전체 알림이 꺼져있어요.");
       return;
     }
@@ -160,9 +174,9 @@ export default function NotificationSetting() {
     setIsTimePickerOpen(true);
   };
 
-  const reminderTimeText = `${reminderTime.meridiem} ${reminderTime.hour}:${
-    reminderTime.minute === 0 ? "00" : reminderTime.minute
-  }`;
+  const reminderTimeText = `${reminderTime.meridiem} ${
+    reminderTime.hour
+  }:${reminderTime.minute.toString().padStart(2, "0")}`;
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
@@ -237,7 +251,6 @@ export default function NotificationSetting() {
                 type="button"
                 onClick={() => {
                   setIsTimePickerOpen(false);
-                  setToastMessage("알림 시간이 설정되었습니다.");
                 }}
               >
                 완료
@@ -260,7 +273,9 @@ export default function NotificationSetting() {
             </S.Value>
           </S.MasterRow>
           {SETTING_ITEMS.map((item) => {
-            const disabled = !isAllEnabled;
+            const disabled =
+              item.key !== "marketingEnabled" &&
+              !isNotificationPermissionEnabled;
             const isActive = draftSettings[item.key];
             const valueText =
               item.key === "quoteReminderEnabled" && isActive

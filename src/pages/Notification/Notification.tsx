@@ -35,12 +35,11 @@ export default function Notification() {
 
   // 전체 미읽음 수를 전역 unread 상태와 동기화
   useEffect(() => {
-    if (isUnreadCountError) {
-      setHasUnread(false);
+    if (isUnreadCountError || unreadCount === undefined) {
       return;
     }
 
-    setHasUnread(Boolean(unreadCount && unreadCount.count > 0));
+    setHasUnread(unreadCount.count > 0);
   }, [isUnreadCountError, setHasUnread, unreadCount]);
 
   const sortedNotifications = [...notifications].sort(

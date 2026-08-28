@@ -10,7 +10,7 @@ export const Container = styled.div`
   max-width: 393px;
   height: 100vh;
   height: 100dvh;
-  overflow: hidden;
+  overflow-y: auto;
   background-color: ${theme.colors.secondary};
 `;
 

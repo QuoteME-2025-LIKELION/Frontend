@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   profileApi,
+  type DeleteAccountRequest,
   type SetupProfileRequest,
   type UpdateSettingsProfileRequest,
   type UpdateAccountRequest,
@@ -124,7 +125,8 @@ export function useDeleteAccountMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => profileApi.deleteAccount(),
+    mutationFn: (payload: DeleteAccountRequest) =>
+      profileApi.deleteAccount(payload),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: profileQueryKeys.all });
     },

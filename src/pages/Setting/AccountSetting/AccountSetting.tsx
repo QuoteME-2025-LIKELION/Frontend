@@ -76,12 +76,23 @@ export default function AccountSetting() {
     nextGender = currentGender,
     nextBirthYear = currentBirthYear
   ) => {
+    const resetDrafts = () => {
+      setGenderDraft(accountProfile?.gender ?? "");
+      setBirthYearDraft(
+        Number.isFinite(accountProfile?.birthYear)
+          ? (accountProfile?.birthYear ?? null)
+          : null
+      );
+    };
+
     if (isAccountProfilePending || !accountProfile) {
+      resetDrafts();
       setToastMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
       return;
     }
 
     if (!nextBirthYear) {
+      resetDrafts();
       setToastMessage("출생연도를 선택해 주세요.");
       return;
     }
@@ -93,6 +104,7 @@ export default function AccountSetting() {
       });
       setToastMessage("계정 정보가 저장되었습니다.");
     } catch (e) {
+      resetDrafts();
       console.error("계정 정보 저장 실패", e);
       setToastMessage("계정 정보 저장에 실패했습니다.");
     }

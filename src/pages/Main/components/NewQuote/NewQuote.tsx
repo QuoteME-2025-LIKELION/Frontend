@@ -215,6 +215,7 @@ export default function NewQuote({
                     <S.TagItem
                       key={friend.id}
                       type="button"
+                      aria-pressed={isSelected}
                       $showBorder={!isLast}
                       $separateAfter={shouldSeparateFromDefaultFriends}
                       onClick={() => toggleSelect(friend.id)}

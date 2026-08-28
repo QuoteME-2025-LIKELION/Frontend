@@ -109,16 +109,19 @@ export default function HomeSideMenu({
             <S.UserIntro>{introduction}</S.UserIntro>
           </S.ImgBox>
           <S.ToggleBtnBox>
-            <S.ToggleBtn onClick={() => navigate("/friend-group")}>
+            <S.ToggleBtn type="button" onClick={() => navigate("/friend-group")}>
               친구 및 그룹
             </S.ToggleBtn>
-            <S.ToggleBtn onClick={() => navigate("/account-setting")}>
+            <S.ToggleBtn type="button" onClick={() => navigate("/account-setting")}>
               계정 관리
             </S.ToggleBtn>
-            <S.ToggleBtn onClick={() => navigate("/notification-setting")}>
+            <S.ToggleBtn
+              type="button"
+              onClick={() => navigate("/notification-setting")}
+            >
               알림 설정
             </S.ToggleBtn>
-            <S.ToggleBtn onClick={() => navigate("/notices")}>
+            <S.ToggleBtn type="button" onClick={() => navigate("/notices")}>
               공지사항
             </S.ToggleBtn>
           </S.ToggleBtnBox>

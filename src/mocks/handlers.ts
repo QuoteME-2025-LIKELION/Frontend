@@ -59,6 +59,47 @@ let mockNotifications: MockNotification[] = [
   },
 ];
 
+const mockNotices = [
+  {
+    noticeId: 1,
+    type: "IMPORTANT",
+    title: "QuoteMe 베타 서비스 운영 안내",
+    content: "베타 기간 동안 일부 기능이 예고 없이 변경될 수 있습니다.",
+    createdAt: "2026-02-02T10:00:00",
+  },
+  {
+    noticeId: 2,
+    type: "IMPORTANT",
+    title: "알림 수신 설정 변경 안내",
+    content: "알림 설정 화면에서 수신 항목을 직접 조정할 수 있습니다.",
+    createdAt: "2026-02-02T09:00:00",
+  },
+  {
+    noticeId: 3,
+    type: "UPDATE",
+    title: "오늘의 QuoteMe 작성 화면이 개선되었어요.",
+    content:
+      "친구 태그와 AI 추천 결과를 더 자연스럽게 확인할 수 있도록 작성 흐름을 다듬었어요.",
+    createdAt: "2026-02-01T10:00:00",
+  },
+  {
+    noticeId: 4,
+    type: "UPDATE",
+    title: "친구와 그룹 화면 사용성이 좋아졌어요.",
+    content:
+      "친구 요청, 그룹 초대, 참여 요청을 한 화면에서 더 쉽게 확인할 수 있도록 정리했어요.",
+    createdAt: "2026-02-01T09:00:00",
+  },
+  {
+    noticeId: 5,
+    type: "UPDATE",
+    title: "공지사항 화면이 추가되었어요.",
+    content:
+      "서비스 안내와 업데이트 소식을 환경설정의 공지사항 메뉴에서 확인할 수 있어요.",
+    createdAt: "2026-02-01T08:00:00",
+  },
+];
+
 const mockGroups = [
   {
     id: 1,
@@ -1055,60 +1096,20 @@ export const handlers = [
     const url = new URL(request.url);
     const type = url.searchParams.get("type");
 
-    const notices = [
-      {
-        noticeId: 1,
-        type: "IMPORTANT",
-        title: "QuoteMe 베타 서비스 운영 안내",
-        content: "베타 기간 동안 일부 기능이 예고 없이 변경될 수 있습니다.",
-        createdAt: "2026-02-02T10:00:00",
-      },
-      {
-        noticeId: 2,
-        type: "IMPORTANT",
-        title: "알림 수신 설정 변경 안내",
-        content: "알림 설정 화면에서 수신 항목을 직접 조정할 수 있습니다.",
-        createdAt: "2026-02-02T09:00:00",
-      },
-      {
-        noticeId: 3,
-        type: "UPDATE",
-        title: "오늘의 QuoteMe 작성 화면이 개선되었어요.",
-        content:
-          "친구 태그와 AI 추천 결과를 더 자연스럽게 확인할 수 있도록 작성 흐름을 다듬었어요.",
-        createdAt: "2026-02-01T10:00:00",
-      },
-      {
-        noticeId: 4,
-        type: "UPDATE",
-        title: "친구와 그룹 화면 사용성이 좋아졌어요.",
-        content:
-          "친구 요청, 그룹 초대, 참여 요청을 한 화면에서 더 쉽게 확인할 수 있도록 정리했어요.",
-        createdAt: "2026-02-01T09:00:00",
-      },
-      {
-        noticeId: 5,
-        type: "UPDATE",
-        title: "공지사항 화면이 추가되었어요.",
-        content:
-          "서비스 안내와 업데이트 소식을 환경설정의 공지사항 메뉴에서 확인할 수 있어요.",
-        createdAt: "2026-02-01T08:00:00",
-      },
-    ];
-
     return HttpResponse.json(
-      type ? notices.filter((notice) => notice.type === type) : notices
+      type ? mockNotices.filter((notice) => notice.type === type) : mockNotices
     );
   }),
 
   http.get("/api/notices/:noticeId", ({ params }) => {
-    return HttpResponse.json({
-      noticeId: Number(params.noticeId),
-      type: "NOTICE",
-      title: "QuoteMe 서비스 업데이트 안내",
-      content: "신규 API 명세에 맞춘 기능이 순차적으로 적용됩니다.",
-      createdAt: "2025-11-07T10:00:00",
-    });
+    const noticeId = Number(params.noticeId);
+    const notice = mockNotices.find((item) => item.noticeId === noticeId);
+
+    if (!notice) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json(notice);
   }),
 
   // ==========================================

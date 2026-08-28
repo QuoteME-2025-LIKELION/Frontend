@@ -138,11 +138,16 @@ export const UserIntro = styled.div`
 
 export const ToggleBtnBox = styled.div`
   margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-export const ToggleBtn = styled.div`
+export const ToggleBtn = styled.button`
   cursor: pointer;
   color: ${theme.colors["fg-primary"]};
+  background: transparent;
+  border: 0;
   font-size: 18px; /* 14px */
   font-weight: 700;
   letter-spacing: -0.28px;

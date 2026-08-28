@@ -10,6 +10,7 @@ import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 import * as S from "./Profile.styles";
 
 const CURRENT_YEAR = new Date().getFullYear();
+const MIN_BIRTH_YEAR = 1900;
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -26,7 +27,9 @@ export default function Profile() {
   const fileRef = useRef<HTMLInputElement>(null);
   const birthYearNumber = Number(birthYear);
   const isValidBirthYear =
-    /^\d{4}$/.test(birthYear) && birthYearNumber <= CURRENT_YEAR;
+    /^\d{4}$/.test(birthYear) &&
+    birthYearNumber >= MIN_BIRTH_YEAR &&
+    birthYearNumber <= CURRENT_YEAR;
   const isNextDisabled =
     (step === 1 && nickname.trim().length === 0) ||
     (step === 2 && intro.trim().length === 0) ||

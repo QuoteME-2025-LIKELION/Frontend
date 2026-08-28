@@ -20,15 +20,15 @@ function isImportantNotice(notice: NoticeSummary) {
 
 export default function Notice() {
   const navigate = useNavigate();
-  const { data: notices = [] } = useNoticesQuery();
+  const { data: notices, isError, isPending } = useNoticesQuery();
   const [visibleNewsCount, setVisibleNewsCount] = useState(INITIAL_NEWS_COUNT);
 
   const importantNotices = useMemo(
-    () => notices.filter(isImportantNotice),
+    () => notices?.filter(isImportantNotice) ?? [],
     [notices]
   );
   const newsNotices = useMemo(
-    () => notices.filter((notice) => !isImportantNotice(notice)),
+    () => notices?.filter((notice) => !isImportantNotice(notice)) ?? [],
     [notices]
   );
   const visibleNews = newsNotices.slice(0, visibleNewsCount);
@@ -44,51 +44,59 @@ export default function Notice() {
           backgroundColor="primary"
           onClickBackBtn={() => navigate("/home")}
         />
-        <S.TopSection>
-          <S.SectionTitle $light>중요 공지</S.SectionTitle>
-          {importantNotices.length > 0 ? (
-            <S.ImportantList>
-              {importantNotices.map((notice) => (
-                <S.ImportantItem key={notice.noticeId}>
-                  <S.ImportantTitle>{notice.title}</S.ImportantTitle>
-                  <S.ImportantDate>
-                    {formatNoticeDate(notice.createdAt)}
-                  </S.ImportantDate>
-                </S.ImportantItem>
-              ))}
-            </S.ImportantList>
-          ) : (
-            <S.Empty>등록된 중요 공지가 없습니다.</S.Empty>
-          )}
-        </S.TopSection>
-        <S.NewsSection>
-          <S.SectionTitle>소식</S.SectionTitle>
-          {visibleNews.length > 0 ? (
-            <S.NewsList>
-              {visibleNews.map((notice) => (
-                <S.NewsItem key={notice.noticeId}>
-                  <S.NewsTitle>{notice.title}</S.NewsTitle>
-                  <S.NewsDate>{formatNoticeDate(notice.createdAt)}</S.NewsDate>
-                  <S.NewsContent>
-                    {notice.content ?? "공지 내용을 확인해 주세요."}
-                  </S.NewsContent>
-                </S.NewsItem>
-              ))}
-            </S.NewsList>
-          ) : (
-            <S.Empty>등록된 소식이 없습니다.</S.Empty>
-          )}
-          {visibleNewsCount < newsNotices.length && (
-            <S.MoreButton
-              type="button"
-              onClick={() =>
-                setVisibleNewsCount((prev) => prev + INITIAL_NEWS_COUNT)
-              }
-            >
-              더보기
-            </S.MoreButton>
-          )}
-        </S.NewsSection>
+        {isPending && <S.Empty>공지사항을 불러오는 중입니다.</S.Empty>}
+        {isError && <S.Empty>공지사항을 불러오지 못했습니다.</S.Empty>}
+        {!isPending && !isError && (
+          <>
+            <S.TopSection>
+              <S.SectionTitle $light>중요 공지</S.SectionTitle>
+              {importantNotices.length > 0 ? (
+                <S.ImportantList>
+                  {importantNotices.map((notice) => (
+                    <S.ImportantItem key={notice.noticeId}>
+                      <S.ImportantTitle>{notice.title}</S.ImportantTitle>
+                      <S.ImportantDate>
+                        {formatNoticeDate(notice.createdAt)}
+                      </S.ImportantDate>
+                    </S.ImportantItem>
+                  ))}
+                </S.ImportantList>
+              ) : (
+                <S.Empty>등록된 중요 공지가 없습니다.</S.Empty>
+              )}
+            </S.TopSection>
+            <S.NewsSection>
+              <S.SectionTitle>소식</S.SectionTitle>
+              {visibleNews.length > 0 ? (
+                <S.NewsList>
+                  {visibleNews.map((notice) => (
+                    <S.NewsItem key={notice.noticeId}>
+                      <S.NewsTitle>{notice.title}</S.NewsTitle>
+                      <S.NewsDate>
+                        {formatNoticeDate(notice.createdAt)}
+                      </S.NewsDate>
+                      <S.NewsContent>
+                        {notice.content ?? "공지 내용을 확인해 주세요."}
+                      </S.NewsContent>
+                    </S.NewsItem>
+                  ))}
+                </S.NewsList>
+              ) : (
+                <S.Empty>등록된 소식이 없습니다.</S.Empty>
+              )}
+              {visibleNewsCount < newsNotices.length && (
+                <S.MoreButton
+                  type="button"
+                  onClick={() =>
+                    setVisibleNewsCount((prev) => prev + INITIAL_NEWS_COUNT)
+                  }
+                >
+                  더보기
+                </S.MoreButton>
+              )}
+            </S.NewsSection>
+          </>
+        )}
       </S.Container>
     </>
   );

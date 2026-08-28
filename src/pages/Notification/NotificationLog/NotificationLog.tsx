@@ -57,7 +57,9 @@ export default function NotificationLog({
 
   return (
     <S.Container onClick={onClick}>
-      <S.Icon $variant={iconVariant}>{iconText}</S.Icon>
+      <S.Icon $variant={iconVariant} $isRead={notification.isRead}>
+        {iconText}
+      </S.Icon>
       <S.Wrapper>
         <S.TextBox>
           <S.Category>{category}</S.Category>

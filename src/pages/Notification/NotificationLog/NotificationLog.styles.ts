@@ -42,18 +42,26 @@ export const TextBox = styled.div`
   overflow: hidden;
 `;
 
-export const Icon = styled.span<{ $variant: "group" | "friend" | "tag" }>`
+export const Icon = styled.span<{
+  $variant: "group" | "friend" | "tag";
+  $isRead: boolean;
+}>`
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ $variant }) =>
-    $variant === "friend" ? "#fff" : theme.colors.primary};
-  border: ${({ $variant }) =>
-    $variant === "friend" ? "1px solid #ddd" : "none"};
-  color: ${({ $variant }) => ($variant === "friend" ? "#000" : "#fff")};
+  background: ${({ $isRead, $variant }) => {
+    if ($isRead) return "#fff";
+    return $variant === "friend" ? "#fff" : theme.colors.primary;
+  }};
+  border: ${({ $isRead, $variant }) =>
+    $isRead || $variant === "friend" ? "1px solid #ddd" : "none"};
+  color: ${({ $isRead, $variant }) => {
+    if ($isRead) return theme.colors["fg-subtle"];
+    return $variant === "friend" ? "#000" : "#fff";
+  }};
   ${theme.fonts.batang};
   font-size: 1.5rem;
   font-weight: 700;

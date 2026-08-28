@@ -81,6 +81,7 @@ export default function ProfileCenter() {
 
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
+    e.target.value = "";
   };
 
   const handleSave = async () => {

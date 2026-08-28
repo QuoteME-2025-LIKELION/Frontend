@@ -42,7 +42,10 @@ export default function AccountDelete() {
     if (!canDelete) return;
 
     try {
-      await deleteAccount();
+      await deleteAccount({
+        selectedReasons,
+        otherReason: isOtherSelected ? otherReason.trim() : undefined,
+      });
       navigate("/account-delete-complete", { replace: true });
     } catch (e) {
       console.error("계정 삭제 실패", e);
