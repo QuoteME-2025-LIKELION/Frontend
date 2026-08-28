@@ -62,8 +62,12 @@ export const Button = styled.button<ButtonStyleProps>`
   border: ${({ $border }) =>
     $border || `1px solid var(--stroke-subtle, ${theme.colors.primary})`};
 
-  border-left: none;
-  border-right: none;
+  ${({ $font = "batang" }) =>
+    $font === "batang" &&
+    `
+    border-left: none;
+    border-right: none;
+  `}
   /* 임의로 추가 */
 
   ${({ $disableActive }) =>

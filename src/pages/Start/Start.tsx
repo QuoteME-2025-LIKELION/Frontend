@@ -16,9 +16,20 @@ export default function Start() {
 
   const { isAuthenticated, isLoading } = useAuthStore();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSheetClosing, setIsSheetClosing] = useState(false);
+  const isSheetVisible = isSheetOpen || isSheetClosing;
 
   const closeSheet = () => {
-    setIsSheetOpen(false);
+    setIsSheetClosing(true);
+    window.setTimeout(() => {
+      setIsSheetOpen(false);
+      setIsSheetClosing(false);
+    }, 180);
+  };
+
+  const openSheet = () => {
+    setIsSheetClosing(false);
+    setIsSheetOpen(true);
   };
   useEffect(() => {
     // 인증 상태 로딩이 끝나고, 로그인된 상태라면 /home으로 이동
@@ -58,9 +69,11 @@ export default function Start() {
       </S.TextBox>
       <S.BtnBox>
         <Button
-          title="Google계정으로 회원가입"
+          title="구글로 회원가입"
           font="pretendard"
           onClick={() => handleSignup("google")}
+          bgColor="#F2F2F2"
+          border="1px solid #C3C5C9"
           children={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -105,6 +118,7 @@ export default function Start() {
           font="pretendard"
           onClick={() => handleSignup("kakao")}
           bgColor="#FEE500"
+          border="none"
           children={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +148,7 @@ export default function Start() {
           <Button
             title="로그인"
             font="pretendard"
-            onClick={() => setIsSheetOpen(true)}
+            onClick={openSheet}
             bgColor="transparent"
             border="none"
             fontcolor="#ffff"
@@ -143,14 +157,16 @@ export default function Start() {
         </S.LogButton>
         {/* 로그인 버튼 */}
       </S.BtnBox>
-      {isSheetOpen && (
+      {isSheetVisible && (
         <>
-          <S.Overlay onClick={closeSheet} />
-          <S.Loginbox>
+          <S.Overlay $isClosing={isSheetClosing} onClick={closeSheet} />
+          <S.Loginbox $isClosing={isSheetClosing}>
             <Button
-              title="Google계정으로 로그인"
+              title="구글로 로그인"
               font="pretendard"
               onClick={() => handleLogin("google")}
+              bgColor="#F2F2F2"
+              border="1px solid #C3C5C9"
               children={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -195,6 +211,7 @@ export default function Start() {
               font="pretendard"
               onClick={() => handleLogin("kakao")}
               bgColor="#FEE500"
+              border="none"
               children={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

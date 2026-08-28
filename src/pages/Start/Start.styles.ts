@@ -1,6 +1,47 @@
+import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 
 import theme from "@/styles/theme";
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`;
+
+const slideUp = keyframes`
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+`;
+
+const slideDown = keyframes`
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -8,6 +49,8 @@ export const Container = styled.div`
   width: 100%;
   background-color: ${() => theme.colors.primary};
   height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   position: relative;
 `;
 
@@ -21,34 +64,33 @@ export const TextBox = styled.div`
 `;
 export const TitleText = styled.div`
   ${theme.fonts.batang};
-  font-size: 48px;
+  font-size: 3rem;
   color: #fff;
   text-align: center;
   font-weight: 400;
   line-height: 100%;
-  padding-bottom: 12px;
+  padding-bottom: 0.75rem;
 `;
 export const Text = styled.div`
   ${theme.fonts.pretendard};
   color: #fff;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 500;
-  line-height: 100%;
-  letter-spacing: -0.28px;
+  line-height: 1;
 `;
 
 export const BtnBox = styled.div`
   width: 100%;
-  padding: 24px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.875rem; /* 14px */
+  gap: 0.875rem;
   margin-top: auto;
-  margin-bottom: 34px;
+  margin-bottom: 3.25rem;
 `;
 
 export const Button = styled.button`
@@ -85,38 +127,49 @@ export const ButtonText = styled.div`
 
 export const LogButton = styled.div`
   width: 100%;
+  min-height: 2.75rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 1.375rem;
+
+  > button {
+    width: auto;
+    height: auto;
+    padding: 0;
+    align-self: auto;
+    flex-shrink: 0;
+  }
 `;
-export const Overlay = styled.div`
+export const Overlay = styled.div<{ $isClosing: boolean }>`
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   z-index: 10;
-  background: var(--bg-overlay, rgba(33, 36, 43, 0.45));
+  background: rgba(12, 31, 49, 0.28);
+  animation: ${({ $isClosing }) => ($isClosing ? fadeOut : fadeIn)} 180ms ease
+    forwards;
 `;
-export const Loginbox = styled.div`
-  position: fixed;
-  left: 50%;
+export const Loginbox = styled.div<{ $isClosing: boolean }>`
+  position: absolute;
+  left: 0;
   bottom: 0;
-  transform: translateX(-50%);
+  transform: translateY(0);
 
   width: 100%;
-  max-width: 393px;
   box-sizing: border-box;
 
-  padding: 24px;
+  min-height: 13.625rem;
+  padding: 2.25rem 1.5rem 4.25rem;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 1.5rem;
 
-  background: #fff;
   z-index: 11;
-  border-radius: var(--spacing-radius-md, 12px) var(--spacing-radius-md, 12px) 0
-    0;
+  border-radius: 0.625rem 0.625rem 0 0;
   background: var(--bg-basement-neutral, #e9eaec);
-
-  /* global-shadow */
-  box-shadow: 0 0 10px 0 rgba(20, 56, 88, 0.16);
+  animation: ${({ $isClosing }) => ($isClosing ? slideDown : slideUp)} 180ms
+    ease-out forwards;
 `;
