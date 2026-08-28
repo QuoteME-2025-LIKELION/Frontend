@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
@@ -20,6 +20,7 @@ import * as S from "./Main.styles";
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   const {
@@ -46,6 +47,7 @@ export default function Home() {
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";
+  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const {
     shareStatus,
     showShareErrorToast,
@@ -70,7 +72,11 @@ export default function Home() {
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
-      {date ? <XHeader /> : <DateHeader onToggleMenu={toggleMenu} />}
+      {date ? (
+        <XHeader onClose={() => navigate(returnTo)} />
+      ) : (
+        <DateHeader onToggleMenu={toggleMenu} />
+      )}
 
       {isToggleVisible && (
         <HomeSideMenu

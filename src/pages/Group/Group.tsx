@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -25,6 +25,7 @@ import * as S from "./Group.styles";
 export default function Group() {
   const { groupId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isValidGroupId = Boolean(groupId && !isNaN(Number(groupId)));
   const { data: groupData, error: groupError } = useGroupQuery(
     isValidGroupId ? groupId : undefined
@@ -60,6 +61,8 @@ export default function Group() {
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/friend-group";
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -269,7 +272,7 @@ export default function Group() {
           showXBtn={false}
           title=""
           backgroundColor="primary"
-          onClickBackBtn={() => navigate("/friend-group")}
+          onClickBackBtn={() => navigate(returnTo)}
         />
         <S.Content>
           <GroupSummaryCard group={groupData} />

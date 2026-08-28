@@ -1,5 +1,7 @@
 import { http, HttpResponse } from "msw";
 
+import type { Notification } from "@/types/notification.type";
+
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
 
 let mockNotificationSettings = {
@@ -11,6 +13,51 @@ let mockNotificationSettings = {
   quoteReminderEnabled: true,
   marketingEnabled: false,
 };
+
+type MockNotification = Notification & {
+  category: "GROUP" | "FRIEND" | "TAG";
+  createdAt: string;
+  referenceId: number;
+};
+
+let mockNotifications: MockNotification[] = [
+  {
+    id: 1,
+    category: "GROUP",
+    type: "GROUP",
+    message: "무니니 그룹에서 초대가 왔습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:00:00",
+    createDate: "2025-11-07T10:00:00",
+    referenceId: 3,
+    targetId: 3,
+    senderName: "라라진",
+  },
+  {
+    id: 2,
+    category: "TAG",
+    type: "TAG_REQUEST",
+    message: "라라진님이 태그를 요청하였습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:10:00",
+    createDate: "2025-11-03T19:02:00",
+    referenceId: 1,
+    targetId: 1,
+    senderName: "라라진",
+  },
+  {
+    id: 3,
+    category: "FRIEND",
+    type: "POKE",
+    message: "조니님이 콕 찔렀습니다.",
+    isRead: true,
+    createdAt: "2025-11-07T10:20:00",
+    createDate: "2025-11-07T10:20:00",
+    referenceId: 6,
+    targetId: 6,
+    senderName: "조니님",
+  },
+];
 
 const mockGroups = [
   {
@@ -950,61 +997,41 @@ export const handlers = [
   http.get("/api/notifications", ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
-    const notifications = [
-      {
-        id: 1,
-        category: "GROUP",
-        type: "GROUP",
-        message: "무니니 그룹에서 초대가 왔습니다.",
-        isRead: false,
-        createdAt: "2025-11-07T10:00:00",
-        createDate: "2025-11-07T10:00:00",
-        referenceId: 3,
-        targetId: 3,
-        senderName: "라라진",
-      },
-      {
-        id: 2,
-        category: "TAG",
-        type: "TAG_REQUEST",
-        message: "라라진님이 태그를 요청하였습니다.",
-        isRead: false,
-        createdAt: "2025-11-07T10:10:00",
-        createDate: "2025-11-03T19:02:00",
-        referenceId: 1,
-        targetId: 1,
-        senderName: "라라진",
-      },
-      {
-        id: 3,
-        category: "FRIEND",
-        type: "POKE",
-        message: "조니님이 콕 찔렀습니다.",
-        isRead: true,
-        createdAt: "2025-11-07T10:20:00",
-        createDate: "2025-11-07T10:20:00",
-        referenceId: 6,
-        targetId: 6,
-        senderName: "조니님",
-      },
-    ];
 
     return HttpResponse.json(
       category
-        ? notifications.filter(
+        ? mockNotifications.filter(
             (notification) =>
               notification.type === category ||
               notification.category === category
           )
-        : notifications
+        : mockNotifications
     );
   }),
 
   http.get("/api/notifications/unread-count", () => {
-    return HttpResponse.json({ count: 4 });
+    return HttpResponse.json({
+      count: mockNotifications.filter((notification) => !notification.isRead)
+        .length,
+    });
   }),
 
-  http.patch("/api/notifications/:id/read", () => {
+  http.patch("/api/notifications/:id/read", ({ params }) => {
+    const notificationId = Number(params.id);
+    const targetNotification = mockNotifications.find(
+      (notification) => notification.id === notificationId
+    );
+
+    if (!targetNotification) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    mockNotifications = mockNotifications.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, isRead: true }
+        : notification
+    );
+
     return new HttpResponse(null, { status: 200 });
   }),
 

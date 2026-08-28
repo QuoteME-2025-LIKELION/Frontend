@@ -6,6 +6,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   useMarkNotificationReadMutation,
   useNotificationsQuery,
+  useUnreadNotificationCountQuery,
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
@@ -24,21 +25,23 @@ export default function Notification() {
   const { setHasUnread } = useNotificationStore();
 
   // 알림 목록 조회와 읽음 처리 mutation을 React Query로 관리
-  const { data: notifications = [], isError } = useNotificationsQuery(
+  const { data: notifications = [] } = useNotificationsQuery(
     selectedFilter ?? undefined
   );
+  const { data: unreadCount, isError: isUnreadCountError } =
+    useUnreadNotificationCountQuery();
   const { mutateAsync: markNotificationRead } =
     useMarkNotificationReadMutation();
 
-  // 조회 결과를 전역 unread 상태와 동기화
+  // 전체 미읽음 수를 전역 unread 상태와 동기화
   useEffect(() => {
-    if (isError) {
+    if (isUnreadCountError) {
       setHasUnread(false);
       return;
     }
 
-    setHasUnread(notifications.some((notification) => !notification.isRead));
-  }, [isError, notifications, setHasUnread]);
+    setHasUnread(Boolean(unreadCount && unreadCount.count > 0));
+  }, [isUnreadCountError, setHasUnread, unreadCount]);
 
   const sortedNotifications = [...notifications].sort(
     (a, b) =>
@@ -61,18 +64,23 @@ export default function Notification() {
       switch (type) {
         case "GROUP":
           // 그룹 알림은 그룹 페이지로 이동
-          navigate(`/group/${notification.targetId}`);
+          navigate(`/group/${notification.targetId}`, {
+            state: { returnTo: "/notification" },
+          });
           break;
         case "POKE":
           // 콕 찌르기 받았으니 자동으로 글쓰기로 이동
-          navigate("/write");
+          navigate("/write", { state: { returnTo: "/notification" } });
           break;
         case "TAG":
-          navigate(`/home/${notification.createDate.slice(0, 10)}`);
+          navigate(`/home/${notification.createDate.slice(0, 10)}`, {
+            state: { returnTo: "/notification" },
+          });
           break;
         case "TAG_REQUEST":
           navigate("/fix", {
             state: {
+              returnTo: "/notification",
               date: notification.createDate.slice(0, 10),
               quoteId: notification.targetId,
               requestedNickname: notification.senderName,

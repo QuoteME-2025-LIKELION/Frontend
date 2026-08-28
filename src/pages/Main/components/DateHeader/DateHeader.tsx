@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useNotificationsQuery } from "@/hooks/useNotificationsQuery";
+import { useUnreadNotificationCountQuery } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 
 import * as S from "./DateHeader.styles";
@@ -14,9 +14,8 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
   const navigate = useNavigate();
   const hasUnread = useNotificationStore((state) => state.hasUnread);
   const setHasUnread = useNotificationStore((state) => state.setHasUnread);
-  const { data: notifications, isError } = useNotificationsQuery();
-  const nextHasUnread =
-    !isError && Boolean(notifications?.some((notification) => !notification.isRead));
+  const { data: unreadCount, isError } = useUnreadNotificationCountQuery();
+  const nextHasUnread = !isError && Boolean(unreadCount && unreadCount.count > 0);
 
   // 읽지 않은 알림 있는지 확인해 아이콘 표시 결정
   useEffect(() => {
