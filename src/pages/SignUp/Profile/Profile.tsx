@@ -27,6 +27,10 @@ export default function Profile() {
   const birthYearNumber = Number(birthYear);
   const isValidBirthYear =
     /^\d{4}$/.test(birthYear) && birthYearNumber <= CURRENT_YEAR;
+  const isNextDisabled =
+    (step === 1 && nickname.trim().length === 0) ||
+    (step === 2 && intro.trim().length === 0) ||
+    (step === 3 && !isValidBirthYear);
 
   const handleClickUpload = () => {
     fileRef.current?.click();
@@ -94,7 +98,7 @@ export default function Profile() {
         <S.InputBox>
           {step === 1 && (
             <>
-              <S.StepText>1/3</S.StepText>
+              <S.StepText>1/4</S.StepText>
 
               <S.TextBox>
                 <S.ExText>
@@ -119,7 +123,7 @@ export default function Profile() {
 
           {step === 2 && (
             <>
-              <S.StepText>2/3</S.StepText>
+              <S.StepText>2/4</S.StepText>
 
               <S.TextBox>
                 <S.ExText>
@@ -133,14 +137,14 @@ export default function Profile() {
               <Input
                 value={intro}
                 onChange={(e) => setIntro(e.target.value)}
-                placeholder="자기소개 설정"
+                placeholder="자기소개를 입력해주세요"
                 type="text"
                 name="intro"
-                maxLength={30}
+                maxLength={20}
                 required
               />
 
-              <S.LimitText>30자 이내</S.LimitText>
+              <S.LimitText>{intro.length}/20자</S.LimitText>
             </>
           )}
 
@@ -231,6 +235,7 @@ export default function Profile() {
           <Button
             title={step === 4 ? "쿼트미 시작하기" : "다음으로"}
             onClick={handleNext}
+            disabled={isNextDisabled}
           />
         </S.BtnBox>
       </S.Container>
