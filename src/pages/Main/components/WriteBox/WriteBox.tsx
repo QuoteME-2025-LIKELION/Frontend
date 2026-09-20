@@ -134,7 +134,7 @@ export default function WriteBox({
               </S.InfoButton>
               {showInfo && (
                 <S.InfoBubble role="status">
-                  30자가 넘어가는 글은 AI추천 받기를 사용해야 등록할 수
+                  30자가 넘어가는 글은 AI 추천 받기를 사용해야 등록할 수
                   있습니다.
                 </S.InfoBubble>
               )}
