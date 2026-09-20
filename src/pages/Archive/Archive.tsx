@@ -105,7 +105,6 @@ export default function Archive() {
                 : "명언 이미지를 저장했습니다."
             }
             isOnShare={shareStatus === "sharing"}
-            showOverlay={true}
           />
         )}
 
