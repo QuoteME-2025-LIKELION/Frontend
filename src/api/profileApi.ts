@@ -12,8 +12,9 @@ export interface SetupProfileRequest extends UpdateSettingsProfileRequest {
 }
 
 export interface UpdateAccountRequest {
-  gender: string;
-  birthYear: number;
+  email: string;
+  birthYear: string;
+  gender: "MALE" | "FEMALE" | "ETC";
 }
 
 export interface DeleteAccountRequest {
@@ -22,9 +23,9 @@ export interface DeleteAccountRequest {
 }
 
 export interface AccountProfileResponse {
-  gender: string;
-  birthYear: number;
   email?: string;
+  birthYear?: string | number | null;
+  gender?: "MALE" | "FEMALE" | "ETC" | null;
 }
 
 export interface MyProfileResponse {

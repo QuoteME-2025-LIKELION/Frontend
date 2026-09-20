@@ -16,12 +16,14 @@ import useAuthStore from "@/stores/useAuthStore";
 import * as S from "./AccountSetting.styles";
 
 type SheetType = "gender" | "birth" | null;
+type GenderValue = "FEMALE" | "MALE" | "ETC";
 
-const GENDER_OPTIONS: Array<{ value: string; label: string }> = [
+const GENDER_OPTIONS: Array<{ value: GenderValue; label: string }> = [
   { value: "FEMALE", label: "여성" },
   { value: "MALE", label: "남성" },
-  { value: "", label: "선택 안 함" },
+  { value: "ETC", label: "선택 안 함" },
 ];
+const DEFAULT_GENDER: GenderValue = "ETC";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from(
@@ -29,7 +31,19 @@ const YEAR_OPTIONS = Array.from(
   (_, index) => CURRENT_YEAR - index
 );
 
-function formatGender(gender: string) {
+function normalizeGender(gender: string | null | undefined): GenderValue {
+  return gender === "FEMALE" || gender === "MALE" || gender === "ETC"
+    ? gender
+    : DEFAULT_GENDER;
+}
+
+function parseBirthYear(year: string | number | null | undefined) {
+  const parsed = typeof year === "number" ? year : Number(year);
+
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function formatGender(gender: GenderValue) {
   return GENDER_OPTIONS.find((option) => option.value === gender)?.label ?? "";
 }
 
@@ -46,18 +60,16 @@ export default function AccountSetting() {
     isPending: isAccountProfilePending,
   } = useAccountProfileQuery();
   const updateAccountMutation = useUpdateAccountMutation();
-  const [genderDraft, setGenderDraft] = useState<string | null>(null);
+  const [genderDraft, setGenderDraft] = useState<GenderValue | null>(null);
   const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
   const [sheetType, setSheetType] = useState<SheetType>(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
-  const currentGender = genderDraft ?? accountProfile?.gender ?? "";
+  const selectedBirthYearRef = useRef<number | null>(null);
+  const currentGender = genderDraft ?? normalizeGender(accountProfile?.gender);
   const currentBirthYear: number | null =
-    birthYearDraft ??
-    (Number.isFinite(accountProfile?.birthYear)
-      ? (accountProfile?.birthYear ?? null)
-      : null);
+    birthYearDraft ?? parseBirthYear(accountProfile?.birthYear);
 
   useEffect(() => {
     if (sheetType !== "birth") {
@@ -77,12 +89,8 @@ export default function AccountSetting() {
     nextBirthYear = currentBirthYear
   ) => {
     const resetDrafts = () => {
-      setGenderDraft(accountProfile?.gender ?? "");
-      setBirthYearDraft(
-        Number.isFinite(accountProfile?.birthYear)
-          ? (accountProfile?.birthYear ?? null)
-          : null
-      );
+      setGenderDraft(normalizeGender(accountProfile?.gender));
+      setBirthYearDraft(parseBirthYear(accountProfile?.birthYear));
     };
 
     if (isAccountProfilePending || !accountProfile) {
@@ -97,10 +105,17 @@ export default function AccountSetting() {
       return;
     }
 
+    if (!accountProfile.email) {
+      resetDrafts();
+      setToastMessage("계정 이메일을 불러오지 못했습니다.");
+      return;
+    }
+
     try {
       await updateAccountMutation.mutateAsync({
+        email: accountProfile.email,
         gender: nextGender,
-        birthYear: nextBirthYear,
+        birthYear: String(nextBirthYear),
       });
       setToastMessage("계정 정보가 저장되었습니다.");
     } catch (e) {
@@ -117,7 +132,10 @@ export default function AccountSetting() {
 
   const handleBirthDone = () => {
     setSheetType(null);
-    void saveAccount(currentGender, currentBirthYear);
+    void saveAccount(
+      currentGender,
+      selectedBirthYearRef.current ?? currentBirthYear
+    );
   };
 
   const centerSelectedOption = (element: HTMLButtonElement) => {
@@ -256,6 +274,7 @@ export default function AccountSetting() {
                     type="button"
                     $selected={currentBirthYear === year}
                     onClick={(event) => {
+                      selectedBirthYearRef.current = year;
                       setBirthYearDraft(year);
                       centerSelectedOption(event.currentTarget);
                     }}
