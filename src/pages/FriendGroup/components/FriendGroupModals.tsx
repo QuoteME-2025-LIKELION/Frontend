@@ -79,11 +79,15 @@ export default function FriendGroupModals({
       )}
       {addTarget && (
         <ConfirmModal
-          nickname={addTarget.nickname}
-          question="님에게 친구 요청을 보낼까요?"
+          question=""
+          lines={[`${addTarget.nickname}님에게 친구 요청을`, "보내시겠어요?"]}
           onClose={onCloseAddModal}
           onConfirm={onConfirmAdd}
           showOverlay={true}
+          cancelText="돌아가기"
+          confirmText="보내기"
+          confirmColor="primary"
+          variant="card"
         />
       )}
       {showAddToast && (

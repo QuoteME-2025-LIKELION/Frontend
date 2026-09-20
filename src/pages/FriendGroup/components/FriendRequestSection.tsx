@@ -25,12 +25,18 @@ export default function FriendRequestSection({
         {requests.length > 0 ? (
           requests.map((request) => {
             const isPending = pendingRequestId === request.requestId;
+            const requesterNickname =
+              request.requesterNickname ?? request.senderNickname ?? "사용자";
+            const requesterProfileImage =
+              request.requesterProfileImageUrl ?? request.senderProfileImage;
+            const requesterIntroduction =
+              request.requesterIntroduction ?? request.senderIntroduction;
 
             return (
               <S.RequestItem key={request.requestId}>
-                {request.requesterProfileImageUrl ? (
+                {requesterProfileImage ? (
                   <S.RequestProfileImg
-                    src={request.requesterProfileImageUrl}
+                    src={requesterProfileImage}
                     alt="프로필 이미지"
                   />
                 ) : (
@@ -38,8 +44,11 @@ export default function FriendRequestSection({
                 )}
                 <S.RequestUserBox>
                   <S.RequestUsername>
-                    {request.requesterNickname}
+                    {requesterNickname}
                   </S.RequestUsername>
+                  {requesterIntroduction && (
+                    <S.RequestIntro>{requesterIntroduction}</S.RequestIntro>
+                  )}
                 </S.RequestUserBox>
                 <S.RequestActionBox>
                   <button
@@ -61,7 +70,9 @@ export default function FriendRequestSection({
             );
           })
         ) : (
-          <S.EmptyBox>받은 친구 요청이 없습니다.</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>받은 친구 요청이 없습니다.</S.EmptyTitle>
+          </S.EmptyBox>
         )}
       </S.FriendList>
     </S.Section>

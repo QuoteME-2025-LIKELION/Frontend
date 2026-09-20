@@ -55,7 +55,9 @@ export default function GroupInvitationSection({
             );
           })
         ) : (
-          <S.EmptyBox>받은 그룹 초대가 없습니다.</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>받은 그룹 초대가 없습니다.</S.EmptyTitle>
+          </S.EmptyBox>
         )}
       </S.FriendList>
     </S.Section>

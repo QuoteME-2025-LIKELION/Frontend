@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useFriendQueries";
 import {
   useGroupQuery,
+  useGroupSentInvitationsQuery,
   useInviteGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
@@ -53,21 +54,45 @@ export default function Invite() {
     debouncedKeyword,
     Boolean(groupData) && Boolean(debouncedKeyword)
   );
+  const { data: sentInvitations = [] } = useGroupSentInvitationsQuery(
+    isValidGroupId ? groupId : undefined
+  );
   const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
 
   const currentMembers = groupData?.members || EMPTY_FRIENDS;
+  const sentInvitationFriends = useMemo(
+    () =>
+      sentInvitations.map((invitation) => ({
+        id: invitation.requesterId,
+        nickname: invitation.requesterNickname,
+        profileImage: invitation.requesterProfileImageUrl,
+        introduction: invitation.requesterIntroduction,
+      })),
+    [sentInvitations]
+  );
   const friendsList = debouncedKeyword
     ? searchResult?.members || EMPTY_FRIENDS
     : friends;
   const filteredFriends = useMemo(() => {
     const currentMemberIds = new Set(currentMembers.map((member) => member.id));
-    const pendingInviteIds = new Set(pendingInvites.map((friend) => friend.id));
+    const pendingInviteIds = new Set([
+      ...sentInvitationFriends.map((friend) => friend.id),
+      ...pendingInvites.map((friend) => friend.id),
+    ]);
 
     return friendsList.filter(
       (friend) =>
         !currentMemberIds.has(friend.id) && !pendingInviteIds.has(friend.id)
     );
-  }, [currentMembers, friendsList, pendingInvites]);
+  }, [currentMembers, friendsList, pendingInvites, sentInvitationFriends]);
+  const pendingInviteList = useMemo(() => {
+    const pendingMap = new Map<number, Friend>();
+
+    sentInvitationFriends.forEach((friend) => pendingMap.set(friend.id, friend));
+    pendingInvites.forEach((friend) => pendingMap.set(friend.id, friend));
+
+    return Array.from(pendingMap.values());
+  }, [pendingInvites, sentInvitationFriends]);
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -122,10 +147,6 @@ export default function Invite() {
       setErrorToastMessage("초대 요청 전송에 실패했습니다.");
     }
   }, [currentMembers.length, groupId, inviteGroupMember, inviteTarget]);
-
-  const handleCancelPendingInvite = useCallback((friendId: number) => {
-    setPendingInvites((prev) => prev.filter((friend) => friend.id !== friendId));
-  }, []);
 
   return (
     <>
@@ -211,17 +232,17 @@ export default function Invite() {
               <S.EmptyBox>초대할 수 있는 친구가 없습니다.</S.EmptyBox>
             )}
           </S.FriendList>
-          {pendingInvites.length > 0 && (
+          {pendingInviteList.length > 0 && (
             <S.PendingList>
               <S.Title>초대 대기</S.Title>
-              {pendingInvites.map((friend) => (
+              {pendingInviteList.map((friend) => (
                 <UserListItem
                   key={friend.id}
                   friend={friend}
                   actionButton={{
-                    type: "delete",
-                    text: "취소",
-                    onClick: () => handleCancelPendingInvite(friend.id),
+                    type: "invite",
+                    text: "요청됨",
+                    onClick: () => undefined,
                   }}
                 />
               ))}

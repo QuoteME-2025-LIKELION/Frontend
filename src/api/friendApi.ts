@@ -9,9 +9,14 @@ export interface SearchFriendsAndGroupsResponse {
 
 export interface FriendRequest {
   requestId: number;
-  requesterId: number;
-  requesterNickname: string;
+  requesterId?: number;
+  requesterNickname?: string;
   requesterProfileImageUrl?: string;
+  requesterIntroduction?: string;
+  senderId?: number;
+  senderNickname?: string;
+  senderProfileImage?: string | null;
+  senderIntroduction?: string | null;
   createdAt: string;
 }
 
