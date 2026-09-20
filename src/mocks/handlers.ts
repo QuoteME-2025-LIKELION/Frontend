@@ -1093,10 +1093,7 @@ export const handlers = [
 
   http.put("/api/notifications/settings", async ({ request }) => {
     const body = await request.json();
-    mockNotificationSettings = {
-      ...mockNotificationSettings,
-      ...(body as typeof mockNotificationSettings),
-    };
+    mockNotificationSettings = body as typeof mockNotificationSettings;
     return HttpResponse.json(mockNotificationSettings);
   }),
 

@@ -75,7 +75,7 @@ export function useUpdateNotificationSettingsMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: Partial<NotificationSettings>) =>
+    mutationFn: (payload: NotificationSettings) =>
       notificationApi.updateSettings(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({

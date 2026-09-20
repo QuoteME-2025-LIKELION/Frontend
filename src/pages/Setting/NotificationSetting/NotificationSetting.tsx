@@ -95,15 +95,14 @@ export default function NotificationSetting() {
 
   const saveSettings = async (
     nextSettings: NotificationSettingsType,
-    successMessage = "알림 설정이 저장되었습니다.",
-    payload: Partial<NotificationSettingsType> = nextSettings
+    successMessage = "알림 설정이 저장되었습니다."
   ) => {
     const previousSettings = draftSettings;
     const previousNotificationPermission = isNotificationPermissionEnabled;
     setDraftSettings(nextSettings);
 
     try {
-      await updateSettings(payload);
+      await updateSettings(nextSettings);
       setToastMessage(successMessage);
     } catch (err) {
       setDraftSettings(previousSettings);
@@ -130,15 +129,7 @@ export default function NotificationSetting() {
         quoteReminderEnabled: nextValue,
         marketingEnabled: draftSettings.marketingEnabled,
       },
-      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요.",
-      {
-        groupEnabled: nextValue,
-        friendEnabled: nextValue,
-        tagEnabled: nextValue,
-        pokeEnabled: nextValue,
-        likeEnabled: nextValue,
-        quoteReminderEnabled: nextValue,
-      }
+      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요."
     );
   };
 
