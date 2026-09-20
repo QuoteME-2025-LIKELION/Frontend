@@ -210,7 +210,7 @@ export const BtnBox = styled.div`
     height: 1.25rem;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 
-    &:active {
+    &:not(:disabled):active {
       background-color: rgba(0, 0, 0, 0.1);
     }
 

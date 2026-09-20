@@ -382,6 +382,7 @@ function FeedListItem({
       tag={quote.taggedNicknames}
       isBookmarked={quote.isBookmarked}
       isBookmarkDisabled={quote.isSilenced || isBookmarkPending}
+      isShareDisabled={quote.isSilenced}
       onBookmark={() => onBookmark(quote.id, Boolean(quote.isBookmarked))}
       onShare={
         !quote.isSilenced

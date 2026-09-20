@@ -21,6 +21,7 @@ interface QuoteFeedProps {
   isSilenced?: boolean;
   isBookmarked?: boolean;
   isBookmarkDisabled?: boolean;
+  isShareDisabled?: boolean;
   onBookmark?: () => void;
   onShare?: () => void;
   onRequest?: () => void;
@@ -84,6 +85,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       isSilenced = false,
       isBookmarked = false,
       isBookmarkDisabled = false,
+      isShareDisabled = false,
       onBookmark = () => {},
       onShare = () => {},
       onRequest = () => {},
@@ -244,8 +246,10 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             </button>
             <button
               type="button"
+              disabled={isShareDisabled}
               onClick={(e) => {
                 e.stopPropagation(); // 이벤트 버블링 중단 (Archive 클릭 방지)
+                if (isShareDisabled) return;
                 onShare(); // 기존 공유 로직 실행
               }}
             >
