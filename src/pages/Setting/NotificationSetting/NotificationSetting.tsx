@@ -177,7 +177,7 @@ export default function NotificationSetting() {
 
   return (
     <>
-      <PageTitle title="알림설정" />
+      <PageTitle title="알림 설정" />
       <S.Container>
         {toastMessage && (
           <ToastModal
@@ -252,7 +252,7 @@ export default function NotificationSetting() {
         <Header
           showBackBtn={true}
           showXBtn={false}
-          title="알림설정"
+          title="알림 설정"
           backgroundColor="secondary"
           onClickBackBtn={() => navigate("/home")}
         />
