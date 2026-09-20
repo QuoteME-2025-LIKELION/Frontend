@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
@@ -36,14 +37,43 @@ export default function Home() {
     displayDate,
     selectedGroupId ?? undefined
   );
+  const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
+    useArchivesByDateQuery(displayDate);
   const { data: friendList = [], isLoading: isFriendsLoading } =
     useFriendsQuery();
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
   const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
-  const myQuote = quotesData?.myQuotes[0] || null;
+  const apiMyQuote = quotesData?.myQuotes[0] || null;
+  const archiveMyQuote = archiveQuotes[0];
+  const myQuote =
+    apiMyQuote?.content || !archiveMyQuote
+      ? apiMyQuote
+      : {
+          id: archiveMyQuote.id,
+          content: archiveMyQuote.content,
+          groupName: apiMyQuote?.groupName ?? "아직 그룹이 없습니다.",
+          authorNickname:
+            archiveMyQuote.authorName ??
+            archiveMyQuote.authorNickname ??
+            apiMyQuote?.authorNickname ??
+            "사용자",
+          birthYear:
+            archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0,
+          createDate: archiveMyQuote.createDate,
+          taggedNicknames:
+            archiveMyQuote.taggedMemberNames ??
+            archiveMyQuote.taggedMembers ??
+            apiMyQuote?.taggedNicknames ??
+            [],
+          isBookmarked: archiveMyQuote.isBookmarked ?? apiMyQuote?.isBookmarked,
+        };
   const otherQuotes = quotesData?.otherQuotes || [];
   const isLoading =
-    isQuotesLoading || isFriendsLoading || isGroupsLoading || isProfileLoading;
+    isQuotesLoading ||
+    isArchivesLoading ||
+    isFriendsLoading ||
+    isGroupsLoading ||
+    isProfileLoading;
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";

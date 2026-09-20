@@ -1,29 +1,36 @@
 import api from "@/api/api";
 import type { MyQuote, OtherQuote } from "@/types/feed.type";
 
+interface RsData<T> {
+  resultCode: string;
+  message: string;
+  data: T;
+  statusCode: number;
+}
+
 export interface GetQuotesResponse {
   myQuotes: MyQuote[];
   otherQuotes: OtherQuote[];
 }
 
 export interface QuoteFeedItem {
-  quoteId: number;
+  id: number;
   authorNickname: string;
   authorIntroduction?: string;
+  authorBirthYear?: string;
+  authorProfileImage?: string;
   content: string;
-  taggedMembers?: string[];
+  taggedNicknames?: string[];
   isLiked?: boolean;
   isBookmarked?: boolean;
-  createdAt?: string;
+  isFriendQuote?: boolean;
+  timeAgo?: string;
 }
 
 export interface GetQuotesFeedResponse {
-  content: QuoteFeedItem[];
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-  };
-  last: boolean;
+  items: QuoteFeedItem[];
+  emptyMessage?: string;
+  empty: boolean;
 }
 
 export interface CreateQuoteRequest {
@@ -52,6 +59,15 @@ export interface AiUsageResponse {
   usedCount: number;
   remainingCount: number;
   limitPerDay: number;
+}
+
+export interface AiUsageApiResponse {
+  usedCount?: number;
+  remainingCount?: number;
+  limitPerDay?: number;
+  used?: number;
+  remaining?: number;
+  limit?: number;
 }
 
 export type MyTagRequestStatus = "NONE" | "PENDING" | "ACCEPTED" | "REJECTED";
@@ -97,7 +113,7 @@ export const quoteApi = {
     groupId?: number | string,
     size?: number
   ) =>
-    api.get<GetQuotesFeedResponse>("/api/quotes/feed", {
+    api.get<RsData<GetQuotesFeedResponse>>("/api/quotes/feed", {
       params: { date, groupId, page, size },
     }),
   createQuote: (payload: CreateQuoteRequest) =>
@@ -118,5 +134,5 @@ export const quoteApi = {
     api.delete(`/api/quotes/${quoteId}/bookmark`),
   summarizeQuote: (payload: SummarizeQuoteRequest) =>
     api.post<SummarizeQuoteResponse>("/api/quotes/summarize", payload),
-  getAiUsage: () => api.get<AiUsageResponse>("/api/quotes/ai-usage"),
+  getAiUsage: () => api.get<AiUsageApiResponse>("/api/quotes/ai-usage"),
 };

@@ -14,6 +14,9 @@ import {
 
 import * as S from "./ProfileCenter.styles";
 
+const NICKNAME_MAX_LENGTH = 10;
+const INTRO_MAX_LENGTH = 20;
+
 export default function ProfileCenter() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +40,7 @@ export default function ProfileCenter() {
     [data]
   );
 
-  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
@@ -51,6 +54,8 @@ export default function ProfileCenter() {
   const currentPreview = preview ?? profile?.imageUrl ?? null;
   const trimmedNickname = currentNickname.trim();
   const isNicknameEmpty = Boolean(profile) && trimmedNickname.length === 0;
+  const isNicknameTooLong = currentNickname.length > NICKNAME_MAX_LENGTH;
+  const isIntroTooLong = currentIntro.length > INTRO_MAX_LENGTH;
   const hasChanges =
     trimmedNickname !== (profile?.nickname ?? "") ||
     currentIntro !== (profile?.intro ?? "") ||
@@ -59,6 +64,8 @@ export default function ProfileCenter() {
     Boolean(profile) &&
     hasChanges &&
     !isNicknameEmpty &&
+    !isNicknameTooLong &&
+    !isIntroTooLong &&
     !updateSettingsProfile.isPending;
 
   useEffect(() => {
@@ -91,7 +98,7 @@ export default function ProfileCenter() {
         introduction: currentIntro,
         image: selectedFile,
       });
-      setShowToast(true);
+      setToastMessage("변경사항이 저장되었습니다.");
       setIsEditing(false);
       setSelectedFile(null);
       setNickname(undefined);
@@ -99,6 +106,11 @@ export default function ProfileCenter() {
       setPreview(undefined);
     } catch (e) {
       console.error("프로필 저장 실패", e);
+      setToastMessage(
+        selectedFile
+          ? "이미지 업로드에 실패했습니다."
+          : "프로필 저장에 실패했습니다."
+      );
     }
   };
 
@@ -135,11 +147,11 @@ export default function ProfileCenter() {
     <>
       <PageTitle title="프로필 관리" />
       <S.Container>
-        {showToast && (
+        {toastMessage && (
           <ToastModal
-            text="변경사항이 저장되었습니다."
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
+            text={toastMessage}
+            isVisible={Boolean(toastMessage)}
+            onClose={() => setToastMessage("")}
             showOverlay={false}
             variant="snackbar"
           />
@@ -205,7 +217,7 @@ export default function ProfileCenter() {
                   placeholder="닉네임"
                   type="text"
                   name="nickname"
-                  maxLength={20}
+                  maxLength={NICKNAME_MAX_LENGTH}
                   required
                 />
               </S.Field>
@@ -215,7 +227,9 @@ export default function ProfileCenter() {
           )}
           <S.FieldMeta $error={isNicknameEmpty} $hidden={!isEditing}>
             {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요.</span>}
-            <span>{currentNickname.length}자/20자</span>
+            <span>
+              {currentNickname.length}자/{NICKNAME_MAX_LENGTH}자
+            </span>
           </S.FieldMeta>
           <S.TextName>자기소개</S.TextName>
           {isEditing ? (
@@ -226,7 +240,7 @@ export default function ProfileCenter() {
                 placeholder="자기소개"
                 type="text"
                 name="intro"
-                maxLength={30}
+                maxLength={INTRO_MAX_LENGTH}
                 required
               />
             </S.Field>

@@ -827,21 +827,32 @@ export const handlers = [
   http.get("/api/quotes/feed", ({ request }) => {
     const url = new URL(request.url);
     const page = Number(url.searchParams.get("page") ?? 0);
-    const size = Number(url.searchParams.get("size") ?? 10);
 
     return HttpResponse.json({
-      content:
-        page === 0
-          ? [
-              {
-                quoteId: 1,
-                authorNickname: "라라진",
-                content: "방귀 퀸 놈이 성낸다",
-              },
-            ]
-          : [],
-      pageable: { pageNumber: page, pageSize: size },
-      last: page >= 0,
+      resultCode: "200",
+      message: "200-1",
+      data: {
+        items:
+          page === 0
+            ? [
+                {
+                  id: 1,
+                  authorNickname: "라라진",
+                  authorBirthYear: "2000",
+                  authorIntroduction: "오늘도 말랑하게",
+                  content: "방귀 뀐 놈이 성낸다",
+                  taggedNicknames: ["말랑이"],
+                  timeAgo: "방금 전",
+                  isLiked: false,
+                  isBookmarked: false,
+                  isFriendQuote: true,
+                },
+              ]
+            : [],
+        emptyMessage: page === 0 ? "" : "표시할 명언이 없습니다.",
+        empty: page !== 0,
+      },
+      statusCode: 200,
     });
   }),
 
