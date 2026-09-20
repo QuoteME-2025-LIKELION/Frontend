@@ -47,12 +47,17 @@ export default function RecommendList({
   const selectedId =
     selection?.dataUpdatedAt === dataUpdatedAt ? selection.id : null;
   const errorStatus = axios.isAxiosError(error) ? error.response?.status : null;
+  const serverErrorMessage =
+    axios.isAxiosError(error) && isErrorResponse(error.response?.data)
+      ? error.response.data.message
+      : null;
   const errorMessage =
-    errorStatus === 429
+    serverErrorMessage ??
+    (errorStatus === 429
       ? "오늘 AI 추천 횟수를 모두 사용했어요."
       : errorStatus === 503
         ? "AI 추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
-        : "AI 추천을 불러오지 못했어요.";
+        : "AI 추천을 불러오지 못했어요.");
   const usageText = isAiUsageLoading
     ? "-/-"
     : aiUsage
@@ -162,5 +167,14 @@ export default function RecommendList({
         </S.ActionBar>
       </S.ComendList>
     </S.Container>
+  );
+}
+
+function isErrorResponse(data: unknown): data is { message: string } {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "message" in data &&
+    typeof (data as { message?: unknown }).message === "string"
   );
 }
