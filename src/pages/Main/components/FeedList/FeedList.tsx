@@ -13,6 +13,7 @@ import {
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
+import theme from "@/styles/theme";
 import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
@@ -209,7 +210,12 @@ export default function FeedList({
     const shareProcess = () =>
       downloadElementImage(
         feedRefs.current[index],
-        `QuoteMe-${displayDate}-${authorNickname}.png`
+        `QuoteMe-${displayDate}-${authorNickname}.png`,
+        {
+          backgroundColor: theme.colors.secondary,
+          horizontalPadding: 24,
+          verticalPadding: 9,
+        }
       );
 
     onShare(shareProcess);

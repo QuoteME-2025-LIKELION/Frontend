@@ -28,7 +28,8 @@ export default function CalendarPage() {
     const shareProcess = () =>
       downloadElementImage(
         feedRefs.current[index],
-        `QuoteMe-${date}-${authorNickname}.png`
+        `QuoteMe-${date}-${authorNickname}.png`,
+        { horizontalPadding: 24, paddingBottom: 9 }
       );
 
     onShare(shareProcess);
