@@ -24,26 +24,37 @@ export default function NotificationLog({
   notification,
   onClick,
 }: NotificationLogProps) {
-  const { senderName, type, createDate } = notification;
+  const { message, senderName, type, createDate } = notification;
   const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
-  const category =
-    type === "GROUP"
-      ? "그룹"
-      : type === "TAG" || type === "TAG_REQUEST"
-        ? "태그"
-        : "친구";
-  const iconVariant =
-    type === "GROUP"
-      ? "group"
-      : type === "TAG" || type === "TAG_REQUEST"
-        ? "tag"
-        : "friend";
+  const isGroupNotification = type.startsWith("GROUP");
+  const isTagNotification = type.startsWith("TAG");
+  const category = isGroupNotification
+    ? "그룹"
+    : isTagNotification
+      ? "태그"
+      : "친구";
+  const iconVariant = isGroupNotification
+    ? "group"
+    : isTagNotification
+      ? "tag"
+      : "friend";
   const iconText = iconVariant === "friend" ? "Q" : "G";
 
   const renderMessage = () => {
+    if (message) {
+      return message;
+    }
+
     switch (type) {
       case "GROUP":
+      case "GROUP_INVITE":
         return <>님이 그룹에 초대했습니다.</>;
+      case "GROUP_ACCEPT":
+        return <>님이 그룹 초대를 수락했습니다.</>;
+      case "FRIEND_REQUEST":
+        return <>님이 친구 요청을 보냈습니다.</>;
+      case "FRIEND_ACCEPTED":
+        return <>님이 친구 요청을 수락했습니다.</>;
       case "TAG":
         return <>님이 태그했습니다.</>;
       case "TAG_REQUEST":
@@ -64,7 +75,7 @@ export default function NotificationLog({
         <S.TextBox>
           <S.Category>{category}</S.Category>
           <S.Message>
-            {senderName}
+            {!message && senderName}
             {renderMessage()}
           </S.Message>
         </S.TextBox>

@@ -62,8 +62,25 @@ export default function Notification() {
       const { type } = notification;
       switch (type) {
         case "GROUP":
+        case "GROUP_ACCEPT":
+        case "GROUP_JOIN_REQUEST":
           // 그룹 알림은 그룹 페이지로 이동
           navigate(`/group/${notification.targetId}`, {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "GROUP_INVITE":
+          navigate("/friend-group/add", {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "FRIEND_REQUEST":
+          navigate("/friend-group/add", {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "FRIEND_ACCEPTED":
+          navigate("/friend-group", {
             state: { returnTo: "/notification" },
           });
           break;
