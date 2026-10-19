@@ -11,6 +11,7 @@ let mockNotificationSettings = {
   pokeEnabled: false,
   likeEnabled: true,
   quoteReminderEnabled: true,
+  quoteReminderTime: "21:00",
   marketingEnabled: false,
 };
 

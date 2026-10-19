@@ -14,6 +14,7 @@ export interface NotificationSettings {
   pokeEnabled: boolean;
   likeEnabled: boolean;
   quoteReminderEnabled: boolean;
+  quoteReminderTime: string | null;
   marketingEnabled: boolean;
 }
 

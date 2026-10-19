@@ -21,6 +21,20 @@ type SettingKey =
 
 type Meridiem = "오전" | "오후";
 
+function parseReminderTime(value: string | null) {
+  const [hour, minute] = (value ?? "21:00").split(":").map(Number);
+  return {
+    meridiem: (hour < 12 ? "오전" : "오후") as Meridiem,
+    hour: hour % 12 || 12,
+    minute,
+  };
+}
+
+function formatReminderTime(time: ReturnType<typeof parseReminderTime>) {
+  const hour = (time.hour % 12) + (time.meridiem === "오후" ? 12 : 0);
+  return `${hour.toString().padStart(2, "0")}:${time.minute.toString().padStart(2, "0")}`;
+}
+
 const DEFAULT_SETTINGS: NotificationSettingsType = {
   groupEnabled: true,
   friendEnabled: true,
@@ -28,6 +42,7 @@ const DEFAULT_SETTINGS: NotificationSettingsType = {
   pokeEnabled: true,
   likeEnabled: true,
   quoteReminderEnabled: true,
+  quoteReminderTime: "21:00",
   marketingEnabled: false,
 };
 
@@ -35,13 +50,11 @@ const SETTING_ITEMS: Array<{
   key: SettingKey;
   title: string;
   description?: string;
-  valueText?: string;
 }> = [
   {
     key: "quoteReminderEnabled",
     title: "오늘의 명언 남기기 알림",
     description: "명언을 작성하지 않았을 때 알림을 보내요.",
-    valueText: "오후 9:00",
   },
   {
     key: "groupEnabled",
@@ -78,11 +91,9 @@ export default function NotificationSetting() {
     useState(true);
   const [toastMessage, setToastMessage] = useState("");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
-  const [reminderTime, setReminderTime] = useState({
-    meridiem: "오후" as Meridiem,
-    hour: 9,
-    minute: 0,
-  });
+  const [reminderTime, setReminderTime] = useState(() =>
+    parseReminderTime(DEFAULT_SETTINGS.quoteReminderTime)
+  );
 
   useEffect(() => {
     setDraftSettings(settings);
@@ -104,11 +115,13 @@ export default function NotificationSetting() {
     try {
       await updateSettings(nextSettings);
       setToastMessage(successMessage);
+      return true;
     } catch (err) {
       setDraftSettings(previousSettings);
       setIsNotificationPermissionEnabled(previousNotificationPermission);
       console.error("알림 설정 저장 실패:", err);
       setToastMessage("알림 설정 저장에 실패했습니다.");
+      return false;
     }
   };
 
@@ -121,6 +134,7 @@ export default function NotificationSetting() {
     setIsNotificationPermissionEnabled(nextValue);
     void saveSettings(
       {
+        ...draftSettings,
         groupEnabled: nextValue,
         friendEnabled: nextValue,
         tagEnabled: nextValue,
@@ -150,24 +164,38 @@ export default function NotificationSetting() {
   };
 
   const handleReminderRowClick = () => {
+    if (isPending) {
+      return;
+    }
+
     if (!isAllEnabled) {
       setToastMessage("전체 알림이 꺼져있어요.");
       return;
     }
 
-    if (!draftSettings.quoteReminderEnabled) {
-      void saveSettings({
-        ...draftSettings,
-        quoteReminderEnabled: true,
-      });
-    }
-
+    setReminderTime(parseReminderTime(draftSettings.quoteReminderTime));
     setIsTimePickerOpen(true);
   };
 
-  const reminderTimeText = `${reminderTime.meridiem} ${
-    reminderTime.hour
-  }:${reminderTime.minute.toString().padStart(2, "0")}`;
+  const handleReminderDone = async () => {
+    if (isPending) {
+      return;
+    }
+
+    const saved = await saveSettings({
+      ...draftSettings,
+      quoteReminderEnabled: true,
+      quoteReminderTime: formatReminderTime(reminderTime),
+    });
+    if (saved) {
+      setIsTimePickerOpen(false);
+    }
+  };
+
+  const savedReminderTime = parseReminderTime(draftSettings.quoteReminderTime);
+  const reminderTimeText = `${savedReminderTime.meridiem} ${
+    savedReminderTime.hour
+  }:${savedReminderTime.minute.toString().padStart(2, "0")}`;
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
@@ -189,7 +217,11 @@ export default function NotificationSetting() {
           />
         )}
         {isTimePickerOpen && (
-          <S.PickerOverlay onClick={() => setIsTimePickerOpen(false)}>
+          <S.PickerOverlay
+            onClick={() => {
+              if (!isPending) setIsTimePickerOpen(false);
+            }}
+          >
             <S.PickerSheet onClick={(event) => event.stopPropagation()}>
               <S.PickerGrid>
                 <S.PickerColumn>
@@ -197,6 +229,7 @@ export default function NotificationSetting() {
                     <S.PickerOption
                       key={meridiem}
                       type="button"
+                      disabled={isPending}
                       $selected={reminderTime.meridiem === meridiem}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, meridiem }));
@@ -212,6 +245,7 @@ export default function NotificationSetting() {
                     <S.PickerOption
                       key={hour}
                       type="button"
+                      disabled={isPending}
                       $selected={reminderTime.hour === hour}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, hour }));
@@ -223,26 +257,28 @@ export default function NotificationSetting() {
                   ))}
                 </S.PickerColumn>
                 <S.PickerColumn>
-                  {MINUTE_OPTIONS.map((minute) => (
-                    <S.PickerOption
-                      key={minute}
-                      type="button"
-                      $selected={reminderTime.minute === minute}
-                      onClick={(event) => {
-                        setReminderTime((prev) => ({ ...prev, minute }));
-                        centerSelectedOption(event.currentTarget);
-                      }}
-                    >
-                      {minute.toString().padStart(2, "0")}분
-                    </S.PickerOption>
-                  ))}
+                  {Array.from(new Set([...MINUTE_OPTIONS, reminderTime.minute]))
+                    .sort((a, b) => a - b)
+                    .map((minute) => (
+                      <S.PickerOption
+                        key={minute}
+                        type="button"
+                        disabled={isPending}
+                        $selected={reminderTime.minute === minute}
+                        onClick={(event) => {
+                          setReminderTime((prev) => ({ ...prev, minute }));
+                          centerSelectedOption(event.currentTarget);
+                        }}
+                      >
+                        {minute.toString().padStart(2, "0")}분
+                      </S.PickerOption>
+                    ))}
                 </S.PickerColumn>
               </S.PickerGrid>
               <S.PickerDoneButton
                 type="button"
-                onClick={() => {
-                  setIsTimePickerOpen(false);
-                }}
+                disabled={isPending}
+                onClick={() => void handleReminderDone()}
               >
                 완료
               </S.PickerDoneButton>
