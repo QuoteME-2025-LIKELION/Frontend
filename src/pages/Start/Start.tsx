@@ -38,15 +38,12 @@ export default function Start() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  //구글 카카오 로그인 보류
-  //이거 어케 할건지
   const handleSignup = (provider: string) => {
-    redirectToOAuthProvider(provider);
+    redirectToOAuthProvider(provider, "signup");
   };
 
   const handleLogin = (provider: string) => {
-    redirectToOAuthProvider(provider);
-    alert("로그인 준비중입니다.");
+    redirectToOAuthProvider(provider, "login");
   };
 
   // 로딩 중이거나 리디렉션 될 사용자에게는 페이지 내용을 보여주지 않음
