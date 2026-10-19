@@ -36,14 +36,17 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const status = axios.isAxiosError(error) ? error.response?.status : null;
+  (error) => {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      const isUnauthenticated =
+        status === 403 &&
+        (data?.resultCode === "403-1" || data?.message === "403-1");
 
-    if (status === 401 || status === 403) {
-      // 토큰이 유효하지 않거나 만료된 경우
-      useAuthStore.getState().logout();
-
-      return Promise.reject(error);
+      if (status === 401 || isUnauthenticated) {
+        useAuthStore.getState().logout();
+      }
     }
 
     return Promise.reject(error);
