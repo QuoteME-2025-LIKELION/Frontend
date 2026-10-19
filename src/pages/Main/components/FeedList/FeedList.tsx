@@ -7,6 +7,7 @@ import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
+import { useGroupQuery } from "@/hooks/useGroupQueries";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
@@ -34,6 +35,7 @@ type FeedListProps = {
   groups: Group[] | [];
   selectedGroupId: number | null;
   myNickname: string;
+  myMemberId?: number;
   onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
@@ -46,6 +48,7 @@ export default function FeedList({
   groups,
   selectedGroupId,
   myNickname,
+  myMemberId,
   onSelectGroup,
   onShare,
   isLoading,
@@ -71,28 +74,31 @@ export default function FeedList({
   );
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const selectedGroup = groups.find((group) => group.id === selectedGroupId);
-  const selectedGroupMembers = useMemo(() => {
-    if (!selectedGroup?.members) {
-      return null;
+  const {
+    data: groupDetail,
+    isLoading: isGroupLoading,
+    isError: isGroupError,
+  } = useGroupQuery(selectedGroupId ?? undefined);
+  const visibleMembers = useMemo(() => {
+    if (selectedGroupId === null) {
+      return friendList;
     }
 
-    return selectedGroup.members
-      .filter((member) => member.nickname !== myNickname)
-      .map((member) => ({
-        id: member.id,
-        nickname: member.nickname,
-        profileImage: member.profileImage,
-        introduction: member.introduction,
-      }));
-  }, [myNickname, selectedGroup]);
-  const visibleFriends = selectedGroupMembers ?? friendList;
+    if (isGroupError || myMemberId === undefined) {
+      return [];
+    }
+
+    return (groupDetail?.members ?? []).filter(
+      (member) => member.id !== myMemberId
+    );
+  }, [friendList, groupDetail, isGroupError, myMemberId, selectedGroupId]);
 
   const quotes = useMemo<QuotesItem[]>(() => {
     const quotesMap = new Map(
       otherQuotes.map((quote) => [quote.authorNickname, quote])
     );
 
-    return visibleFriends.map((friend) => {
+    return visibleMembers.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
         const quoteId = friendQuote.quoteId ?? friendQuote.id;
@@ -128,7 +134,7 @@ export default function FeedList({
         isFriendQuote: true,
       };
     });
-  }, [bookmarkOverrides, otherQuotes, visibleFriends]);
+  }, [bookmarkOverrides, otherQuotes, visibleMembers]);
 
   const tagRequestQuote = quotes.find(
     (quote) => quote.quoteId === tagRequestQuoteId
@@ -317,7 +323,16 @@ export default function FeedList({
           </S.FilterMenu>
         )}
       </S.FilterBox>
-      {quotes.length > 0 ? (
+      {selectedGroupId !== null && isGroupError ? (
+        <S.NoFeedbox>
+          <S.NoFeedText>그룹 멤버를 불러오지 못했어요.</S.NoFeedText>
+          <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
+        </S.NoFeedbox>
+      ) : selectedGroupId !== null && isGroupLoading ? (
+        <S.NoFeedbox>
+          <S.NoFeedText>그룹 멤버를 불러오는 중이에요.</S.NoFeedText>
+        </S.NoFeedbox>
+      ) : quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
             key={`${quote.friendId}-${quote.quoteId ?? "empty"}`}
@@ -336,9 +351,15 @@ export default function FeedList({
         ))
       ) : !isLoading ? (
         <S.NoFeedbox>
-          <S.NoFeedText>아직 함께 볼 친구 피드가 없어요.</S.NoFeedText>
+          <S.NoFeedText>
+            {selectedGroupId === null
+              ? "아직 함께 볼 친구 피드가 없어요."
+              : "아직 함께 볼 그룹 멤버가 없어요."}
+          </S.NoFeedText>
           <S.NoFeedSubText>
-            친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요.
+            {selectedGroupId === null
+              ? "친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요."
+              : "다른 멤버가 참여하면 서로의 명언을 이곳에서 볼 수 있어요."}
           </S.NoFeedSubText>
         </S.NoFeedbox>
       ) : null}

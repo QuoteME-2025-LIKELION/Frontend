@@ -126,6 +126,7 @@ export default function Home() {
         groups={groups}
         selectedGroupId={selectedGroupId}
         myNickname={profileNickname}
+        myMemberId={myProfile?.id}
         onSelectGroup={setSelectedGroupId}
         onShare={executeShare}
         isLoading={isLoading}
