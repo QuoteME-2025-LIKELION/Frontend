@@ -5,7 +5,6 @@ import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
-import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
@@ -36,9 +35,11 @@ export default function Home() {
 
   const { date } = useParams();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-  const { data: quotesData, isLoading: isQuotesLoading } = useQuotesByDateQuery(
-    displayDate
-  );
+  const {
+    data: quotesData,
+    isLoading: isQuotesLoading,
+    isError: isQuotesError,
+  } = useQuotesByDateQuery(displayDate, selectedGroupId ?? undefined);
   const {
     data: feedData,
     isLoading: isFeedLoading,
@@ -46,8 +47,6 @@ export default function Home() {
   } = useQuotesFeedQuery(displayDate, 0, selectedGroupId ?? undefined);
   const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
     useArchivesByDateQuery(displayDate);
-  const { data: friendList = [], isLoading: isFriendsLoading } =
-    useFriendsQuery();
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
   const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
   const apiMyQuote = quotesData?.myQuotes[0] || null;
@@ -79,7 +78,6 @@ export default function Home() {
     isQuotesLoading ||
     isFeedLoading ||
     isArchivesLoading ||
-    isFriendsLoading ||
     isGroupsLoading ||
     isProfileLoading;
   const profileImage = myProfile?.profileImage;
@@ -130,7 +128,7 @@ export default function Home() {
       <FeedList
         date={date}
         otherQuotes={otherQuotes}
-        friendList={friendList}
+        unwrittenMembers={quotesData?.unwrittenMembers ?? []}
         groups={groups}
         selectedGroupId={selectedGroupId}
         myNickname={profileNickname}
@@ -138,7 +136,7 @@ export default function Home() {
         onSelectGroup={setSelectedGroupId}
         onShare={executeShare}
         isLoading={isLoading}
-        isFeedError={isFeedError}
+        isFeedError={isFeedError || isQuotesError}
         emptyMessage={feedData?.emptyMessage}
       />
       {shareStatus !== "nothing" && (

@@ -376,11 +376,12 @@ const mockAiUsage = {
 
 function getMockFeedQuotes(groupIdParam: string | null) {
   const groupId = groupIdParam === null ? undefined : Number(groupIdParam);
-  const groupMemberNicknames = groupId === undefined
-    ? [2, 6, 7].map((id) => getMockMember(id).nickname)
-    : mockGroups
-        .find((group) => group.id === groupId)
-        ?.members.map((member) => member.nickname) ?? [];
+  const groupMemberNicknames =
+    groupId === undefined
+      ? [2, 6, 7].map((id) => getMockMember(id).nickname)
+      : (mockGroups
+          .find((group) => group.id === groupId)
+          ?.members.map((member) => member.nickname) ?? []);
   return [
     {
       id: 2,
@@ -441,10 +442,7 @@ function getMockFeedQuotes(groupIdParam: string | null) {
       timeAgo: "30분 전",
       createDate: "2025-11-03T19:02:00",
     },
-  ].filter(
-    (quote) =>
-      groupMemberNicknames.includes(quote.authorNickname)
-  );
+  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname));
 }
 
 export const handlers = [
@@ -809,7 +807,21 @@ export const handlers = [
 
   http.get("/api/quotes", ({ request }) => {
     const url = new URL(request.url);
-    const otherQuotes = getMockFeedQuotes(url.searchParams.get("groupId"));
+    const groupId = url.searchParams.get("groupId");
+    const otherQuotes = getMockFeedQuotes(groupId);
+    const members =
+      groupId === null
+        ? []
+        : (mockGroups.find((group) => group.id === Number(groupId))?.members ??
+          []);
+    const writtenMemberIds = new Set([1, 2, 3, 4, 6]);
+    const unwrittenMembers = members
+      .filter((member) => !writtenMemberIds.has(member.id))
+      .map((member) => ({
+        memberId: member.id,
+        nickname: member.nickname,
+        profileImage: member.profileImage,
+      }));
 
     return HttpResponse.json({
       myQuotes: [
@@ -825,6 +837,7 @@ export const handlers = [
         },
       ],
       otherQuotes,
+      unwrittenMembers,
     });
   }),
 

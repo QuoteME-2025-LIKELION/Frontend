@@ -1,14 +1,13 @@
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { QuoteFeedItem } from "@/api/quoteApi";
+import type { QuoteFeedItem, UnwrittenMember } from "@/api/quoteApi";
 import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
-import { useGroupQuery } from "@/hooks/useGroupQueries";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
@@ -16,7 +15,6 @@ import {
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
 import theme from "@/styles/theme";
-import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
@@ -24,7 +22,7 @@ import * as S from "./FeedList.styles";
 
 interface QuotesItem extends QuoteFeedItem {
   createDate?: string;
-  friendId: number;
+  memberId?: number;
   isSilenced: boolean;
   quoteId?: number;
 }
@@ -32,7 +30,7 @@ interface QuotesItem extends QuoteFeedItem {
 type FeedListProps = {
   date?: string;
   otherQuotes: QuoteFeedItem[];
-  friendList: Friend[] | [];
+  unwrittenMembers: UnwrittenMember[];
   groups: Group[] | [];
   selectedGroupId: number | null;
   myNickname: string;
@@ -47,7 +45,7 @@ type FeedListProps = {
 export default function FeedList({
   date,
   otherQuotes,
-  friendList,
+  unwrittenMembers,
   groups,
   selectedGroupId,
   myNickname,
@@ -79,67 +77,30 @@ export default function FeedList({
   );
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const selectedGroup = groups.find((group) => group.id === selectedGroupId);
-  const {
-    data: groupDetail,
-    isLoading: isGroupLoading,
-    isError: isGroupError,
-  } = useGroupQuery(selectedGroupId ?? undefined);
-  const visibleMembers = useMemo(() => {
-    if (selectedGroupId === null) {
-      return friendList;
-    }
-
-    if (isGroupError || myMemberId === undefined) {
-      return [];
-    }
-
-    return (groupDetail?.members ?? []).filter(
-      (member) => member.id !== myMemberId
-    );
-  }, [friendList, groupDetail, isGroupError, myMemberId, selectedGroupId]);
-
-  const quotes = useMemo<QuotesItem[]>(() => {
-    const quotesMap = new Map(
-      otherQuotes.map((quote) => [quote.authorNickname, quote])
-    );
-
-    return visibleMembers.map((friend) => {
-      const friendQuote = quotesMap.get(friend.nickname);
-      if (friendQuote) {
-        const quoteId = friendQuote.id;
-        const taggedNicknames =
-          friendQuote.taggedNicknames ?? [];
-
-        return {
-          ...friendQuote,
-          id: quoteId,
-          quoteId,
-          friendId: friend.id,
-          isSilenced: false,
-          taggedNicknames,
-          isLiked: Boolean(friendQuote.isLiked),
-          isBookmarked:
-            bookmarkOverrides[quoteId] ?? Boolean(friendQuote.isBookmarked),
-        };
-      }
-
-      return {
-        id: friend.id,
-        friendId: friend.id,
-        authorNickname: friend.nickname,
-        authorProfileImage: friend.profileImage,
-        authorIntroduction: friend.introduction,
-        isSilenced: true,
-        content: "",
-        taggedNicknames: [],
-        timeAgo: "",
-        isLiked: false,
-        isBookmarked: false,
-        createDate: "",
-        isFriendQuote: true,
-      };
-    });
-  }, [bookmarkOverrides, otherQuotes, visibleMembers]);
+  const quotes = useMemo<QuotesItem[]>(
+    () => [
+      ...otherQuotes.map((quote) => ({
+        ...quote,
+        quoteId: quote.id,
+        isSilenced: false,
+        taggedNicknames: quote.taggedNicknames ?? [],
+        isBookmarked: bookmarkOverrides[quote.id] ?? Boolean(quote.isBookmarked),
+      })),
+      ...unwrittenMembers
+        .filter((member) => member.memberId !== myMemberId)
+        .map((member) => ({
+          id: member.memberId,
+          memberId: member.memberId,
+          authorNickname: member.nickname,
+          authorProfileImage: member.profileImage ?? undefined,
+          content: "",
+          taggedNicknames: [],
+          isSilenced: true,
+          isBookmarked: false,
+        })),
+    ],
+    [bookmarkOverrides, otherQuotes, unwrittenMembers, myMemberId]
+  );
 
   const tagRequestQuote = quotes.find(
     (quote) => quote.quoteId === tagRequestQuoteId
@@ -328,16 +289,7 @@ export default function FeedList({
           </S.FilterMenu>
         )}
       </S.FilterBox>
-      {selectedGroupId !== null && isGroupError ? (
-        <S.NoFeedbox>
-          <S.NoFeedText>그룹 멤버를 불러오지 못했어요.</S.NoFeedText>
-          <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
-        </S.NoFeedbox>
-      ) : selectedGroupId !== null && isGroupLoading ? (
-        <S.NoFeedbox>
-          <S.NoFeedText>그룹 멤버를 불러오는 중이에요.</S.NoFeedText>
-        </S.NoFeedbox>
-      ) : isFeedError ? (
+      {isFeedError ? (
         <S.NoFeedbox>
           <S.NoFeedText>명언을 불러오지 못했어요.</S.NoFeedText>
           <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
@@ -345,7 +297,9 @@ export default function FeedList({
       ) : isLoading ? null : quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
-            key={`${quote.friendId}-${quote.quoteId ?? "empty"}`}
+            key={
+              quote.isSilenced ? `member-${quote.memberId}` : `quote-${quote.id}`
+            }
             quote={quote}
             index={index}
             refCallback={(el) => {
@@ -435,7 +389,9 @@ function FeedListItem({
       canRequestTag={canRequestTag}
       tagRequestStatus={tagRequest?.status ?? "NONE"}
       onPoke={() => {
-        onPoke(quote.friendId);
+        if (quote.isSilenced && quote.memberId !== undefined) {
+          onPoke(quote.memberId);
+        }
       }}
       isInArchive={false}
       isSilenced={quote.isSilenced}

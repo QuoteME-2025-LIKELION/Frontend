@@ -8,9 +8,16 @@ interface RsData<T> {
   statusCode: number;
 }
 
+export interface UnwrittenMember {
+  memberId: number;
+  nickname: string;
+  profileImage?: string | null;
+}
+
 export interface GetQuotesResponse {
   myQuotes: MyQuote[];
   otherQuotes: OtherQuote[];
+  unwrittenMembers: UnwrittenMember[];
 }
 
 export interface QuoteFeedItem {
