@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import type { QuoteFeedItem } from "@/api/quoteApi";
 import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
@@ -15,14 +16,14 @@ import {
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
 import theme from "@/styles/theme";
-import type { OtherQuote } from "@/types/feed.type";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./FeedList.styles";
 
-interface QuotesItem extends OtherQuote {
+interface QuotesItem extends QuoteFeedItem {
+  createDate?: string;
   friendId: number;
   isSilenced: boolean;
   quoteId?: number;
@@ -30,7 +31,7 @@ interface QuotesItem extends OtherQuote {
 
 type FeedListProps = {
   date?: string;
-  otherQuotes: OtherQuote[] | [];
+  otherQuotes: QuoteFeedItem[];
   friendList: Friend[] | [];
   groups: Group[] | [];
   selectedGroupId: number | null;
@@ -39,6 +40,8 @@ type FeedListProps = {
   onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
   isLoading: boolean;
+  isFeedError?: boolean;
+  emptyMessage?: string | null;
 };
 
 export default function FeedList({
@@ -52,6 +55,8 @@ export default function FeedList({
   onSelectGroup,
   onShare,
   isLoading,
+  isFeedError = false,
+  emptyMessage,
 }: FeedListProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -101,9 +106,9 @@ export default function FeedList({
     return visibleMembers.map((friend) => {
       const friendQuote = quotesMap.get(friend.nickname);
       if (friendQuote) {
-        const quoteId = friendQuote.quoteId ?? friendQuote.id;
+        const quoteId = friendQuote.id;
         const taggedNicknames =
-          friendQuote.taggedNicknames ?? friendQuote.taggedMembers ?? [];
+          friendQuote.taggedNicknames ?? [];
 
         return {
           ...friendQuote,
@@ -332,7 +337,12 @@ export default function FeedList({
         <S.NoFeedbox>
           <S.NoFeedText>그룹 멤버를 불러오는 중이에요.</S.NoFeedText>
         </S.NoFeedbox>
-      ) : quotes.length > 0 ? (
+      ) : isFeedError ? (
+        <S.NoFeedbox>
+          <S.NoFeedText>명언을 불러오지 못했어요.</S.NoFeedText>
+          <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
+        </S.NoFeedbox>
+      ) : isLoading ? null : quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
             key={`${quote.friendId}-${quote.quoteId ?? "empty"}`}
@@ -352,9 +362,10 @@ export default function FeedList({
       ) : !isLoading ? (
         <S.NoFeedbox>
           <S.NoFeedText>
-            {selectedGroupId === null
-              ? "아직 함께 볼 친구 피드가 없어요."
-              : "아직 함께 볼 그룹 멤버가 없어요."}
+            {emptyMessage ||
+              (selectedGroupId === null
+                ? "아직 함께 볼 친구 피드가 없어요."
+                : "아직 함께 볼 그룹 멤버가 없어요.")}
           </S.NoFeedText>
           <S.NoFeedSubText>
             {selectedGroupId === null

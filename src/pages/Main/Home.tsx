@@ -9,7 +9,10 @@ import { useFriendsQuery } from "@/hooks/useFriendQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
-import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import {
+  useQuotesByDateQuery,
+  useQuotesFeedQuery,
+} from "@/hooks/useQuoteQueries";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import DateHeader from "./components/DateHeader/DateHeader";
@@ -34,9 +37,13 @@ export default function Home() {
   const { date } = useParams();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading: isQuotesLoading } = useQuotesByDateQuery(
-    displayDate,
-    selectedGroupId ?? undefined
+    displayDate
   );
+  const {
+    data: feedData,
+    isLoading: isFeedLoading,
+    isError: isFeedError,
+  } = useQuotesFeedQuery(displayDate, 0, selectedGroupId ?? undefined);
   const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
     useArchivesByDateQuery(displayDate);
   const { data: friendList = [], isLoading: isFriendsLoading } =
@@ -67,9 +74,10 @@ export default function Home() {
             [],
           isBookmarked: archiveMyQuote.isBookmarked ?? apiMyQuote?.isBookmarked,
         };
-  const otherQuotes = quotesData?.otherQuotes || [];
+  const otherQuotes = feedData?.items ?? [];
   const isLoading =
     isQuotesLoading ||
+    isFeedLoading ||
     isArchivesLoading ||
     isFriendsLoading ||
     isGroupsLoading ||
@@ -130,6 +138,8 @@ export default function Home() {
         onSelectGroup={setSelectedGroupId}
         onShare={executeShare}
         isLoading={isLoading}
+        isFeedError={isFeedError}
+        emptyMessage={feedData?.emptyMessage}
       />
       {shareStatus !== "nothing" && (
         <ToastModal

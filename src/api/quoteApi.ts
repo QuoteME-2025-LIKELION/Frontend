@@ -29,7 +29,7 @@ export interface QuoteFeedItem {
 
 export interface GetQuotesFeedResponse {
   items: QuoteFeedItem[];
-  emptyMessage?: string;
+  emptyMessage?: string | null;
   empty: boolean;
 }
 

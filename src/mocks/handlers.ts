@@ -374,6 +374,79 @@ const mockAiUsage = {
   limitPerDay: 3,
 };
 
+function getMockFeedQuotes(groupIdParam: string | null) {
+  const groupId = groupIdParam === null ? undefined : Number(groupIdParam);
+  const groupMemberNicknames = groupId === undefined
+    ? [2, 6, 7].map((id) => getMockMember(id).nickname)
+    : mockGroups
+        .find((group) => group.id === groupId)
+        ?.members.map((member) => member.nickname) ?? [];
+  return [
+    {
+      id: 2,
+      quoteId: 2,
+      authorNickname: "라라진",
+      authorIntroduction: "Seize the day",
+      content: "방귀 퀸 놈이 성낸다",
+      taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
+      taggedMembers: ["말랑이", "몰랑이", "규빈이"],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "19시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 3,
+      quoteId: 3,
+      authorNickname: "조니님",
+      authorIntroduction: "새 친구를 기다려요",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "내일의 나는 오늘의 기록에서 시작된다",
+      taggedNicknames: [],
+      taggedMembers: [],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "1시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 4,
+      quoteId: 4,
+      authorNickname: "말랑이",
+      authorIntroduction: "천천히 단단하게",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "느린 걸음도 방향이 있으면 충분하다",
+      taggedNicknames: ["라라진"],
+      taggedMembers: ["라라진"],
+      isLiked: false,
+      isBookmarked: true,
+      isFriendQuote: true,
+      timeAgo: "3시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 5,
+      quoteId: 5,
+      authorNickname: "몰랑이",
+      authorIntroduction: "좋은 문장을 모아요",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "잘 쉬는 마음이 오래 걷는다",
+      taggedNicknames: [],
+      taggedMembers: [],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "30분 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+  ].filter(
+    (quote) =>
+      groupMemberNicknames.includes(quote.authorNickname)
+  );
+}
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -736,77 +809,7 @@ export const handlers = [
 
   http.get("/api/quotes", ({ request }) => {
     const url = new URL(request.url);
-    const groupId = Number(url.searchParams.get("groupId"));
-    const groupMemberNicknames = Number.isNaN(groupId)
-      ? null
-      : mockGroups
-          .find((group) => group.id === groupId)
-          ?.members.map((member) => member.nickname);
-    const otherQuotes = [
-      {
-        id: 2,
-        quoteId: 2,
-        authorNickname: "라라진",
-        authorIntroduction: "Seize the day",
-        content: "방귀 퀸 놈이 성낸다",
-        taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
-        taggedMembers: ["말랑이", "몰랑이", "규빈이"],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "19시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 3,
-        quoteId: 3,
-        authorNickname: "조니님",
-        authorIntroduction: "새 친구를 기다려요",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "내일의 나는 오늘의 기록에서 시작된다",
-        taggedNicknames: [],
-        taggedMembers: [],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "1시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 4,
-        quoteId: 4,
-        authorNickname: "말랑이",
-        authorIntroduction: "천천히 단단하게",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "느린 걸음도 방향이 있으면 충분하다",
-        taggedNicknames: ["라라진"],
-        taggedMembers: ["라라진"],
-        isLiked: false,
-        isBookmarked: true,
-        isFriendQuote: true,
-        timeAgo: "3시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 5,
-        quoteId: 5,
-        authorNickname: "몰랑이",
-        authorIntroduction: "좋은 문장을 모아요",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "잘 쉬는 마음이 오래 걷는다",
-        taggedNicknames: [],
-        taggedMembers: [],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "30분 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-    ].filter(
-      (quote) =>
-        !groupMemberNicknames ||
-        groupMemberNicknames.includes(quote.authorNickname)
-    );
+    const otherQuotes = getMockFeedQuotes(url.searchParams.get("groupId"));
 
     return HttpResponse.json({
       myQuotes: [
@@ -827,31 +830,15 @@ export const handlers = [
 
   http.get("/api/quotes/feed", ({ request }) => {
     const url = new URL(request.url);
-    const page = Number(url.searchParams.get("page") ?? 0);
+    const items = getMockFeedQuotes(url.searchParams.get("groupId"));
 
     return HttpResponse.json({
       resultCode: "200",
       message: "200-1",
       data: {
-        items:
-          page === 0
-            ? [
-                {
-                  id: 1,
-                  authorNickname: "라라진",
-                  authorBirthYear: "2000",
-                  authorIntroduction: "오늘도 말랑하게",
-                  content: "방귀 뀐 놈이 성낸다",
-                  taggedNicknames: ["말랑이"],
-                  timeAgo: "방금 전",
-                  isLiked: false,
-                  isBookmarked: false,
-                  isFriendQuote: true,
-                },
-              ]
-            : [],
-        emptyMessage: page === 0 ? "" : "표시할 명언이 없습니다.",
-        empty: page !== 0,
+        items,
+        emptyMessage: items.length === 0 ? "표시할 명언이 없습니다." : null,
+        empty: items.length === 0,
       },
       statusCode: 200,
     });
