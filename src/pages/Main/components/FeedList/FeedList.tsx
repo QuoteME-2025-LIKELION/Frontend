@@ -309,6 +309,7 @@ export default function FeedList({
             onBookmark={handleBookmark}
             onShare={handleShare}
             onRequest={openTagRequestConfirm}
+            onTagRequestInfo={setToastMessage}
             onPoke={handlePoke}
             myNickname={myNickname}
           />
@@ -340,6 +341,7 @@ interface FeedListItemProps {
   onBookmark: (quoteId: number, isBookmarked: boolean) => void;
   onShare: (authorNickname: string, index: number) => void;
   onRequest: (quoteId: number) => void;
+  onTagRequestInfo: (message: string) => void;
   onPoke: (friendId: number) => void;
   myNickname: string;
 }
@@ -352,6 +354,7 @@ function FeedListItem({
   onBookmark,
   onShare,
   onRequest,
+  onTagRequestInfo,
   onPoke,
   myNickname,
 }: FeedListItemProps) {
@@ -359,9 +362,15 @@ function FeedListItem({
   const canRequestTag =
     !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
   const shouldCheckTagRequest = canRequestTag && quote.quoteId !== undefined;
-  const { data: tagRequest } = useMyQuoteTagRequestQuery(
+  const {
+    data: tagRequest,
+    isFetching: isTagRequestFetching,
+    isError: isTagRequestError,
+  } = useMyQuoteTagRequestQuery(
     shouldCheckTagRequest ? quote.quoteId : undefined
   );
+  const isTagRequestLoading =
+    shouldCheckTagRequest && (isTagRequestFetching || tagRequest === undefined);
 
   return (
     <QuoteFeed
@@ -382,12 +391,21 @@ function FeedListItem({
           : undefined
       }
       onRequest={() => {
-        if (canRequestTag && quote.quoteId !== undefined) {
+        if (
+          canRequestTag &&
+          !isTagRequestLoading &&
+          !isTagRequestError &&
+          tagRequest?.status === "NONE" &&
+          quote.quoteId !== undefined
+        ) {
           onRequest(quote.quoteId);
         }
       }}
       canRequestTag={canRequestTag}
+      onTagRequestInfo={onTagRequestInfo}
       tagRequestStatus={tagRequest?.status ?? "NONE"}
+      isTagRequestLoading={isTagRequestLoading}
+      isTagRequestError={isTagRequestError}
       onPoke={() => {
         if (quote.isSilenced && quote.memberId !== undefined) {
           onPoke(quote.memberId);

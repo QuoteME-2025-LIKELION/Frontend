@@ -881,10 +881,10 @@ export const handlers = [
     const quoteId = Number(params.quoteId);
     const currentStatus = mockMyTagRequestStatusByQuoteId[quoteId];
 
-    if (currentStatus === "PENDING" || currentStatus === "ACCEPTED") {
+    if (currentStatus && currentStatus !== "NONE") {
       return HttpResponse.json(
         { message: "이미 태그를 요청했습니다." },
-        { status: 409 }
+        { status: 400 }
       );
     }
 
