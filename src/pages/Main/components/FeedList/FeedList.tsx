@@ -317,10 +317,19 @@ export default function FeedList({
       ) : !isLoading ? (
         <S.NoFeedbox>
           <S.NoFeedText>
-            {emptyMessage ||
+            {emptyMessage ===
+            "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요" ? (
+              <>
+                친구를 추가하면 매일 피드에서
+                <br />
+                명언을 확인할 수 있어요
+              </>
+            ) : (
+              emptyMessage ||
               (selectedGroupId === null
                 ? "아직 함께 볼 친구 피드가 없어요."
-                : "아직 함께 볼 그룹 멤버가 없어요.")}
+                : "아직 함께 볼 그룹 멤버가 없어요.")
+            )}
           </S.NoFeedText>
           <S.NoFeedSubText>
             {selectedGroupId === null
