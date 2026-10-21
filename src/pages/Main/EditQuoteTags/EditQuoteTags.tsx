@@ -17,10 +17,8 @@ export default function EditQuoteTags() {
   const location = useLocation();
   const date = location.state?.date as string | undefined;
   const quoteId = location.state?.quoteId as number | undefined;
-  const requestedNickname = location.state?.requestedNickname as
-    | string
-    | undefined;
-  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/home";
 
   const {
     active,
@@ -88,7 +86,6 @@ export default function EditQuoteTags() {
             taggedNicknames: myQuote.taggedNicknames,
           }}
           mode="fix"
-          requestedNickname={requestedNickname}
         />
       )}
     </S.Container>

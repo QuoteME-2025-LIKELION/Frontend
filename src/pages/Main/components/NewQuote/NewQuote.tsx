@@ -12,6 +12,7 @@ import {
   useUpdateQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
+import type { Friend } from "@/types/friend.type";
 
 import * as S from "./NewQuote.styles";
 
@@ -19,14 +20,12 @@ interface NewQuoteProps {
   quote: CreatedQuote;
   mode?: "create" | "fix"; // fix일 때만 명시적으로 추가하도록
   onBack?: () => void;
-  requestedNickname?: string;
 }
 
 export default function NewQuote({
   quote,
   mode = "create",
   onBack,
-  requestedNickname,
 }: NewQuoteProps) {
   const [selectedIdsDraft, setSelectedIdsDraft] = useState<number[] | null>(
     null
@@ -42,44 +41,48 @@ export default function NewQuote({
     useCreateQuoteMutation();
   const { mutateAsync: updateQuoteTags, isPending: isUpdatingQuoteTags } =
     useUpdateQuoteTagsMutation();
-  const pendingTagRequests = useMemo(
-    () => tagRequests.filter((request) => request.status === "PENDING"),
+  const pendingRequesterIds = useMemo(
+    () => new Set(tagRequests.map((request) => request.requesterId)),
     [tagRequests]
   );
-  const pendingRequesterNames = useMemo(
-    () =>
-      new Set(
-        [
-          ...pendingTagRequests.map((request) => request.requesterNickname),
-          requestedNickname,
-        ].filter(Boolean)
-      ),
-    [pendingTagRequests, requestedNickname]
-  );
+  const tagCandidates = useMemo(() => {
+    const candidates = new Map<number, Friend>(
+      friends.map((friend) => [friend.id, friend])
+    );
+    for (const request of tagRequests) {
+      if (!candidates.has(request.requesterId)) {
+        candidates.set(request.requesterId, {
+          id: request.requesterId,
+          nickname: request.requesterName,
+        });
+      }
+    }
+    return [...candidates.values()];
+  }, [friends, tagRequests]);
   const initialSelectedIds = useMemo(() => {
     if (mode !== "fix") {
       return [];
     }
 
-    return friends
+    return tagCandidates
       .filter(
         (friend) =>
           quote.taggedNicknames?.includes(friend.nickname) ||
-          pendingRequesterNames.has(friend.nickname)
+          pendingRequesterIds.has(friend.id)
       )
       .map((friend) => friend.id);
-  }, [friends, mode, pendingRequesterNames, quote.taggedNicknames]);
+  }, [tagCandidates, mode, pendingRequesterIds, quote.taggedNicknames]);
   const selectedIds = selectedIdsDraft ?? initialSelectedIds;
-  const selectedFriends = friends.filter((friend) =>
+  const selectedFriends = tagCandidates.filter((friend) =>
     selectedIds.includes(friend.id)
   );
-  const filteredFriends = friends
+  const filteredFriends = tagCandidates
     .filter((friend) =>
       friend.nickname.toLowerCase().includes(keyword.trim().toLowerCase())
     )
     .sort((a, b) => {
-      const aPending = pendingRequesterNames.has(a.nickname);
-      const bPending = pendingRequesterNames.has(b.nickname);
+      const aPending = pendingRequesterIds.has(a.id);
+      const bPending = pendingRequesterIds.has(b.id);
 
       if (aPending === bPending) {
         return 0;
@@ -89,7 +92,7 @@ export default function NewQuote({
     });
   const lastPendingRequesterIndex = filteredFriends.reduce(
     (lastIndex, friend, index) =>
-      pendingRequesterNames.has(friend.nickname) ? index : lastIndex,
+      pendingRequesterIds.has(friend.id) ? index : lastIndex,
     -1
   );
   const hasVisiblePendingRequesterFriend = lastPendingRequesterIndex >= 0;
@@ -159,7 +162,7 @@ export default function NewQuote({
         <S.Description>
           나중에 태그를 추가하거나 수정할 수 있어요.
         </S.Description>
-        {friends.length === 0 ? (
+        {tagCandidates.length === 0 ? (
           <S.EmptyBox>
             <S.EmptyTitle>태그할 수 있는 친구가 없어요.</S.EmptyTitle>
             <S.EmptyDescription>
@@ -203,9 +206,7 @@ export default function NewQuote({
                 {filteredFriends.map((friend, index) => {
                   const isSelected = selectedIds.includes(friend.id);
                   const isLast = index === filteredFriends.length - 1;
-                  const isPendingRequester = pendingRequesterNames.has(
-                    friend.nickname
-                  );
+                  const isPendingRequester = pendingRequesterIds.has(friend.id);
                   const shouldSeparateFromDefaultFriends =
                     isPendingRequester &&
                     index === lastPendingRequesterIndex &&
@@ -229,7 +230,7 @@ export default function NewQuote({
                         <S.Username>{friend.nickname}</S.Username>
                         <S.Intro>
                           {isPendingRequester
-                            ? "태그 요청을 보낸 친구예요."
+                            ? "태그 요청을 보낸 분이에요."
                             : friend.introduction}
                         </S.Intro>
                       </S.UserBox>

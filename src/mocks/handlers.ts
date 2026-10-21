@@ -281,11 +281,11 @@ const mockQuoteTagRequestsByQuoteId: Record<
   number,
   Array<{
     requestId: number;
-    requesterNickname: string;
-    status: "NONE" | "PENDING" | "ACCEPTED" | "REJECTED";
+    requesterId: number;
+    requesterName: string;
   }>
 > = {
-  1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
+  1: [{ requestId: 101, requesterId: 2, requesterName: "라라진" }],
 };
 let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
 let mockMyQuoteIsBookmarked = false;

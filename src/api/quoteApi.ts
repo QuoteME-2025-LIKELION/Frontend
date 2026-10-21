@@ -85,8 +85,8 @@ export interface MyTagRequestResponse {
 
 export interface QuoteTagRequest {
   requestId: number;
-  requesterNickname: string;
-  status: MyTagRequestStatus;
+  requesterId: number;
+  requesterName: string;
 }
 
 export interface BookmarkQuoteResponse {
