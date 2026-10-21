@@ -57,6 +57,8 @@ export default function FeedList({
   emptyMessage,
 }: FeedListProps) {
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
+  const isNoFriendsMessage =
+    emptyMessage === "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요";
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const filterBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
@@ -317,8 +319,7 @@ export default function FeedList({
       ) : !isLoading ? (
         <S.NoFeedbox>
           <S.NoFeedText>
-            {emptyMessage ===
-            "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요" ? (
+            {isNoFriendsMessage ? (
               <>
                 친구를 추가하면 매일 피드에서
                 <br />
@@ -331,11 +332,13 @@ export default function FeedList({
                 : "아직 함께 볼 그룹 멤버가 없어요.")
             )}
           </S.NoFeedText>
-          <S.NoFeedSubText>
-            {selectedGroupId === null
-              ? "친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요."
-              : "다른 멤버가 참여하면 서로의 명언을 이곳에서 볼 수 있어요."}
-          </S.NoFeedSubText>
+          {!isNoFriendsMessage && (
+            <S.NoFeedSubText>
+              {selectedGroupId === null
+                ? "친구를 추가하면 서로의 명언을 이곳에서 볼 수 있어요."
+                : "다른 멤버가 참여하면 서로의 명언을 이곳에서 볼 수 있어요."}
+            </S.NoFeedSubText>
+          )}
         </S.NoFeedbox>
       ) : null}
     </S.FeedList>

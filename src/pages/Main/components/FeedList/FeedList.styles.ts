@@ -77,6 +77,7 @@ export const NoFeedText = styled.div`
   padding: 0 0 0.75rem;
   text-align: center;
   font-size: 1rem;
+  line-height: 1.8;
   ${theme.fonts.batang}
   color: ${theme.colors.territory};
   letter-spacing: -0.28px;
