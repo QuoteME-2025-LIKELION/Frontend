@@ -40,7 +40,7 @@ export function useFriendSearchQuery(keyword: string, enabled = true) {
 }
 
 /**
- * 받은 친구 요청 목록 조회
+ * 보낸/받은 친구 요청 목록 조회
  */
 export function useFriendRequestsQuery(enabled = true) {
   return useQuery({
@@ -75,7 +75,7 @@ export function useRequestFriendMutation() {
   return useMutation({
     mutationFn: (targetId: number) => friendApi.requestFriend(targetId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
+      return queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
     },
   });
 }

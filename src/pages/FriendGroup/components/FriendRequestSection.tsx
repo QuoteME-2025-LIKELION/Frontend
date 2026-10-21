@@ -18,25 +18,23 @@ export default function FriendRequestSection({
   onAccept,
   onReject,
 }: FriendRequestSectionProps) {
+  const receivedRequests = requests.filter(
+    (request) => request.direction === "RECEIVED"
+  );
+
   return (
     <S.Section>
       <S.Title>받은 친구 요청</S.Title>
       <S.FriendList>
-        {requests.length > 0 ? (
-          requests.map((request) => {
+        {receivedRequests.length > 0 ? (
+          receivedRequests.map((request) => {
             const isPending = pendingRequestId === request.requestId;
-            const requesterNickname =
-              request.requesterNickname ?? request.senderNickname ?? "사용자";
-            const requesterProfileImage =
-              request.requesterProfileImageUrl ?? request.senderProfileImage;
-            const requesterIntroduction =
-              request.requesterIntroduction ?? request.senderIntroduction;
 
             return (
               <S.RequestItem key={request.requestId}>
-                {requesterProfileImage ? (
+                {request.senderProfileImage ? (
                   <S.RequestProfileImg
-                    src={requesterProfileImage}
+                    src={request.senderProfileImage}
                     alt="프로필 이미지"
                   />
                 ) : (
@@ -44,10 +42,12 @@ export default function FriendRequestSection({
                 )}
                 <S.RequestUserBox>
                   <S.RequestUsername>
-                    {requesterNickname}
+                    {request.senderNickname}
                   </S.RequestUsername>
-                  {requesterIntroduction && (
-                    <S.RequestIntro>{requesterIntroduction}</S.RequestIntro>
+                  {request.senderIntroduction && (
+                    <S.RequestIntro>
+                      {request.senderIntroduction}
+                    </S.RequestIntro>
                   )}
                 </S.RequestUserBox>
                 <S.RequestActionBox>

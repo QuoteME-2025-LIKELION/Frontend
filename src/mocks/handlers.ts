@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 
+import type { FriendRequest } from "@/api/friendApi";
 import type { Notification } from "@/types/notification.type";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
@@ -259,17 +260,27 @@ const mockFriendRequestIds = [6, 7, 8];
 const getMockMember = (id: number) =>
   mockMembersById[id as keyof typeof mockMembersById];
 
-const createFriendRequest = (requesterId: number, index: number) => {
-  const member = getMockMember(requesterId);
-
+const createFriendRequest = (
+  senderId: number,
+  index: number
+): FriendRequest => {
+  const member = getMockMember(senderId);
   return {
     requestId: 10 + index,
-    requesterId,
-    requesterNickname: member.nickname,
-    requesterProfileImageUrl: member.profileImage,
-    createdAt: `2025-11-07T10:${String(index * 5).padStart(2, "0")}:00`,
+    direction: "RECEIVED",
+    senderId,
+    senderNickname: member.nickname,
+    senderProfileImage: member.profileImage,
+    senderIntroduction: member.introduction,
+    receiverId: 1,
+    receiverNickname: "손지수",
+    receiverProfileImage: MOCK_PROFILE_IMAGE,
+    receiverIntroduction: "긍정의 힘을 믿어요",
   };
 };
+let mockFriendRequests = mockFriendRequestIds.map(createFriendRequest);
+let nextFriendRequestId = 20;
+const mockFriendIds = [2, 6, 7];
 
 const createFriendListItem = (id: number) => ({
   ...getMockMember(id),
@@ -581,20 +592,64 @@ export const handlers = [
         { status: 400 }
       );
     }
+    const receiverId = Number(params.targetId);
+    const member = getMockMember(receiverId);
+    if (!member) return new HttpResponse(null, { status: 404 });
+    if (
+      mockFriendRequests.some((item) =>
+        item.direction === "SENT"
+          ? item.receiverId === receiverId
+          : item.senderId === receiverId
+      )
+    ) {
+      return HttpResponse.json(
+        { message: "이미 대기 중인 친구 요청이 있습니다." },
+        { status: 400 }
+      );
+    }
+    mockFriendRequests.push({
+      requestId: nextFriendRequestId++,
+      direction: "SENT",
+      senderId: 1,
+      senderNickname: "손지수",
+      senderProfileImage: MOCK_PROFILE_IMAGE,
+      receiverId,
+      receiverNickname: member.nickname,
+      receiverProfileImage: member.profileImage,
+      receiverIntroduction: member.introduction,
+    });
     return new HttpResponse(null, { status: 201 });
   }),
 
   http.get("/api/friends/requests", () => {
-    return HttpResponse.json(
-      mockFriendRequestIds.map((id, index) => createFriendRequest(id, index))
-    );
+    return HttpResponse.json(mockFriendRequests);
   }),
 
-  http.post("/api/friends/requests/:requestId/accept", () => {
+  http.post("/api/friends/requests/:requestId/accept", ({ params }) => {
+    const item = mockFriendRequests.find(
+      (request) =>
+        request.requestId === Number(params.requestId) &&
+        request.direction === "RECEIVED"
+    );
+    if (!item) return new HttpResponse(null, { status: 404 });
+    if (!mockFriendIds.includes(item.senderId))
+      mockFriendIds.push(item.senderId);
+    mockFriendRequests = mockFriendRequests.filter(
+      (request) => request.requestId !== item.requestId
+    );
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/friends/requests/:requestId/reject", () => {
+  http.post("/api/friends/requests/:requestId/reject", ({ params }) => {
+    const item = mockFriendRequests.find(
+      (request) =>
+        request.requestId === Number(params.requestId) &&
+        request.direction === "RECEIVED"
+    );
+    if (!item) return new HttpResponse(null, { status: 404 });
+    mockFriendRequests = mockFriendRequests.filter(
+      (request) => request.requestId !== item.requestId
+    );
     return new HttpResponse(null, { status: 200 });
   }),
 
@@ -1152,7 +1207,7 @@ export const handlers = [
   }),
 
   http.get("/api/settings/friends-list", () => {
-    return HttpResponse.json([2, 6, 7].map(createFriendListItem));
+    return HttpResponse.json(mockFriendIds.map(createFriendListItem));
   }),
 
   // ==========================================
