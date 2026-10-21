@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
+import { getNotificationFeedPath } from "@/utils/getNotificationFeedPath";
 
 import NotificationFilterTabs, {
   type NotificationFilter,
@@ -79,6 +80,7 @@ export default function Notification() {
             state: { returnTo: "/notification" },
           });
           break;
+        case "GROUP_REJECT":
         case "FRIEND_ACCEPTED":
           navigate("/friend-group", {
             state: { returnTo: "/notification" },
@@ -89,7 +91,8 @@ export default function Notification() {
           navigate("/write", { state: { returnTo: "/notification" } });
           break;
         case "TAG":
-          navigate(`/home/${notification.createDate.slice(0, 10)}`, {
+        case "TAG_ACCEPTED":
+          navigate(getNotificationFeedPath(notification.createDate), {
             state: { returnTo: "/notification" },
           });
           break;

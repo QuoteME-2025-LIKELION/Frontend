@@ -20,9 +20,11 @@ export interface Notification {
     | "LIKE"
     | "TAG"
     | "TAG_REQUEST"
+    | "TAG_ACCEPTED"
     | "GROUP"
     | "GROUP_INVITE"
     | "GROUP_ACCEPT"
+    | "GROUP_REJECT"
     | "GROUP_JOIN_REQUEST"
     | "FRIEND_REQUEST"
     | "FRIEND_ACCEPTED";
