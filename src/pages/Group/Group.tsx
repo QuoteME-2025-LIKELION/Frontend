@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Header from "@/components/Header/Header";
@@ -58,6 +58,8 @@ export default function Group() {
     number | null
   >(null);
 
+  const joinRequestInFlight = useRef(false);
+
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
@@ -110,7 +112,7 @@ export default function Group() {
         return;
       }
 
-      if (pendingJoinRequestId !== null) {
+      if (joinRequestInFlight.current) {
         return;
       }
 
@@ -123,6 +125,7 @@ export default function Group() {
         (request) => request.requestId === requestId
       );
 
+      joinRequestInFlight.current = true;
       setPendingJoinRequestId(requestId);
 
       try {
@@ -138,6 +141,7 @@ export default function Group() {
         setErrorMessage("그룹 가입 요청 수락에 실패했습니다.");
         setShowErrorToast(true);
       } finally {
+        joinRequestInFlight.current = false;
         setPendingJoinRequestId(null);
       }
     },
@@ -146,7 +150,6 @@ export default function Group() {
       groupId,
       joinRequests,
       members.length,
-      pendingJoinRequestId,
     ]
   );
 
@@ -157,7 +160,7 @@ export default function Group() {
         return;
       }
 
-      if (pendingJoinRequestId !== null) {
+      if (joinRequestInFlight.current) {
         return;
       }
 
@@ -165,6 +168,7 @@ export default function Group() {
         (request) => request.requestId === requestId
       );
 
+      joinRequestInFlight.current = true;
       setPendingJoinRequestId(requestId);
 
       try {
@@ -180,10 +184,11 @@ export default function Group() {
         setErrorMessage("그룹 가입 요청 거절에 실패했습니다.");
         setShowErrorToast(true);
       } finally {
+        joinRequestInFlight.current = false;
         setPendingJoinRequestId(null);
       }
     },
-    [groupId, joinRequests, pendingJoinRequestId, rejectGroupJoinRequest]
+    [groupId, joinRequests, rejectGroupJoinRequest]
   );
 
   const handleQuitGroup = useCallback(() => {

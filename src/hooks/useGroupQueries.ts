@@ -237,12 +237,14 @@ export function useAcceptGroupJoinRequestMutation() {
       requestId: number;
     }) => groupApi.acceptJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.detail(variables.groupId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.joinRequests(variables.groupId),
-      });
+      return Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(variables.groupId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.joinRequests(variables.groupId),
+        }),
+      ]);
     },
   });
 }
@@ -259,7 +261,7 @@ export function useRejectGroupJoinRequestMutation() {
       requestId: number;
     }) => groupApi.rejectJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: groupQueryKeys.joinRequests(variables.groupId),
       });
     },
