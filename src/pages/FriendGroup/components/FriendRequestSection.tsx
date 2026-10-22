@@ -18,19 +18,23 @@ export default function FriendRequestSection({
   onAccept,
   onReject,
 }: FriendRequestSectionProps) {
+  const receivedRequests = requests.filter(
+    (request) => request.direction === "RECEIVED"
+  );
+
   return (
     <S.Section>
       <S.Title>받은 친구 요청</S.Title>
       <S.FriendList>
-        {requests.length > 0 ? (
-          requests.map((request) => {
+        {receivedRequests.length > 0 ? (
+          receivedRequests.map((request) => {
             const isPending = pendingRequestId === request.requestId;
 
             return (
               <S.RequestItem key={request.requestId}>
-                {request.requesterProfileImageUrl ? (
+                {request.senderProfileImage ? (
                   <S.RequestProfileImg
-                    src={request.requesterProfileImageUrl}
+                    src={request.senderProfileImage}
                     alt="프로필 이미지"
                   />
                 ) : (
@@ -38,8 +42,13 @@ export default function FriendRequestSection({
                 )}
                 <S.RequestUserBox>
                   <S.RequestUsername>
-                    {request.requesterNickname}
+                    {request.senderNickname}
                   </S.RequestUsername>
+                  {request.senderIntroduction && (
+                    <S.RequestIntro>
+                      {request.senderIntroduction}
+                    </S.RequestIntro>
+                  )}
                 </S.RequestUserBox>
                 <S.RequestActionBox>
                   <button
@@ -61,7 +70,9 @@ export default function FriendRequestSection({
             );
           })
         ) : (
-          <S.EmptyBox>받은 친구 요청이 없습니다.</S.EmptyBox>
+          <S.EmptyBox>
+            <S.EmptyTitle>받은 친구 요청이 없습니다.</S.EmptyTitle>
+          </S.EmptyBox>
         )}
       </S.FriendList>
     </S.Section>

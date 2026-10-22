@@ -10,6 +10,7 @@ interface UserListItemProps {
   actionButton?: {
     // 우측 버튼 정보
     type: "delete" | "add" | "invite"; // 버튼 종류
+    disabled?: boolean;
     text: string; // 버튼에 표시될 텍스트 (삭제, 추가, 초대)
     onClick: () => void; // 버튼 클릭 시 실행될 함수
   };
@@ -52,7 +53,7 @@ export default function UserListItem({
   let actionButtonElement = null;
 
   if (actionButton && !isSelectable) {
-    const { type, text, onClick } = actionButton;
+    const { type, text, onClick, disabled = false } = actionButton;
     const ButtonComponent =
       type === "delete"
         ? S.DeleteBtn
@@ -61,7 +62,9 @@ export default function UserListItem({
           : null;
 
     actionButtonElement = ButtonComponent ? (
-      <ButtonComponent onClick={onClick}>{text}</ButtonComponent>
+      <ButtonComponent type="button" disabled={disabled} onClick={onClick}>
+        {text}
+      </ButtonComponent>
     ) : null;
   }
 

@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "@/App";
 
 async function enableMocking() {
-  if (!import.meta.env.DEV) {
+  if (!import.meta.env.DEV || import.meta.env.VITE_ENABLE_MSW !== "true") {
     return;
   }
 

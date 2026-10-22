@@ -75,10 +75,9 @@ export const FilterOption = styled.button<{ $active: boolean }>`
 export const NoFeedText = styled.div`
   width: 100%;
   padding: 0 0 0.75rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
   font-size: 1rem;
+  line-height: 1.8;
   ${theme.fonts.batang}
   color: ${theme.colors.territory};
   letter-spacing: -0.28px;

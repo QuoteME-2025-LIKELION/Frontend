@@ -10,6 +10,10 @@ import {
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
+import {
+  getNotificationFeedPath,
+  getNotificationQuoteDate,
+} from "@/utils/getNotificationFeedPath";
 
 import NotificationFilterTabs, {
   type NotificationFilter,
@@ -62,8 +66,26 @@ export default function Notification() {
       const { type } = notification;
       switch (type) {
         case "GROUP":
+        case "GROUP_ACCEPT":
+        case "GROUP_JOIN_REQUEST":
           // 그룹 알림은 그룹 페이지로 이동
           navigate(`/group/${notification.targetId}`, {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "GROUP_INVITE":
+          navigate("/friend-group/add", {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "FRIEND_REQUEST":
+          navigate("/friend-group/add", {
+            state: { returnTo: "/notification" },
+          });
+          break;
+        case "GROUP_REJECT":
+        case "FRIEND_ACCEPTED":
+          navigate("/friend-group", {
             state: { returnTo: "/notification" },
           });
           break;
@@ -72,20 +94,27 @@ export default function Notification() {
           navigate("/write", { state: { returnTo: "/notification" } });
           break;
         case "TAG":
-          navigate(`/home/${notification.createDate.slice(0, 10)}`, {
+        case "TAG_ACCEPTED":
+          navigate(getNotificationFeedPath(notification.quoteDate), {
             state: { returnTo: "/notification" },
           });
           break;
-        case "TAG_REQUEST":
+        case "TAG_REQUEST": {
+          const date = getNotificationQuoteDate(notification.quoteDate);
+          if (!date) {
+            navigate("/home", { state: { returnTo: "/notification" } });
+            break;
+          }
           navigate("/fix", {
             state: {
               returnTo: "/notification",
-              date: notification.createDate.slice(0, 10),
+              date,
               quoteId: notification.targetId,
               requestedNickname: notification.senderName,
             },
           });
           break;
+        }
       }
     },
     [navigate, markNotificationRead]

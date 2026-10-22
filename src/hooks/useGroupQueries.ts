@@ -10,6 +10,8 @@ export const groupQueryKeys = {
     [...groupQueryKeys.all, "detail", String(groupId)] as const,
   joinRequests: (groupId: number | string) =>
     [...groupQueryKeys.detail(groupId), "join-requests"] as const,
+  sentInvitations: (groupId: number | string) =>
+    [...groupQueryKeys.detail(groupId), "sent-invitations"] as const,
 };
 
 /**
@@ -119,6 +121,22 @@ export function useGroupJoinRequestsQuery(
 }
 
 /**
+ * 그룹장이 보낸 초대 대기 목록 조회
+ */
+export function useGroupSentInvitationsQuery(
+  groupId: number | string | undefined
+) {
+  return useQuery({
+    queryKey: groupQueryKeys.sentInvitations(groupId ?? ""),
+    queryFn: async () => {
+      const res = await groupApi.getSentInvitations(groupId!);
+      return res.data;
+    },
+    enabled: groupId !== undefined,
+  });
+}
+
+/**
  * 그룹 멤버 제거 후 그룹 관련 캐시 갱신
  */
 export function useRemoveGroupMemberMutation() {
@@ -159,6 +177,9 @@ export function useUpdateGroupMottoMutation() {
       queryClient.invalidateQueries({
         queryKey: groupQueryKeys.detail(variables.groupId),
       });
+      queryClient.invalidateQueries({
+        queryKey: groupQueryKeys.sentInvitations(variables.groupId),
+      });
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
     },
   });
@@ -179,10 +200,12 @@ export function useInviteGroupMemberMutation() {
       friendId: number;
     }) => groupApi.inviteMember(groupId, friendId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.detail(variables.groupId),
-      });
-      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+      return Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(variables.groupId),
+        }),
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() }),
+      ]);
     },
   });
 }
@@ -216,12 +239,14 @@ export function useAcceptGroupJoinRequestMutation() {
       requestId: number;
     }) => groupApi.acceptJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.detail(variables.groupId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.joinRequests(variables.groupId),
-      });
+      return Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(variables.groupId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.joinRequests(variables.groupId),
+        }),
+      ]);
     },
   });
 }
@@ -238,7 +263,7 @@ export function useRejectGroupJoinRequestMutation() {
       requestId: number;
     }) => groupApi.rejectJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: groupQueryKeys.joinRequests(variables.groupId),
       });
     },

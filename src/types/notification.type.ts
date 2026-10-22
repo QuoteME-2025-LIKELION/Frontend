@@ -1,7 +1,7 @@
 /**
  * 알림 타입 정의
  * @property {number} id - 알림 고유 ID
- * @property {"POKE" | "LIKE" | "TAG" | "GROUP"} type - 알림 유형
+ * @property {string} type - 알림 유형
  * @property {string} message - 알림 메시지
  * @property {number} targetId - 알림 대상 ID
  * - POKE: 찌른 사람의 Member ID
@@ -11,14 +11,28 @@
  * - TAG_REQUEST: 태그 요청된 Quote ID
  * @property {string} senderName - 알림 발신자 이름
  * @property {string} createDate - 알림 생성 일자
+ * @property {string | null} quoteDate - 태그 대상 명언 작성일 (YYYY-MM-DD)
  * @property {boolean} isRead - 알림 읽음 여부
  */
 export interface Notification {
   id: number;
-  type: "POKE" | "LIKE" | "TAG" | "GROUP" | "TAG_REQUEST";
+  type:
+    | "POKE"
+    | "LIKE"
+    | "TAG"
+    | "TAG_REQUEST"
+    | "TAG_ACCEPTED"
+    | "GROUP"
+    | "GROUP_INVITE"
+    | "GROUP_ACCEPT"
+    | "GROUP_REJECT"
+    | "GROUP_JOIN_REQUEST"
+    | "FRIEND_REQUEST"
+    | "FRIEND_ACCEPTED";
   message: string;
   targetId: number;
   senderName: string;
   createDate: string;
+  quoteDate?: string | null;
   isRead: boolean;
 }

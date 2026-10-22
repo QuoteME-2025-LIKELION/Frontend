@@ -27,6 +27,7 @@ export interface GroupJoinRequest {
   requesterId: number;
   requesterNickname: string;
   requesterProfileImageUrl?: string;
+  requesterIntroduction?: string;
   createdAt?: string;
 }
 
@@ -41,6 +42,8 @@ export const groupApi = {
     api.post<CreateGroupResponse>("/api/groups", payload),
   inviteMember: (groupId: number | string, friendId: number) =>
     api.post(`/api/groups/${groupId}/invite/${friendId}`),
+  getSentInvitations: (groupId: number | string) =>
+    api.get<GroupJoinRequest[]>(`/api/groups/${groupId}/invitations/sent`),
   getInvitations: () => api.get<GroupInvitation[]>("/api/groups/invitations"),
   acceptInvitation: (requestId: number) =>
     api.post(`/api/groups/invitations/${requestId}/accept`),

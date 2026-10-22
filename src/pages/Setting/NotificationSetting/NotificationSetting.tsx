@@ -21,6 +21,20 @@ type SettingKey =
 
 type Meridiem = "오전" | "오후";
 
+function parseReminderTime(value: string | null) {
+  const [hour, minute] = (value ?? "21:00").split(":").map(Number);
+  return {
+    meridiem: (hour < 12 ? "오전" : "오후") as Meridiem,
+    hour: hour % 12 || 12,
+    minute,
+  };
+}
+
+function formatReminderTime(time: ReturnType<typeof parseReminderTime>) {
+  const hour = (time.hour % 12) + (time.meridiem === "오후" ? 12 : 0);
+  return `${hour.toString().padStart(2, "0")}:${time.minute.toString().padStart(2, "0")}`;
+}
+
 const DEFAULT_SETTINGS: NotificationSettingsType = {
   groupEnabled: true,
   friendEnabled: true,
@@ -28,6 +42,7 @@ const DEFAULT_SETTINGS: NotificationSettingsType = {
   pokeEnabled: true,
   likeEnabled: true,
   quoteReminderEnabled: true,
+  quoteReminderTime: "21:00",
   marketingEnabled: false,
 };
 
@@ -35,13 +50,11 @@ const SETTING_ITEMS: Array<{
   key: SettingKey;
   title: string;
   description?: string;
-  valueText?: string;
 }> = [
   {
     key: "quoteReminderEnabled",
     title: "오늘의 명언 남기기 알림",
     description: "명언을 작성하지 않았을 때 알림을 보내요.",
-    valueText: "오후 9:00",
   },
   {
     key: "groupEnabled",
@@ -69,7 +82,8 @@ const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, index) => index * 5);
 
 export default function NotificationSetting() {
   const navigate = useNavigate();
-  const { data: settings = DEFAULT_SETTINGS } = useNotificationSettingsQuery();
+  const { data: settings = DEFAULT_SETTINGS, isSuccess: isSettingsReady } =
+    useNotificationSettingsQuery();
   const { mutateAsync: updateSettings, isPending } =
     useUpdateNotificationSettingsMutation();
   const [draftSettings, setDraftSettings] =
@@ -78,11 +92,9 @@ export default function NotificationSetting() {
     useState(true);
   const [toastMessage, setToastMessage] = useState("");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
-  const [reminderTime, setReminderTime] = useState({
-    meridiem: "오후" as Meridiem,
-    hour: 9,
-    minute: 0,
-  });
+  const [reminderTime, setReminderTime] = useState(() =>
+    parseReminderTime(DEFAULT_SETTINGS.quoteReminderTime)
+  );
 
   useEffect(() => {
     setDraftSettings(settings);
@@ -95,26 +107,31 @@ export default function NotificationSetting() {
 
   const saveSettings = async (
     nextSettings: NotificationSettingsType,
-    successMessage = "알림 설정이 저장되었습니다.",
-    payload: Partial<NotificationSettingsType> = nextSettings
+    successMessage = "알림 설정이 저장되었습니다."
   ) => {
+    if (!isSettingsReady || isPending) {
+      return false;
+    }
+
     const previousSettings = draftSettings;
     const previousNotificationPermission = isNotificationPermissionEnabled;
     setDraftSettings(nextSettings);
 
     try {
-      await updateSettings(payload);
+      await updateSettings(nextSettings);
       setToastMessage(successMessage);
+      return true;
     } catch (err) {
       setDraftSettings(previousSettings);
       setIsNotificationPermissionEnabled(previousNotificationPermission);
       console.error("알림 설정 저장 실패:", err);
       setToastMessage("알림 설정 저장에 실패했습니다.");
+      return false;
     }
   };
 
   const handleToggleAll = () => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -122,6 +139,7 @@ export default function NotificationSetting() {
     setIsNotificationPermissionEnabled(nextValue);
     void saveSettings(
       {
+        ...draftSettings,
         groupEnabled: nextValue,
         friendEnabled: nextValue,
         tagEnabled: nextValue,
@@ -130,20 +148,12 @@ export default function NotificationSetting() {
         quoteReminderEnabled: nextValue,
         marketingEnabled: draftSettings.marketingEnabled,
       },
-      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요.",
-      {
-        groupEnabled: nextValue,
-        friendEnabled: nextValue,
-        tagEnabled: nextValue,
-        pokeEnabled: nextValue,
-        likeEnabled: nextValue,
-        quoteReminderEnabled: nextValue,
-      }
+      nextValue ? "전체 알림이 켜졌습니다." : "전체 알림이 꺼졌어요."
     );
   };
 
   const handleToggleItem = (key: SettingKey) => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -159,24 +169,38 @@ export default function NotificationSetting() {
   };
 
   const handleReminderRowClick = () => {
+    if (!isSettingsReady || isPending) {
+      return;
+    }
+
     if (!isAllEnabled) {
       setToastMessage("전체 알림이 꺼져있어요.");
       return;
     }
 
-    if (!draftSettings.quoteReminderEnabled) {
-      void saveSettings({
-        ...draftSettings,
-        quoteReminderEnabled: true,
-      });
-    }
-
+    setReminderTime(parseReminderTime(draftSettings.quoteReminderTime));
     setIsTimePickerOpen(true);
   };
 
-  const reminderTimeText = `${reminderTime.meridiem} ${
-    reminderTime.hour
-  }:${reminderTime.minute.toString().padStart(2, "0")}`;
+  const handleReminderDone = async () => {
+    if (!isSettingsReady || isPending) {
+      return;
+    }
+
+    const saved = await saveSettings({
+      ...draftSettings,
+      quoteReminderEnabled: true,
+      quoteReminderTime: formatReminderTime(reminderTime),
+    });
+    if (saved) {
+      setIsTimePickerOpen(false);
+    }
+  };
+
+  const savedReminderTime = parseReminderTime(draftSettings.quoteReminderTime);
+  const reminderTimeText = `${savedReminderTime.meridiem} ${
+    savedReminderTime.hour
+  }:${savedReminderTime.minute.toString().padStart(2, "0")}`;
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
@@ -186,7 +210,7 @@ export default function NotificationSetting() {
 
   return (
     <>
-      <PageTitle title="알림설정" />
+      <PageTitle title="알림 설정" />
       <S.Container>
         {toastMessage && (
           <ToastModal
@@ -198,7 +222,11 @@ export default function NotificationSetting() {
           />
         )}
         {isTimePickerOpen && (
-          <S.PickerOverlay onClick={() => setIsTimePickerOpen(false)}>
+          <S.PickerOverlay
+            onClick={() => {
+              if (!isPending) setIsTimePickerOpen(false);
+            }}
+          >
             <S.PickerSheet onClick={(event) => event.stopPropagation()}>
               <S.PickerGrid>
                 <S.PickerColumn>
@@ -206,6 +234,7 @@ export default function NotificationSetting() {
                     <S.PickerOption
                       key={meridiem}
                       type="button"
+                      disabled={isPending}
                       $selected={reminderTime.meridiem === meridiem}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, meridiem }));
@@ -221,6 +250,7 @@ export default function NotificationSetting() {
                     <S.PickerOption
                       key={hour}
                       type="button"
+                      disabled={isPending}
                       $selected={reminderTime.hour === hour}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, hour }));
@@ -232,26 +262,28 @@ export default function NotificationSetting() {
                   ))}
                 </S.PickerColumn>
                 <S.PickerColumn>
-                  {MINUTE_OPTIONS.map((minute) => (
-                    <S.PickerOption
-                      key={minute}
-                      type="button"
-                      $selected={reminderTime.minute === minute}
-                      onClick={(event) => {
-                        setReminderTime((prev) => ({ ...prev, minute }));
-                        centerSelectedOption(event.currentTarget);
-                      }}
-                    >
-                      {minute.toString().padStart(2, "0")}분
-                    </S.PickerOption>
-                  ))}
+                  {Array.from(new Set([...MINUTE_OPTIONS, reminderTime.minute]))
+                    .sort((a, b) => a - b)
+                    .map((minute) => (
+                      <S.PickerOption
+                        key={minute}
+                        type="button"
+                        disabled={isPending}
+                        $selected={reminderTime.minute === minute}
+                        onClick={(event) => {
+                          setReminderTime((prev) => ({ ...prev, minute }));
+                          centerSelectedOption(event.currentTarget);
+                        }}
+                      >
+                        {minute.toString().padStart(2, "0")}분
+                      </S.PickerOption>
+                    ))}
                 </S.PickerColumn>
               </S.PickerGrid>
               <S.PickerDoneButton
                 type="button"
-                onClick={() => {
-                  setIsTimePickerOpen(false);
-                }}
+                disabled={isPending}
+                onClick={() => void handleReminderDone()}
               >
                 완료
               </S.PickerDoneButton>
@@ -261,12 +293,16 @@ export default function NotificationSetting() {
         <Header
           showBackBtn={true}
           showXBtn={false}
-          title="알림설정"
+          title="알림 설정"
           backgroundColor="secondary"
           onClickBackBtn={() => navigate("/home")}
         />
         <S.List>
-          <S.MasterRow type="button" onClick={handleToggleAll}>
+          <S.MasterRow
+            type="button"
+            disabled={!isSettingsReady || isPending}
+            onClick={handleToggleAll}
+          >
             <S.Title>전체 알림 허용</S.Title>
             <S.Value $active={isAllEnabled}>
               {isAllEnabled ? "On" : "Off"}
@@ -274,8 +310,10 @@ export default function NotificationSetting() {
           </S.MasterRow>
           {SETTING_ITEMS.map((item) => {
             const disabled =
-              item.key !== "marketingEnabled" &&
-              !isNotificationPermissionEnabled;
+              !isSettingsReady ||
+              isPending ||
+              (item.key !== "marketingEnabled" &&
+                !isNotificationPermissionEnabled);
             const isActive = draftSettings[item.key];
             const valueText =
               item.key === "quoteReminderEnabled" && isActive
@@ -289,6 +327,7 @@ export default function NotificationSetting() {
                 key={item.key}
                 type="button"
                 $disabled={disabled}
+                disabled={disabled}
                 onClick={() =>
                   item.key === "quoteReminderEnabled"
                     ? handleReminderRowClick()

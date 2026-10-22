@@ -93,7 +93,7 @@ export const Bottom = styled.div`
   margin-top: 0;
   padding-top: 0.75rem;
   display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
   align-items: center;
   border-top: 1px solid #fff;
 `;

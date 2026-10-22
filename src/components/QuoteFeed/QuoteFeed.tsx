@@ -21,11 +21,15 @@ interface QuoteFeedProps {
   isSilenced?: boolean;
   isBookmarked?: boolean;
   isBookmarkDisabled?: boolean;
+  isShareDisabled?: boolean;
   onBookmark?: () => void;
   onShare?: () => void;
   onRequest?: () => void;
+  onTagRequestInfo?: (message: string) => void;
   canRequestTag?: boolean;
   tagRequestStatus?: MyTagRequestStatus;
+  isTagRequestLoading?: boolean;
+  isTagRequestError?: boolean;
   onPoke?: () => void;
   isInArchive?: boolean;
   onArchiveClick?: () => void;
@@ -84,11 +88,15 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       isSilenced = false,
       isBookmarked = false,
       isBookmarkDisabled = false,
+      isShareDisabled = false,
       onBookmark = () => {},
       onShare = () => {},
       onRequest = () => {},
+      onTagRequestInfo,
       canRequestTag = true,
       tagRequestStatus = "NONE",
+      isTagRequestLoading = false,
+      isTagRequestError = false,
       onPoke = () => {},
       isInArchive = false,
       onArchiveClick,
@@ -104,8 +112,31 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         ? timeAgo
         : "";
     const isNotTagged = !tag || tag.length === 0 || isSilenced;
-    const isTagRequestPending = tagRequestStatus === "PENDING";
-    const isTagRequestDisabled = !canRequestTag || isTagRequestPending;
+    const isTagRequestDisabled =
+      !canRequestTag ||
+      isTagRequestLoading ||
+      isTagRequestError ||
+      tagRequestStatus !== "NONE";
+    const tagRequestLabel = isTagRequestError
+      ? "태그 요청 상태 확인 불가"
+      : isTagRequestLoading
+        ? "태그 요청 상태 확인 중"
+        : {
+            NONE: "태그 요청하기",
+            PENDING: "태그 요청됨",
+            ACCEPTED: "태그 재요청 불가",
+            REJECTED: "태그 요청 거절됨",
+          }[tagRequestStatus] ?? "태그 재요청 불가";
+    const tagRequestMessage = isTagRequestError
+      ? "태그 요청 상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요."
+      : isTagRequestLoading
+        ? "태그 요청 상태를 확인 중이에요. 잠시만 기다려 주세요."
+        : {
+            NONE: "태그를 요청할 수 있어요.",
+            PENDING: "이미 태그를 요청했어요. 수락을 기다려 주세요.",
+            ACCEPTED: "태그 요청이 이미 수락된 명언에는 다시 요청할 수 없어요.",
+            REJECTED: "태그 요청이 거절되어 다시 요청할 수 없어요.",
+          }[tagRequestStatus] ?? "이 명언에는 태그를 다시 요청할 수 없어요.";
 
     // 아카이브 페이지에 있을 땐 피드 클릭 가능
     const handleArchiveClick = isInArchive ? onArchiveClick : undefined;
@@ -182,11 +213,18 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                 {canRequestTag && (
                   <S.PlusBtn
                     type="button"
-                    aria-label={
-                      isTagRequestPending ? "태그 요청됨" : "태그 요청하기"
+                    aria-label={tagRequestLabel}
+                    title={tagRequestLabel}
+                    disabled={isTagRequestDisabled && !onTagRequestInfo}
+                    onClick={(event) =>
+                      handleActionClick(event, () => {
+                        if (isTagRequestDisabled) {
+                          onTagRequestInfo?.(tagRequestMessage);
+                          return;
+                        }
+                        onRequest();
+                      })
                     }
-                    disabled={isTagRequestDisabled}
-                    onClick={(event) => handleActionClick(event, onRequest)}
                     $isInArchive={isInArchive}
                   >
                     <svg
@@ -224,7 +262,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                   onClick={(event) => handleActionClick(event, onRequest)}
                   $isInArchive={isInArchive}
                 >
-                  {isTagRequestPending ? "태그 요청됨" : "태그 요청하기"}
+                  {tagRequestLabel}
                 </S.RequestBtn>
               )
             )}
@@ -244,8 +282,10 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             </button>
             <button
               type="button"
+              disabled={isShareDisabled}
               onClick={(e) => {
                 e.stopPropagation(); // 이벤트 버블링 중단 (Archive 클릭 방지)
+                if (isShareDisabled) return;
                 onShare(); // 기존 공유 로직 실행
               }}
             >

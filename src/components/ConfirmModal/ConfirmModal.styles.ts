@@ -158,7 +158,11 @@ export const Btn = styled.button<{
 
   &:active {
     color: ${({ $confirmColor }) =>
-      $confirmColor === "danger" ? theme.colors.red : "#000"};
+      $confirmColor === "danger"
+        ? theme.colors.red
+        : $confirmColor === "primary"
+          ? theme.colors.primary
+          : "#000"};
   }
 
   &:disabled {

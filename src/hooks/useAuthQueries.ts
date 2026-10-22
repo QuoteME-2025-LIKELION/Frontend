@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   authApi,
   type LoginRequest,
+  type OAuthMode,
   type SignUpRequest,
 } from "@/api/authApi";
 import useAuthStore from "@/stores/useAuthStore";
@@ -13,8 +14,8 @@ import useAuthStore from "@/stores/useAuthStore";
  * OAuth provider 인증 페이지로 이동
  */
 export function useOAuthRedirect() {
-  return (provider: string) => {
-    authApi.redirectToOAuthProvider(provider);
+  return (provider: string, mode: OAuthMode) => {
+    authApi.redirectToOAuthProvider(provider, mode);
   };
 }
 

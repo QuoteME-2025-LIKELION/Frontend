@@ -1,4 +1,5 @@
 import UserListItem from "@/components/UserListItem/UserListItem";
+import { useFriendRequestsQuery } from "@/hooks/useFriendQueries";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "../FriendGroup.styles";
@@ -25,6 +26,21 @@ export default function FriendListSection({
   onAddFriend,
   hideExistingFriendAction = false,
 }: FriendListSectionProps) {
+  const {
+    data: requests,
+    isFetching,
+    isError,
+  } = useFriendRequestsQuery(Boolean(keyword));
+  const sentIds = new Set(
+    requests
+      ?.filter((request) => request.direction === "SENT")
+      .map((request) => request.receiverId)
+  );
+  const receivedIds = new Set(
+    requests
+      ?.filter((request) => request.direction === "RECEIVED")
+      .map((request) => request.senderId)
+  );
   const visibleUsers = keyword ? searchMembers : friends;
   const emptyText = keyword
     ? "검색 결과가 없습니다."
@@ -37,20 +53,35 @@ export default function FriendListSection({
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {
             const isFriend = friendIdSet.has(user.id);
+            const isSent = sentIds.has(user.id);
+            const isReceived = receivedIds.has(user.id);
+            const isChecking = isFetching || requests === undefined;
+            const isAddDisabled = isSent || isReceived || isChecking || isError;
             const actionButton =
               keyword && !isFriend
                 ? {
                     type: "add" as const,
-                    text: "추가",
-                    onClick: () => onAddFriend(user.nickname, user.id),
+                    text: isSent
+                      ? "요청됨"
+                      : isReceived
+                        ? "받은 요청"
+                        : isError
+                          ? "확인 불가"
+                          : isChecking
+                            ? "확인 중"
+                            : "추가",
+                    disabled: isAddDisabled,
+                    onClick: () => {
+                      if (!isAddDisabled) onAddFriend(user.nickname, user.id);
+                    },
                   }
                 : keyword && hideExistingFriendAction
                   ? undefined
-                : {
-                    type: "delete" as const,
-                    text: "삭제",
-                    onClick: () => onDeleteFriend(user.nickname, user.id),
-                  };
+                  : {
+                      type: "delete" as const,
+                      text: "삭제",
+                      onClick: () => onDeleteFriend(user.nickname, user.id),
+                    };
 
             return (
               <UserListItem

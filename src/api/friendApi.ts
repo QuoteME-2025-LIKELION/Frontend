@@ -9,10 +9,15 @@ export interface SearchFriendsAndGroupsResponse {
 
 export interface FriendRequest {
   requestId: number;
-  requesterId: number;
-  requesterNickname: string;
-  requesterProfileImageUrl?: string;
-  createdAt: string;
+  direction: "RECEIVED" | "SENT";
+  senderId: number;
+  senderNickname: string;
+  senderProfileImage?: string | null;
+  senderIntroduction?: string | null;
+  receiverId: number;
+  receiverNickname: string;
+  receiverProfileImage?: string | null;
+  receiverIntroduction?: string | null;
 }
 
 export interface PokeStatisticsResponse {

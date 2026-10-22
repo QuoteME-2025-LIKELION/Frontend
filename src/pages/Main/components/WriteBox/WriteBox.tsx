@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
 
 import * as S from "./WriteBox.styles";
@@ -24,7 +24,7 @@ export default function WriteBox({
 }: WriteBoxProps) {
   const infoWrapRef = useRef<HTMLDivElement | null>(null);
   const [showInfo, setShowInfo] = useState(false);
-  const [showShortAiConfirm, setShowShortAiConfirm] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const today = new Date();
 
   const month = today.getMonth() + 1; // 0부터 시작
@@ -48,7 +48,7 @@ export default function WriteBox({
     if (!canUseAi) return;
 
     if (isShortAiText) {
-      setShowShortAiConfirm(true);
+      setToastMessage("16자 이상부터 추천받을 수 있어요.");
       return;
     }
 
@@ -81,6 +81,13 @@ export default function WriteBox({
 
   return (
     <>
+      {toastMessage && (
+        <ToastModal
+          isVisible={Boolean(toastMessage)}
+          onClose={() => setToastMessage("")}
+          text={toastMessage}
+        />
+      )}
       <S.Container>
         <S.Datebox>
           <S.Month>
@@ -127,7 +134,7 @@ export default function WriteBox({
               </S.InfoButton>
               {showInfo && (
                 <S.InfoBubble role="status">
-                  30자가 넘어가는 글은 AI추천 받기를 사용해야 등록할 수
+                  30자가 넘어가는 글은 AI 추천 받기를 사용해야 등록할 수
                   있습니다.
                 </S.InfoBubble>
               )}
@@ -150,24 +157,6 @@ export default function WriteBox({
             </S.ActionButton>
           </S.ActionBar>
         </S.WriteBody>
-      )}
-      {showShortAiConfirm && (
-        <ConfirmModal
-          variant="card"
-          question=""
-          lines={["이대로 AI추천을", "받으시겠어요?"]}
-          descriptionLines={[
-            "15자 이하의 글은 추천이 제대로",
-            "나오지 않을 수 있습니다.",
-          ]}
-          cancelText="돌아가기"
-          confirmText="추천 받기"
-          onClose={() => setShowShortAiConfirm(false)}
-          onConfirm={() => {
-            setShowShortAiConfirm(false);
-            onAI(value);
-          }}
-        />
       )}
     </>
   );

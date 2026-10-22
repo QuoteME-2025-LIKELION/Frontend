@@ -1,5 +1,7 @@
 import api from "@/api/api";
 
+export type OAuthMode = "login" | "signup";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -26,9 +28,9 @@ export const authApi = {
   signup: (payload: SignUpRequest) =>
     api.post<AuthTokenResponse>("/api/auth/signup", payload),
   logout: () => api.post("/api/auth/logout"),
-  redirectToOAuthProvider: (provider: string) => {
+  redirectToOAuthProvider: (provider: string, mode: OAuthMode) => {
     window.location.assign(
-      `${import.meta.env.VITE_API_URL}/oauth2/authorization/${provider}`
+      `${import.meta.env.VITE_API_URL}/oauth2/authorization/${provider}?mode=${mode}`
     );
   },
 };

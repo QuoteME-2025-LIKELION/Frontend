@@ -78,7 +78,7 @@ export function useQuotesFeedQuery(
     queryKey: quoteQueryKeys.feed(date ?? "", page, groupId, size),
     queryFn: async () => {
       const res = await quoteApi.getQuotesFeed(date!, page, groupId, size);
-      return res.data;
+      return res.data.data;
     },
     enabled: date !== undefined,
   });
@@ -92,7 +92,11 @@ export function useAiUsageQuery() {
     queryKey: quoteQueryKeys.aiUsage(),
     queryFn: async () => {
       const res = await quoteApi.getAiUsage();
-      return res.data;
+      return {
+        usedCount: res.data.usedCount ?? res.data.used ?? 0,
+        remainingCount: res.data.remainingCount ?? res.data.remaining ?? 0,
+        limitPerDay: res.data.limitPerDay ?? res.data.limit ?? 0,
+      };
     },
   });
 }

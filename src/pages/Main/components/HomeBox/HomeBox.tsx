@@ -40,7 +40,8 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const formattedDate = formatCustomDate(displayDate);
   const [month, day, weekday] = formattedDate.split(" ");
 
-  const hasFeed = !!myQuote;
+  const quoteContent = myQuote?.content ?? "";
+  const hasFeed = !!myQuote && quoteContent.length > 0;
   const quoteId = myQuote?.id;
   const isBookmarkPending = isBookmarking || isUnbookmarking;
   const isBookmarked =
@@ -53,18 +54,17 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   // 내 피드 내용이 존재한다면 두 줄로 분리
   // 존재하지 않는다면 피드 작성하도록 유도
   if (hasFeed) {
-    const text = myQuote.content;
-    if (text.length <= 10) {
-      [line1, line2] = [text, ""];
+    if (quoteContent.length <= 10) {
+      [line1, line2] = [quoteContent, ""];
     } else {
-      const middle = Math.floor(text.length / 2);
-      const splitPoint = text.lastIndexOf(" ", middle);
+      const middle = Math.floor(quoteContent.length / 2);
+      const splitPoint = quoteContent.lastIndexOf(" ", middle);
       if (splitPoint !== -1) {
-        line1 = text.substring(0, splitPoint);
-        line2 = text.substring(splitPoint + 1);
+        line1 = quoteContent.substring(0, splitPoint);
+        line2 = quoteContent.substring(splitPoint + 1);
       } else {
-        line1 = text.substring(0, middle);
-        line2 = text.substring(middle);
+        line1 = quoteContent.substring(0, middle);
+        line2 = quoteContent.substring(middle);
       }
     }
   } else {

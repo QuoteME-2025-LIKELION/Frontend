@@ -14,6 +14,7 @@ export interface NotificationSettings {
   pokeEnabled: boolean;
   likeEnabled: boolean;
   quoteReminderEnabled: boolean;
+  quoteReminderTime: string | null;
   marketingEnabled: boolean;
 }
 
@@ -31,6 +32,6 @@ export const notificationApi = {
     api.patch(`/api/notifications/${notificationId}/read`),
   getSettings: () =>
     api.get<NotificationSettings>("/api/notifications/settings"),
-  updateSettings: (payload: Partial<NotificationSettings>) =>
+  updateSettings: (payload: NotificationSettings) =>
     api.put<NotificationSettings>("/api/notifications/settings", payload),
 };

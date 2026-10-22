@@ -20,7 +20,7 @@ interface ToastModalProps {
  * @param props
  * @param props.isVisible - 모달의 표시 여부 (조건부 렌더링용. useState 등으로 관리)
  * @param props.onClose - 모달이 닫힐 때 호출될 함수 (setState(false) 등)
- * @param props.showOverlay - 모달 뒤에 오버레이를 표시할지 여부 (기본값 true)
+ * @param props.showOverlay - 모달 뒤에 오버레이를 표시할지 여부 (기본값 false)
  * @param props.text - 모달에 표시될 텍스트 (빨간색이 아닌 부분)
  * @param props.redText - 모달에 표시될 빨간색 텍스트 (선택 사항)
  * @param props.text2 - 빨간색 텍스트 옆으로 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
@@ -39,13 +39,13 @@ interface ToastModalProps {
 export default function ToastModal({
   isVisible,
   onClose,
-  showOverlay = true,
+  showOverlay = false,
   text,
   redText,
   text2,
   text3,
   isOnShare = false,
-  variant = "default",
+  variant = "snackbar",
 }: ToastModalProps) {
   useEffect(() => {
     if (isVisible && !isOnShare) {

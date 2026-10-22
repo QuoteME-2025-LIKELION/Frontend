@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 
+import type { FriendRequest } from "@/api/friendApi";
 import type { Notification } from "@/types/notification.type";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
@@ -11,6 +12,7 @@ let mockNotificationSettings = {
   pokeEnabled: false,
   likeEnabled: true,
   quoteReminderEnabled: true,
+  quoteReminderTime: "21:00",
   marketingEnabled: false,
 };
 
@@ -258,17 +260,27 @@ const mockFriendRequestIds = [6, 7, 8];
 const getMockMember = (id: number) =>
   mockMembersById[id as keyof typeof mockMembersById];
 
-const createFriendRequest = (requesterId: number, index: number) => {
-  const member = getMockMember(requesterId);
-
+const createFriendRequest = (
+  senderId: number,
+  index: number
+): FriendRequest => {
+  const member = getMockMember(senderId);
   return {
     requestId: 10 + index,
-    requesterId,
-    requesterNickname: member.nickname,
-    requesterProfileImageUrl: member.profileImage,
-    createdAt: `2025-11-07T10:${String(index * 5).padStart(2, "0")}:00`,
+    direction: "RECEIVED",
+    senderId,
+    senderNickname: member.nickname,
+    senderProfileImage: member.profileImage,
+    senderIntroduction: member.introduction,
+    receiverId: 1,
+    receiverNickname: "손지수",
+    receiverProfileImage: MOCK_PROFILE_IMAGE,
+    receiverIntroduction: "긍정의 힘을 믿어요",
   };
 };
+let mockFriendRequests = mockFriendRequestIds.map(createFriendRequest);
+let nextFriendRequestId = 20;
+const mockFriendIds = [2, 6, 7];
 
 const createFriendListItem = (id: number) => ({
   ...getMockMember(id),
@@ -280,11 +292,11 @@ const mockQuoteTagRequestsByQuoteId: Record<
   number,
   Array<{
     requestId: number;
-    requesterNickname: string;
-    status: "NONE" | "PENDING" | "ACCEPTED" | "REJECTED";
+    requesterId: number;
+    requesterName: string;
   }>
 > = {
-  1: [{ requestId: 101, requesterNickname: "라라진", status: "PENDING" }],
+  1: [{ requestId: 101, requesterId: 2, requesterName: "라라진" }],
 };
 let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
 let mockMyQuoteIsBookmarked = false;
@@ -372,6 +384,77 @@ const mockAiUsage = {
   remainingCount: 2,
   limitPerDay: 3,
 };
+
+function getMockFeedQuotes(groupIdParam: string | null) {
+  const groupId = groupIdParam === null ? undefined : Number(groupIdParam);
+  const groupMemberNicknames =
+    groupId === undefined
+      ? [2, 6, 7].map((id) => getMockMember(id).nickname)
+      : (mockGroups
+          .find((group) => group.id === groupId)
+          ?.members.map((member) => member.nickname) ?? []);
+  return [
+    {
+      id: 2,
+      quoteId: 2,
+      authorNickname: "라라진",
+      authorIntroduction: "Seize the day",
+      content: "방귀 퀸 놈이 성낸다",
+      taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
+      taggedMembers: ["말랑이", "몰랑이", "규빈이"],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "19시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 3,
+      quoteId: 3,
+      authorNickname: "조니님",
+      authorIntroduction: "새 친구를 기다려요",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "내일의 나는 오늘의 기록에서 시작된다",
+      taggedNicknames: [],
+      taggedMembers: [],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "1시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 4,
+      quoteId: 4,
+      authorNickname: "말랑이",
+      authorIntroduction: "천천히 단단하게",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "느린 걸음도 방향이 있으면 충분하다",
+      taggedNicknames: ["라라진"],
+      taggedMembers: ["라라진"],
+      isLiked: false,
+      isBookmarked: true,
+      isFriendQuote: true,
+      timeAgo: "3시간 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+    {
+      id: 5,
+      quoteId: 5,
+      authorNickname: "몰랑이",
+      authorIntroduction: "좋은 문장을 모아요",
+      authorProfileImage: MOCK_PROFILE_IMAGE,
+      content: "잘 쉬는 마음이 오래 걷는다",
+      taggedNicknames: [],
+      taggedMembers: [],
+      isLiked: false,
+      isBookmarked: false,
+      isFriendQuote: true,
+      timeAgo: "30분 전",
+      createDate: "2025-11-03T19:02:00",
+    },
+  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname));
+}
 
 export const handlers = [
   // ==========================================
@@ -509,20 +592,64 @@ export const handlers = [
         { status: 400 }
       );
     }
+    const receiverId = Number(params.targetId);
+    const member = getMockMember(receiverId);
+    if (!member) return new HttpResponse(null, { status: 404 });
+    if (
+      mockFriendRequests.some((item) =>
+        item.direction === "SENT"
+          ? item.receiverId === receiverId
+          : item.senderId === receiverId
+      )
+    ) {
+      return HttpResponse.json(
+        { message: "이미 대기 중인 친구 요청이 있습니다." },
+        { status: 400 }
+      );
+    }
+    mockFriendRequests.push({
+      requestId: nextFriendRequestId++,
+      direction: "SENT",
+      senderId: 1,
+      senderNickname: "손지수",
+      senderProfileImage: MOCK_PROFILE_IMAGE,
+      receiverId,
+      receiverNickname: member.nickname,
+      receiverProfileImage: member.profileImage,
+      receiverIntroduction: member.introduction,
+    });
     return new HttpResponse(null, { status: 201 });
   }),
 
   http.get("/api/friends/requests", () => {
-    return HttpResponse.json(
-      mockFriendRequestIds.map((id, index) => createFriendRequest(id, index))
-    );
+    return HttpResponse.json(mockFriendRequests);
   }),
 
-  http.post("/api/friends/requests/:requestId/accept", () => {
+  http.post("/api/friends/requests/:requestId/accept", ({ params }) => {
+    const item = mockFriendRequests.find(
+      (request) =>
+        request.requestId === Number(params.requestId) &&
+        request.direction === "RECEIVED"
+    );
+    if (!item) return new HttpResponse(null, { status: 404 });
+    if (!mockFriendIds.includes(item.senderId))
+      mockFriendIds.push(item.senderId);
+    mockFriendRequests = mockFriendRequests.filter(
+      (request) => request.requestId !== item.requestId
+    );
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/friends/requests/:requestId/reject", () => {
+  http.post("/api/friends/requests/:requestId/reject", ({ params }) => {
+    const item = mockFriendRequests.find(
+      (request) =>
+        request.requestId === Number(params.requestId) &&
+        request.direction === "RECEIVED"
+    );
+    if (!item) return new HttpResponse(null, { status: 404 });
+    mockFriendRequests = mockFriendRequests.filter(
+      (request) => request.requestId !== item.requestId
+    );
     return new HttpResponse(null, { status: 200 });
   }),
 
@@ -735,77 +862,21 @@ export const handlers = [
 
   http.get("/api/quotes", ({ request }) => {
     const url = new URL(request.url);
-    const groupId = Number(url.searchParams.get("groupId"));
-    const groupMemberNicknames = Number.isNaN(groupId)
-      ? null
-      : mockGroups
-          .find((group) => group.id === groupId)
-          ?.members.map((member) => member.nickname);
-    const otherQuotes = [
-      {
-        id: 2,
-        quoteId: 2,
-        authorNickname: "라라진",
-        authorIntroduction: "Seize the day",
-        content: "방귀 퀸 놈이 성낸다",
-        taggedNicknames: ["말랑이", "몰랑이", "규빈이"],
-        taggedMembers: ["말랑이", "몰랑이", "규빈이"],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "19시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 3,
-        quoteId: 3,
-        authorNickname: "조니님",
-        authorIntroduction: "새 친구를 기다려요",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "내일의 나는 오늘의 기록에서 시작된다",
-        taggedNicknames: [],
-        taggedMembers: [],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "1시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 4,
-        quoteId: 4,
-        authorNickname: "말랑이",
-        authorIntroduction: "천천히 단단하게",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "느린 걸음도 방향이 있으면 충분하다",
-        taggedNicknames: ["라라진"],
-        taggedMembers: ["라라진"],
-        isLiked: false,
-        isBookmarked: true,
-        isFriendQuote: true,
-        timeAgo: "3시간 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-      {
-        id: 5,
-        quoteId: 5,
-        authorNickname: "몰랑이",
-        authorIntroduction: "좋은 문장을 모아요",
-        authorProfileImage: MOCK_PROFILE_IMAGE,
-        content: "잘 쉬는 마음이 오래 걷는다",
-        taggedNicknames: [],
-        taggedMembers: [],
-        isLiked: false,
-        isBookmarked: false,
-        isFriendQuote: true,
-        timeAgo: "30분 전",
-        createDate: "2025-11-03T19:02:00",
-      },
-    ].filter(
-      (quote) =>
-        !groupMemberNicknames ||
-        groupMemberNicknames.includes(quote.authorNickname)
-    );
+    const groupId = url.searchParams.get("groupId");
+    const otherQuotes = getMockFeedQuotes(groupId);
+    const members =
+      groupId === null
+        ? []
+        : (mockGroups.find((group) => group.id === Number(groupId))?.members ??
+          []);
+    const writtenMemberIds = new Set([1, 2, 3, 4, 6]);
+    const unwrittenMembers = members
+      .filter((member) => !writtenMemberIds.has(member.id))
+      .map((member) => ({
+        memberId: member.id,
+        nickname: member.nickname,
+        profileImage: member.profileImage,
+      }));
 
     return HttpResponse.json({
       myQuotes: [
@@ -821,27 +892,23 @@ export const handlers = [
         },
       ],
       otherQuotes,
+      unwrittenMembers,
     });
   }),
 
   http.get("/api/quotes/feed", ({ request }) => {
     const url = new URL(request.url);
-    const page = Number(url.searchParams.get("page") ?? 0);
-    const size = Number(url.searchParams.get("size") ?? 10);
+    const items = getMockFeedQuotes(url.searchParams.get("groupId"));
 
     return HttpResponse.json({
-      content:
-        page === 0
-          ? [
-              {
-                quoteId: 1,
-                authorNickname: "라라진",
-                content: "방귀 퀸 놈이 성낸다",
-              },
-            ]
-          : [],
-      pageable: { pageNumber: page, pageSize: size },
-      last: page >= 0,
+      resultCode: "200",
+      message: "200-1",
+      data: {
+        items,
+        emptyMessage: items.length === 0 ? "표시할 명언이 없습니다." : null,
+        empty: items.length === 0,
+      },
+      statusCode: 200,
     });
   }),
 
@@ -869,10 +936,10 @@ export const handlers = [
     const quoteId = Number(params.quoteId);
     const currentStatus = mockMyTagRequestStatusByQuoteId[quoteId];
 
-    if (currentStatus === "PENDING" || currentStatus === "ACCEPTED") {
+    if (currentStatus && currentStatus !== "NONE") {
       return HttpResponse.json(
         { message: "이미 태그를 요청했습니다." },
-        { status: 409 }
+        { status: 400 }
       );
     }
 
@@ -1082,10 +1149,7 @@ export const handlers = [
 
   http.put("/api/notifications/settings", async ({ request }) => {
     const body = await request.json();
-    mockNotificationSettings = {
-      ...mockNotificationSettings,
-      ...(body as typeof mockNotificationSettings),
-    };
+    mockNotificationSettings = body as typeof mockNotificationSettings;
     return HttpResponse.json(mockNotificationSettings);
   }),
 
@@ -1143,7 +1207,7 @@ export const handlers = [
   }),
 
   http.get("/api/settings/friends-list", () => {
-    return HttpResponse.json([2, 6, 7].map(createFriendListItem));
+    return HttpResponse.json(mockFriendIds.map(createFriendListItem));
   }),
 
   // ==========================================

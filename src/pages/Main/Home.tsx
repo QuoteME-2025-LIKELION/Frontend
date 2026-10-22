@@ -4,11 +4,14 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
-import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
-import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
+import {
+  useQuotesByDateQuery,
+  useQuotesFeedQuery,
+} from "@/hooks/useQuoteQueries";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import DateHeader from "./components/DateHeader/DateHeader";
@@ -32,18 +35,57 @@ export default function Home() {
 
   const { date } = useParams();
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
-  const { data: quotesData, isLoading: isQuotesLoading } = useQuotesByDateQuery(
-    displayDate,
-    selectedGroupId ?? undefined
-  );
-  const { data: friendList = [], isLoading: isFriendsLoading } =
-    useFriendsQuery();
+  const {
+    data: quotesData,
+    isLoading: isQuotesLoading,
+    isError: isQuotesError,
+  } = useQuotesByDateQuery(displayDate, selectedGroupId ?? undefined);
+  const {
+    data: feedData,
+    isLoading: isFeedLoading,
+    isError: isFeedError,
+  } = useQuotesFeedQuery(displayDate, 0, selectedGroupId ?? undefined);
+  const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
+    useArchivesByDateQuery(displayDate);
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
   const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
-  const myQuote = quotesData?.myQuotes[0] || null;
-  const otherQuotes = quotesData?.otherQuotes || [];
+  const apiMyQuote = quotesData?.myQuotes[0] || null;
+  const archiveMyQuote = myProfile?.nickname
+    ? archiveQuotes.find(
+        (quote) =>
+          quote.authorName === myProfile.nickname ||
+          quote.authorNickname === myProfile.nickname
+      )
+    : undefined;
+  const myQuote =
+    apiMyQuote?.content || !archiveMyQuote
+      ? apiMyQuote
+      : {
+          id: archiveMyQuote.id,
+          content: archiveMyQuote.content,
+          groupName: apiMyQuote?.groupName ?? "아직 그룹이 없습니다.",
+          authorNickname:
+            archiveMyQuote.authorName ??
+            archiveMyQuote.authorNickname ??
+            apiMyQuote?.authorNickname ??
+            "사용자",
+          birthYear:
+            archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0,
+          createDate: archiveMyQuote.createDate,
+          taggedNicknames:
+            archiveMyQuote.taggedMemberNames ??
+            archiveMyQuote.taggedMembers ??
+            apiMyQuote?.taggedNicknames ??
+            [],
+          isBookmarked: archiveMyQuote.isBookmarked ?? apiMyQuote?.isBookmarked,
+        };
+  const otherQuotes = feedData?.items ?? [];
   const isLoading =
-    isQuotesLoading || isFriendsLoading || isGroupsLoading || isProfileLoading;
+    isQuotesLoading ||
+    isFeedLoading ||
+    isArchivesLoading ||
+    isGroupsLoading ||
+    isProfileLoading;
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";
@@ -92,13 +134,16 @@ export default function Home() {
       <FeedList
         date={date}
         otherQuotes={otherQuotes}
-        friendList={friendList}
+        unwrittenMembers={quotesData?.unwrittenMembers ?? []}
         groups={groups}
         selectedGroupId={selectedGroupId}
         myNickname={profileNickname}
+        myMemberId={myProfile?.id}
         onSelectGroup={setSelectedGroupId}
         onShare={executeShare}
         isLoading={isLoading}
+        isFeedError={isFeedError || isQuotesError}
+        emptyMessage={feedData?.emptyMessage}
       />
       {shareStatus !== "nothing" && (
         <ToastModal

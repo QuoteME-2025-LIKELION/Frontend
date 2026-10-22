@@ -78,6 +78,12 @@ export const BtnBox = styled.div`
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     text-underline-position: from-font;
 
+    &:disabled {
+      cursor: default;
+      text-decoration: none;
+      opacity: 0.65;
+    }
+
     &:active {
       background-color: ${theme.colors.secondary};
     }
