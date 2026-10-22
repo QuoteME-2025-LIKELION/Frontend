@@ -10,7 +10,10 @@ import {
 } from "@/hooks/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
-import { getNotificationFeedPath } from "@/utils/getNotificationFeedPath";
+import {
+  getNotificationFeedPath,
+  getNotificationQuoteDate,
+} from "@/utils/getNotificationFeedPath";
 
 import NotificationFilterTabs, {
   type NotificationFilter,
@@ -92,20 +95,26 @@ export default function Notification() {
           break;
         case "TAG":
         case "TAG_ACCEPTED":
-          navigate(getNotificationFeedPath(notification.createDate), {
+          navigate(getNotificationFeedPath(notification.quoteDate), {
             state: { returnTo: "/notification" },
           });
           break;
-        case "TAG_REQUEST":
+        case "TAG_REQUEST": {
+          const date = getNotificationQuoteDate(notification.quoteDate);
+          if (!date) {
+            navigate("/home", { state: { returnTo: "/notification" } });
+            break;
+          }
           navigate("/fix", {
             state: {
               returnTo: "/notification",
-              date: notification.createDate.slice(0, 10),
+              date,
               quoteId: notification.targetId,
               requestedNickname: notification.senderName,
             },
           });
           break;
+        }
       }
     },
     [navigate, markNotificationRead]
