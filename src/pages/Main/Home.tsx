@@ -3,8 +3,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
+import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
 import { useImageShare } from "@/hooks/useImageShare";
 import { useMyProfileQuery } from "@/hooks/useProfileQueries";
@@ -50,7 +50,13 @@ export default function Home() {
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
   const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
   const apiMyQuote = quotesData?.myQuotes[0] || null;
-  const archiveMyQuote = archiveQuotes[0];
+  const archiveMyQuote = myProfile?.nickname
+    ? archiveQuotes.find(
+        (quote) =>
+          quote.authorName === myProfile.nickname ||
+          quote.authorNickname === myProfile.nickname
+      )
+    : undefined;
   const myQuote =
     apiMyQuote?.content || !archiveMyQuote
       ? apiMyQuote

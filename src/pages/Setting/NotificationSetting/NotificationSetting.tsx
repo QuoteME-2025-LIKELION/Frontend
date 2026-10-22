@@ -82,7 +82,8 @@ const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, index) => index * 5);
 
 export default function NotificationSetting() {
   const navigate = useNavigate();
-  const { data: settings = DEFAULT_SETTINGS } = useNotificationSettingsQuery();
+  const { data: settings = DEFAULT_SETTINGS, isSuccess: isSettingsReady } =
+    useNotificationSettingsQuery();
   const { mutateAsync: updateSettings, isPending } =
     useUpdateNotificationSettingsMutation();
   const [draftSettings, setDraftSettings] =
@@ -108,6 +109,10 @@ export default function NotificationSetting() {
     nextSettings: NotificationSettingsType,
     successMessage = "알림 설정이 저장되었습니다."
   ) => {
+    if (!isSettingsReady || isPending) {
+      return false;
+    }
+
     const previousSettings = draftSettings;
     const previousNotificationPermission = isNotificationPermissionEnabled;
     setDraftSettings(nextSettings);
@@ -126,7 +131,7 @@ export default function NotificationSetting() {
   };
 
   const handleToggleAll = () => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -148,7 +153,7 @@ export default function NotificationSetting() {
   };
 
   const handleToggleItem = (key: SettingKey) => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -164,7 +169,7 @@ export default function NotificationSetting() {
   };
 
   const handleReminderRowClick = () => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -178,7 +183,7 @@ export default function NotificationSetting() {
   };
 
   const handleReminderDone = async () => {
-    if (isPending) {
+    if (!isSettingsReady || isPending) {
       return;
     }
 
@@ -293,7 +298,11 @@ export default function NotificationSetting() {
           onClickBackBtn={() => navigate("/home")}
         />
         <S.List>
-          <S.MasterRow type="button" onClick={handleToggleAll}>
+          <S.MasterRow
+            type="button"
+            disabled={!isSettingsReady || isPending}
+            onClick={handleToggleAll}
+          >
             <S.Title>전체 알림 허용</S.Title>
             <S.Value $active={isAllEnabled}>
               {isAllEnabled ? "On" : "Off"}
@@ -301,8 +310,10 @@ export default function NotificationSetting() {
           </S.MasterRow>
           {SETTING_ITEMS.map((item) => {
             const disabled =
-              item.key !== "marketingEnabled" &&
-              !isNotificationPermissionEnabled;
+              !isSettingsReady ||
+              isPending ||
+              (item.key !== "marketingEnabled" &&
+                !isNotificationPermissionEnabled);
             const isActive = draftSettings[item.key];
             const valueText =
               item.key === "quoteReminderEnabled" && isActive
@@ -316,6 +327,7 @@ export default function NotificationSetting() {
                 key={item.key}
                 type="button"
                 $disabled={disabled}
+                disabled={disabled}
                 onClick={() =>
                   item.key === "quoteReminderEnabled"
                     ? handleReminderRowClick()

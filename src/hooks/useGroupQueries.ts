@@ -200,10 +200,12 @@ export function useInviteGroupMemberMutation() {
       friendId: number;
     }) => groupApi.inviteMember(groupId, friendId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.detail(variables.groupId),
-      });
-      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+      return Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(variables.groupId),
+        }),
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() }),
+      ]);
     },
   });
 }

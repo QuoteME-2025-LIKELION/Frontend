@@ -51,6 +51,8 @@ export default function NotificationLog({
         return <>님이 그룹에 초대했습니다.</>;
       case "GROUP_ACCEPT":
         return <>님이 그룹 초대를 수락했습니다.</>;
+      case "GROUP_JOIN_REQUEST":
+        return <>님이 그룹 가입을 요청했습니다.</>;
       case "GROUP_REJECT":
         return <>님이 그룹 가입 요청을 거절했습니다.</>;
       case "FRIEND_REQUEST":

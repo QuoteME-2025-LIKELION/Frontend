@@ -89,6 +89,7 @@ export default function AccountSetting() {
     nextBirthYear = currentBirthYear
   ) => {
     const resetDrafts = () => {
+      selectedBirthYearRef.current = null;
       setGenderDraft(normalizeGender(accountProfile?.gender));
       setBirthYearDraft(parseBirthYear(accountProfile?.birthYear));
     };
@@ -186,7 +187,13 @@ export default function AccountSetting() {
                 <S.RowLabel>성별</S.RowLabel>
                 <S.RowValue>{formatGender(currentGender)}</S.RowValue>
               </S.InfoRow>
-              <S.InfoRow type="button" onClick={() => setSheetType("birth")}>
+              <S.InfoRow
+                type="button"
+                onClick={() => {
+                  selectedBirthYearRef.current = currentBirthYear;
+                  setSheetType("birth");
+                }}
+              >
                 <S.RowLabel>출생연도</S.RowLabel>
                 <S.RowValue>{formatBirthYear(currentBirthYear)}</S.RowValue>
               </S.InfoRow>

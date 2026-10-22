@@ -175,6 +175,7 @@ function isErrorResponse(data: unknown): data is { message: string } {
     typeof data === "object" &&
     data !== null &&
     "message" in data &&
-    typeof (data as { message?: unknown }).message === "string"
+    typeof (data as { message?: unknown }).message === "string" &&
+    (data as { message: string }).message.trim().length > 0
   );
 }

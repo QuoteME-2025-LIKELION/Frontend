@@ -39,7 +39,6 @@ export default function Invite() {
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스 적용
   const [inviteTarget, setInviteTarget] = useState<InviteTarget | null>(null);
-  const [pendingInvites, setPendingInvites] = useState<Friend[]>([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [errorToastMessage, setErrorToastMessage] = useState("");
   const [showFullGroupToast, setShowFullGroupToast] = useState(false);
@@ -77,22 +76,20 @@ export default function Invite() {
     const currentMemberIds = new Set(currentMembers.map((member) => member.id));
     const pendingInviteIds = new Set([
       ...sentInvitationFriends.map((friend) => friend.id),
-      ...pendingInvites.map((friend) => friend.id),
     ]);
 
     return friendsList.filter(
       (friend) =>
         !currentMemberIds.has(friend.id) && !pendingInviteIds.has(friend.id)
     );
-  }, [currentMembers, friendsList, pendingInvites, sentInvitationFriends]);
+  }, [currentMembers, friendsList, sentInvitationFriends]);
   const pendingInviteList = useMemo(() => {
     const pendingMap = new Map<number, Friend>();
 
     sentInvitationFriends.forEach((friend) => pendingMap.set(friend.id, friend));
-    pendingInvites.forEach((friend) => pendingMap.set(friend.id, friend));
 
     return Array.from(pendingMap.values());
-  }, [pendingInvites, sentInvitationFriends]);
+  }, [sentInvitationFriends]);
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -132,13 +129,6 @@ export default function Invite() {
 
     try {
       await inviteGroupMember({ groupId, friendId: inviteTarget.id });
-      setPendingInvites((prev) => {
-        if (prev.some((friend) => friend.id === inviteTarget.id)) {
-          return prev;
-        }
-
-        return [...prev, inviteTarget];
-      });
       setInviteTarget(null);
       setShowSuccessToast(true);
     } catch (err) {
