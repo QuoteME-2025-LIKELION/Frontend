@@ -104,7 +104,7 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
 
   &:active {
     background-color: ${({ $isSelected }) =>
-      $isSelected ? theme.colors.primary : "#d9dade"};
+      $isSelected ? theme.colors.primary : theme.colors["grey-100"]};
   }
 `;
 
@@ -160,8 +160,8 @@ export const ActionButton = styled.button`
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

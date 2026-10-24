@@ -53,7 +53,7 @@ export const Container = styled.div<{
   gap: 0.125rem;
   padding: ${({ $variant }) => ($variant === "snackbar" ? "0 1.625rem" : "0")};
   background-color: ${({ $variant }) =>
-    $variant === "snackbar" ? "#f8f8f8" : theme.colors.secondary};
+    $variant === "snackbar" ? theme.colors["grey-00"] : theme.colors.secondary};
   border-radius: ${({ $variant }) =>
     $variant === "snackbar" ? "0.25rem" : "1.875rem"};
   border: ${({ $variant }) =>

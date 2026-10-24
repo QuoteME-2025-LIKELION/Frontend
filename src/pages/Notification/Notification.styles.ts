@@ -101,7 +101,7 @@ export const Message = styled.div`
 `;
 
 export const MessageText = styled.div`
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   text-align: center;
   ${theme.fonts.batang};
   font-size: 1rem;

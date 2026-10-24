@@ -71,7 +71,7 @@ export default function Start() {
           font="pretendard"
           onClick={() => handleSignup("google")}
           bgColor="#F2F2F2"
-          border="1px solid #C3C5C9"
+          border={`1px solid ${theme.colors["grey-200"]}`}
           children={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +164,7 @@ export default function Start() {
               font="pretendard"
               onClick={() => handleLogin("google")}
               bgColor="#F2F2F2"
-              border="1px solid #C3C5C9"
+              border={`1px solid ${theme.colors["grey-200"]}`}
               children={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

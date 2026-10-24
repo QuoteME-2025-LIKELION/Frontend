@@ -110,7 +110,7 @@ export const DayButton = styled.button<{
   align-items: center;
   justify-content: center;
   ${theme.fonts.pretendard}
-  color: ${({ $outside }) => ($outside ? "#c9cbd0" : theme.colors.black)};
+  color: ${({ $outside }) => ($outside ? theme.colors["grey-200"] : theme.colors.black)};
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;

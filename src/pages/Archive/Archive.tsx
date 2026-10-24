@@ -131,7 +131,7 @@ export default function Archive() {
             >
               <path
                 d="M15 18L9 12L15 6"
-                stroke={theme.colors["fg-primary"]}
+                stroke={theme.colors["grey-950"]}
                 strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -157,7 +157,7 @@ export default function Archive() {
               >
                 <path
                   d="M15 18L9 12L15 6"
-                  stroke={theme.colors["fg-primary"]}
+                  stroke={theme.colors["grey-950"]}
                   strokeWidth="1.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -184,7 +184,7 @@ export default function Archive() {
               >
                 <path
                   d="M9 18L15 12L9 6"
-                  stroke={theme.colors["fg-primary"]}
+                  stroke={theme.colors["grey-950"]}
                   strokeWidth="1.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -265,7 +265,7 @@ export default function Archive() {
                   >
                     <path
                       d="M15 18L9 12L15 6"
-                      stroke={theme.colors["fg-primary"]}
+                      stroke={theme.colors["grey-950"]}
                       strokeWidth="1.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -287,7 +287,7 @@ export default function Archive() {
                   >
                     <path
                       d="M9 18L15 12L9 6"
-                      stroke={theme.colors["fg-primary"]}
+                      stroke={theme.colors["grey-950"]}
                       strokeWidth="1.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"

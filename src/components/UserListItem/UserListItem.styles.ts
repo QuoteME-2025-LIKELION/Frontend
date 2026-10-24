@@ -7,14 +7,14 @@ export const Container = styled.div<{
   $isSelected: boolean;
 }>`
   width: 100%;
-  border-bottom: 1px solid #dedede;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   display: grid;
   grid-template-columns: 2.8125rem minmax(0, 1fr) auto;
   gap: 0.6875rem; /* 11px */
   align-items: center;
   padding: 0.625rem 0; /* 10px 0 */
   background-color: ${({ $isSelected }) =>
-    $isSelected ? "#e8e8e8" : "transparent"};
+    $isSelected ? theme.colors["grey-50"] : "transparent"};
   cursor: ${({ $isSelectable }) => ($isSelectable ? "pointer" : "default")};
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);

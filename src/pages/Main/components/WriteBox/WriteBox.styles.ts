@@ -232,8 +232,8 @@ export const ActionButton = styled.button`
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

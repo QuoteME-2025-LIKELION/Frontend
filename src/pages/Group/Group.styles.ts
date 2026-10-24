@@ -230,11 +230,11 @@ export const InviteButton = styled.button<{ $isDisabled: boolean }>`
   justify-content: center;
   align-items: center;
   border-top: 0.5px solid
-    ${({ $isDisabled }) => ($isDisabled ? "#dedede" : theme.colors.primary)};
+    ${({ $isDisabled }) => ($isDisabled ? theme.colors["grey-100"] : theme.colors.primary)};
 
   ${theme.fonts.pretendard}
   color: ${({ $isDisabled }) =>
-    $isDisabled ? "#c3c5c9" : theme.colors["fg-primary"]};
+    $isDisabled ? theme.colors["grey-200"] : theme.colors["grey-950"]};
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   letter-spacing: -0.28px;
@@ -285,5 +285,5 @@ export const QuitBtn = styled.button<{
   border-top: ${({ $hasTopBorder }) =>
     $hasTopBorder ? "0.5px solid" : 0};
   border-top-color: ${({ $isTopBorderDisabled }) =>
-    $isTopBorderDisabled ? "#dedede" : theme.colors.primary};
+    $isTopBorderDisabled ? theme.colors["grey-100"] : theme.colors.primary};
 `;

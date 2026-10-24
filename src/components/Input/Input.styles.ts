@@ -27,7 +27,7 @@ export const Input = styled.input<InputStyleProps>`
   &:focus {
     border-radius: var(--spacing-radius-xs, 2px);
     border: 0.5px solid var(--stroke-brand, ${theme.colors.primary});
-    background: var(--bg-white, #fafafa);
+    background: var(--bg-white, ${theme.colors["grey-00"]});
   }
 
   /* Spin 감추려고 코드 추가 */

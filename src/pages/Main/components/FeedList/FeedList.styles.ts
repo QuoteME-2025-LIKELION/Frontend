@@ -59,7 +59,7 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   width: 100%;
   min-height: 2.75rem;
   padding: 0 0.5rem;
-  border-bottom: 1px solid #dedede;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   ${theme.fonts.pretendard}
   color: ${({ $active }) => ($active ? theme.colors.black : theme.colors.territory)};
   font-size: 0.875rem;
@@ -89,7 +89,7 @@ export const NoFeedbox = styled.div`
 
 export const NoFeedSubText = styled.div`
   width: 100%;
-  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
+  color: var(--fg-subtle, ${theme.colors["grey-400"]});
   text-align: center;
 
   /* caption/description/md */

@@ -88,7 +88,7 @@ export const ImgPreview = styled.div<{ $profileImage?: string }>`
   width: 80px;
   height: 80px;
   border-radius: 80px;
-  background-color: #e0e0e0;
+  background-color: ${theme.colors["grey-100"]};
   background-image: ${({ $profileImage }) =>
     $profileImage ? `url(${$profileImage})` : "none"};
   background-size: cover; /* 이미지 크기 조절 */
@@ -117,7 +117,7 @@ export const ProfileSettingButton = styled.button`
 `;
 
 export const UserName = styled.div`
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   text-align: center;
   ${theme.fonts.batang};
   font-size: 16px;
@@ -126,7 +126,7 @@ export const UserName = styled.div`
 `;
 
 export const UserIntro = styled.div`
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   text-align: center;
   ${theme.fonts.pretendard};
   font-size: 12px;
@@ -145,7 +145,7 @@ export const ToggleBtnBox = styled.div`
 
 export const ToggleBtn = styled.button`
   cursor: pointer;
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   background: transparent;
   border: 0;
   font-size: 18px; /* 14px */
@@ -159,7 +159,7 @@ export const ToggleBtn = styled.button`
   padding: var(--spacing-padding-md, 20px) 0;
   text-align: center;
   width: 240px;
-  border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
+  border-bottom: 0.5px solid var(--stroke-subtle, ${theme.colors["grey-200"]});
 
   &:last-of-type {
     border-bottom: none;
@@ -180,7 +180,7 @@ export const ToggleInfoRow = styled.div`
 `;
 
 export const ToggleInfoText = styled.div`
-  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
+  color: var(--fg-subtle, ${theme.colors["grey-400"]});
   text-align: center;
 
   /* button/xs */
@@ -193,7 +193,7 @@ export const ToggleInfoText = styled.div`
 `;
 
 export const CopyMailText = styled.button`
-  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
+  color: var(--fg-subtle, ${theme.colors["grey-400"]});
   text-align: center;
   font-family: Pretendard;
   font-size: var(--font-size-t1, 12px);
@@ -218,7 +218,7 @@ export const CopyToast = styled.div`
   min-height: 3.25rem;
 
   border-radius: var(--spacing-radius-sm, 4px);
-  background: #f8f8f8;
+  background: ${theme.colors["grey-00"]};
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
   animation:
     ${toastIn} 0.3s ease-out,

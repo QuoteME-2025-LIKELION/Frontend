@@ -58,7 +58,7 @@ export const Toggle = styled.div<{ $active: boolean }>`
 
 export const ToggleBtn = styled.div`
   cursor: pointer;
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 18px; /* 14px */
   font-weight: 700;
   letter-spacing: -0.28px;
@@ -70,5 +70,5 @@ export const ToggleBtn = styled.div`
   padding: var(--spacing-padding-md, 20px) 0;
   text-align: center;
   width: 240px;
-  border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
+  border-bottom: 0.5px solid var(--stroke-subtle, ${theme.colors["grey-200"]});
 `;

@@ -69,7 +69,7 @@ export const NewsItem = styled.article`
   width: 100%;
   padding-bottom: 1.4375rem;
   margin-bottom: 1.4375rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
 `;
 
 export const NewsTitle = styled.h3`
@@ -85,7 +85,7 @@ export const NewsTitle = styled.h3`
 export const NewsDate = styled.div`
   margin-top: 0.5rem;
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.28px;
@@ -107,7 +107,7 @@ export const MoreButton = styled.button`
   margin: 0.25rem auto 0;
   padding: 0.5rem 1rem;
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.28px;
@@ -116,7 +116,7 @@ export const MoreButton = styled.button`
 export const Empty = styled.div`
   padding: 2rem 0;
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: -0.28px;

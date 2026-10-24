@@ -197,7 +197,7 @@ export const TagItem = styled.button<{
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: ${({ $showBorder }) =>
-    $showBorder ? "1px solid #dedede" : "0"};
+    $showBorder ? `1px solid ${theme.colors["grey-100"]}` : "0"};
   margin-bottom: ${({ $separateAfter }) =>
     $separateAfter ? "1.375rem" : "0"};
   background-color: transparent;
@@ -294,8 +294,8 @@ export const ActionButton = styled.button`
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

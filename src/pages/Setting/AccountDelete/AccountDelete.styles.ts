@@ -18,7 +18,7 @@ export const Content = styled.main`
 export const Title = styled.h1`
   margin: 0;
   ${theme.fonts.batang};
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.5;
@@ -28,7 +28,7 @@ export const Title = styled.h1`
 export const Description = styled.p`
   margin: 0.75rem 0 0;
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.6;
@@ -38,7 +38,7 @@ export const Description = styled.p`
 export const ReasonTitle = styled.h2`
   margin: 2.75rem 0 1.25rem;
   ${theme.fonts.batang};
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.5;
@@ -56,13 +56,13 @@ export const ReasonRow = styled.button`
   grid-template-columns: minmax(0, 1fr) 1.25rem;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #d8dadd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
 `;
 
 export const ReasonText = styled.span`
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -90,14 +90,14 @@ export const OtherInput = styled.input`
   padding: 0.75rem;
   background-color: ${theme.colors.white};
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.28px;
 
   &::placeholder {
-    color: ${theme.colors["fg-subtle"]};
+    color: ${theme.colors["grey-400"]};
   }
 `;
 
@@ -114,7 +114,7 @@ export const DeleteButton = styled.button`
   letter-spacing: -0.28px;
 
   &:disabled {
-    color: #c3c5c9;
+    color: ${theme.colors["grey-200"]};
     cursor: not-allowed;
   }
 `;

@@ -138,7 +138,7 @@ export const TagName = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #dedede;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 0.8125rem;
