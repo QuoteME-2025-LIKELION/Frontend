@@ -32,7 +32,7 @@ export const FilterButton = styled.button`
   align-items: center;
   gap: 0.25rem;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 140%;
@@ -50,7 +50,7 @@ export const FilterMenu = styled.div`
   left: 0;
   width: 8.25rem;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 `;
@@ -61,7 +61,7 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   padding: 0 0.5rem;
   border-bottom: 1px solid #dedede;
   ${theme.fonts.pretendard}
-  color: ${({ $active }) => ($active ? "#000" : theme.colors.territory)};
+  color: ${({ $active }) => ($active ? theme.colors.black : theme.colors.territory)};
   font-size: 0.875rem;
   font-weight: ${({ $active }) => ($active ? 700 : 500)};
   text-align: center;
@@ -89,7 +89,7 @@ export const NoFeedbox = styled.div`
 
 export const NoFeedSubText = styled.div`
   width: 100%;
-  color: var(--fg-subtle, #9599a1);
+  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
   text-align: center;
 
   /* caption/description/md */

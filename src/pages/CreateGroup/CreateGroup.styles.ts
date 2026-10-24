@@ -95,7 +95,7 @@ export const Title = styled.div`
   ${theme.fonts.batang}
   font-size: 1rem; /* 16px */
   text-align: center;
-  color: #000;
+  color: ${theme.colors.black};
   font-weight: 700;
   letter-spacing: -0.32px;
 `;
@@ -143,7 +143,7 @@ export const PendingTitle = styled.div`
   align-items: center;
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.32px;
@@ -173,7 +173,7 @@ export const EmptyFriendList = styled.div`
   }
 
   button {
-    color: #000;
+    color: ${theme.colors.black};
     text-decoration-line: underline;
     font-weight: 500;
     text-underline-position: from-font;

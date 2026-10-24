@@ -65,7 +65,7 @@ export const InfoBox = styled.div`
   align-items: center;
 
   ${theme.fonts.pretendard};
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -75,7 +75,7 @@ export const InfoBox = styled.div`
 
 export const TextName = styled.div`
   ${theme.fonts.batang};
-  color: #21242b;
+  color: ${theme.colors["fg-primary"]};
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 700;
@@ -109,7 +109,7 @@ export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
   justify-content: ${({ $error }) => ($error ? "space-between" : "flex-end")};
   gap: 0.75rem;
   ${theme.fonts.pretendard};
-  color: ${({ $error }) => ($error ? theme.colors.red : "#9599a1")};
+  color: ${({ $error }) => ($error ? theme.colors.red : theme.colors["fg-subtle"])};
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.35;
@@ -118,7 +118,7 @@ export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
 
   span:last-of-type {
     margin-left: auto;
-    color: #9599a1;
+    color: ${theme.colors["fg-subtle"]};
   }
 `;
 

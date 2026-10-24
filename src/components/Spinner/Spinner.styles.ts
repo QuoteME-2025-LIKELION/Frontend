@@ -1,6 +1,9 @@
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 
+import theme from "@/styles/theme";
+
+
 export const SpinnerContainer = styled.div`
   position: fixed;
   top: 0;
@@ -29,7 +32,7 @@ export const Spinner = styled.div`
   height: 50px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   box-sizing: border-box;
-  border-top-color: white;
+  border-top-color: ${theme.colors.white};
   border-radius: 100%;
 
   animation: ${spin} 1s ease-in-out infinite;

@@ -6,6 +6,7 @@ import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useOAuthRedirect } from "@/hooks/useAuthQueries";
 import useAuthStore from "@/stores/useAuthStore";
+import theme from "@/styles/theme";
 
 import * as S from "./Start.styles";
 
@@ -87,7 +88,7 @@ export default function Start() {
                 width="20"
                 height="20"
               >
-                <path d="M20 0H0V20H20V0Z" fill="white" />
+                <path d="M20 0H0V20H20V0Z" fill={theme.colors.white} />
               </mask>
               <g mask="url(#mask0_1227_14514)">
                 <path
@@ -129,12 +130,12 @@ export default function Start() {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M10 0.666748C4.47686 0.666748 0 4.12559 0 8.39151C0 11.0446 1.73156 13.3834 4.36836 14.7745L3.25892 18.8273C3.1609 19.1854 3.57046 19.4708 3.88496 19.2633L8.74816 16.0536C9.15856 16.0932 9.57564 16.1164 10 16.1164C15.5227 16.1164 19.9999 12.6576 19.9999 8.39151C19.9999 4.12559 15.5227 0.666748 10 0.666748Z"
-                  fill="black"
+                  fill={theme.colors.black}
                 />
               </g>
               <defs>
                 <clipPath id="clip0_1227_14550">
-                  <rect width="19.9999" height="20" fill="white" />
+                  <rect width="19.9999" height="20" fill={theme.colors.white} />
                 </clipPath>
               </defs>
             </svg>
@@ -148,7 +149,7 @@ export default function Start() {
             onClick={openSheet}
             bgColor="transparent"
             border="none"
-            fontcolor="#ffff"
+            fontcolor={theme.colors.white}
             disableActive
           />
         </S.LogButton>
@@ -180,7 +181,7 @@ export default function Start() {
                     width="20"
                     height="20"
                   >
-                    <path d="M20 0H0V20H20V0Z" fill="white" />
+                    <path d="M20 0H0V20H20V0Z" fill={theme.colors.white} />
                   </mask>
                   <g mask="url(#mask0_1227_14514)">
                     <path
@@ -222,12 +223,12 @@ export default function Start() {
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M10 0.666748C4.47686 0.666748 0 4.12559 0 8.39151C0 11.0446 1.73156 13.3834 4.36836 14.7745L3.25892 18.8273C3.1609 19.1854 3.57046 19.4708 3.88496 19.2633L8.74816 16.0536C9.15856 16.0932 9.57564 16.1164 10 16.1164C15.5227 16.1164 19.9999 12.6576 19.9999 8.39151C19.9999 4.12559 15.5227 0.666748 10 0.666748Z"
-                      fill="black"
+                      fill={theme.colors.black}
                     />
                   </g>
                   <defs>
                     <clipPath id="clip0_1227_14550">
-                      <rect width="19.9999" height="20" fill="white" />
+                      <rect width="19.9999" height="20" fill={theme.colors.white} />
                     </clipPath>
                   </defs>
                 </svg>

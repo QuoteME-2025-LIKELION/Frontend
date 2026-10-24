@@ -49,7 +49,7 @@ export const Toggle = styled.div<{ $active: boolean }>`
   align-items: center;
   flex-direction: column;
 
-  background: var(--bg-basement-neutral, #e9eaec);
+  background: var(--bg-basement-neutral, ${theme.colors.secondary});
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 
   animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
@@ -64,7 +64,7 @@ export const ToggleBtn = styled.div`
   letter-spacing: -0.28px;
   ${theme.fonts.batang}
   &:hover, &:active {
-    color: black;
+    color: ${theme.colors.black};
   }
 
   padding: var(--spacing-padding-md, 20px) 0;

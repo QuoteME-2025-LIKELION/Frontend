@@ -22,7 +22,7 @@ export const Container = styled.div`
 export const EmptyMessage = styled.p`
   margin: 8rem 0 0;
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1rem;
   font-weight: 500;
   line-height: 150%;

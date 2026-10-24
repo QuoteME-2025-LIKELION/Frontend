@@ -43,7 +43,7 @@ export const RequestUserBoxBase = styled.div`
 
 export const RequestUsernameBase = styled.div`
   font-weight: 700;
-  color: #000;
+  color: ${theme.colors.black};
 `;
 
 export const RequestIntroBase = styled.div`

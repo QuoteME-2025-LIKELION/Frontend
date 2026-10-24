@@ -55,7 +55,7 @@ export const Modal = styled.div`
 `;
 
 export const Message = styled.div`
-  color: #000;
+  color: ${theme.colors.black};
   text-align: center;
   ${theme.fonts.batang}
   font-size: 15px;

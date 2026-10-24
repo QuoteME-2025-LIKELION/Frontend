@@ -19,6 +19,7 @@ const theme = {
     "fg-primary": "#21242b",
     "fg-subtle": "#9599a1",
     white: "#ffffff",
+    black: "#000000",
   },
   // 아예 font-family 자체를 관리
   fonts: {

@@ -79,7 +79,7 @@ export const ExText = styled.div`
 `;
 
 export const exText = styled.div`
-  color: var(--fg-subtle, #9599a1);
+  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
 
   /* caption/description/md */
   ${theme.fonts.pretendard}

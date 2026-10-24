@@ -82,7 +82,7 @@ export const Container = styled.div<{
         `};
 
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.9375rem;
   letter-spacing: -0.3px;
   font-weight: 500;

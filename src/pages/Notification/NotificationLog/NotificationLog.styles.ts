@@ -35,7 +35,7 @@ export const TextBox = styled.div`
   min-width: 0;
 
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem; /* 14px */
   font-weight: 600;
   letter-spacing: -0.28px;
@@ -53,14 +53,14 @@ export const Icon = styled.span<{
   align-items: center;
   justify-content: center;
   background: ${({ $isRead, $variant }) => {
-    if ($isRead) return "#fff";
-    return $variant === "friend" ? "#fff" : theme.colors.primary;
+    if ($isRead) return theme.colors.white;
+    return $variant === "friend" ? theme.colors.white : theme.colors.primary;
   }};
   border: ${({ $isRead, $variant }) =>
     $isRead || $variant === "friend" ? "1px solid #ddd" : "none"};
   color: ${({ $isRead, $variant }) => {
     if ($isRead) return theme.colors["fg-subtle"];
-    return $variant === "friend" ? "#000" : "#fff";
+    return $variant === "friend" ? theme.colors.black : theme.colors.white;
   }};
   ${theme.fonts.batang};
   font-size: 1.5rem;

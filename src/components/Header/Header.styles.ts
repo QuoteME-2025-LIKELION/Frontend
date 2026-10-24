@@ -13,11 +13,11 @@ export const Wrapper = styled.div<{
   background-color: ${({ $backgroundColor }) => {
     if ($backgroundColor === "primary") return theme.colors.primary;
     if ($backgroundColor === "secondary") return theme.colors.secondary;
-    if ($backgroundColor === "white") return "#fff";
+    if ($backgroundColor === "white") return theme.colors.white;
   }};
 
   color: ${({ $backgroundColor }) =>
-    $backgroundColor === "primary" ? "#fff" : "#000"};
+    $backgroundColor === "primary" ? theme.colors.white : theme.colors.black};
   font-size: 1.25rem; /* 20px */
   font-weight: 700;
   letter-spacing: -0.4px;

@@ -21,7 +21,7 @@ export const DateBox = styled.div`
   margin-bottom: 0.875rem;
 `;
 export const Month = styled.div`
-  color: #fff;
+  color: ${theme.colors.white};
   text-align: center;
   ${theme.fonts.bombaram};
   font-size: 36px;
@@ -47,13 +47,13 @@ export const Wrapper = styled.button`
   display: flex;
   align-items: flex-start;
   gap: 1.125rem;
-  color: white;
+  color: ${theme.colors.white};
   cursor: pointer;
 `;
 
 export const Text = styled.div<{ hasFeed: boolean }>`
   width: 100%;
-  color: ${({ hasFeed }) => (hasFeed ? "#fff" : "rgba(255, 255, 255, 0.7)")};
+  color: ${({ hasFeed }) => (hasFeed ? theme.colors.white : "rgba(255, 255, 255, 0.7)")};
   text-align: center;
   ${theme.fonts.batang}
   font-size: 14px;
@@ -64,11 +64,11 @@ export const Text = styled.div<{ hasFeed: boolean }>`
   align-items: center;
   justify-content: center;
   padding: 0 0.75rem;
-  border-top: 1px solid #fff;
+  border-top: 1px solid ${theme.colors.white};
 `;
 
 export const Day = styled.div`
-  color: #fff;
+  color: ${theme.colors.white};
   text-align: center;
   ${theme.fonts.bombaram}
   font-size: 75px;
@@ -95,7 +95,7 @@ export const Bottom = styled.div`
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr) auto;
   align-items: center;
-  border-top: 1px solid #fff;
+  border-top: 1px solid ${theme.colors.white};
 `;
 
 export const TagBox = styled.div`
@@ -108,7 +108,7 @@ export const TagButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: #fff;
+  color: ${theme.colors.white};
   ${theme.fonts.pretendard}
   font-size: 12px;
   font-weight: 500;
@@ -126,7 +126,7 @@ export const TagMenu = styled.div`
   left: 0;
   width: 8.25rem;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   overflow: hidden;
   z-index: 3;
@@ -153,7 +153,7 @@ export const TagEditButton = styled.button`
   align-items: center;
   justify-content: center;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
@@ -176,7 +176,7 @@ export const AuthorDivider = styled.span`
 export const AuthorText = styled.div`
   min-width: 0;
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.26px;

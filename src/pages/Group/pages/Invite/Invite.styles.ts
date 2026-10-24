@@ -39,7 +39,7 @@ export const Title = styled.div`
   text-align: center;
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.32px;

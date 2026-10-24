@@ -62,7 +62,7 @@ export const Value = styled.span<{ $active?: boolean; $disabled?: boolean }>`
   ${theme.fonts.pretendard};
   color: ${({ $active, $disabled }) => {
     if ($disabled) return "#c7cbd1";
-    return $active ? theme.colors.primary : "#9599a1";
+    return $active ? theme.colors.primary : theme.colors["fg-subtle"];
   }};
   font-size: 0.8125rem;
   font-weight: 500;

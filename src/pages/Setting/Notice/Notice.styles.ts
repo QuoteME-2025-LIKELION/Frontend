@@ -12,12 +12,12 @@ export const Container = styled.div`
 export const TopSection = styled.section`
   padding: 2.375rem 1.5rem 2.625rem;
   background: ${theme.colors.primary};
-  color: #fff;
+  color: ${theme.colors.white};
 `;
 
 export const SectionTitle = styled.h2<{ $light?: boolean }>`
   ${theme.fonts.batang};
-  color: ${({ $light }) => ($light ? "#fff" : "#000")};
+  color: ${({ $light }) => ($light ? theme.colors.white : theme.colors.black)};
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.35;
@@ -41,7 +41,7 @@ export const ImportantItem = styled.div`
 
 export const ImportantTitle = styled.div`
   ${theme.fonts.pretendard};
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;
@@ -74,7 +74,7 @@ export const NewsItem = styled.article`
 
 export const NewsTitle = styled.h3`
   ${theme.fonts.batang};
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.35;
@@ -85,7 +85,7 @@ export const NewsTitle = styled.h3`
 export const NewsDate = styled.div`
   margin-top: 0.5rem;
   ${theme.fonts.pretendard};
-  color: #9599a1;
+  color: ${theme.colors["fg-subtle"]};
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.28px;
@@ -94,7 +94,7 @@ export const NewsDate = styled.div`
 export const NewsContent = styled.p`
   margin-top: 0.625rem;
   ${theme.fonts.pretendard};
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.55;
@@ -107,7 +107,7 @@ export const MoreButton = styled.button`
   margin: 0.25rem auto 0;
   padding: 0.5rem 1rem;
   ${theme.fonts.pretendard};
-  color: #9599a1;
+  color: ${theme.colors["fg-subtle"]};
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.28px;
@@ -116,7 +116,7 @@ export const MoreButton = styled.button`
 export const Empty = styled.div`
   padding: 2rem 0;
   ${theme.fonts.pretendard};
-  color: #9599a1;
+  color: ${theme.colors["fg-subtle"]};
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: -0.28px;

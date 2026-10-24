@@ -26,7 +26,7 @@ export const Section = styled.section`
 export const SectionTitle = styled.h2`
   margin: 0;
   ${theme.fonts.batang}
-  color: #21242b;
+  color: ${theme.colors["fg-primary"]};
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.4;
@@ -50,7 +50,7 @@ export const InfoRow = styled.button`
 
 export const RowLabel = styled.span`
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["fg-primary"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -59,7 +59,7 @@ export const RowLabel = styled.span`
 
 export const RowValue = styled.span`
   ${theme.fonts.pretendard}
-  color: #9599a1;
+  color: ${theme.colors["fg-subtle"]};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.35;
@@ -117,13 +117,13 @@ export const ProviderIconFrame = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   overflow: hidden;
 `;
 
 export const ProviderName = styled.span`
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["fg-primary"]};
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;
@@ -132,7 +132,7 @@ export const ProviderName = styled.span`
 
 export const ProviderStatus = styled.span`
   ${theme.fonts.pretendard}
-  color: #9599a1;
+  color: ${theme.colors["fg-subtle"]};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.35;
@@ -153,7 +153,7 @@ export const BottomActions = styled.div`
 
 export const LogoutButton = styled.button`
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -206,7 +206,7 @@ export const GenderOption = styled.button`
 
   span {
     ${theme.fonts.pretendard}
-    color: #21242b;
+    color: ${theme.colors["fg-primary"]};
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.35;
@@ -226,8 +226,8 @@ export const CheckMark = styled.span`
     top: 0.25rem;
     width: 0.5rem;
     height: 0.875rem;
-    border-right: 1.5px solid #21242b;
-    border-bottom: 1.5px solid #21242b;
+    border-right: 1.5px solid ${theme.colors["fg-primary"]};
+    border-bottom: 1.5px solid ${theme.colors["fg-primary"]};
     transform: rotate(45deg);
   }
 `;
@@ -251,7 +251,7 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   width: 100%;
   min-height: 1.75rem;
   ${theme.fonts.batang}
-  color: ${({ $selected }) => ($selected ? "#21242b" : "#9599a1")};
+  color: ${({ $selected }) => ($selected ? theme.colors["fg-primary"] : theme.colors["fg-subtle"])};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   line-height: 1.35;
@@ -265,7 +265,7 @@ export const SheetDoneButton = styled.button`
   border-top: 1px solid #8392a0;
   border-bottom: 1px solid #8392a0;
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["fg-primary"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;

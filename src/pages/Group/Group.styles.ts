@@ -71,7 +71,7 @@ export const TextBox = styled.div`
 
 export const GroupTitle = styled.div`
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.25rem; /* 20px */
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -79,7 +79,7 @@ export const GroupTitle = styled.div`
 
 export const Title = styled.div`
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.32px;
@@ -97,7 +97,7 @@ export const InfoLine = styled.div`
   gap: 0.5rem; /* 8px */
 
   ${theme.fonts.pretendard}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.875rem; /* 14px */
   letter-spacing: -0.28px;
 
@@ -114,7 +114,7 @@ export const Since = styled.div`
   position: relative;
   z-index: 1;
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.25rem; /* 20px */
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -178,14 +178,14 @@ export const Quotation = styled.div`
   align-items: center;
   justify-content: center;
   transform: translateY(0.9rem);
-  color: #fff;
+  color: ${theme.colors.white};
   height: 1rem; /* 16px */
 `;
 
 export const Text = styled.div`
   font-size: 1rem; /* 16px */
   letter-spacing: -0.28px;
-  color: #fff;
+  color: ${theme.colors.white};
 `;
 
 export const EmptyText = styled(Text)`

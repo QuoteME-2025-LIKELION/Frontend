@@ -7,6 +7,7 @@ import nudgeOutlineIcon from "@/assets/icons/quote-feed/nudge-outline.svg";
 import shareIcon from "@/assets/icons/quote-feed/share.svg";
 import userActiveIcon from "@/assets/icons/quote-feed/user-active.svg";
 import userDisabledIcon from "@/assets/icons/quote-feed/user-disabled.svg";
+import theme from "@/styles/theme";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
 import * as S from "./QuoteFeed.styles";
@@ -236,7 +237,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                     >
                       <path
                         d="M1.66675 3.99999H6.33341M4.00008 1.66666V6.33332"
-                        stroke={isInArchive ? "#FFF" : "#959595"}
+                        stroke={isInArchive ? theme.colors.white : theme.colors.territory}
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />

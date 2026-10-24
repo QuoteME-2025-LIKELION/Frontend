@@ -16,7 +16,7 @@ export const Input = styled.input<InputStyleProps>`
   outline: none;
 
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   letter-spacing: -0.28px;

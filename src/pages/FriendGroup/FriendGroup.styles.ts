@@ -54,7 +54,7 @@ export const Title = styled.div`
   align-items: center;
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.32px;
@@ -76,7 +76,7 @@ export const BtnBox = styled.div`
     text-underline-position: from-font;
 
     &:active {
-      color: #000;
+      color: ${theme.colors.black};
     }
   }
 `;
@@ -131,7 +131,7 @@ export const GroupName = styled.div`
   font-size: 0.875rem; /* 14px */
   font-weight: 700;
   letter-spacing: -0.28px;
-  color: #fff;
+  color: ${theme.colors.white};
   word-break: keep-all;
   text-align: center;
   white-space: normal;

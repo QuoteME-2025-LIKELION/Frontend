@@ -68,7 +68,7 @@ export const Toggle = styled.div<{ $active: boolean }>`
   align-items: center;
   flex-direction: column;
 
-  background: var(--bg-basement-neutral, #e9eaec);
+  background: var(--bg-basement-neutral, ${theme.colors.secondary});
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 
   animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
@@ -153,7 +153,7 @@ export const ToggleBtn = styled.button`
   letter-spacing: -0.28px;
   ${theme.fonts.batang}
   &:hover, &:active {
-    color: black;
+    color: ${theme.colors.black};
   }
 
   padding: var(--spacing-padding-md, 20px) 0;
@@ -180,7 +180,7 @@ export const ToggleInfoRow = styled.div`
 `;
 
 export const ToggleInfoText = styled.div`
-  color: var(--fg-subtle, #9599a1);
+  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
   text-align: center;
 
   /* button/xs */
@@ -193,7 +193,7 @@ export const ToggleInfoText = styled.div`
 `;
 
 export const CopyMailText = styled.button`
-  color: var(--fg-subtle, #9599a1);
+  color: var(--fg-subtle, ${theme.colors["fg-subtle"]});
   text-align: center;
   font-family: Pretendard;
   font-size: var(--font-size-t1, 12px);
@@ -225,7 +225,7 @@ export const CopyToast = styled.div`
     ${toastOut} 0.3s ease-in 1.7s forwards;
 
   ${theme.fonts.pretendard};
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1.45;

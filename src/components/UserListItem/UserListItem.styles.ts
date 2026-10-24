@@ -54,7 +54,7 @@ export const UserBox = styled.div`
 
 export const Username = styled.div`
   font-weight: 700;
-  color: #000;
+  color: ${theme.colors.black};
 `;
 
 export const Intro = styled.div`

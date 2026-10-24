@@ -6,6 +6,7 @@ import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
+import theme from "@/styles/theme";
 
 import * as S from "./Profile.styles";
 
@@ -208,7 +209,7 @@ export default function Profile() {
                       viewBox="0 0 80 80"
                       fill="none"
                     >
-                      <circle cx="40" cy="40" r="40" fill="#143858" />
+                      <circle cx="40" cy="40" r="40" fill={theme.colors.primary} />
 
                       <g transform="translate(22,18)">
                         <path
