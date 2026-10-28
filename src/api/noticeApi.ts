@@ -3,11 +3,11 @@ import api from "@/api/api";
 export type NoticeType = "IMPORTANT" | "UPDATE" | "NOTICE" | "EVENT";
 
 export interface NoticeSummary {
-  noticeId: number;
+  id: number;
   type: NoticeType;
   title: string;
   content?: string;
-  createdAt: string;
+  createDate: string;
 }
 
 export interface NoticeDetail extends NoticeSummary {
@@ -20,6 +20,6 @@ export interface NoticeDetail extends NoticeSummary {
 export const noticeApi = {
   getNotices: (type?: NoticeType) =>
     api.get<NoticeSummary[]>("/api/notices", { params: { type } }),
-  getNotice: (noticeId: number | string) =>
-    api.get<NoticeDetail>(`/api/notices/${noticeId}`),
+  getNotice: (id: number | string) =>
+    api.get<NoticeDetail>(`/api/notices/${id}`),
 };
