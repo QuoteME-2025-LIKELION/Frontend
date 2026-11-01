@@ -180,14 +180,30 @@ export const Btn = styled.button<{ $active: boolean }>`
     `}
 `;
 
-export const MonthPickerOverlay = styled.div`
+export const MonthPickerOverlay = styled.dialog`
   position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   inset: 0;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.38);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const MonthPicker = styled.div`

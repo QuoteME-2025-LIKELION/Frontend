@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import calendarIcon from "@/assets/icons/archive/calendar.svg";
@@ -32,6 +32,9 @@ function getDateInMonth(baseDate: Date, year: number, month: number) {
 }
 
 export default function Archive() {
+  const monthDialogRef = useRef<HTMLDialogElement>(null);
+  const selectedMonthRef = useRef<HTMLButtonElement>(null);
+  const pickerYearId = useId();
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname.split("/").pop();
@@ -39,6 +42,25 @@ export default function Archive() {
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
+  useEffect(() => {
+    if (!isMonthPickerOpen || !isCalendarTab) return;
+    const dialog = monthDialogRef.current;
+    if (!dialog) return;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    selectedMonthRef.current?.focus({ preventScroll: true });
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
+    };
+  }, [isMonthPickerOpen, isCalendarTab]);
+
   const calendarDates = useMemo(
     () => getCalendarDates(currentMonth),
     [currentMonth]
@@ -170,6 +192,8 @@ export default function Archive() {
             </S.MonthButton>
             <S.MonthText
               type="button"
+              aria-expanded={isMonthPickerOpen}
+              aria-haspopup="dialog"
               onClick={() => setIsMonthPickerOpen(true)}
             >
               {currentMonthText}
@@ -200,6 +224,8 @@ export default function Archive() {
             <S.CalendarButton
               type="button"
               aria-label="월 선택"
+              aria-expanded={isMonthPickerOpen}
+              aria-haspopup="dialog"
               onClick={() => setIsMonthPickerOpen(true)}
             >
               <img src={calendarIcon} alt="" width={24} height={24} />
@@ -260,7 +286,20 @@ export default function Archive() {
           <Outlet context={{ onShare: executeShare, selectedDateString }} />
         </S.ContentArea>
         {isCalendarTab && isMonthPickerOpen && (
-          <S.MonthPickerOverlay onClick={() => setIsMonthPickerOpen(false)}>
+          <S.MonthPickerOverlay
+            ref={monthDialogRef}
+            aria-label="월 선택"
+            aria-describedby={pickerYearId}
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setIsMonthPickerOpen(false);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget)
+                setIsMonthPickerOpen(false);
+            }}
+          >
             <S.MonthPicker onClick={(event) => event.stopPropagation()}>
               <S.PickerHeader>
                 <S.MonthButton
@@ -286,7 +325,9 @@ export default function Archive() {
                     />
                   </svg>
                 </S.MonthButton>
-                <S.PickerYear>{currentMonth.getFullYear()}</S.PickerYear>
+                <S.PickerYear id={pickerYearId} aria-live="polite">
+                  {currentMonth.getFullYear()}
+                </S.PickerYear>
                 <S.MonthButton
                   type="button"
                   aria-label="다음 해"
@@ -315,6 +356,11 @@ export default function Archive() {
                 {MONTHS.map((month) => (
                   <S.MonthOption
                     key={month}
+                    ref={
+                      month === currentMonth.getMonth() + 1
+                        ? selectedMonthRef
+                        : undefined
+                    }
                     type="button"
                     aria-pressed={month === currentMonth.getMonth() + 1}
                     $active={month === currentMonth.getMonth() + 1}
