@@ -62,7 +62,12 @@ export default function UserListItem({
           : null;
 
     actionButtonElement = ButtonComponent ? (
-      <ButtonComponent type="button" disabled={disabled} onClick={onClick}>
+      <ButtonComponent
+        type="button"
+        aria-label={`${nickname} ${text}`}
+        disabled={disabled}
+        onClick={onClick}
+      >
         {text}
       </ButtonComponent>
     ) : null;
@@ -71,6 +76,22 @@ export default function UserListItem({
   return (
     <S.Container
       onClick={handleClick}
+      role={isSelectable ? "button" : undefined}
+      tabIndex={isSelectable ? 0 : undefined}
+      aria-pressed={isSelectable ? isSelected : undefined}
+      onKeyDown={
+        isSelectable
+          ? (event) => {
+              if (
+                event.target !== event.currentTarget ||
+                (event.key !== "Enter" && event.key !== " ")
+              )
+                return;
+              event.preventDefault();
+              if (!event.repeat) event.currentTarget.click();
+            }
+          : undefined
+      }
       $isSelectable={isSelectable}
       $isSelected={isSelected}
     >

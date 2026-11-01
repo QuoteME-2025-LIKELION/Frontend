@@ -115,6 +115,18 @@ export default function RecommendList({
         {quotes.map((q) => (
           <S.Commend
             key={q.id}
+            role="button"
+            tabIndex={0}
+            aria-pressed={selectedId === q.id}
+            onKeyDown={(event) => {
+              if (
+                event.target !== event.currentTarget ||
+                (event.key !== "Enter" && event.key !== " ")
+              )
+                return;
+              event.preventDefault();
+              if (!event.repeat) event.currentTarget.click();
+            }}
             $isSelected={selectedId === q.id}
             onClick={() => setSelection({ id: q.id, dataUpdatedAt })}
           >
