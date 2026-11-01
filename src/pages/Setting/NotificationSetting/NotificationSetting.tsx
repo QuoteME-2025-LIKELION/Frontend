@@ -10,6 +10,7 @@ import {
   useNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
 } from "@/hooks/useNotificationsQuery";
+import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./NotificationSetting.styles";
 
@@ -206,7 +207,7 @@ export default function NotificationSetting() {
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
-      behavior: "smooth",
+      behavior: getPreferredScrollBehavior(),
     });
   };
 

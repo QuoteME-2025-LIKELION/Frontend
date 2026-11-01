@@ -13,6 +13,7 @@ import {
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
 import useAuthStore from "@/stores/useAuthStore";
+import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";
 
@@ -142,7 +143,7 @@ export default function AccountSetting() {
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
-      behavior: "smooth",
+      behavior: getPreferredScrollBehavior(),
     });
   };
 
