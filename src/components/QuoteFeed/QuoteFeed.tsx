@@ -160,7 +160,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         {!isInArchive && (
           <S.ProfileContainer>
             {profileImageUrl ? (
-              <S.ProfileImg src={profileImageUrl} alt="프로필 이미지" />
+              <S.ProfileImg src={profileImageUrl} alt={`${authorName} 프로필 이미지`} />
             ) : (
               <S.DefaultProfileImg />
             )}

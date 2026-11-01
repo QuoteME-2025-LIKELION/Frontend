@@ -46,14 +46,22 @@ export default function GroupMainSection({
     <S.Main>
       <S.Section>
         <S.Title role="heading" aria-level={2}>그룹 메시지</S.Title>
-        <S.MessageBox onClick={onEditMessage}>
-          <S.Quotation>“</S.Quotation>
+        <S.MessageBox
+          type="button"
+          aria-label={
+            group?.motto
+              ? `그룹 메시지 수정: ${group.motto}`
+              : "그룹 메시지 입력"
+          }
+          onClick={onEditMessage}
+        >
+          <S.Quotation aria-hidden="true">“</S.Quotation>
           {group?.motto ? (
             <S.Text>{group.motto}</S.Text>
           ) : (
             <S.EmptyText>메시지를 입력하세요</S.EmptyText>
           )}
-          <S.Quotation>”</S.Quotation>
+          <S.Quotation aria-hidden="true">”</S.Quotation>
         </S.MessageBox>
       </S.Section>
       <S.Section>

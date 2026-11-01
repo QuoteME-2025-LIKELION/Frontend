@@ -160,7 +160,6 @@ export const Btn = styled.button<{ $active: boolean }>`
   align-items: center;
   text-align: center;
   background-color: transparent;
-  outline: none;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);

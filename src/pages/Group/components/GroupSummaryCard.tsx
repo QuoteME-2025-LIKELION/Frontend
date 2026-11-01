@@ -31,7 +31,7 @@ export default function GroupSummaryCard({ group }: GroupSummaryCardProps) {
           </S.InfoBox>
         </S.TextBox>
         <S.Since>Since {createdYear}</S.Since>
-        <S.Count>{memberCount}</S.Count>
+        <S.Count aria-hidden="true">{memberCount}</S.Count>
       </S.GroupCard>
     </S.GrayBox>
   );

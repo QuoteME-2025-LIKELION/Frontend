@@ -97,7 +97,7 @@ export default function UserListItem({
     >
       {/* 프로필 이미지 없는 유저면 회색 배경으로 (추후 favicon으로 수정될 수 있음) */}
       {profileImage ? (
-        <S.ProfileImg src={profileImage} alt="프로필 이미지" />
+        <S.ProfileImg src={profileImage} alt={`${nickname} 프로필 이미지`} />
       ) : (
         <S.DefaultProfileImg />
       )}

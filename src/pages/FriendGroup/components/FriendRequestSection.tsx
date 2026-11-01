@@ -35,7 +35,7 @@ export default function FriendRequestSection({
                 {request.senderProfileImage ? (
                   <S.RequestProfileImg
                     src={request.senderProfileImage}
-                    alt="프로필 이미지"
+                    alt={`${request.senderNickname} 프로필 이미지`}
                   />
                 ) : (
                   <S.RequestDefaultProfileImg />
