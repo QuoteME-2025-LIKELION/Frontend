@@ -5,7 +5,10 @@ import Spinner from "@/components/Spinner/Spinner";
 import ProtectedRoute from "@/layouts/ProtectedRoute";
 import OAuthCallback from "@/OAuthCallback";
 import NotFound from "@/pages/NotFound/NotFound";
+import AccountDeleteComplete from "@/pages/Setting/AccountDelete/AccountDeleteComplete";
 import Start from "@/pages/Start/Start";
+
+import RouteErrorBoundary from "./RouteErrorBoundary";
 
 const Archive = lazy(() => import("@/pages/Archive/Archive"));
 const Bookmarks = lazy(() => import("@/pages/Archive/Bookmarks/Bookmarks"));
@@ -34,9 +37,6 @@ const Notification = lazy(() => import("@/pages/Notification/Notification"));
 const AccountDelete = lazy(
   () => import("@/pages/Setting/AccountDelete/AccountDelete")
 );
-const AccountDeleteComplete = lazy(
-  () => import("@/pages/Setting/AccountDelete/AccountDeleteComplete")
-);
 const AccountSetting = lazy(
   () => import("@/pages/Setting/AccountSetting/AccountSetting")
 );
@@ -54,59 +54,61 @@ const Profile = lazy(() => import("@/pages/SignUp/Profile/Profile"));
  */
 export default function AppRoutes() {
   return (
-    <Suspense
-      fallback={
-        <div role="status" aria-label="화면을 불러오는 중">
-          <Spinner />
-        </div>
-      }
-    >
-      <Routes>
-        {/* 인증 없이 접근 가능한 진입/인증 플로우 라우트 */}
-        <Route path="/" element={<Start />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/oauth2/callback" element={<OAuthCallback />} />
-        <Route
-          path="/account-delete-complete"
-          element={<AccountDeleteComplete />}
-        />
-
-        {/* 로그인 상태가 필요한 화면 */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/home/:date?" element={<Home />} />
-          <Route path="/write" element={<Write />} />
-          <Route path="/fix" element={<EditQuoteTags />} />
-          <Route path="/archive" element={<Archive />}>
-            <Route index element={<CalendarPage />} />
-            <Route path="my-quotes" element={<MyQuotes />} />
-            <Route path="likes" element={<Likes />} />
-            <Route path="bookmarks" element={<Bookmarks />} />
-          </Route>
-          <Route path="/notification" element={<Notification />} />
-
-          <Route path="/profile-center" element={<ProfileCenter />} />
-          <Route path="/account-setting" element={<AccountSetting />} />
-          <Route path="/account-delete" element={<AccountDelete />} />
+    <RouteErrorBoundary>
+      <Suspense
+        fallback={
+          <div role="status" aria-label="화면을 불러오는 중">
+            <Spinner />
+          </div>
+        }
+      >
+        <Routes>
+          {/* 인증 없이 접근 가능한 진입/인증 플로우 라우트 */}
+          <Route path="/" element={<Start />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/oauth2/callback" element={<OAuthCallback />} />
           <Route
-            path="/notification-setting"
-            element={<NotificationSetting />}
+            path="/account-delete-complete"
+            element={<AccountDeleteComplete />}
           />
-          <Route path="/notices" element={<Notice />} />
 
-          <Route path="/friend-group" element={<FriendGroup />} />
-          <Route path="/friend-group/add" element={<FriendGroupAdd />} />
-          <Route path="/create-group" element={<CreateGroup />} />
+          {/* 로그인 상태가 필요한 화면 */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home/:date?" element={<Home />} />
+            <Route path="/write" element={<Write />} />
+            <Route path="/fix" element={<EditQuoteTags />} />
+            <Route path="/archive" element={<Archive />}>
+              <Route index element={<CalendarPage />} />
+              <Route path="my-quotes" element={<MyQuotes />} />
+              <Route path="likes" element={<Likes />} />
+              <Route path="bookmarks" element={<Bookmarks />} />
+            </Route>
+            <Route path="/notification" element={<Notification />} />
 
-          <Route path="/group/:groupId">
-            <Route index element={<Group />} />
-            <Route path="invite" element={<Invite />} />
-            <Route path="change-message" element={<ChangeMessage />} />
+            <Route path="/profile-center" element={<ProfileCenter />} />
+            <Route path="/account-setting" element={<AccountSetting />} />
+            <Route path="/account-delete" element={<AccountDelete />} />
+            <Route
+              path="/notification-setting"
+              element={<NotificationSetting />}
+            />
+            <Route path="/notices" element={<Notice />} />
+
+            <Route path="/friend-group" element={<FriendGroup />} />
+            <Route path="/friend-group/add" element={<FriendGroupAdd />} />
+            <Route path="/create-group" element={<CreateGroup />} />
+
+            <Route path="/group/:groupId">
+              <Route index element={<Group />} />
+              <Route path="invite" element={<Invite />} />
+              <Route path="change-message" element={<ChangeMessage />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }
