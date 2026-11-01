@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import theme from "@/styles/theme";
@@ -23,6 +23,24 @@ export default function HomeSideMenu({
   onClose,
 }: HomeSideMenuProps) {
   const navigate = useNavigate();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
+    };
+  }, []);
   const [copyToastMessage, setCopyToastMessage] = useState("");
 
   const handleCopyMail = async () => {
@@ -62,7 +80,18 @@ export default function HomeSideMenu({
 
   return (
     <>
-      <S.ToggleWrapper onClick={onClose}>
+      <S.ToggleWrapper
+        ref={dialogRef}
+        aria-label="내 메뉴"
+        aria-modal="true"
+        onCancel={(event) => {
+          event.preventDefault();
+          if (active) onClose();
+        }}
+        onClick={(event) => {
+          if (event.target === event.currentTarget && active) onClose();
+        }}
+      >
         <S.Toggle $active={active} onClick={(event) => event.stopPropagation()}>
           <S.ImgBox>
             <S.ImgPreview $profileImage={profileImage}>
@@ -142,7 +171,7 @@ export default function HomeSideMenu({
             <S.ToggleInfoText>버전 1.0</S.ToggleInfoText>
           </S.ToggleInfoBox>
         </S.Toggle>
-        {copyToastMessage && <S.CopyToast>{copyToastMessage}</S.CopyToast>}
+        {copyToastMessage && <S.CopyToast role="status">{copyToastMessage}</S.CopyToast>}
       </S.ToggleWrapper>
     </>
   );

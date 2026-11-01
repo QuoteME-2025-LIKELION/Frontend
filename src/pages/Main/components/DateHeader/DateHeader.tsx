@@ -9,9 +9,10 @@ import * as S from "./DateHeader.styles";
 
 interface DateHeaderProps {
   onToggleMenu: () => void;
+  isMenuOpen?: boolean;
 }
 
-export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
+export default function DateHeader({ onToggleMenu, isMenuOpen }: DateHeaderProps) {
   const navigate = useNavigate();
   const hasUnread = useNotificationStore((state) => state.hasUnread);
   const setHasUnread = useNotificationStore((state) => state.setHasUnread);
@@ -104,6 +105,7 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
           <S.IconButton
             type="button"
             aria-label="메뉴 열기"
+            aria-expanded={isMenuOpen}
             onClick={onToggleMenu}
           >
             <svg

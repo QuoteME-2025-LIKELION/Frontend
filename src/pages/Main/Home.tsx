@@ -117,7 +117,7 @@ export default function Home() {
       {date ? (
         <XHeader onClose={() => navigate(returnTo)} />
       ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
+        <DateHeader onToggleMenu={toggleMenu} isMenuOpen={isToggleVisible} />
       )}
 
       {isToggleVisible && (

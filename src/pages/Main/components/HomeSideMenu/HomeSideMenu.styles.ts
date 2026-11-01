@@ -47,11 +47,28 @@ const toastOut = keyframes`
   }
 `;
 
-export const ToggleWrapper = styled.div`
-  position: absolute;
+export const ToggleWrapper = styled.dialog`
+  position: fixed;
+  width: 100%;
+  max-width: 393px;
+  height: 100%;
+  max-height: none;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  overflow: clip;
   inset: 0;
   z-index: 998;
   background: rgba(0, 0, 0, 0.45);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const Toggle = styled.div<{ $active: boolean }>`
@@ -72,7 +89,7 @@ export const Toggle = styled.div<{ $active: boolean }>`
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 
   animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
-    forwards;
+    both;
 `;
 
 export const ImgBox = styled.div`

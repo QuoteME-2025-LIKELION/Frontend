@@ -52,7 +52,7 @@ export default function EditQuoteTags() {
       {date ? (
         <XHeader onClose={() => navigate(returnTo)} />
       ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
+        <DateHeader onToggleMenu={toggleMenu} isMenuOpen={isToggleVisible} />
       )}
 
       {isToggleVisible && (
