@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -51,6 +51,12 @@ const isValidGroup = (data: unknown): data is Group => {
 
 export default function FriendGroupAdd() {
   const navigate = useNavigate();
+  const [rejectionTarget, setRejectionTarget] = useState<{
+    kind: "friend" | "group";
+    requestId: number;
+    name: string;
+  } | null>(null);
+  const rejectionLock = useRef(false);
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500);
   const [pendingFriendRequestId, setPendingFriendRequestId] = useState<
@@ -243,9 +249,48 @@ export default function FriendGroupAdd() {
     [rejectGroupInvitation]
   );
 
+  const handleConfirmRejection = async () => {
+    if (!rejectionTarget || rejectionLock.current) return;
+    rejectionLock.current = true;
+    try {
+      if (rejectionTarget.kind === "friend") {
+        await handleRejectFriendRequest(rejectionTarget.requestId);
+      } else {
+        await handleRejectGroupInvitation(rejectionTarget.requestId);
+      }
+    } finally {
+      rejectionLock.current = false;
+      setRejectionTarget(null);
+    }
+  };
+
   return (
     <>
       <PageTitle title="친구 및 그룹 추가" />
+      {rejectionTarget && (
+        <ConfirmModal
+          question=""
+          lines={[
+            rejectionTarget.kind === "friend"
+              ? `${rejectionTarget.name}님의 친구 요청을`
+              : `${rejectionTarget.name} 그룹의 초대를`,
+            "거절하시겠어요?",
+          ]}
+          cancelText="취소"
+          confirmText="거절"
+          confirmColor="danger"
+          confirmDisabled={
+            pendingFriendRequestId !== null || pendingGroupInvitationId !== null
+          }
+          onClose={() => {
+            if (!rejectionLock.current) setRejectionTarget(null);
+          }}
+          onConfirm={() => {
+            void handleConfirmRejection();
+          }}
+          variant="card"
+        />
+      )}
       <S.Container>
         {friendRequestTarget && (
           <ConfirmModal
@@ -363,13 +408,33 @@ export default function FriendGroupAdd() {
                 requests={friendRequests}
                 pendingRequestId={pendingFriendRequestId}
                 onAccept={handleAcceptFriendRequest}
-                onReject={handleRejectFriendRequest}
+                onReject={(requestId) => {
+                  const request = friendRequests.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (request)
+                    setRejectionTarget({
+                      kind: "friend",
+                      requestId,
+                      name: request.senderNickname,
+                    });
+                }}
               />
               <GroupInvitationSection
                 invitations={groupInvitations}
                 pendingInvitationId={pendingGroupInvitationId}
                 onAccept={handleAcceptGroupInvitation}
-                onReject={handleRejectGroupInvitation}
+                onReject={(requestId) => {
+                  const invitation = groupInvitations.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (invitation)
+                    setRejectionTarget({
+                      kind: "group",
+                      requestId,
+                      name: invitation.groupName,
+                    });
+                }}
               />
             </>
           )}
