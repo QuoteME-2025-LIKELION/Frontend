@@ -32,6 +32,7 @@ type FeedListProps = {
   otherQuotes: QuoteFeedItem[];
   unwrittenMembers: UnwrittenMember[];
   groups: Group[] | [];
+  isGroupsReady: boolean;
   selectedGroupId: number | null;
   myNickname: string;
   myMemberId?: number;
@@ -47,6 +48,7 @@ export default function FeedList({
   otherQuotes,
   unwrittenMembers,
   groups,
+  isGroupsReady,
   selectedGroupId,
   myNickname,
   myMemberId,
@@ -87,7 +89,8 @@ export default function FeedList({
         quoteId: quote.id,
         isSilenced: false,
         taggedNicknames: quote.taggedNicknames ?? [],
-        isBookmarked: bookmarkOverrides[quote.id] ?? Boolean(quote.isBookmarked),
+        isBookmarked:
+          bookmarkOverrides[quote.id] ?? Boolean(quote.isBookmarked),
       })),
       ...unwrittenMembers
         .filter((member) => member.memberId !== myMemberId)
@@ -104,6 +107,15 @@ export default function FeedList({
     ],
     [bookmarkOverrides, otherQuotes, unwrittenMembers, myMemberId]
   );
+
+  const canCreateGroup =
+    isGroupsReady && !isLoading && !isFeedError && groups.length === 0;
+  const canAddFriend =
+    !isLoading &&
+    !isFeedError &&
+    selectedGroupId === null &&
+    isNoFriendsMessage &&
+    quotes.length === 0;
 
   const tagRequestQuote = quotes.find(
     (quote) => quote.quoteId === tagRequestQuoteId
@@ -309,6 +321,11 @@ export default function FeedList({
                 {group.name ?? "그룹"}
               </S.FilterOption>
             ))}
+            {canCreateGroup && (
+              <S.FilterCreateLink to="/create-group">
+                그룹 만들기
+              </S.FilterCreateLink>
+            )}
           </S.FilterMenu>
         )}
       </S.FilterBox>
@@ -321,7 +338,9 @@ export default function FeedList({
         quotes.map((quote, index) => (
           <FeedListItem
             key={
-              quote.isSilenced ? `member-${quote.memberId}` : `quote-${quote.id}`
+              quote.isSilenced
+                ? `member-${quote.memberId}`
+                : `quote-${quote.id}`
             }
             quote={quote}
             index={index}
@@ -353,6 +372,11 @@ export default function FeedList({
                 : "아직 함께 볼 그룹 멤버가 없어요.")
             )}
           </S.NoFeedText>
+          {canAddFriend && (
+            <S.EmptyActionLink to="/friend-group/add">
+              친구 추가
+            </S.EmptyActionLink>
+          )}
           {!isNoFriendsMessage && (
             <S.NoFeedSubText>
               {selectedGroupId === null

@@ -49,7 +49,11 @@ export default function Home() {
   const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
     useArchivesByDateQuery(displayDate);
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
-  const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
+  const {
+    data: groups = [],
+    isLoading: isGroupsLoading,
+    isSuccess: isGroupsReady,
+  } = useMyGroupsQuery();
   const apiMyQuote = quotesData?.myQuotes[0] || null;
   const archiveMyQuote = myProfile?.nickname
     ? archiveQuotes.find(
@@ -140,6 +144,7 @@ export default function Home() {
           otherQuotes={otherQuotes}
           unwrittenMembers={quotesData?.unwrittenMembers ?? []}
           groups={groups}
+          isGroupsReady={isGroupsReady}
           selectedGroupId={selectedGroupId}
           myNickname={profileNickname}
           myMemberId={myProfile?.id}

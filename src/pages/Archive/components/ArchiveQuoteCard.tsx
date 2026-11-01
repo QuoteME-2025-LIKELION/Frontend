@@ -22,16 +22,20 @@ const ArchiveQuoteCard = forwardRef<HTMLDivElement, ArchiveQuoteCardProps>(
     ref
   ) => {
     const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
-    const birthYear = feed.authorBirthYear
-      ? `${feed.authorBirthYear}~`
-      : "1999~";
+    const birthYear =
+      Number.isInteger(feed.authorBirthYear) &&
+      feed.authorBirthYear > 0 &&
+      feed.authorBirthYear <= new Date().getFullYear()
+        ? feed.authorBirthYear
+        : null;
     const taggedNames = feed.taggedMemberNames ?? feed.taggedMembers ?? [];
 
     return (
       <S.Container ref={ref}>
         <S.OpenButton type="button" onClick={onClick}>
           <S.Author>
-            {authorName} ({birthYear})
+            {authorName}
+            {birthYear !== null && ` (${birthYear}~)`}
           </S.Author>
           <S.QuoteBox>
             <S.QuoteMark aria-hidden="true">“</S.QuoteMark>

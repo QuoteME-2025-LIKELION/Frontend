@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { Link } from "react-router-dom";
 
 import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
@@ -109,4 +110,29 @@ export const NoFeedSubText = styled.div`
   font-weight: var(--font-weight-regular, 400);
   line-height: var(--line-height-t2, 21px); /* 150% */
   letter-spacing: -0.28px;
+`;
+
+export const FilterCreateLink = styled(Link)`
+  width: 100%;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.black};
+  font-size: 0.875rem;
+`;
+
+export const EmptyActionLink = styled(Link)`
+  width: fit-content;
+  min-height: 2.75rem;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.primary};
+  font-size: 0.875rem;
+  font-weight: 600;
 `;

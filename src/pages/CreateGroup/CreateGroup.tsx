@@ -249,7 +249,7 @@ export default function CreateGroup() {
         )}
         {showInviteToast && (
           <ToastModal
-            text="초대 요청을 보냈습니다."
+            text="초대할 멤버에 추가했습니다."
             isVisible={showInviteToast}
             onClose={() => setShowInviteToast(false)}
             showOverlay={false}
