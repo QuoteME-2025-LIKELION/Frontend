@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useOAuthRedirect } from "@/hooks/useAuthQueries";
@@ -72,6 +73,7 @@ export default function Start() {
 
   return (
     <S.Container>
+      <PageTitle title="시작" heading />
       {showErrorToast && (
         <ToastModal
           isVisible={showErrorToast}

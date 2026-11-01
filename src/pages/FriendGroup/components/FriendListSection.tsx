@@ -48,7 +48,9 @@ export default function FriendListSection({
 
   return (
     <S.Section>
-      {!keyword ? <S.Title>친구</S.Title> : <S.Title>사용자</S.Title>}
+      <S.Title role="heading" aria-level={2}>
+        {keyword ? "사용자" : "친구"}
+      </S.Title>
       <S.FriendList>
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {

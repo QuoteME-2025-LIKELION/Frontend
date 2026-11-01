@@ -20,7 +20,7 @@ export default function GroupInvitationSection({
 }: GroupInvitationSectionProps) {
   return (
     <S.Section>
-      <S.Title>받은 그룹 초대</S.Title>
+      <S.Title role="heading" aria-level={2}>받은 그룹 초대</S.Title>
       <S.FriendList>
         {invitations.length > 0 ? (
           invitations.map((invitation) => {

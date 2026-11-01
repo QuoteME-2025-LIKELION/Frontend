@@ -24,7 +24,7 @@ export default function GroupJoinRequestSection({
 
   return (
     <S.Section>
-      <S.Title>가입 요청</S.Title>
+      <S.Title role="heading" aria-level={2}>가입 요청</S.Title>
       <S.RequestList>
         {requests.map((request) => {
           const isProcessing = pendingRequestId !== null;

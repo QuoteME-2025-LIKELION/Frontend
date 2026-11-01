@@ -24,7 +24,7 @@ export default function FriendRequestSection({
 
   return (
     <S.Section>
-      <S.Title>받은 친구 요청</S.Title>
+      <S.Title role="heading" aria-level={2}>받은 친구 요청</S.Title>
       <S.FriendList>
         {receivedRequests.length > 0 ? (
           receivedRequests.map((request) => {

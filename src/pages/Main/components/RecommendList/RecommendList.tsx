@@ -76,7 +76,9 @@ export default function RecommendList({
   return (
     <S.Container>
       <S.Head>
-        <S.TitleText>AI 명언 추천</S.TitleText>
+        <S.TitleText role="heading" aria-level={2}>
+          AI 명언 추천
+        </S.TitleText>
       </S.Head>
       <S.ComendList>
         <S.RefreshButton

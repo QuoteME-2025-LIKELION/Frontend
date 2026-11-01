@@ -117,7 +117,7 @@ export default function Profile() {
 
   return (
     <>
-      <PageTitle title="회원가입" />
+      <PageTitle title="회원가입" heading />
       <S.Container>
         <S.InputBox>
           {step === 1 && (

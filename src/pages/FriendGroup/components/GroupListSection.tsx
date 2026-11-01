@@ -34,7 +34,9 @@ export default function GroupListSection({
   return (
     <S.Section>
       <S.Title>
-        <div>{keyword ? "그룹" : "나의 그룹"}</div>
+        <div role="heading" aria-level={2}>
+          {keyword ? "그룹" : "나의 그룹"}
+        </div>
         {showManagementButtons && (
           <S.BtnBox>
             <button onClick={onCreateGroup}>그룹 만들기</button>

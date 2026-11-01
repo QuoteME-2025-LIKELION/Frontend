@@ -45,7 +45,7 @@ export default function GroupMainSection({
   return (
     <S.Main>
       <S.Section>
-        <S.Title>그룹 메시지</S.Title>
+        <S.Title role="heading" aria-level={2}>그룹 메시지</S.Title>
         <S.MessageBox onClick={onEditMessage}>
           <S.Quotation>“</S.Quotation>
           {group?.motto ? (
@@ -57,7 +57,7 @@ export default function GroupMainSection({
         </S.MessageBox>
       </S.Section>
       <S.Section>
-        <S.Title>멤버</S.Title>
+        <S.Title role="heading" aria-level={2}>멤버</S.Title>
         {members.length > 0 ? (
           <S.MemberList>
             {members.map((friend) => (

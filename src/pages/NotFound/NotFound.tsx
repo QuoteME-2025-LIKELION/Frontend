@@ -5,7 +5,7 @@ import * as S from "./NotFound.styles";
 export default function NotFound() {
   return (
     <>
-      <PageTitle title="Not Found" />
+      <PageTitle title="Not Found" heading />
       <S.Container>
         <S.Content>
           <S.SorryBox>

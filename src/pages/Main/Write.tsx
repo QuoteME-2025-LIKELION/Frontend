@@ -42,7 +42,7 @@ export default function Write() {
 
   return (
     <>
-      <PageTitle title="명언 작성하기" />
+      <PageTitle title="명언 작성하기" heading />
       <S.Container>
         {showExitModal && (
           <ConfirmModal

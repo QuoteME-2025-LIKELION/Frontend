@@ -112,7 +112,7 @@ export default function Home() {
 
   return (
     <S.Container>
-      <PageTitle title="홈" />
+      <PageTitle title="홈" heading />
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
