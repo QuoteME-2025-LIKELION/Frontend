@@ -169,14 +169,30 @@ export const DeleteButton = styled.button`
   letter-spacing: -0.28px;
 `;
 
-export const SheetOverlay = styled.div`
+export const SheetOverlay = styled.dialog`
   position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   inset: 0;
   z-index: 9997;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   background-color: rgba(0, 0, 0, 0.36);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const Sheet = styled.div`

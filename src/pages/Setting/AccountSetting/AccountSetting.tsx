@@ -65,6 +65,7 @@ export default function AccountSetting() {
   const [sheetType, setSheetType] = useState<SheetType>(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const sheetRef = useRef<HTMLDialogElement>(null);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
   const selectedBirthYearRef = useRef<number | null>(null);
   const currentGender = genderDraft ?? normalizeGender(accountProfile?.gender);
@@ -72,16 +73,34 @@ export default function AccountSetting() {
     birthYearDraft ?? parseBirthYear(accountProfile?.birthYear);
 
   useEffect(() => {
-    if (sheetType !== "birth") {
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      selectedYearRef.current?.scrollIntoView({
-        block: "center",
-        behavior: "auto",
-      });
+    if (!sheetType) return;
+    const dialog = sheetRef.current;
+    if (!dialog) return;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    const selectedOption =
+      dialog.querySelector<HTMLButtonElement>('[aria-pressed="true"]') ??
+      dialog.querySelector<HTMLButtonElement>("button");
+    selectedOption?.focus({ preventScroll: true });
+    document.body.style.overflow = "hidden";
+    const frame = window.requestAnimationFrame(() => {
+      if (sheetType === "birth") {
+        selectedYearRef.current?.scrollIntoView({
+          block: "center",
+          behavior: "auto",
+        });
+      }
     });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
+    };
   }, [sheetType]);
 
   const saveAccount = async (
@@ -183,12 +202,19 @@ export default function AccountSetting() {
           <S.Section>
             <S.SectionTitle>계정 정보</S.SectionTitle>
             <S.InfoList>
-              <S.InfoRow type="button" onClick={() => setSheetType("gender")}>
+              <S.InfoRow
+                type="button"
+                aria-haspopup="dialog"
+                aria-expanded={sheetType === "gender"}
+                onClick={() => setSheetType("gender")}
+              >
                 <S.RowLabel>성별</S.RowLabel>
                 <S.RowValue>{formatGender(currentGender)}</S.RowValue>
               </S.InfoRow>
               <S.InfoRow
                 type="button"
+                aria-haspopup="dialog"
+                aria-expanded={sheetType === "birth"}
                 onClick={() => {
                   selectedBirthYearRef.current = currentBirthYear;
                   setSheetType("birth");
@@ -247,7 +273,18 @@ export default function AccountSetting() {
         </S.BottomActions>
 
         {sheetType === "gender" && (
-          <S.SheetOverlay onClick={() => setSheetType(null)}>
+          <S.SheetOverlay
+            ref={sheetRef}
+            aria-label="성별 선택"
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setSheetType(null);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setSheetType(null);
+            }}
+          >
             <S.Sheet onClick={(event) => event.stopPropagation()}>
               <S.GenderList>
                 {GENDER_OPTIONS.map((option) => (
@@ -270,7 +307,18 @@ export default function AccountSetting() {
         )}
 
         {sheetType === "birth" && (
-          <S.SheetOverlay onClick={() => setSheetType(null)}>
+          <S.SheetOverlay
+            ref={sheetRef}
+            aria-label="출생연도 선택"
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setSheetType(null);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setSheetType(null);
+            }}
+          >
             <S.Sheet onClick={(event) => event.stopPropagation()}>
               <S.YearPicker>
                 {YEAR_OPTIONS.map((year) => (
