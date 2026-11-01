@@ -24,7 +24,8 @@ export const Row = styled.button<{ $disabled?: boolean }>`
   column-gap: 1rem;
   border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
-  color: ${({ $disabled }) => ($disabled ? theme.colors["grey-200"] : theme.colors["grey-950"])};
+  color: ${({ $disabled }) =>
+    $disabled ? theme.colors["grey-200"] : theme.colors["grey-950"]};
 `;
 
 export const MasterRow = styled(Row)`
@@ -70,14 +71,28 @@ export const Value = styled.span<{ $active?: boolean; $disabled?: boolean }>`
   white-space: nowrap;
 `;
 
-export const PickerOverlay = styled.div`
+export const PickerOverlay = styled.dialog`
   position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   inset: 0;
   z-index: 9997;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   background: rgba(0, 0, 0, 0.36);
+  &:not([open]) {
+    display: none;
+  }
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const PickerSheet = styled.div`
@@ -115,7 +130,8 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   min-height: 1.75rem;
   scroll-snap-align: center;
   ${theme.fonts.batang};
-  color: ${({ $selected }) => ($selected ? theme.colors["grey-950"] : theme.colors["grey-300"])};
+  color: ${({ $selected }) =>
+    $selected ? theme.colors["grey-950"] : theme.colors["grey-300"]};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   letter-spacing: -0.025rem;

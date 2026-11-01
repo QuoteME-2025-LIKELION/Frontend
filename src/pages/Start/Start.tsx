@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useOAuthRedirect } from "@/hooks/useAuthQueries";
+import useModalDialog from "@/hooks/useModalDialog";
 import useAuthStore from "@/stores/useAuthStore";
 import theme from "@/styles/theme";
 
@@ -20,15 +21,32 @@ export default function Start() {
   const [isSheetClosing, setIsSheetClosing] = useState(false);
   const isSheetVisible = isSheetOpen || isSheetClosing;
 
+  const dialogRef = useModalDialog(
+    isSheetVisible && !isLoading && !isAuthenticated
+  );
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (closeTimer.current !== null) clearTimeout(closeTimer.current);
+    },
+    []
+  );
+
   const closeSheet = () => {
+    if (closeTimer.current !== null) return;
     setIsSheetClosing(true);
-    window.setTimeout(() => {
+    closeTimer.current = setTimeout(() => {
+      closeTimer.current = null;
       setIsSheetOpen(false);
       setIsSheetClosing(false);
     }, 180);
   };
 
   const openSheet = () => {
+    if (closeTimer.current !== null) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
     setIsSheetClosing(false);
     setIsSheetOpen(true);
   };
@@ -74,6 +92,8 @@ export default function Start() {
           border={`1px solid ${theme.colors["grey-200"]}`}
           children={
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
@@ -119,6 +139,8 @@ export default function Start() {
           border="none"
           children={
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
@@ -145,6 +167,8 @@ export default function Start() {
           <S.Text>기존 회원이신가요?</S.Text>
           <Button
             title="로그인"
+            aria-haspopup="dialog"
+            aria-expanded={isSheetVisible}
             font="pretendard"
             onClick={openSheet}
             bgColor="transparent"
@@ -156,7 +180,18 @@ export default function Start() {
         {/* 로그인 버튼 */}
       </S.BtnBox>
       {isSheetVisible && (
-        <>
+        <S.LoginDialog
+          ref={dialogRef}
+          aria-label="로그인 방법 선택"
+          aria-modal="true"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeSheet();
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeSheet();
+          }}
+        >
           <S.Overlay $isClosing={isSheetClosing} onClick={closeSheet} />
           <S.Loginbox $isClosing={isSheetClosing}>
             <Button
@@ -167,6 +202,8 @@ export default function Start() {
               border={`1px solid ${theme.colors["grey-200"]}`}
               children={
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
                   height="20"
@@ -212,6 +249,8 @@ export default function Start() {
               border="none"
               children={
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
                   height="20"
@@ -228,14 +267,18 @@ export default function Start() {
                   </g>
                   <defs>
                     <clipPath id="clip0_1227_14550">
-                      <rect width="19.9999" height="20" fill={theme.colors.white} />
+                      <rect
+                        width="19.9999"
+                        height="20"
+                        fill={theme.colors.white}
+                      />
                     </clipPath>
                   </defs>
                 </svg>
               }
             ></Button>
           </S.Loginbox>
-        </>
+        </S.LoginDialog>
       )}
     </S.Container>
   );

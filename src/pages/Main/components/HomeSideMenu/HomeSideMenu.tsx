@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
 
 import * as S from "./HomeSideMenu.styles";
@@ -23,24 +24,7 @@ export default function HomeSideMenu({
   onClose,
 }: HomeSideMenuProps) {
   const navigate = useNavigate();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
-        previousFocus.focus({ preventScroll: true });
-      }
-    };
-  }, []);
+  const dialogRef = useModalDialog();
   const [copyToastMessage, setCopyToastMessage] = useState("");
 
   const handleCopyMail = async () => {
@@ -144,10 +128,16 @@ export default function HomeSideMenu({
             <S.UserIntro>{introduction}</S.UserIntro>
           </S.ImgBox>
           <S.ToggleBtnBox>
-            <S.ToggleBtn type="button" onClick={() => navigate("/friend-group")}>
+            <S.ToggleBtn
+              type="button"
+              onClick={() => navigate("/friend-group")}
+            >
               친구 및 그룹
             </S.ToggleBtn>
-            <S.ToggleBtn type="button" onClick={() => navigate("/account-setting")}>
+            <S.ToggleBtn
+              type="button"
+              onClick={() => navigate("/account-setting")}
+            >
               계정 관리
             </S.ToggleBtn>
             <S.ToggleBtn
@@ -171,7 +161,9 @@ export default function HomeSideMenu({
             <S.ToggleInfoText>버전 1.0</S.ToggleInfoText>
           </S.ToggleInfoBox>
         </S.Toggle>
-        {copyToastMessage && <S.CopyToast role="status">{copyToastMessage}</S.CopyToast>}
+        {copyToastMessage && (
+          <S.CopyToast role="status">{copyToastMessage}</S.CopyToast>
+        )}
       </S.ToggleWrapper>
     </>
   );

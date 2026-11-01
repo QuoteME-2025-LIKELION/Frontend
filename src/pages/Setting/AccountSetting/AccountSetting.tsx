@@ -7,6 +7,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import useModalDialog from "@/hooks/useModalDialog";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
@@ -65,7 +66,7 @@ export default function AccountSetting() {
   const [sheetType, setSheetType] = useState<SheetType>(null);
   const [toastMessage, setToastMessage] = useState("");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const sheetRef = useRef<HTMLDialogElement>(null);
+  const sheetRef = useModalDialog(sheetType !== null);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
   const selectedBirthYearRef = useRef<number | null>(null);
   const currentGender = genderDraft ?? normalizeGender(accountProfile?.gender);
@@ -73,34 +74,14 @@ export default function AccountSetting() {
     birthYearDraft ?? parseBirthYear(accountProfile?.birthYear);
 
   useEffect(() => {
-    if (!sheetType) return;
-    const dialog = sheetRef.current;
-    if (!dialog) return;
-    const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    const selectedOption =
-      dialog.querySelector<HTMLButtonElement>('[aria-pressed="true"]') ??
-      dialog.querySelector<HTMLButtonElement>("button");
-    selectedOption?.focus({ preventScroll: true });
-    document.body.style.overflow = "hidden";
+    if (sheetType !== "birth") return;
     const frame = window.requestAnimationFrame(() => {
-      if (sheetType === "birth") {
-        selectedYearRef.current?.scrollIntoView({
-          block: "center",
-          behavior: "auto",
-        });
-      }
+      selectedYearRef.current?.scrollIntoView({
+        block: "center",
+        behavior: "auto",
+      });
     });
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
-        previousFocus.focus({ preventScroll: true });
-      }
-    };
+    return () => window.cancelAnimationFrame(frame);
   }, [sheetType]);
 
   const saveAccount = async (

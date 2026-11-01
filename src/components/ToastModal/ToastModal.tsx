@@ -62,7 +62,12 @@ export default function ToastModal({
   if (!isVisible) return null;
   return (
     <S.Overlay $showOverlay={showOverlay} data-toast-overlay="">
-      <S.Container $isOnShare={isOnShare} $variant={variant}>
+      <S.Container
+        role="status"
+        aria-atomic="true"
+        $isOnShare={isOnShare}
+        $variant={variant}
+      >
         <div>
           {text}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
           {text2 && text2}

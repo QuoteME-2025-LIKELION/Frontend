@@ -1,10 +1,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
-import * as S from "./ConfirmModal.styles";
+import useModalDialog from "@/hooks/useModalDialog";
 
-const activeDialogs = new Set<HTMLDialogElement>();
-let bodyOverflowBeforeDialog = "";
+import * as S from "./ConfirmModal.styles";
 
 interface ConfirmModalProps {
   question: string;
@@ -64,63 +63,25 @@ export default function ConfirmModal({
 }: ConfirmModalProps) {
   const titleId = useId();
   const descriptionId = useId();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useModalDialog(true, {
+    initialFocusRef: cancelRef,
+    restoreFocusFallback: true,
+  });
   const confirmRef = useRef<HTMLButtonElement>(null);
   const closingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const hasDescription = Boolean(description || descriptionLines?.length);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    const previousFocus = document.activeElement;
-    if (!dialog.open) dialog.showModal();
-    cancelRef.current?.focus();
-
-    if (activeDialogs.size === 0) {
-      bodyOverflowBeforeDialog = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-    }
-    activeDialogs.add(dialog);
-
-    return () => {
+  useEffect(
+    () => () => {
       if (closingTimer.current !== null) {
         clearTimeout(closingTimer.current);
         closingTimer.current = null;
       }
-      if (dialog.open) dialog.close();
-      activeDialogs.delete(dialog);
-      if (activeDialogs.size === 0) {
-        document.body.style.overflow = bodyOverflowBeforeDialog;
-      }
-
-      let focusRestored = false;
-      if (
-        previousFocus instanceof HTMLElement &&
-        previousFocus.isConnected &&
-        previousFocus !== document.body &&
-        (activeDialogs.size === 0 ||
-          [...activeDialogs].some((active) => active.contains(previousFocus)))
-      ) {
-        previousFocus.focus({ preventScroll: true });
-        focusRestored = document.activeElement === previousFocus;
-      }
-      if (!focusRestored && activeDialogs.size === 0) {
-        // 트리거가 삭제된 경우 페이지 제목/본문을 우선하고, 없으면 앱으로 복귀한다.
-        const fallback =
-          document.querySelector<HTMLElement>("main, h1") ??
-          document.getElementById("root");
-        if (!fallback) return;
-        const previousTabIndex = fallback.getAttribute("tabindex");
-        fallback.setAttribute("tabindex", "-1");
-        fallback.focus({ preventScroll: true });
-        if (previousTabIndex === null) fallback.removeAttribute("tabindex");
-        else fallback.setAttribute("tabindex", previousTabIndex);
-      }
-    };
-  }, []);
+    },
+    []
+  );
 
   const scheduleAction = (action: () => void) => {
     if (isClosing || closingTimer.current !== null) return;

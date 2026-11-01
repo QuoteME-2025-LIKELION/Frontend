@@ -1,10 +1,11 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import calendarIcon from "@/assets/icons/archive/calendar.svg";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
+import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
@@ -32,7 +33,6 @@ function getDateInMonth(baseDate: Date, year: number, month: number) {
 }
 
 export default function Archive() {
-  const monthDialogRef = useRef<HTMLDialogElement>(null);
   const selectedMonthRef = useRef<HTMLButtonElement>(null);
   const pickerYearId = useId();
   const navigate = useNavigate();
@@ -42,24 +42,9 @@ export default function Archive() {
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
-  useEffect(() => {
-    if (!isMonthPickerOpen || !isCalendarTab) return;
-    const dialog = monthDialogRef.current;
-    if (!dialog) return;
-    const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    selectedMonthRef.current?.focus({ preventScroll: true });
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
-        previousFocus.focus({ preventScroll: true });
-      }
-    };
-  }, [isMonthPickerOpen, isCalendarTab]);
+  const monthDialogRef = useModalDialog(isMonthPickerOpen && isCalendarTab, {
+    initialFocusRef: selectedMonthRef,
+  });
 
   const calendarDates = useMemo(
     () => getCalendarDates(currentMonth),

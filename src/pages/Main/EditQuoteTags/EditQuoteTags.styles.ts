@@ -35,10 +35,24 @@ export const Container = styled.div`
   position: relative;
 `;
 
-export const Toggle = styled.div<{ $active: boolean }>`
-  position: absolute;
+export const Toggle = styled.dialog<{ $active: boolean }>`
+  position: fixed;
   top: 0;
   right: 0;
+  bottom: 0;
+  left: auto;
+  margin: 0 max(0px, calc((100vw - 393px) / 2)) 0 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  max-height: none;
+  overflow: clip;
+  &:not([open]) {
+    display: none;
+  }
+  &::backdrop {
+    background: transparent;
+  }
 
   width: 270px; /* 피그마 보고 조절 */
   height: 100vh;
@@ -52,11 +66,10 @@ export const Toggle = styled.div<{ $active: boolean }>`
   background: var(--bg-basement-neutral, ${theme.colors.secondary});
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 
-  animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out
-    forwards;
+  animation: ${({ $active }) => ($active ? fadeIn : fadeOut)} 0.3s ease-out both;
 `;
 
-export const ToggleBtn = styled.div`
+export const ToggleBtn = styled.button`
   cursor: pointer;
   color: ${theme.colors["grey-950"]};
   font-size: 18px; /* 14px */

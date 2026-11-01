@@ -32,7 +32,7 @@ export default function RequestModal({
   return (
     <S.Overlay onClick={onClose}>
       <S.Modal>
-        <S.Message>
+        <S.Message role="status" aria-atomic="true">
           {isTag ? "태그 요청이 전송되었습니다." : ""}
           {isPoke ? "콕 찔렀습니다!" : ""}
         </S.Message>
