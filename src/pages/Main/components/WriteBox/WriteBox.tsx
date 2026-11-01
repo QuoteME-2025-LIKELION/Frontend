@@ -26,6 +26,7 @@ export default function WriteBox({
   const countId = `${fieldId}-count`;
   const guideId = `${fieldId}-guide`;
   const infoId = `${fieldId}-info`;
+  const infoButtonRef = useRef<HTMLButtonElement>(null);
   const infoWrapRef = useRef<HTMLDivElement | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -133,8 +134,23 @@ export default function WriteBox({
               그대로 게시하거나 <br />
               AI에게 명언을 추천 받을 수 있어요.
             </S.Guide>
-            <S.InfoWrap ref={infoWrapRef}>
+            <S.InfoWrap
+              ref={infoWrapRef}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape" || !showInfo) return;
+                event.preventDefault();
+                event.stopPropagation();
+                setShowInfo(false);
+                infoButtonRef.current?.focus({ preventScroll: true });
+              }}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setShowInfo(false);
+                }
+              }}
+            >
               <S.InfoButton
+                ref={infoButtonRef}
                 type="button"
                 aria-label="명언 작성 안내"
                 aria-expanded={showInfo}

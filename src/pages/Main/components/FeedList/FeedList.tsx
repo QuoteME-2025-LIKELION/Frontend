@@ -60,6 +60,7 @@ export default function FeedList({
   const isNoFriendsMessage =
     emptyMessage === "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요";
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
   const filterBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
@@ -255,8 +256,23 @@ export default function FeedList({
           onConfirm={handleRequest}
         />
       )}
-      <S.FilterBox ref={filterBoxRef}>
+      <S.FilterBox
+        ref={filterBoxRef}
+        onKeyDown={(event) => {
+          if (event.key !== "Escape" || !isFilterOpen) return;
+          event.preventDefault();
+          event.stopPropagation();
+          setIsFilterOpen(false);
+          filterButtonRef.current?.focus({ preventScroll: true });
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            setIsFilterOpen(false);
+          }
+        }}
+      >
         <S.FilterButton
+          ref={filterButtonRef}
           type="button"
           aria-expanded={isFilterOpen}
           onClick={() => setIsFilterOpen((prev) => !prev)}
@@ -273,6 +289,7 @@ export default function FeedList({
               onClick={() => {
                 onSelectGroup(null);
                 setIsFilterOpen(false);
+                filterButtonRef.current?.focus({ preventScroll: true });
               }}
             >
               전체보기
@@ -286,6 +303,7 @@ export default function FeedList({
                 onClick={() => {
                   onSelectGroup(group.id);
                   setIsFilterOpen(false);
+                  filterButtonRef.current?.focus({ preventScroll: true });
                 }}
               >
                 {group.name ?? "그룹"}

@@ -26,6 +26,7 @@ interface HomeBoxProps {
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const tagButtonRef = useRef<HTMLButtonElement>(null);
   const tagBoxRef = useRef<HTMLDivElement | null>(null);
   const downloadElementImage = useElementImageDownload();
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
@@ -166,8 +167,23 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       </S.Wrapper>
       <S.Bottom>
         {hasFeed && (
-          <S.TagBox ref={tagBoxRef}>
+          <S.TagBox
+            ref={tagBoxRef}
+            onKeyDown={(event) => {
+              if (event.key !== "Escape" || !isTagMenuOpen) return;
+              event.preventDefault();
+              event.stopPropagation();
+              setIsTagMenuOpen(false);
+              tagButtonRef.current?.focus({ preventScroll: true });
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setIsTagMenuOpen(false);
+              }
+            }}
+          >
             <S.TagButton
+              ref={tagButtonRef}
               type="button"
               aria-label={`태그된 친구 ${taggedNicknames.length}명`}
               aria-expanded={isTagMenuOpen}
