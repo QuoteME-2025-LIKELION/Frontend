@@ -5,6 +5,7 @@ import calendarIcon from "@/assets/icons/archive/calendar.svg";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
+import theme from "@/styles/theme";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./Archive.styles";
@@ -130,7 +131,7 @@ export default function Archive() {
             >
               <path
                 d="M15 18L9 12L15 6"
-                stroke="#21242B"
+                stroke={theme.colors["grey-950"]}
                 strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -156,7 +157,7 @@ export default function Archive() {
               >
                 <path
                   d="M15 18L9 12L15 6"
-                  stroke="#21242B"
+                  stroke={theme.colors["grey-950"]}
                   strokeWidth="1.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -183,7 +184,7 @@ export default function Archive() {
               >
                 <path
                   d="M9 18L15 12L9 6"
-                  stroke="#21242B"
+                  stroke={theme.colors["grey-950"]}
                   strokeWidth="1.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -264,7 +265,7 @@ export default function Archive() {
                   >
                     <path
                       d="M15 18L9 12L15 6"
-                      stroke="#21242B"
+                      stroke={theme.colors["grey-950"]}
                       strokeWidth="1.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -286,7 +287,7 @@ export default function Archive() {
                   >
                     <path
                       d="M9 18L15 12L9 6"
-                      stroke="#21242B"
+                      stroke={theme.colors["grey-950"]}
                       strokeWidth="1.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"

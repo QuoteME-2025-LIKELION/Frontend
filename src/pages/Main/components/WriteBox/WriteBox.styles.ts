@@ -20,7 +20,7 @@ export const Datebox = styled.div`
   align-items: center;
 `;
 export const Month = styled.div`
-  color: #fff;
+  color: ${theme.colors.white};
   text-align: center;
   ${theme.fonts.bombaram};
   font-size: 36px;
@@ -78,7 +78,7 @@ export const LineWrap = styled.div`
 export const Line = styled.div`
   width: 100%;
   height: 1px;
-  background: #fff;
+  background: ${theme.colors.white};
 `;
 
 export const TextArea = styled.textarea`
@@ -95,7 +95,7 @@ export const TextArea = styled.textarea`
   resize: none;
   padding: 0 33px;
 
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.875rem;
   line-height: 2.5rem !important;
   ${theme.fonts.batang}
@@ -184,7 +184,7 @@ export const InfoBubble = styled.div`
   padding: 0.625rem 0.75rem;
   border-radius: 0.25rem;
   background-color: ${theme.colors.primary};
-  color: #fff;
+  color: ${theme.colors.white};
   ${theme.fonts.pretendard}
   font-size: 0.75rem;
   font-weight: 500;
@@ -225,15 +225,15 @@ export const ActionButton = styled.button`
   border-bottom: 0.5px solid ${theme.colors.primary};
   background-color: transparent;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 120%;
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import theme from "@/styles/theme";
+
 import * as S from "./Header.styles";
 
 interface HeaderProps {
@@ -53,7 +55,7 @@ export default function Header({
             >
               <path
                 d="M15 18L9 12L15 6"
-                stroke={backgroundColor === "primary" ? "#fff" : "#000"}
+                stroke={backgroundColor === "primary" ? theme.colors.white : theme.colors.black}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -71,7 +73,7 @@ export default function Header({
             >
               <path
                 d="M18 6L6 18M6 6L18 18"
-                stroke={backgroundColor === "primary" ? "#fff" : "black"}
+                stroke={backgroundColor === "primary" ? theme.colors.white : theme.colors.black}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

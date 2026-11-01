@@ -1,5 +1,6 @@
 import Search from "@/components/Search/Search";
 import UserListItem from "@/components/UserListItem/UserListItem";
+import theme from "@/styles/theme";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "../CreateGroup.styles";
@@ -90,7 +91,7 @@ export default function CreateGroupInviteStep({
                 >
                   <path
                     d="M4.66669 4.6665L11.3334 11.3332M11.3334 11.3332V4.6665M11.3334 11.3332H4.66669"
-                    stroke="black"
+                    stroke={theme.colors.black}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />

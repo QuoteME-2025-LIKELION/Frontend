@@ -8,7 +8,7 @@ export const Container = styled.article`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  color: #fff;
+  color: ${theme.colors.white};
 `;
 
 export const OpenButton = styled.button`
@@ -26,7 +26,7 @@ export const OpenButton = styled.button`
 
 export const Author = styled.div`
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: -0.28px;
@@ -42,7 +42,7 @@ export const QuoteBox = styled.div`
 
 export const QuoteMark = styled.span`
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 0.8;
@@ -50,7 +50,7 @@ export const QuoteMark = styled.span`
 
 export const Content = styled.p`
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.0625rem;
   font-weight: 500;
   line-height: 155%;
@@ -61,7 +61,7 @@ export const Content = styled.p`
 
 export const OriginalContent = styled.p`
   ${theme.fonts.pretendard}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 155%;
@@ -96,7 +96,7 @@ export const TagText = styled.div`
   gap: 0.25rem;
   overflow: hidden;
   ${theme.fonts.pretendard}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: -0.24px;

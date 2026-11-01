@@ -1,3 +1,5 @@
+import theme from "@/styles/theme";
+
 import * as S from "./Search.styles";
 
 interface SearchProps {
@@ -67,7 +69,7 @@ export default function Search({
         >
           <path
             d="M14 14L11.1067 11.1067M12.6667 7.33333C12.6667 10.2789 10.2789 12.6667 7.33333 12.6667C4.38781 12.6667 2 10.2789 2 7.33333C2 4.38781 4.38781 2 7.33333 2C10.2789 2 12.6667 4.38781 12.6667 7.33333Z"
-            stroke="#959595"
+            stroke={theme.colors.territory}
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -97,7 +99,7 @@ export default function Search({
               <g clipPath="url(#clip0_636_1003)">
                 <path
                   d="M10 6L6.00004 10M6.00004 6L10 10M14.6667 8C14.6667 11.6819 11.6819 14.6667 8.00004 14.6667C4.31814 14.6667 1.33337 11.6819 1.33337 8C1.33337 4.3181 4.31814 1.33334 8.00004 1.33334C11.6819 1.33334 14.6667 4.3181 14.6667 8Z"
-                  stroke="#959595"
+                  stroke={theme.colors.territory}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -105,7 +107,7 @@ export default function Search({
               </g>
               <defs>
                 <clipPath id="clip0_636_1003">
-                  <rect width="16" height="16" fill="white" />
+                  <rect width="16" height="16" fill={theme.colors.white} />
                 </clipPath>
               </defs>
             </svg>

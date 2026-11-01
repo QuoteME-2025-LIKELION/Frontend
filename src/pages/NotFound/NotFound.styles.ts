@@ -8,7 +8,7 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 393px;
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   height: 100%;
   padding: 0 0.9375rem; /* 0 15px */
   margin-top: 54%;
@@ -36,7 +36,7 @@ export const SorryBox = styled.div`
   top: 1.5rem; /* 20px */
   left: 1rem;
   gap: 0.625rem; /* 10px */
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   padding-right: 0.6125rem; /* 10px */
 
   ${theme.fonts.bombaram}
@@ -73,7 +73,7 @@ export const Main = styled.div`
 `;
 
 export const TextBox = styled.div`
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   padding: 0.5625rem 0; /* 9px 0 */
   border-top: 1px solid ${theme.colors.primary};
   border-bottom: 1px solid ${theme.colors.primary};

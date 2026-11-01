@@ -41,7 +41,7 @@ export const TagScrollArea = styled.div`
 
 export const Title = styled.div`
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 20px;
   font-weight: 700;
   line-height: 120%;
@@ -120,7 +120,7 @@ export const SelectedUser = styled.div`
   justify-content: center;
   gap: 0.25rem;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 120%;
@@ -145,7 +145,7 @@ export const SelectedAvatar = styled.div`
 
   span {
     ${theme.fonts.batang}
-    color: #fff;
+    color: ${theme.colors.white};
     font-size: 1rem;
     line-height: 100%;
   }
@@ -159,7 +159,7 @@ export const RemoveSelectedButton = styled.button`
   height: 0.875rem;
   border-radius: 50%;
   background-color: ${theme.colors.territory};
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.625rem;
   line-height: 1;
   display: flex;
@@ -171,7 +171,7 @@ export const RemoveSelectedButton = styled.button`
 export const TagRequestListTitle = styled.div`
   margin-top: 0.75rem;
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 120%;
@@ -197,7 +197,7 @@ export const TagItem = styled.button<{
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: ${({ $showBorder }) =>
-    $showBorder ? "1px solid #dedede" : "0"};
+    $showBorder ? `1px solid ${theme.colors["grey-100"]}` : "0"};
   margin-bottom: ${({ $separateAfter }) =>
     $separateAfter ? "1.375rem" : "0"};
   background-color: transparent;
@@ -220,7 +220,7 @@ export const DefaultProfileImg = styled.div`
   align-items: center;
   justify-content: center;
   ${theme.fonts.batang}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.75rem;
   line-height: 100%;
 `;
@@ -235,7 +235,7 @@ export const UserBox = styled.div`
 
 export const Username = styled.div`
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 120%;
@@ -287,15 +287,15 @@ export const ActionButton = styled.button`
   border-bottom: 0.5px solid ${theme.colors.primary};
   background-color: transparent;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 120%;
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

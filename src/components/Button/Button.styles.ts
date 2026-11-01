@@ -22,7 +22,7 @@ export const Button = styled.button<ButtonStyleProps>`
       gap: var(--spacing-gap-lg, 12px);
       align-self: stretch;
       border-radius: var(--spacing-radius-sm, 4px);
-      border: ${$border || "1px solid var(--stroke-subtle, #C3C5C9)"};
+      border: ${$border || `1px solid var(--stroke-subtle, ${theme.colors["grey-200"]})`};
       background-color: ${$bgColor || "#F2F2F2"};
 
     `
@@ -53,7 +53,7 @@ export const Button = styled.button<ButtonStyleProps>`
     `
       : `
       ${theme.fonts.pretendard}
-      color: ${$fontColor || theme.colors["fg-primary"]};
+      color: ${$fontColor || theme.colors["grey-950"]};
       font-size: 0.875rem;
       font-weight: 500;
     `}
@@ -70,14 +70,14 @@ export const Button = styled.button<ButtonStyleProps>`
     !$disableActive &&
     `
     &:active {
-      background-color: #d4d6da;
+      background-color: ${theme.colors["grey-100"]};
     }
   `}
 
   &:disabled {
     border-top: 1px solid rgba(149, 153, 161, 0.24);
     border-bottom: 1px solid rgba(149, 153, 161, 0.24);
-    color: #c3c5c9;
+    color: ${theme.colors["grey-200"]};
     background-color: transparent;
     cursor: not-allowed;
   }

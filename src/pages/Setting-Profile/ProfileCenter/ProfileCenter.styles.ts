@@ -25,7 +25,7 @@ export const ImgPreview = styled.button`
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #e0e0e0;
+  background-color: ${theme.colors["grey-100"]};
   background-size: cover;
   background-position: center;
   flex: 0 0 80px;
@@ -38,7 +38,7 @@ export const ImgPreview = styled.button`
 
 export const ImgInput = styled.button<{ $hidden?: boolean }>`
   ${theme.fonts.pretendard};
-  color: #a4a9b0;
+  color: ${theme.colors["grey-300"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -65,7 +65,7 @@ export const InfoBox = styled.div`
   align-items: center;
 
   ${theme.fonts.pretendard};
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -75,7 +75,7 @@ export const InfoBox = styled.div`
 
 export const TextName = styled.div`
   ${theme.fonts.batang};
-  color: #21242b;
+  color: ${theme.colors["grey-950"]};
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 700;
@@ -96,7 +96,7 @@ export const Field = styled.div<{ $error?: boolean }>`
   input:focus {
     border: 0.5px solid
       ${({ $error }) => ($error ? theme.colors.red : theme.colors.primary)};
-    background: var(--bg-white, #fafafa);
+    background: var(--bg-white, ${theme.colors["grey-00"]});
   }
 `;
 
@@ -109,7 +109,7 @@ export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
   justify-content: ${({ $error }) => ($error ? "space-between" : "flex-end")};
   gap: 0.75rem;
   ${theme.fonts.pretendard};
-  color: ${({ $error }) => ($error ? theme.colors.red : "#9599a1")};
+  color: ${({ $error }) => ($error ? theme.colors.red : theme.colors["grey-400"])};
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.35;
@@ -118,7 +118,7 @@ export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
 
   span:last-of-type {
     margin-left: auto;
-    color: #9599a1;
+    color: ${theme.colors["grey-400"]};
   }
 `;
 

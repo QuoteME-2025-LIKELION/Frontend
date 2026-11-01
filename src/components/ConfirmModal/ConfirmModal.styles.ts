@@ -77,7 +77,7 @@ export const Question = styled.div<{ $variant: "default" | "card" }>`
   text-align: center;
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: ${({ $variant }) => ($variant === "card" ? "1rem" : "0.9375rem")};
   line-height: ${({ $variant }) => ($variant === "card" ? "1.55" : "1")};
   letter-spacing: -0.3px;
@@ -92,7 +92,7 @@ export const Question = styled.div<{ $variant: "default" | "card" }>`
 
   div {
     ${theme.fonts.pretendard}
-    color: #000;
+    color: ${theme.colors.black};
     font-size: 0.9375rem;
     letter-spacing: -0.3px;
     font-weight: 600;
@@ -147,7 +147,7 @@ export const Btn = styled.button<{
       : $confirmColor === "primary"
         ? theme.colors.primary
         : $variant === "card"
-          ? "#000"
+          ? theme.colors.black
           : theme.colors.territory};
   font-size: ${({ $variant }) =>
     $variant === "card" ? "0.875rem" : "0.9375rem"};
@@ -162,7 +162,7 @@ export const Btn = styled.button<{
         ? theme.colors.red
         : $confirmColor === "primary"
           ? theme.colors.primary
-          : "#000"};
+          : theme.colors.black};
   }
 
   &:disabled {
@@ -181,7 +181,7 @@ export const Description = styled.div`
   text-align: center;
 
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.75rem; /* 12px */
   line-height: 1.5;
   font-weight: 500;

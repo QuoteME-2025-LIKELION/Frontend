@@ -58,7 +58,7 @@ export const ImgInput = styled.div`
   cursor: pointer;
 `;
 export const StepText = styled.div`
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   ${theme.fonts.batang};
   font-size: 1.25rem;
   font-style: normal;
@@ -68,7 +68,7 @@ export const StepText = styled.div`
 `;
 
 export const ExText = styled.div`
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
 
   /* title/lg */
   ${theme.fonts.batang}
@@ -79,7 +79,7 @@ export const ExText = styled.div`
 `;
 
 export const exText = styled.div`
-  color: var(--fg-subtle, #9599a1);
+  color: var(--fg-subtle, ${theme.colors["grey-400"]});
 
   /* caption/description/md */
   ${theme.fonts.pretendard}
@@ -108,7 +108,7 @@ export const LimitText = styled.div`
   align-self: flex-end;
   margin-top: -1.5rem;
   ${theme.fonts.pretendard};
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.5;

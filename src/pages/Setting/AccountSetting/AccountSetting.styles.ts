@@ -26,7 +26,7 @@ export const Section = styled.section`
 export const SectionTitle = styled.h2`
   margin: 0;
   ${theme.fonts.batang}
-  color: #21242b;
+  color: ${theme.colors["grey-950"]};
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.4;
@@ -44,13 +44,13 @@ export const InfoRow = styled.button`
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #d8dadd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
 `;
 
 export const RowLabel = styled.span`
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["grey-950"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -59,7 +59,7 @@ export const RowLabel = styled.span`
 
 export const RowValue = styled.span`
   ${theme.fonts.pretendard}
-  color: #9599a1;
+  color: ${theme.colors["grey-400"]};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.35;
@@ -88,7 +88,7 @@ export const LinkedRow = styled.div`
   grid-template-columns: 2.75rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.8125rem;
-  border-bottom: 1px solid #d8dadd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
 `;
 
 export const LinkedActionRow = styled.button`
@@ -98,7 +98,7 @@ export const LinkedActionRow = styled.button`
   grid-template-columns: 2.75rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.8125rem;
-  border-bottom: 1px solid #d8dadd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
   cursor: pointer;
 `;
@@ -117,13 +117,13 @@ export const ProviderIconFrame = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   overflow: hidden;
 `;
 
 export const ProviderName = styled.span`
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["grey-950"]};
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;
@@ -132,7 +132,7 @@ export const ProviderName = styled.span`
 
 export const ProviderStatus = styled.span`
   ${theme.fonts.pretendard}
-  color: #9599a1;
+  color: ${theme.colors["grey-400"]};
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.35;
@@ -153,7 +153,7 @@ export const BottomActions = styled.div`
 
 export const LogoutButton = styled.button`
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
@@ -197,7 +197,7 @@ export const GenderOption = styled.button`
   display: grid;
   grid-template-columns: minmax(0, 1fr) 1.5rem;
   align-items: center;
-  border-bottom: 1px solid #d8dadd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
 
   &:last-of-type {
@@ -206,7 +206,7 @@ export const GenderOption = styled.button`
 
   span {
     ${theme.fonts.pretendard}
-    color: #21242b;
+    color: ${theme.colors["grey-950"]};
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.35;
@@ -226,8 +226,8 @@ export const CheckMark = styled.span`
     top: 0.25rem;
     width: 0.5rem;
     height: 0.875rem;
-    border-right: 1.5px solid #21242b;
-    border-bottom: 1.5px solid #21242b;
+    border-right: 1.5px solid ${theme.colors["grey-950"]};
+    border-bottom: 1.5px solid ${theme.colors["grey-950"]};
     transform: rotate(45deg);
   }
 `;
@@ -251,7 +251,7 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   width: 100%;
   min-height: 1.75rem;
   ${theme.fonts.batang}
-  color: ${({ $selected }) => ($selected ? "#21242b" : "#9599a1")};
+  color: ${({ $selected }) => ($selected ? theme.colors["grey-950"] : theme.colors["grey-400"])};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   line-height: 1.35;
@@ -265,7 +265,7 @@ export const SheetDoneButton = styled.button`
   border-top: 1px solid #8392a0;
   border-bottom: 1px solid #8392a0;
   ${theme.fonts.pretendard}
-  color: #21242b;
+  color: ${theme.colors["grey-950"]};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;

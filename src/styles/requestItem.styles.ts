@@ -4,7 +4,7 @@ import theme from "@/styles/theme";
 
 export const RequestItemBase = styled.div`
   width: 100%;
-  border-bottom: 1px solid #dedede;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   display: grid;
   grid-template-columns: 2.8125rem 1fr auto;
   gap: 0.6875rem; /* 11px */
@@ -43,7 +43,7 @@ export const RequestUserBoxBase = styled.div`
 
 export const RequestUsernameBase = styled.div`
   font-weight: 700;
-  color: #000;
+  color: ${theme.colors.black};
 `;
 
 export const RequestIntroBase = styled.div`

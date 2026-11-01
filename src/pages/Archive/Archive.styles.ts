@@ -34,7 +34,7 @@ export const HeaderButton = styled.button`
 
 export const HeaderTitle = styled.h1`
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.36px;
@@ -62,7 +62,7 @@ export const MonthButton = styled.button`
 
 export const MonthText = styled.button`
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -90,7 +90,7 @@ export const CalendarGrid = styled.div`
 
 export const Weekday = styled.div<{ $sunday?: boolean }>`
   ${theme.fonts.pretendard}
-  color: ${({ $sunday }) => ($sunday ? "#2b6da6" : "#000")};
+  color: ${({ $sunday }) => ($sunday ? "#2b6da6" : theme.colors.black)};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 2rem;
@@ -110,7 +110,7 @@ export const DayButton = styled.button<{
   align-items: center;
   justify-content: center;
   ${theme.fonts.pretendard}
-  color: ${({ $outside }) => ($outside ? "#c9cbd0" : "#000")};
+  color: ${({ $outside }) => ($outside ? theme.colors["grey-200"] : theme.colors.black)};
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -118,7 +118,7 @@ export const DayButton = styled.button<{
   ${({ $today }) =>
     $today &&
     css`
-      background-color: #fff;
+      background-color: ${theme.colors.white};
       border: 1px solid #2b6da6;
       color: #2b6da6;
     `}
@@ -127,7 +127,7 @@ export const DayButton = styled.button<{
     $selected &&
     css`
       background-color: ${theme.colors.primary};
-      color: #fff;
+      color: ${theme.colors.white};
       border: 0;
     `}
 `;
@@ -174,7 +174,7 @@ export const Btn = styled.button<{ $active: boolean }>`
   ${({ $active }) =>
     $active &&
     css`
-      color: #fff;
+      color: ${theme.colors.white};
       border-top-color: rgba(255, 255, 255, 0.62);
       border-bottom-color: rgba(255, 255, 255, 0.62);
     `}
@@ -207,7 +207,7 @@ export const PickerHeader = styled.div`
 
 export const PickerYear = styled.span`
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -223,7 +223,7 @@ export const MonthOption = styled.button<{ $active: boolean }>`
   min-height: 2.75rem;
   border-radius: 4px;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -232,6 +232,6 @@ export const MonthOption = styled.button<{ $active: boolean }>`
     $active &&
     css`
       background-color: ${theme.colors.primary};
-      color: #fff;
+      color: ${theme.colors.white};
     `}
 `;

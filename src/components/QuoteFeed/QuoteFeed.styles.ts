@@ -22,7 +22,7 @@ export const ArchiveContainer = styled.div`
   font-weight: 700;
   letter-spacing: -0.24px;
   font-size: 0.75rem; /* 12px */
-  color: #fff;
+  color: ${theme.colors.white};
 `;
 
 export const ProfileContainer = styled.div`
@@ -59,7 +59,7 @@ export const ProfileInfo = styled.div`
 
 export const Username = styled.div<{ $isInArchive?: boolean }>`
   ${theme.fonts.pretendard}
-  color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
+  color: ${({ $isInArchive }) => ($isInArchive ? theme.colors.white : theme.colors.black)};
   font-weight: 700;
   font-size: 0.8125rem;
   letter-spacing: -0.28px;
@@ -75,7 +75,7 @@ export const IntroTimeBox = styled.div<{ $isInArchive?: boolean }>`
   div {
     ${theme.fonts.pretendard}
     color: ${({ $isInArchive }) =>
-      $isInArchive ? "#fff" : theme.colors.territory};
+      $isInArchive ? theme.colors.white : theme.colors.territory};
     font-size: 0.6875rem;
     font-weight: 500;
     line-height: 120%;
@@ -108,11 +108,11 @@ export const TextContainer = styled.div<{
     color: ${({ $isSilenced, $isInArchive }) =>
       $isSilenced
         ? $isInArchive
-          ? "#fff"
+          ? theme.colors.white
           : theme.colors.territory
         : $isInArchive
-          ? "#fff"
-          : "#000"};
+          ? theme.colors.white
+          : theme.colors.black};
   }
 `;
 
@@ -138,9 +138,9 @@ export const TagContainer = styled.div<{ $isInArchive?: boolean }>`
   width: 100%;
   padding: 0.375rem 0; /* 6px 0 */
   border-top: 1px solid
-    ${({ $isInArchive }) => ($isInArchive ? "#fff" : theme.colors.territory)};
+    ${({ $isInArchive }) => ($isInArchive ? theme.colors.white : theme.colors.territory)};
   border-bottom: 1px solid
-    ${({ $isInArchive }) => ($isInArchive ? "#fff" : theme.colors.territory)};
+    ${({ $isInArchive }) => ($isInArchive ? theme.colors.white : theme.colors.territory)};
   min-height: 1.875rem; /* 30px */
 `;
 
@@ -168,12 +168,12 @@ export const Name = styled.div<{ $isInArchive?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ $isInArchive }) => ($isInArchive ? "#fff" : "#000")};
+  color: ${({ $isInArchive }) => ($isInArchive ? theme.colors.white : theme.colors.black)};
 `;
 
 export const RequestBtn = styled.button<{ $isInArchive?: boolean }>`
   color: ${({ $isInArchive }) =>
-    $isInArchive ? "#fff" : theme.colors.territory};
+    $isInArchive ? theme.colors.white : theme.colors.territory};
   background-color: transparent;
   display: flex;
   align-items: center;

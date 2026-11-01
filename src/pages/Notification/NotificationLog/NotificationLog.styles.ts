@@ -10,7 +10,7 @@ export const Container = styled.button`
   background-color: transparent;
   gap: 0.75rem;
   padding: 0.875rem 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
 `;
 
@@ -35,7 +35,7 @@ export const TextBox = styled.div`
   min-width: 0;
 
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem; /* 14px */
   font-weight: 600;
   letter-spacing: -0.28px;
@@ -53,14 +53,14 @@ export const Icon = styled.span<{
   align-items: center;
   justify-content: center;
   background: ${({ $isRead, $variant }) => {
-    if ($isRead) return "#fff";
-    return $variant === "friend" ? "#fff" : theme.colors.primary;
+    if ($isRead) return theme.colors.white;
+    return $variant === "friend" ? theme.colors.white : theme.colors.primary;
   }};
   border: ${({ $isRead, $variant }) =>
-    $isRead || $variant === "friend" ? "1px solid #ddd" : "none"};
+    $isRead || $variant === "friend" ? `1px solid ${theme.colors["grey-100"]}` : "none"};
   color: ${({ $isRead, $variant }) => {
-    if ($isRead) return theme.colors["fg-subtle"];
-    return $variant === "friend" ? "#000" : "#fff";
+    if ($isRead) return theme.colors["grey-400"];
+    return $variant === "friend" ? theme.colors.black : theme.colors.white;
   }};
   ${theme.fonts.batang};
   font-size: 1.5rem;
@@ -71,7 +71,7 @@ export const Icon = styled.span<{
 export const Category = styled.span`
   margin-bottom: 0.25rem;
   ${theme.fonts.pretendard};
-  color: #4f7fa5;
+  color: ${theme.colors["indigo-500"]};
   font-size: 0.75rem;
   font-weight: 500;
 `;

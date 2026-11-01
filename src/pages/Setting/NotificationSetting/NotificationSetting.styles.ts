@@ -22,9 +22,9 @@ export const Row = styled.button<{ $disabled?: boolean }>`
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 1rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid ${theme.colors["grey-100"]};
   text-align: left;
-  color: ${({ $disabled }) => ($disabled ? "#c7cbd1" : "#24262c")};
+  color: ${({ $disabled }) => ($disabled ? theme.colors["grey-200"] : theme.colors["grey-950"])};
 `;
 
 export const MasterRow = styled(Row)`
@@ -61,8 +61,8 @@ export const Description = styled.span`
 export const Value = styled.span<{ $active?: boolean; $disabled?: boolean }>`
   ${theme.fonts.pretendard};
   color: ${({ $active, $disabled }) => {
-    if ($disabled) return "#c7cbd1";
-    return $active ? theme.colors.primary : "#9599a1";
+    if ($disabled) return theme.colors["grey-200"];
+    return $active ? theme.colors.primary : theme.colors["grey-400"];
   }};
   font-size: 0.8125rem;
   font-weight: 500;
@@ -115,7 +115,7 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   min-height: 1.75rem;
   scroll-snap-align: center;
   ${theme.fonts.batang};
-  color: ${({ $selected }) => ($selected ? "#24262c" : "#a4a9b0")};
+  color: ${({ $selected }) => ($selected ? theme.colors["grey-950"] : theme.colors["grey-300"])};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   letter-spacing: -0.025rem;
@@ -128,7 +128,7 @@ export const PickerDoneButton = styled.button`
   border-top: 1px solid #8392a0;
   border-bottom: 1px solid #8392a0;
   ${theme.fonts.pretendard};
-  color: #24262c;
+  color: ${theme.colors["grey-950"]};
   font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: -0.28px;

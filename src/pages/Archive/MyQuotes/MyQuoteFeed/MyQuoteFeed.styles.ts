@@ -28,7 +28,7 @@ export const DateBox = styled.div`
 
 export const Date = styled.div`
   ${theme.fonts.bombaram}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 1.25rem; /* 20px */
   font-weight: 400;
   letter-spacing: -0.4px;
@@ -44,7 +44,7 @@ export const Day = styled.div`
 
 export const FeedContainer = styled.div`
   width: 100%;
-  border: 1px solid #fff;
+  border: 1px solid ${theme.colors.white};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,7 +63,7 @@ export const TitleBox = styled.div`
   gap: 1.125rem; /* 18px */
   padding: 0.5rem 0; /* 8px 0 */
 
-  color: #000;
+  color: ${theme.colors.black};
   ${theme.fonts.batang}
   font-weight: 500;
 `;
@@ -99,7 +99,7 @@ export const Desc = styled.div`
   word-break: break-all;
 
   ${theme.fonts.pretendard}
-  color: #fff;
+  color: ${theme.colors.white};
   font-size: 0.75rem;
   line-height: 120%; /* 14.4px */
   letter-spacing: -0.24px;
@@ -111,7 +111,7 @@ export const TagContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #fff;
+  border-top: 1px solid ${theme.colors.white};
   padding: 0.3125rem; /* 5px */
   gap: 0.3125rem; /* 5px */
 `;
@@ -129,7 +129,7 @@ export const Tag = styled.div`
   flex-wrap: wrap;
   div {
     ${theme.fonts.pretendard}
-    color: #fff;
+    color: ${theme.colors.white};
     font-size: 0.75rem; /* 12px */
     font-weight: 500;
     letter-spacing: -0.24px;

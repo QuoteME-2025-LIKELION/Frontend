@@ -36,7 +36,7 @@ export const Head = styled.div`
 `;
 
 export const Text = styled.div`
-  color: #000;
+  color: ${theme.colors.black};
   ${theme.fonts.batang}
   text-align: center;
   font-style: normal;
@@ -57,7 +57,7 @@ export const QuoteText = styled(Text)<{ $isSelected?: boolean }>`
   min-width: 0;
   font-size: 15px;
   line-height: 135%;
-  color: ${({ $isSelected }) => ($isSelected ? "#fff" : "#000")};
+  color: ${({ $isSelected }) => ($isSelected ? theme.colors.white : theme.colors.black)};
 `;
 
 export const RefreshButton = styled.button`
@@ -95,16 +95,16 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
   width: 100%;
   border-radius: 0.125rem;
   background: ${({ $isSelected }) =>
-    $isSelected ? theme.colors.primary : "#fff"};
+    $isSelected ? theme.colors.primary : theme.colors.white};
   gap: 0.375rem;
   cursor: pointer;
 
   border: ${({ $isSelected }) =>
-    $isSelected ? "1px solid #143858" : "1px solid transparent"};
+    $isSelected ? `1px solid ${theme.colors.primary}` : "1px solid transparent"};
 
   &:active {
     background-color: ${({ $isSelected }) =>
-      $isSelected ? theme.colors.primary : "#d9dade"};
+      $isSelected ? theme.colors.primary : theme.colors["grey-100"]};
   }
 `;
 
@@ -121,7 +121,7 @@ export const FirstLine = styled.div<{ $isSelected?: boolean }>`
   }
 
   path {
-    fill: ${({ $isSelected }) => ($isSelected ? "#fff" : "#000")};
+    fill: ${({ $isSelected }) => ($isSelected ? theme.colors.white : theme.colors.black)};
   }
 `;
 
@@ -153,15 +153,15 @@ export const ActionButton = styled.button`
   border-bottom: 0.5px solid ${theme.colors.primary};
   background-color: transparent;
   ${theme.fonts.pretendard}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 120%;
   cursor: pointer;
 
   &:disabled {
-    border-color: #dedede;
-    color: #c3c5c9;
+    border-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: default;
   }
 

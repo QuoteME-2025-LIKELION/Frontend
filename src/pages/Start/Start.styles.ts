@@ -65,7 +65,7 @@ export const TextBox = styled.div`
 export const TitleText = styled.div`
   ${theme.fonts.batang};
   font-size: 3rem;
-  color: #fff;
+  color: ${theme.colors.white};
   text-align: center;
   font-weight: 400;
   line-height: 100%;
@@ -73,7 +73,7 @@ export const TitleText = styled.div`
 `;
 export const Text = styled.div`
   ${theme.fonts.pretendard};
-  color: #fff;
+  color: ${theme.colors.white};
   text-align: center;
   font-size: 0.875rem;
   font-style: normal;
@@ -96,7 +96,7 @@ export const BtnBox = styled.div`
 export const Button = styled.button`
   width: 100%;
   height: 2.6875rem; /* 43px */
-  background-color: #fff;
+  background-color: ${theme.colors.white};
   border-top: 0.5px solid ${theme.colors.territory};
   border-bottom: 0.5px solid ${theme.colors.territory};
   display: flex;
@@ -106,7 +106,7 @@ export const Button = styled.button`
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem; /* 16px */
   font-weight: 700;
   letter-spacing: -0.32px;
@@ -120,7 +120,7 @@ export const Button = styled.button`
 
 export const ButtonText = styled.div`
   ${theme.fonts.batang};
-  color: #000;
+  color: ${theme.colors.black};
   text-align: center;
   font-weight: 700;
 `;
@@ -169,7 +169,7 @@ export const Loginbox = styled.div<{ $isClosing: boolean }>`
 
   z-index: 11;
   border-radius: 0.625rem 0.625rem 0 0;
-  background: var(--bg-basement-neutral, #e9eaec);
+  background: var(--bg-basement-neutral, ${theme.colors.secondary});
   animation: ${({ $isClosing }) => ($isClosing ? slideDown : slideUp)} 180ms
     ease-out forwards;
 `;

@@ -95,7 +95,7 @@ export const Title = styled.div`
   ${theme.fonts.batang}
   font-size: 1rem; /* 16px */
   text-align: center;
-  color: #000;
+  color: ${theme.colors.black};
   font-weight: 700;
   letter-spacing: -0.32px;
 `;
@@ -143,7 +143,7 @@ export const PendingTitle = styled.div`
   align-items: center;
 
   ${theme.fonts.batang}
-  color: #000;
+  color: ${theme.colors.black};
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.32px;
@@ -173,7 +173,7 @@ export const EmptyFriendList = styled.div`
   }
 
   button {
-    color: #000;
+    color: ${theme.colors.black};
     text-decoration-line: underline;
     font-weight: 500;
     text-underline-position: from-font;
@@ -199,9 +199,9 @@ export const BtnBox = styled.div`
   gap: 0.625rem; /* 10px */
 
   &:disabled {
-    border-top: 0.5px solid var(--stroke-subtle, #c3c5c9);
-    border-bottom: 0.5px solid var(--stroke-subtle, #c3c5c9);
-    color: var(--fg-disabled, #c3c5c9);
+    border-top: 0.5px solid var(--stroke-subtle, ${theme.colors["grey-200"]});
+    border-bottom: 0.5px solid var(--stroke-subtle, ${theme.colors["grey-200"]});
+    color: var(--fg-disabled, ${theme.colors["grey-200"]});
   }
 `;
 
@@ -222,15 +222,15 @@ export const ActionButton = styled.button`
   border-bottom: 0.5px solid ${theme.colors.primary};
 
   ${theme.fonts.pretendard}
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   font-size: 1rem;
   font-weight: 500;
   letter-spacing: -0.32px;
 
   &:disabled {
-    border-top-color: #dedede;
-    border-bottom-color: #dedede;
-    color: #c3c5c9;
+    border-top-color: ${theme.colors["grey-100"]};
+    border-bottom-color: ${theme.colors["grey-100"]};
+    color: ${theme.colors["grey-200"]};
     cursor: not-allowed;
   }
 
@@ -240,7 +240,7 @@ export const ActionButton = styled.button`
 `;
 
 export const MTitle = styled.div`
-  color: ${theme.colors["fg-primary"]};
+  color: ${theme.colors["grey-950"]};
   margin-top: 0;
   ${theme.fonts.batang}
   font-size: var(--font-size-t5, 20px);
@@ -250,7 +250,7 @@ export const MTitle = styled.div`
 `;
 
 export const STitle = styled.div`
-  color: ${theme.colors["fg-subtle"]};
+  color: ${theme.colors["grey-400"]};
 
   ${theme.fonts.pretendard}
   font-size: var(--font-size-t2, 14px);

@@ -10,8 +10,8 @@ import * as S from "./Notice.styles";
 
 const INITIAL_NEWS_COUNT = 3;
 
-function formatNoticeDate(date: string) {
-  return date.slice(0, 10).replaceAll("-", ".");
+function formatNoticeDate(date: string | null) {
+  return date ? date.slice(0, 10).replaceAll("-", ".") : "";
 }
 
 function isImportantNotice(notice: NoticeSummary) {
@@ -53,10 +53,10 @@ export default function Notice() {
               {importantNotices.length > 0 ? (
                 <S.ImportantList>
                   {importantNotices.map((notice) => (
-                    <S.ImportantItem key={notice.noticeId}>
+                    <S.ImportantItem key={notice.id}>
                       <S.ImportantTitle>{notice.title}</S.ImportantTitle>
                       <S.ImportantDate>
-                        {formatNoticeDate(notice.createdAt)}
+                        {formatNoticeDate(notice.createDate)}
                       </S.ImportantDate>
                     </S.ImportantItem>
                   ))}
@@ -70,10 +70,10 @@ export default function Notice() {
               {visibleNews.length > 0 ? (
                 <S.NewsList>
                   {visibleNews.map((notice) => (
-                    <S.NewsItem key={notice.noticeId}>
+                    <S.NewsItem key={notice.id}>
                       <S.NewsTitle>{notice.title}</S.NewsTitle>
                       <S.NewsDate>
-                        {formatNoticeDate(notice.createdAt)}
+                        {formatNoticeDate(notice.createDate)}
                       </S.NewsDate>
                       <S.NewsContent>
                         {notice.content ?? "공지 내용을 확인해 주세요."}
