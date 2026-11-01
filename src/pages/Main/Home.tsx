@@ -90,7 +90,8 @@ export default function Home() {
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";
-  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const {
     shareStatus,
     showShareErrorToast,
@@ -132,45 +133,47 @@ export default function Home() {
         />
       )}
 
-      <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
-      <FeedList
-        date={date}
-        otherQuotes={otherQuotes}
-        unwrittenMembers={quotesData?.unwrittenMembers ?? []}
-        groups={groups}
-        selectedGroupId={selectedGroupId}
-        myNickname={profileNickname}
-        myMemberId={myProfile?.id}
-        onSelectGroup={setSelectedGroupId}
-        onShare={executeShare}
-        isLoading={isLoading}
-        isFeedError={isFeedError || isQuotesError}
-        emptyMessage={feedData?.emptyMessage}
-      />
-      {shareStatus !== "nothing" && (
-        <ToastModal
-          isVisible={true}
-          onClose={resetShareStatus}
-          text={
-            shareStatus === "sharing"
-              ? "명언 이미지를 저장중입니다."
-              : "명언 이미지를 저장했습니다."
-          }
-          isOnShare={shareStatus === "sharing"}
-          showOverlay={false}
-          variant="snackbar"
+      <S.ScrollContent data-page-scroll="">
+        <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
+        <FeedList
+          date={date}
+          otherQuotes={otherQuotes}
+          unwrittenMembers={quotesData?.unwrittenMembers ?? []}
+          groups={groups}
+          selectedGroupId={selectedGroupId}
+          myNickname={profileNickname}
+          myMemberId={myProfile?.id}
+          onSelectGroup={setSelectedGroupId}
+          onShare={executeShare}
+          isLoading={isLoading}
+          isFeedError={isFeedError || isQuotesError}
+          emptyMessage={feedData?.emptyMessage}
         />
-      )}
+        {shareStatus !== "nothing" && (
+          <ToastModal
+            isVisible={true}
+            onClose={resetShareStatus}
+            text={
+              shareStatus === "sharing"
+                ? "명언 이미지를 저장중입니다."
+                : "명언 이미지를 저장했습니다."
+            }
+            isOnShare={shareStatus === "sharing"}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
 
-      {showShareErrorToast && (
-        <ToastModal
-          isVisible={showShareErrorToast}
-          onClose={closeShareErrorToast}
-          text="이미지 저장에 실패했습니다."
-          showOverlay={false}
-          variant="snackbar"
-        />
-      )}
+        {showShareErrorToast && (
+          <ToastModal
+            isVisible={showShareErrorToast}
+            onClose={closeShareErrorToast}
+            text="이미지 저장에 실패했습니다."
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
+      </S.ScrollContent>
     </S.Container>
   );
 }

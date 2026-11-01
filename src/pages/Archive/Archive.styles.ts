@@ -206,6 +206,8 @@ export const MonthPickerOverlay = styled.dialog`
 `;
 
 export const MonthPicker = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
   width: min(18.625rem, calc(100% - 4rem));
   padding: 1.5rem 1.75rem 1rem;
   border-radius: 4px;

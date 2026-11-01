@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -10,6 +11,12 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   padding: 1.5rem 1.5rem 1.25rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 export const DateBox = styled.div`
@@ -53,7 +60,8 @@ export const Wrapper = styled.button`
 
 export const Text = styled.div<{ hasFeed: boolean }>`
   width: 100%;
-  color: ${({ hasFeed }) => (hasFeed ? theme.colors.white : "rgba(255, 255, 255, 0.7)")};
+  color: ${({ hasFeed }) =>
+    hasFeed ? theme.colors.white : "rgba(255, 255, 255, 0.7)"};
   text-align: center;
   ${theme.fonts.batang}
   font-size: 14px;

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const FeedList = styled.div`
@@ -18,6 +19,14 @@ export const FeedList = styled.div`
   & > div:not([data-toast-overlay]) {
     width: 100%;
     padding: 0;
+  }
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      height: auto;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
   }
 `;
 
@@ -61,7 +70,8 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   padding: 0 0.5rem;
   border-bottom: 1px solid ${theme.colors["grey-100"]};
   ${theme.fonts.pretendard}
-  color: ${({ $active }) => ($active ? theme.colors.black : theme.colors.territory)};
+  color: ${({ $active }) =>
+    $active ? theme.colors.black : theme.colors.territory};
   font-size: 0.875rem;
   font-weight: ${({ $active }) => ($active ? 700 : 500)};
   text-align: center;

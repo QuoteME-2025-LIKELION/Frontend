@@ -36,6 +36,10 @@ export const Container = styled.div`
 `;
 
 export const Toggle = styled.dialog<{ $active: boolean }>`
+  > button {
+    flex-shrink: 0;
+  }
+
   position: fixed;
   top: 0;
   right: 0;
@@ -46,7 +50,8 @@ export const Toggle = styled.dialog<{ $active: boolean }>`
   border: 0;
   color: inherit;
   max-height: none;
-  overflow: clip;
+  overflow-x: hidden;
+  overflow-y: auto;
   &:not([open]) {
     display: none;
   }

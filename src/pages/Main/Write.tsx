@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -19,13 +19,18 @@ export default function Write() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState<WriteStep>("write");
+  const scrollContentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollContentRef.current) scrollContentRef.current.scrollTop = 0;
+  }, [activeStep]);
   const [quoteSource, setQuoteSource] = useState<QuoteSource>("direct");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [draftText, setDraftText] = useState("");
   const [diaryText, setDiaryText] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
   const { data: aiUsage, isLoading: isAiUsageLoading } = useAiUsageQuery();
-  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const hasDraft =
     draftText.trim().length > 0 ||
     diaryText.trim().length > 0 ||
@@ -59,59 +64,61 @@ export default function Write() {
         )}
         <XHeader showHomeButton={false} onClose={handleClose} />
 
-        <WriteBox
-          value={
-            activeStep === "tag" && createdQuote
-              ? createdQuote.content
-              : draftText
-          }
-          onChange={setDraftText}
-          isRecommendMode={activeStep === "recommend"}
-          isResultMode={activeStep === "tag"}
-          onComplete={(data) => {
-            setQuoteSource("direct");
-            setCreatedQuote({
-              content: data.content,
-              authorName: data.authorName || "",
-              authorBirthYear: data.authorBirthYear ?? null,
-              taggedNicknames: data.taggedMemberNames,
-            });
-            setActiveStep("tag");
-          }}
-          onAI={(text) => {
-            setDiaryText(text);
-            setActiveStep("recommend");
-          }}
-        />
-
-        {activeStep === "recommend" && (
-          <RecommendList
-            content={diaryText}
-            aiUsage={aiUsage}
-            isAiUsageLoading={isAiUsageLoading}
-            onBack={() => setActiveStep("write")}
-            onSelectComplete={(aiText) => {
-              setQuoteSource("ai");
+        <S.ScrollContent ref={scrollContentRef} data-page-scroll="">
+          <WriteBox
+            value={
+              activeStep === "tag" && createdQuote
+                ? createdQuote.content
+                : draftText
+            }
+            onChange={setDraftText}
+            isRecommendMode={activeStep === "recommend"}
+            isResultMode={activeStep === "tag"}
+            onComplete={(data) => {
+              setQuoteSource("direct");
               setCreatedQuote({
-                content: aiText,
-                originalContent: diaryText,
-                summary: aiText,
-                authorName: "QuoteMe AI",
-                authorBirthYear: null,
+                content: data.content,
+                authorName: data.authorName || "",
+                authorBirthYear: data.authorBirthYear ?? null,
+                taggedNicknames: data.taggedMemberNames,
               });
               setActiveStep("tag");
             }}
+            onAI={(text) => {
+              setDiaryText(text);
+              setActiveStep("recommend");
+            }}
           />
-        )}
 
-        {activeStep === "tag" && createdQuote && (
-          <NewQuote
-            quote={createdQuote}
-            onBack={() =>
-              setActiveStep(quoteSource === "ai" ? "recommend" : "write")
-            }
-          />
-        )}
+          {activeStep === "recommend" && (
+            <RecommendList
+              content={diaryText}
+              aiUsage={aiUsage}
+              isAiUsageLoading={isAiUsageLoading}
+              onBack={() => setActiveStep("write")}
+              onSelectComplete={(aiText) => {
+                setQuoteSource("ai");
+                setCreatedQuote({
+                  content: aiText,
+                  originalContent: diaryText,
+                  summary: aiText,
+                  authorName: "QuoteMe AI",
+                  authorBirthYear: null,
+                });
+                setActiveStep("tag");
+              }}
+            />
+          )}
+
+          {activeStep === "tag" && createdQuote && (
+            <NewQuote
+              quote={createdQuote}
+              onBack={() =>
+                setActiveStep(quoteSource === "ai" ? "recommend" : "write")
+              }
+            />
+          )}
+        </S.ScrollContent>
       </S.Container>
     </>
   );

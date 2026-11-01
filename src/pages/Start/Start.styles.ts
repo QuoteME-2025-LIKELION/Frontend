@@ -153,6 +153,10 @@ export const Overlay = styled.div<{ $isClosing: boolean }>`
     forwards;
 `;
 export const Loginbox = styled.div<{ $isClosing: boolean }>`
+  > button {
+    flex-shrink: 0;
+  }
+
   position: absolute;
   left: 0;
   bottom: 0;
@@ -161,7 +165,9 @@ export const Loginbox = styled.div<{ $isClosing: boolean }>`
   width: 100%;
   box-sizing: border-box;
 
-  min-height: 13.625rem;
+  min-height: min(13.625rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
   padding: 2.25rem 1.5rem 4.25rem;
   display: flex;
   flex-direction: column;

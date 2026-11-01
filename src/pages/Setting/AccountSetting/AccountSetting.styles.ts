@@ -196,6 +196,8 @@ export const SheetOverlay = styled.dialog`
 `;
 
 export const Sheet = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
   width: 100%;
   max-width: 393px;
   padding: 2rem 1.5rem 3rem;

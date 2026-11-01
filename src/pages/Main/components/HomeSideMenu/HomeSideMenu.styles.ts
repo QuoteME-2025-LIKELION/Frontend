@@ -72,12 +72,17 @@ export const ToggleWrapper = styled.dialog`
 `;
 
 export const Toggle = styled.div<{ $active: boolean }>`
+  > * {
+    flex-shrink: 0;
+  }
+
   position: absolute;
   top: 0;
   right: 0;
 
   width: 270px; /* 피그마 보고 조절 */
-  height: 100vh;
+  height: 100%;
+  overflow-y: auto;
 
   z-index: 999;
 

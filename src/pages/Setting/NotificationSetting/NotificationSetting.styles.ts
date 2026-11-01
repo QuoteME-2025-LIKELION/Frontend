@@ -96,6 +96,8 @@ export const PickerOverlay = styled.dialog`
 `;
 
 export const PickerSheet = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
   width: 100%;
   max-width: 393px;
   padding: 2.125rem 1.5rem 2.75rem;
