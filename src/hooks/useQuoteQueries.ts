@@ -5,6 +5,7 @@ import {
   type CreateQuoteRequest,
   type UpdateQuoteTagsRequest,
 } from "@/api/quoteApi";
+import { normalizeAiUsage } from "@/utils/aiUsage";
 
 export const quoteQueryKeys = {
   all: ["quotes"] as const,
@@ -53,14 +54,16 @@ export function useQuotesByDateQuery(
 /**
  * 입력한 문장을 기반으로 추천 명언 문장 생성
  */
-export function useQuoteSummaryQuery(content: string) {
+export function useQuoteSummaryQuery(content: string, canGenerate = true) {
   return useQuery({
     queryKey: quoteQueryKeys.summary(content),
     queryFn: async () => {
       const res = await quoteApi.summarizeQuote({ content });
       return res.data;
     },
-    enabled: Boolean(content),
+    enabled: Boolean(content) && canGenerate,
+    // 생성 POST의 재실행은 명시적인 다시 받기 조작으로 제한한다.
+    staleTime: Infinity,
     retry: false,
   });
 }
@@ -92,11 +95,7 @@ export function useAiUsageQuery() {
     queryKey: quoteQueryKeys.aiUsage(),
     queryFn: async () => {
       const res = await quoteApi.getAiUsage();
-      return {
-        usedCount: res.data.usedCount ?? res.data.used ?? 0,
-        remainingCount: res.data.remainingCount ?? res.data.remaining ?? 0,
-        limitPerDay: res.data.limitPerDay ?? res.data.limit ?? 0,
-      };
+      return normalizeAiUsage(res.data);
     },
   });
 }

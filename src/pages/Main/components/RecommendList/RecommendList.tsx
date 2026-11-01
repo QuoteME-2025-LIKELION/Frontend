@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { AiUsageResponse } from "@/api/quoteApi";
 import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
 import theme from "@/styles/theme";
+import type { AiRequestState } from "@/utils/aiUsage";
 
 import * as S from "./RecommendList.styles";
 
@@ -13,13 +14,15 @@ interface RecommendListProps {
   onSelectComplete: (text: string) => void;
   content: string;
   aiUsage?: AiUsageResponse;
-  isAiUsageLoading?: boolean;
+  aiRequestState: AiRequestState;
+  onRetryAiUsage: () => void;
 }
 
 export default function RecommendList({
   content,
   aiUsage,
-  isAiUsageLoading = false,
+  aiRequestState,
+  onRetryAiUsage,
   onBack,
   onSelectComplete,
 }: RecommendListProps) {
@@ -35,7 +38,7 @@ export default function RecommendList({
     isError,
     isFetching,
     refetch,
-  } = useQuoteSummaryQuery(content);
+  } = useQuoteSummaryQuery(content, aiRequestState === "available");
   const recommendationTexts = summaryData?.summaries?.length
     ? summaryData.summaries
     : summaryData?.summary
@@ -59,19 +62,20 @@ export default function RecommendList({
       : errorStatus === 503
         ? "AI 추천을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         : "AI 추천을 불러오지 못했어요.");
-  const usageText = isAiUsageLoading
-    ? "-/-"
-    : aiUsage
-      ? `${aiUsage.usedCount}/${aiUsage.limitPerDay}`
-      : "-/-";
+  const usageText =
+    aiRequestState === "loading" || aiRequestState === "unavailable"
+      ? "-/-"
+      : aiUsage
+        ? `${aiUsage.usedCount}/${aiUsage.limitPerDay}`
+        : "-/-";
 
   useEffect(() => {
-    if (dataUpdatedAt === 0) return;
+    if (dataUpdatedAt === 0 && errorStatus !== 429) return;
 
     void queryClient.invalidateQueries({
       queryKey: quoteQueryKeys.aiUsage(),
     });
-  }, [dataUpdatedAt, queryClient]);
+  }, [dataUpdatedAt, errorStatus, queryClient]);
 
   return (
     <S.Container>
@@ -83,9 +87,22 @@ export default function RecommendList({
       <S.ComendList>
         <S.RefreshButton
           type="button"
-          aria-label="AI 추천 다시 받기"
-          disabled={isFetching}
+          aria-label={
+            aiRequestState === "unavailable"
+              ? "AI 사용량 다시 확인"
+              : "AI 추천 다시 받기"
+          }
+          disabled={
+            isFetching ||
+            aiRequestState === "loading" ||
+            aiRequestState === "exhausted"
+          }
           onClick={() => {
+            if (aiRequestState === "unavailable") {
+              onRetryAiUsage();
+              return;
+            }
+            if (aiRequestState !== "available" || isFetching) return;
             setSelection(null);
             if (content) {
               void refetch();

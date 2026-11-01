@@ -5,6 +5,7 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useAiUsageQuery } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
+import { getAiRequestState } from "@/utils/aiUsage";
 
 import NewQuote from "./components/NewQuote/NewQuote";
 import RecommendList from "./components/RecommendList/RecommendList";
@@ -28,7 +29,17 @@ export default function Write() {
   const [draftText, setDraftText] = useState("");
   const [diaryText, setDiaryText] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
-  const { data: aiUsage, isLoading: isAiUsageLoading } = useAiUsageQuery();
+  const {
+    data: aiUsage,
+    isFetching: isAiUsageLoading,
+    isError: isAiUsageError,
+    refetch: retryAiUsage,
+  } = useAiUsageQuery();
+  const aiRequestState = getAiRequestState(
+    aiUsage,
+    isAiUsageLoading,
+    isAiUsageError
+  );
   const returnTo =
     location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const hasDraft =
@@ -72,6 +83,10 @@ export default function Write() {
                 : draftText
             }
             onChange={setDraftText}
+            aiRequestState={aiRequestState}
+            onRetryAiUsage={() => {
+              void retryAiUsage();
+            }}
             isRecommendMode={activeStep === "recommend"}
             isResultMode={activeStep === "tag"}
             onComplete={(data) => {
@@ -94,7 +109,10 @@ export default function Write() {
             <RecommendList
               content={diaryText}
               aiUsage={aiUsage}
-              isAiUsageLoading={isAiUsageLoading}
+              aiRequestState={aiRequestState}
+              onRetryAiUsage={() => {
+                void retryAiUsage();
+              }}
               onBack={() => setActiveStep("write")}
               onSelectComplete={(aiText) => {
                 setQuoteSource("ai");
