@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import Input from "@/components/Input/Input";
 
 import * as S from "../CreateGroup.styles";
@@ -24,6 +26,12 @@ export default function CreateGroupStepFields({
   onChangeMotto,
   onMoveStep,
 }: CreateGroupStepFieldsProps) {
+  const fieldId = useId();
+  const titleId = `${fieldId}-title`;
+  const helpId = `${fieldId}-help`;
+  const metaId = `${fieldId}-meta`;
+  const isGroupNameInvalid = isSubmitted && groupName.trim().length === 0;
+
   if (step === 3) {
     return null;
   }
@@ -34,24 +42,29 @@ export default function CreateGroupStepFields({
         {step === 1 && (
           <>
             <S.StepTitleContainer>
-              <S.MTitle>
+              <S.MTitle id={titleId}>
                 그룹 이름을 <br />
                 설정해 주세요.
               </S.MTitle>
-              <S.STitle>그룹 이름은 한 번 정하면 바꿀 수 없어요.</S.STitle>
+              <S.STitle id={helpId}>
+                그룹 이름은 한 번 정하면 바꿀 수 없어요.
+              </S.STitle>
             </S.StepTitleContainer>
             <S.InputBox>
               <Input
+                aria-labelledby={titleId}
+                aria-describedby={`${helpId} ${metaId}`}
+                aria-invalid={isGroupNameInvalid}
                 placeholder="그룹 이름을 입력해 주세요"
                 required={true}
                 value={groupName}
                 onChange={(e) => onChangeGroupName(e.target.value)}
                 maxLength={10}
               />
-              {isSubmitted && groupName.trim().length === 0 ? (
-                <S.ErrorMsg>그룹명을 입력해주세요.</S.ErrorMsg>
+              {isGroupNameInvalid ? (
+                <S.ErrorMsg id={metaId}>그룹명을 입력해주세요.</S.ErrorMsg>
               ) : (
-                <div>10자 이내</div>
+                <div id={metaId}>10자 이내</div>
               )}
             </S.InputBox>
           </>
@@ -59,20 +72,24 @@ export default function CreateGroupStepFields({
         {step === 2 && (
           <>
             <S.StepTitleContainer>
-              <S.MTitle>
+              <S.MTitle id={titleId}>
                 그룹 메시지를 <br />
                 설정해 주세요.
               </S.MTitle>
-              <S.STitle>그룹 메시지는 누구나 언제든 수정할 수 있어요.</S.STitle>
+              <S.STitle id={helpId}>
+                그룹 메시지는 누구나 언제든 수정할 수 있어요.
+              </S.STitle>
             </S.StepTitleContainer>
             <S.InputBox>
               <Input
+                aria-labelledby={titleId}
+                aria-describedby={`${helpId} ${metaId}`}
                 placeholder="그룹 메시지를 입력해 주세요"
                 value={motto}
                 onChange={(e) => onChangeMotto(e.target.value)}
                 maxLength={20}
               />
-              <div>20자 이내</div>
+              <div id={metaId}>20자 이내</div>
             </S.InputBox>
           </>
         )}

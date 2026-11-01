@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
@@ -22,6 +22,10 @@ export default function WriteBox({
   onComplete,
   onAI,
 }: WriteBoxProps) {
+  const fieldId = useId();
+  const countId = `${fieldId}-count`;
+  const guideId = `${fieldId}-guide`;
+  const infoId = `${fieldId}-info`;
   const infoWrapRef = useRef<HTMLDivElement | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -97,6 +101,12 @@ export default function WriteBox({
         </S.Datebox>
         <S.WriteBox>
           <S.TextArea
+            aria-label="명언 내용"
+            aria-describedby={
+              !isRecommendMode && !isResultMode
+                ? `${countId} ${guideId}`
+                : countId
+            }
             value={value}
             onChange={(e) => onChange(e.target.value)}
             readOnly={isRecommendMode || isResultMode}
@@ -113,12 +123,12 @@ export default function WriteBox({
             <S.Line />
           </S.LineWrap>
         </S.WriteBox>
-        <S.CountText>{value.length}자/50자</S.CountText>
+        <S.CountText id={countId}>{value.length}자/50자</S.CountText>
       </S.Container>
       {!isRecommendMode && !isResultMode && (
         <S.WriteBody>
           <S.GuideBox>
-            <S.Guide>
+            <S.Guide id={guideId}>
               오늘의 명언을 직접 적고 <br />
               그대로 게시하거나 <br />
               AI에게 명언을 추천 받을 수 있어요.
@@ -128,12 +138,13 @@ export default function WriteBox({
                 type="button"
                 aria-label="명언 작성 안내"
                 aria-expanded={showInfo}
+                aria-controls={showInfo ? infoId : undefined}
                 onClick={() => setShowInfo((prev) => !prev)}
               >
                 i
               </S.InfoButton>
               {showInfo && (
-                <S.InfoBubble role="status">
+                <S.InfoBubble id={infoId} role="status">
                   30자가 넘어가는 글은 AI 추천 받기를 사용해야 등록할 수
                   있습니다.
                 </S.InfoBubble>

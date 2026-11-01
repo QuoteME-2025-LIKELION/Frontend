@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -14,6 +14,7 @@ import {
 import * as S from "./ChangeMessage.styles";
 
 export default function ChangeMessage() {
+  const messageMetaId = useId();
   const navigate = useNavigate();
   const location = useLocation();
   const hasPushedHistoryGuard = useRef(false);
@@ -180,6 +181,7 @@ export default function ChangeMessage() {
             <S.MessageInput
               $isFocused={isMessageFocused}
               aria-label="그룹 메시지"
+              aria-describedby={isMessageFocused ? messageMetaId : undefined}
               placeholder="어떤 이야기를 나눌까요?"
               name="message"
               value={message}
@@ -193,7 +195,9 @@ export default function ChangeMessage() {
             />
             <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
           </S.MessageField>
-          {isMessageFocused && <S.Desc>{message.length}자/20자</S.Desc>}
+          {isMessageFocused && (
+            <S.Desc id={messageMetaId}>{message.length}자/20자</S.Desc>
+          )}
         </S.Content>
         <S.BottomActionBar>
           <S.ActionButton type="button" onClick={handleSave}>

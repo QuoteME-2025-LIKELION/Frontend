@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
@@ -18,6 +18,10 @@ const NICKNAME_MAX_LENGTH = 10;
 const INTRO_MAX_LENGTH = 20;
 
 export default function ProfileCenter() {
+  const fieldId = useId();
+  const nicknameLabelId = `${fieldId}-nickname-label`;
+  const nicknameMetaId = `${fieldId}-nickname-meta`;
+  const introLabelId = `${fieldId}-intro-label`;
   const navigate = useNavigate();
   const location = useLocation();
   const fromPath = location.state?.from || "default";
@@ -182,7 +186,7 @@ export default function ProfileCenter() {
             type="button"
             disabled={!isEditing}
             onClick={handleClickUpload}
-            aria-label="프로필 이미지"
+            aria-label={isEditing ? "프로필 이미지 변경" : "프로필 이미지"}
             style={{
               backgroundImage: currentPreview
                 ? `url(${currentPreview})`
@@ -191,6 +195,7 @@ export default function ProfileCenter() {
           />
           <input
             type="file"
+            aria-label="프로필 이미지 파일 선택"
             accept="image/*"
             ref={fileRef}
             onChange={handleChangeFile}
@@ -207,11 +212,14 @@ export default function ProfileCenter() {
           </S.ImgInput>
         </S.ProfileWrapper>
         <S.InputBox>
-          <S.TextName>닉네임</S.TextName>
+          <S.TextName id={nicknameLabelId}>닉네임</S.TextName>
           {isEditing ? (
             <>
               <S.Field $error={isNicknameEmpty}>
                 <Input
+                  aria-labelledby={nicknameLabelId}
+                  aria-describedby={nicknameMetaId}
+                  aria-invalid={isNicknameEmpty || isNicknameTooLong}
                   value={currentNickname}
                   onChange={(e) => setNickname(e.target.value)}
                   placeholder="닉네임"
@@ -225,16 +233,22 @@ export default function ProfileCenter() {
           ) : (
             <S.InfoBox>{currentNickname}</S.InfoBox>
           )}
-          <S.FieldMeta $error={isNicknameEmpty} $hidden={!isEditing}>
+          <S.FieldMeta
+            id={nicknameMetaId}
+            $error={isNicknameEmpty}
+            $hidden={!isEditing}
+          >
             {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요.</span>}
             <span>
               {currentNickname.length}자/{NICKNAME_MAX_LENGTH}자
             </span>
           </S.FieldMeta>
-          <S.TextName>자기소개</S.TextName>
+          <S.TextName id={introLabelId}>자기소개</S.TextName>
           {isEditing ? (
             <S.Field>
               <Input
+                aria-labelledby={introLabelId}
+                aria-invalid={isIntroTooLong}
                 value={currentIntro}
                 onChange={(e) => setIntro(e.target.value)}
                 placeholder="자기소개"

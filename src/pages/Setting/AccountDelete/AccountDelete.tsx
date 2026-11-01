@@ -109,6 +109,7 @@ export default function AccountDelete() {
           </S.ReasonList>
           {isOtherSelected && (
             <S.OtherInput
+              aria-label="기타 탈퇴 사유"
               value={otherReason}
               onChange={(event) => setOtherReason(event.target.value)}
               placeholder="탈퇴 사유를 작성해 주세요"
