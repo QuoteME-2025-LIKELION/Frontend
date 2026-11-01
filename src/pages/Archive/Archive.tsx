@@ -20,8 +20,10 @@ function getCalendarDates(monthDate: Date) {
   const month = monthDate.getMonth();
   const firstDate = new Date(year, month, 1);
   const startDate = new Date(year, month, 1 - firstDate.getDay());
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const weekCount = Math.max(5, Math.ceil((firstDate.getDay() + lastDay) / 7));
 
-  return Array.from({ length: 42 }, (_, index) => {
+  return Array.from({ length: weekCount * 7 }, (_, index) => {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + index);
     return date;
