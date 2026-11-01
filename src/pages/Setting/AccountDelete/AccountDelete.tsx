@@ -91,6 +91,7 @@ export default function AccountDelete() {
               <S.ReasonRow
                 key={reason}
                 type="button"
+                aria-pressed={selectedReasons.includes(reason)}
                 onClick={() => toggleReason(reason)}
               >
                 <S.ReasonText>{reason}</S.ReasonText>

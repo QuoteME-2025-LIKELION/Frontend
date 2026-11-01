@@ -170,6 +170,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
             <S.TagButton
               type="button"
               aria-label={`태그된 친구 ${taggedNicknames.length}명`}
+              aria-expanded={isTagMenuOpen}
               onClick={handleTagButtonClick}
             >
               <img src={userIcon} alt="" />

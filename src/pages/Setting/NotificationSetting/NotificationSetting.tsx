@@ -235,6 +235,7 @@ export default function NotificationSetting() {
                       key={meridiem}
                       type="button"
                       disabled={isPending}
+                      aria-pressed={reminderTime.meridiem === meridiem}
                       $selected={reminderTime.meridiem === meridiem}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, meridiem }));
@@ -251,6 +252,7 @@ export default function NotificationSetting() {
                       key={hour}
                       type="button"
                       disabled={isPending}
+                      aria-pressed={reminderTime.hour === hour}
                       $selected={reminderTime.hour === hour}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, hour }));
@@ -269,6 +271,7 @@ export default function NotificationSetting() {
                         key={minute}
                         type="button"
                         disabled={isPending}
+                        aria-pressed={reminderTime.minute === minute}
                         $selected={reminderTime.minute === minute}
                         onClick={(event) => {
                           setReminderTime((prev) => ({ ...prev, minute }));

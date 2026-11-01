@@ -221,6 +221,9 @@ export default function Archive() {
                   type="button"
                   $outside={date.getMonth() !== currentMonth.getMonth()}
                   $today={dateString === todayString}
+                  aria-label={`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`}
+                  aria-pressed={dateString === selectedDateString}
+                  aria-current={dateString === todayString ? "date" : undefined}
                   $selected={dateString === selectedDateString}
                   onClick={() => handleSelectDate(date)}
                 >
@@ -234,18 +237,21 @@ export default function Archive() {
           <S.Menu>
             <S.Btn
               onClick={() => navigate("/archive")}
+              aria-current={path === "archive" ? "page" : undefined}
               $active={path === "archive"}
             >
               전체보기
             </S.Btn>
             <S.Btn
               onClick={() => navigate("/archive/my-quotes")}
+              aria-current={path === "my-quotes" ? "page" : undefined}
               $active={path === "my-quotes"}
             >
               나의 명언
             </S.Btn>
             <S.Btn
               onClick={() => navigate("/archive/bookmarks")}
+              aria-current={path === "bookmarks" ? "page" : undefined}
               $active={path === "bookmarks"}
             >
               북마크
@@ -310,6 +316,7 @@ export default function Archive() {
                   <S.MonthOption
                     key={month}
                     type="button"
+                    aria-pressed={month === currentMonth.getMonth() + 1}
                     $active={month === currentMonth.getMonth() + 1}
                     onClick={() => handleSelectMonth(month)}
                   >

@@ -254,6 +254,7 @@ export default function AccountSetting() {
                   <S.GenderOption
                     key={option.label}
                     type="button"
+                    aria-pressed={currentGender === option.value}
                     onClick={() => setGenderDraft(option.value)}
                   >
                     <span>{option.label}</span>
@@ -279,6 +280,7 @@ export default function AccountSetting() {
                       currentBirthYear === year ? selectedYearRef : undefined
                     }
                     type="button"
+                    aria-pressed={currentBirthYear === year}
                     $selected={currentBirthYear === year}
                     onClick={(event) => {
                       selectedBirthYearRef.current = year;

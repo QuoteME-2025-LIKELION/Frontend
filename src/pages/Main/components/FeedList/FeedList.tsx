@@ -258,6 +258,7 @@ export default function FeedList({
       <S.FilterBox ref={filterBoxRef}>
         <S.FilterButton
           type="button"
+          aria-expanded={isFilterOpen}
           onClick={() => setIsFilterOpen((prev) => !prev)}
         >
           <img src={funnelIcon} alt="" />
@@ -267,6 +268,7 @@ export default function FeedList({
           <S.FilterMenu>
             <S.FilterOption
               type="button"
+              aria-pressed={selectedGroupId === null}
               $active={selectedGroupId === null}
               onClick={() => {
                 onSelectGroup(null);
@@ -279,6 +281,7 @@ export default function FeedList({
               <S.FilterOption
                 key={group.id}
                 type="button"
+                aria-pressed={selectedGroupId === group.id}
                 $active={selectedGroupId === group.id}
                 onClick={() => {
                   onSelectGroup(group.id);
