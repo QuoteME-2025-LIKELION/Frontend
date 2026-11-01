@@ -7,6 +7,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
 import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
+import { getArchiveDateInMonth, isFutureArchiveDate } from "@/utils/archiveDate";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./Archive.styles";
@@ -25,11 +26,6 @@ function getCalendarDates(monthDate: Date) {
     date.setDate(startDate.getDate() + index);
     return date;
   });
-}
-
-function getDateInMonth(baseDate: Date, year: number, month: number) {
-  const lastDate = new Date(year, month + 1, 0).getDate();
-  return new Date(year, month, Math.min(baseDate.getDate(), lastDate));
 }
 
 export default function Archive() {
@@ -67,7 +63,7 @@ export default function Archive() {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), prev.getMonth() + amount, 1);
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
@@ -77,13 +73,14 @@ export default function Archive() {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear() + amount, prev.getMonth(), 1);
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
   };
 
   const handleSelectDate = (date: Date) => {
+    if (isFutureArchiveDate(date)) return;
     setSelectedDate(date);
     setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
   };
@@ -92,7 +89,7 @@ export default function Archive() {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), month - 1, 1);
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
@@ -230,6 +227,7 @@ export default function Archive() {
                 <S.DayButton
                   key={dateString}
                   type="button"
+                  disabled={isFutureArchiveDate(date)}
                   $outside={date.getMonth() !== currentMonth.getMonth()}
                   $today={dateString === todayString}
                   aria-label={`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`}

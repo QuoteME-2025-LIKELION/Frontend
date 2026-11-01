@@ -130,6 +130,11 @@ export const DayButton = styled.button<{
       color: ${theme.colors.white};
       border: 0;
     `}
+
+  &:disabled {
+    color: ${theme.colors["grey-200"]};
+    cursor: default;
+  }
 `;
 
 export const ContentArea = styled.div`
