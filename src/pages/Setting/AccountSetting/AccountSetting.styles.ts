@@ -10,7 +10,7 @@ export const Container = styled.div`
   background-color: ${theme.colors.secondary};
 `;
 
-export const Content = styled.main`
+export const Content = styled.div`
   width: 100%;
   padding: 3.25rem 1.5rem 0;
 `;

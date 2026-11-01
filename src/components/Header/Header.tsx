@@ -85,7 +85,9 @@ export default function Header({
             </svg>
           </button>
         ) : null}
-        <div>{title}</div>
+        <div role="heading" aria-level={1}>
+          {title}
+        </div>
         {rightElement ?? <S.Div></S.Div>}
       </S.Container>
     </S.Wrapper>

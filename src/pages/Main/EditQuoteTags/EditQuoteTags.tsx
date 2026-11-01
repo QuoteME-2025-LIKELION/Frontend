@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
 import useModalDialog from "@/hooks/useModalDialog";
@@ -50,6 +51,7 @@ export default function EditQuoteTags() {
 
   return (
     <S.Container>
+      <PageTitle title="태그 수정" />
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}

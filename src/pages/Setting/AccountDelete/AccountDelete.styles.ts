@@ -10,12 +10,12 @@ export const Container = styled.div`
   background-color: ${theme.colors.secondary};
 `;
 
-export const Content = styled.main`
+export const Content = styled.div`
   width: 100%;
   padding: 3.5rem 1.5rem 7.75rem;
 `;
 
-export const Title = styled.h1`
+export const Title = styled.h2`
   margin: 0;
   ${theme.fonts.batang};
   color: ${theme.colors["grey-950"]};

@@ -55,13 +55,7 @@ const Profile = lazy(() => import("@/pages/SignUp/Profile/Profile"));
 export default function AppRoutes() {
   return (
     <RouteErrorBoundary>
-      <Suspense
-        fallback={
-          <div role="status" aria-label="화면을 불러오는 중">
-            <Spinner />
-          </div>
-        }
-      >
+      <Suspense fallback={<Spinner />}>
         <Routes>
           {/* 인증 없이 접근 가능한 진입/인증 플로우 라우트 */}
           <Route path="/" element={<Start />} />
