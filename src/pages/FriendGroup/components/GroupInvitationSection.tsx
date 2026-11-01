@@ -39,6 +39,7 @@ export default function GroupInvitationSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${invitation.groupName} 그룹 초대 수락`}
                     onClick={() => onAccept(invitation.requestId)}
                   >
                     수락
@@ -46,6 +47,7 @@ export default function GroupInvitationSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${invitation.groupName} 그룹 초대 거절`}
                     onClick={() => onReject(invitation.requestId)}
                   >
                     거절

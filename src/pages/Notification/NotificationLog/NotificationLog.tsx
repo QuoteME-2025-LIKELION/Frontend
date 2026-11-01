@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import type { Notification } from "@/types/notification.type";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
@@ -24,6 +26,7 @@ export default function NotificationLog({
   notification,
   onClick,
 }: NotificationLogProps) {
+  const readStatusId = useId();
   const { message, senderName, type, createDate } = notification;
   const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
   const isGroupNotification = type.startsWith("GROUP");
@@ -78,8 +81,19 @@ export default function NotificationLog({
   };
 
   return (
-    <S.Container onClick={onClick}>
-      <S.Icon $variant={iconVariant} $isRead={notification.isRead}>
+    <S.Container
+      type="button"
+      onClick={onClick}
+      aria-describedby={readStatusId}
+    >
+      <span id={readStatusId} hidden>
+        {notification.isRead ? "읽은 알림" : "읽지 않은 알림"}
+      </span>
+      <S.Icon
+        aria-hidden="true"
+        $variant={iconVariant}
+        $isRead={notification.isRead}
+      >
         {iconText}
       </S.Icon>
       <S.Wrapper>

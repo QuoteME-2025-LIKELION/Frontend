@@ -54,6 +54,7 @@ export default function FriendRequestSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${request.senderNickname} 친구 요청 승인`}
                     onClick={() => onAccept(request.requestId)}
                   >
                     승인
@@ -61,6 +62,7 @@ export default function FriendRequestSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${request.senderNickname} 친구 요청 거절`}
                     onClick={() => onReject(request.requestId)}
                   >
                     거절

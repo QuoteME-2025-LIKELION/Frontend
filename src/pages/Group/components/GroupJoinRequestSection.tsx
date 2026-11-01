@@ -49,6 +49,7 @@ export default function GroupJoinRequestSection({
                 <button
                   type="button"
                   disabled={isProcessing}
+                  aria-label={`${request.requesterNickname} 그룹 가입 요청 수락`}
                   onClick={() => onAccept(request.requestId)}
                 >
                   수락
@@ -56,6 +57,7 @@ export default function GroupJoinRequestSection({
                 <button
                   type="button"
                   disabled={isProcessing}
+                  aria-label={`${request.requesterNickname} 그룹 가입 요청 거절`}
                   onClick={() => onReject(request.requestId)}
                 >
                   거절

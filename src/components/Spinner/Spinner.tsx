@@ -5,8 +5,9 @@ import * as S from "./Spinner.styles";
  */
 export default function Spinner() {
   return (
-    <S.SpinnerContainer>
-      <S.Spinner />
+    <S.SpinnerContainer role="status" aria-atomic="true">
+      <S.LoadingText>불러오는 중입니다.</S.LoadingText>
+      <S.Spinner aria-hidden="true" />
     </S.SpinnerContainer>
   );
 }

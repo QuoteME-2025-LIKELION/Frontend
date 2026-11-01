@@ -109,9 +109,13 @@ export default function RecommendList({
           <S.UsageText>{usageText}</S.UsageText>
         </S.RefreshButton>
         {isFetching && (
-          <S.StatusText>AI 추천을 불러오는 중입니다.</S.StatusText>
+          <S.StatusText role="status">
+            AI 추천을 불러오는 중입니다.
+          </S.StatusText>
         )}
-        {isError && !isFetching && <S.StatusText>{errorMessage}</S.StatusText>}
+        {isError && !isFetching && (
+          <S.StatusText role="alert">{errorMessage}</S.StatusText>
+        )}
         {quotes.map((q) => (
           <S.Commend
             key={q.id}

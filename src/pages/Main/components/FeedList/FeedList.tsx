@@ -313,7 +313,7 @@ export default function FeedList({
         )}
       </S.FilterBox>
       {isFeedError ? (
-        <S.NoFeedbox>
+        <S.NoFeedbox role="alert">
           <S.NoFeedText>명언을 불러오지 못했어요.</S.NoFeedText>
           <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
         </S.NoFeedbox>
