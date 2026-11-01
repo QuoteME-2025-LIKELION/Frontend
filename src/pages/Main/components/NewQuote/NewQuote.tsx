@@ -172,6 +172,7 @@ export default function NewQuote({
         ) : (
           <>
             <Search
+              label="태그할 친구 검색"
               placeholder="검색어를 입력해 주세요"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}

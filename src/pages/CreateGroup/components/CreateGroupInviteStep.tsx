@@ -53,6 +53,7 @@ export default function CreateGroupInviteStep({
         <S.Desc>그룹의 최대 정원은 5명이에요.</S.Desc>
       </S.TitleContainer>
       <Search
+        label="그룹에 초대할 친구 검색"
         placeholder="검색어를 입력해 주세요"
         desc={
           friendList.length === 0
