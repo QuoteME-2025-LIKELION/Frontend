@@ -28,11 +28,14 @@ export default function NotificationLog({
   const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
   const isGroupNotification = type.startsWith("GROUP");
   const isTagNotification = type.startsWith("TAG");
-  const category = isGroupNotification
-    ? "그룹"
-    : isTagNotification
-      ? "태그"
-      : "친구";
+  const category =
+    type === "QUOTE_REMINDER"
+      ? "명언"
+      : isGroupNotification
+        ? "그룹"
+        : isTagNotification
+          ? "태그"
+          : "친구";
   const iconVariant = isGroupNotification
     ? "group"
     : isTagNotification
@@ -46,6 +49,8 @@ export default function NotificationLog({
     }
 
     switch (type) {
+      case "QUOTE_REMINDER":
+        return <>오늘의 명언을 작성할 시간이에요!</>;
       case "GROUP":
       case "GROUP_INVITE":
         return <>님이 그룹에 초대했습니다.</>;
@@ -81,7 +86,7 @@ export default function NotificationLog({
         <S.TextBox>
           <S.Category>{category}</S.Category>
           <S.Message>
-            {!message && senderName}
+            {!message && type !== "QUOTE_REMINDER" && senderName}
             {renderMessage()}
           </S.Message>
         </S.TextBox>

@@ -17,6 +17,7 @@
 export interface Notification {
   id: number;
   type:
+    | "QUOTE_REMINDER"
     | "POKE"
     | "LIKE"
     | "TAG"
