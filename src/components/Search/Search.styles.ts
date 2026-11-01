@@ -20,11 +20,18 @@ export const Container = styled.div`
   align-items: center;
   gap: 0.5625rem; /* 9px */
   background-color: ${theme.colors.white};
+  border-radius: var(--spacing-radius-xs, 2px);
 
   &:focus-within {
-    border-radius: var(--spacing-radius-xs, 2px);
-    border: 0.5px solid var(--stroke-brand, ${theme.colors.primary});
+    outline: 1px solid ${theme.colors.primary};
+    outline-offset: -1px;
     background: var(--bg-white, ${theme.colors["grey-00"]});
+  }
+
+  @media (forced-colors: active) {
+    &:focus-within {
+      outline-color: Highlight;
+    }
   }
 
   button {
@@ -44,6 +51,12 @@ export const SearchInput = styled.input`
   display: flex;
   align-items: center;
   outline: none;
+
+  /* 입력 초점은 검색창 외곽에서 표시하고, 지우기 버튼의 초점은 유지 */
+  &&:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 
   ${theme.fonts.pretendard}
   color: ${theme.colors.black};

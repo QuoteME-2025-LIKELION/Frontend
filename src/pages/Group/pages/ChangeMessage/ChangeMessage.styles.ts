@@ -40,6 +40,17 @@ export const MessageField = styled.label<{ $isFocused: boolean }>`
   font-size: 0.875rem; /* 14px */
   font-weight: 700;
   letter-spacing: -0.28px;
+
+  &:focus-within {
+    outline: 1px solid ${theme.colors.primary};
+    outline-offset: -1px;
+  }
+
+  @media (forced-colors: active) {
+    &:focus-within {
+      outline-color: Highlight;
+    }
+  }
 `;
 
 export const QuoteMark = styled.span`
@@ -56,6 +67,12 @@ export const MessageInput = styled.input<{ $isFocused: boolean }>`
   border: 0;
   outline: none;
   text-align: center;
+
+  /* 초점 표시는 따옴표를 포함한 MessageField 외곽으로 통일 */
+  &&:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 
   ${theme.fonts.batang}
   color: ${({ $isFocused }) =>

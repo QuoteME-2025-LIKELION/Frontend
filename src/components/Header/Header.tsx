@@ -45,8 +45,10 @@ export default function Header({
     <S.Wrapper $backgroundColor={backgroundColor}>
       <S.Container>
         {showBackBtn ? (
-          <button onClick={onClickBackBtn}>
+          <button type="button" aria-label="뒤로가기" onClick={onClickBackBtn}>
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -63,8 +65,10 @@ export default function Header({
             </svg>
           </button>
         ) : showXBtn ? (
-          <button onClick={onClickXBtn}>
+          <button type="button" aria-label="닫기" onClick={onClickXBtn}>
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"

@@ -2,6 +2,8 @@
 
 import { css, Global } from "@emotion/react";
 
+import theme from "./theme";
+
 const globalStyles = () => css`
   html,
   body {
@@ -44,6 +46,18 @@ const globalStyles = () => css`
 
   svg {
     flex-shrink: 0;
+  }
+
+  :is(button, a[href], input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid ${theme.colors.primary};
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px ${theme.colors.white};
+  }
+
+  @media (forced-colors: active) {
+    :is(button, a[href], input, textarea, select, [tabindex]):focus-visible {
+      outline-color: Highlight;
+    }
   }
 `;
 

@@ -86,17 +86,13 @@ export const TextName = styled.div`
 
 export const Field = styled.div<{ $error?: boolean }>`
   width: 100%;
+  --input-focus-color: ${({ $error }) =>
+    $error ? theme.colors.red : theme.colors.primary};
 
   input {
     border: 0.5px solid
       ${({ $error }) => ($error ? theme.colors.red : "transparent")};
     background-color: ${theme.colors.white};
-  }
-
-  input:focus {
-    border: 0.5px solid
-      ${({ $error }) => ($error ? theme.colors.red : theme.colors.primary)};
-    background: var(--bg-white, ${theme.colors["grey-00"]});
   }
 `;
 
@@ -109,7 +105,8 @@ export const FieldMeta = styled.div<{ $error?: boolean; $hidden?: boolean }>`
   justify-content: ${({ $error }) => ($error ? "space-between" : "flex-end")};
   gap: 0.75rem;
   ${theme.fonts.pretendard};
-  color: ${({ $error }) => ($error ? theme.colors.red : theme.colors["grey-400"])};
+  color: ${({ $error }) =>
+    $error ? theme.colors.red : theme.colors["grey-400"]};
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.35;
