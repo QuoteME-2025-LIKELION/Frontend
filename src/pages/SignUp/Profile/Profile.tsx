@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import ToastModal from "@/components/ToastModal/ToastModal";
 import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 import theme from "@/styles/theme";
 
@@ -15,17 +14,25 @@ const MIN_BIRTH_YEAR = 1900;
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { mutateAsync: setupProfile } = useSetupProfileMutation();
+  const { mutateAsync: setupProfile, isPending } = useSetupProfileMutation();
   const [step, setStep] = useState(1);
   const [nickname, setNickname] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [intro, setIntro] = useState("");
-  const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("프로필 저장에 실패했습니다.");
+  const [submitError, setSubmitError] = useState("");
+  const [touched, setTouched] = useState({
+    nickname: false,
+    intro: false,
+    birthYear: false,
+  });
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const stepInputRef = useRef<HTMLInputElement>(null);
+  const uploadButtonRef = useRef<HTMLButtonElement>(null);
+  const previousStepRef = useRef(step);
+  const submittingRef = useRef(false);
   const birthYearNumber = Number(birthYear);
   const isValidBirthYear =
     /^\d{4}$/.test(birthYear) &&
@@ -35,6 +42,22 @@ export default function Profile() {
     (step === 1 && nickname.trim().length === 0) ||
     (step === 2 && intro.trim().length === 0) ||
     (step === 3 && !isValidBirthYear);
+
+  const nicknameError = touched.nickname && nickname.trim().length === 0;
+  const introError = touched.intro && intro.trim().length === 0;
+  const birthYearError =
+    (touched.birthYear || birthYear.length === 4) && !isValidBirthYear;
+
+  useEffect(() => {
+    if (previousStepRef.current === step) return;
+    previousStepRef.current = step;
+
+    if (step === 4) {
+      uploadButtonRef.current?.focus();
+    } else {
+      stepInputRef.current?.focus();
+    }
+  }, [step]);
 
   const handleClickUpload = () => {
     fileRef.current?.click();
@@ -58,6 +81,10 @@ export default function Profile() {
   }, [preview]);
 
   const handleSignUp = async () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitError("");
+
     try {
       await setupProfile({
         nickname: nickname,
@@ -69,15 +96,15 @@ export default function Profile() {
       navigate("/home");
     } catch (error) {
       console.error("프로필 저장 실패:", error);
-      setErrorMessage("프로필 저장에 실패했습니다.");
-      setShowErrorToast(true);
+      setSubmitError("프로필 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      submittingRef.current = false;
     }
   };
 
   const handleNext = () => {
-    if (step === 3 && !isValidBirthYear) {
-      setErrorMessage("올바른 출생연도를 입력해 주세요.");
-      setShowErrorToast(true);
+    if (isNextDisabled || isPending) {
+      stepInputRef.current?.focus();
       return;
     }
 
@@ -92,97 +119,153 @@ export default function Profile() {
     <>
       <PageTitle title="회원가입" />
       <S.Container>
-        {showErrorToast && (
-          <ToastModal
-            isVisible={showErrorToast}
-            onClose={() => setShowErrorToast(false)}
-            text={errorMessage}
-          />
-        )}
         <S.InputBox>
           {step === 1 && (
             <>
-              <S.StepText>1/4</S.StepText>
+              <S.StepText id="profile-step">1/4</S.StepText>
 
               <S.TextBox>
-                <S.ExText>
+                <S.FieldLabel htmlFor="profile-nickname">
                   쿼트미에서 사용할 <br />
                   닉네임을 설정해 주세요.
-                </S.ExText>
+                </S.FieldLabel>
 
-                <S.exText>닉네임은 언제든 수정할 수 있어요.</S.exText>
+                <S.exText id="profile-nickname-help">
+                  닉네임은 언제든 수정할 수 있어요.
+                </S.exText>
               </S.TextBox>
 
-              <Input
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="닉네임을 입력해 주세요"
-                type="text"
-                name="nickname"
-                maxLength={10}
-                required
-              />
+              <S.Field>
+                <Input
+                  id="profile-nickname"
+                  ref={stepInputRef}
+                  aria-describedby={`profile-step profile-nickname-help profile-nickname-limit${nicknameError ? " profile-nickname-error" : ""}`}
+                  aria-invalid={nicknameError || undefined}
+                  onBlur={() =>
+                    setTouched((previous) => ({ ...previous, nickname: true }))
+                  }
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  placeholder="닉네임을 입력해 주세요"
+                  type="text"
+                  name="nickname"
+                  autoComplete="nickname"
+                  maxLength={10}
+                  required
+                />
+                <S.VisuallyHidden id="profile-nickname-limit">
+                  공백을 포함해 최대 10자까지 입력할 수 있습니다.
+                </S.VisuallyHidden>
+                {nicknameError && (
+                  <S.ErrorMessage id="profile-nickname-error">
+                    닉네임을 입력해 주세요.
+                  </S.ErrorMessage>
+                )}
+              </S.Field>
             </>
           )}
 
           {step === 2 && (
             <>
-              <S.StepText>2/4</S.StepText>
+              <S.StepText id="profile-step">2/4</S.StepText>
 
               <S.TextBox>
-                <S.ExText>
+                <S.FieldLabel htmlFor="profile-intro">
                   다른 사람들에게 보여줄 <br />
                   자기소개를 설정해 주세요.
-                </S.ExText>
+                </S.FieldLabel>
 
-                <S.exText>자기소개는 언제든 수정할 수 있어요.</S.exText>
+                <S.exText id="profile-intro-help">
+                  자기소개는 언제든 수정할 수 있어요.
+                </S.exText>
               </S.TextBox>
 
-              <Input
-                value={intro}
-                onChange={(e) => setIntro(e.target.value)}
-                placeholder="자기소개를 입력해주세요"
-                type="text"
-                name="intro"
-                maxLength={20}
-                required
-              />
+              <S.Field>
+                <Input
+                  id="profile-intro"
+                  ref={stepInputRef}
+                  aria-describedby={`profile-step profile-intro-help profile-intro-limit${introError ? " profile-intro-error" : ""}`}
+                  aria-invalid={introError || undefined}
+                  onBlur={() =>
+                    setTouched((previous) => ({ ...previous, intro: true }))
+                  }
+                  value={intro}
+                  onChange={(e) => setIntro(e.target.value)}
+                  placeholder="자기소개를 입력해주세요"
+                  type="text"
+                  name="intro"
+                  maxLength={20}
+                  required
+                />
 
-              <S.LimitText>{intro.length}/20자</S.LimitText>
+                <S.VisuallyHidden id="profile-intro-limit">
+                  공백을 포함해 최대 20자까지 입력할 수 있습니다.
+                </S.VisuallyHidden>
+                <S.FieldMeta>
+                  {introError && (
+                    <S.ErrorMessage id="profile-intro-error">
+                      자기소개를 입력해 주세요.
+                    </S.ErrorMessage>
+                  )}
+                  <S.LimitText>{intro.length}/20자</S.LimitText>
+                </S.FieldMeta>
+              </S.Field>
             </>
           )}
 
           {step === 3 && (
             <>
-              <S.StepText>3/4</S.StepText>
+              <S.StepText id="profile-step">3/4</S.StepText>
 
               <S.TextBox>
-                <S.ExText>
+                <S.FieldLabel htmlFor="profile-birth-year">
                   명언 카드에 표시할 <br />
                   출생연도를 입력해 주세요.
-                </S.ExText>
+                </S.FieldLabel>
 
-                <S.exText>출생연도는 계정 관리에서 수정할 수 있어요.</S.exText>
+                <S.exText id="profile-birth-year-help">
+                  출생연도는 계정 관리에서 수정할 수 있어요.
+                </S.exText>
               </S.TextBox>
 
-              <Input
-                value={birthYear}
-                onChange={(e) =>
-                  setBirthYear(e.target.value.replace(/\D/g, "").slice(0, 4))
-                }
-                placeholder="출생연도(yyyy) 입력"
-                type="text"
-                name="birthYear"
-                maxLength={4}
-                inputMode="numeric"
-                required
-              />
+              <S.Field>
+                <Input
+                  id="profile-birth-year"
+                  ref={stepInputRef}
+                  aria-describedby={`profile-step profile-birth-year-help profile-birth-year-limit${birthYearError ? " profile-birth-year-error" : ""}`}
+                  aria-invalid={birthYearError || undefined}
+                  onBlur={() =>
+                    setTouched((previous) => ({ ...previous, birthYear: true }))
+                  }
+                  value={birthYear}
+                  onChange={(e) =>
+                    setBirthYear(e.target.value.replace(/\D/g, "").slice(0, 4))
+                  }
+                  placeholder="출생연도(yyyy) 입력"
+                  type="text"
+                  name="birthYear"
+                  autoComplete="bday-year"
+                  maxLength={4}
+                  inputMode="numeric"
+                  required
+                />
+                <S.VisuallyHidden id="profile-birth-year-limit">
+                  출생연도를 숫자 4자리로 입력해 주세요. {MIN_BIRTH_YEAR}년부터{" "}
+                  {CURRENT_YEAR}년까지 입력할 수 있습니다.
+                </S.VisuallyHidden>
+                {birthYearError && (
+                  <S.ErrorMessage id="profile-birth-year-error">
+                    {MIN_BIRTH_YEAR}년부터 {CURRENT_YEAR}년 사이의 출생연도를
+                    숫자 4자리로 입력해 주세요.
+                  </S.ErrorMessage>
+                )}
+              </S.Field>
             </>
           )}
 
           {step === 4 && (
             <>
-              <S.StepText>4/4</S.StepText>
+              <S.StepText id="profile-step">4/4</S.StepText>
 
               <S.TextBox>
                 <S.ExText>
@@ -195,6 +278,12 @@ export default function Profile() {
 
               <S.ProfileWrapper>
                 <S.ImgPreview
+                  role="img"
+                  aria-label={
+                    selectedFile
+                      ? `선택한 프로필 이미지: ${selectedFile.name}`
+                      : "기본 프로필 이미지"
+                  }
                   style={{
                     backgroundImage: preview ? `url(${preview})` : "none",
                     backgroundSize: "cover",
@@ -203,13 +292,20 @@ export default function Profile() {
                 >
                   {!preview && (
                     <svg
+                      aria-hidden="true"
+                      focusable="false"
                       xmlns="http://www.w3.org/2000/svg"
                       width="80"
                       height="80"
                       viewBox="0 0 80 80"
                       fill="none"
                     >
-                      <circle cx="40" cy="40" r="40" fill={theme.colors.primary} />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="40"
+                        fill={theme.colors.primary}
+                      />
 
                       <g transform="translate(22,18)">
                         <path
@@ -221,25 +317,49 @@ export default function Profile() {
                   )}
                 </S.ImgPreview>
                 <input
+                  id="profile-image"
                   type="file"
+                  aria-label="프로필 이미지 파일 선택"
                   accept="image/*"
+                  disabled={isPending}
                   ref={fileRef}
                   onChange={handleChangeFile}
                   style={{ display: "none" }}
                 />
 
-                <S.ImgInput onClick={handleClickUpload}>
+                <S.ImgInput
+                  type="button"
+                  ref={uploadButtonRef}
+                  aria-describedby="profile-step profile-image-selection"
+                  onClick={handleClickUpload}
+                  disabled={isPending}
+                >
                   이미지 업로드하기
                 </S.ImgInput>
+                <S.VisuallyHidden id="profile-image-selection" role="status">
+                  {selectedFile
+                    ? `${selectedFile.name} 파일을 선택했습니다.`
+                    : "이미지를 선택하지 않으면 기본 프로필 이미지를 사용합니다."}
+                </S.VisuallyHidden>
               </S.ProfileWrapper>
             </>
           )}
         </S.InputBox>
+        <S.VisuallyHidden role="status">
+          {isPending ? "프로필을 저장하는 중입니다." : ""}
+        </S.VisuallyHidden>
+        {submitError && (
+          <S.SaveError id="profile-save-error" role="alert">
+            {submitError}
+          </S.SaveError>
+        )}
         <S.BtnBox>
           <Button
             title={step === 4 ? "쿼트미 시작하기" : "다음으로"}
             onClick={handleNext}
-            disabled={isNextDisabled}
+            disabled={isNextDisabled || isPending}
+            aria-busy={isPending}
+            aria-describedby={submitError ? "profile-save-error" : undefined}
           />
         </S.BtnBox>
       </S.Container>

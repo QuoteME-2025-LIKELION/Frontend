@@ -21,6 +21,13 @@ export const InputBox = styled.div`
   align-items: flex-start;
   gap: 2rem;
   padding: 5rem 1.5rem 0;
+`;
+
+export const Field = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 8px */
 
   > input {
     height: 2.875rem;
@@ -50,7 +57,7 @@ export const ImgPreview = styled.div`
   overflow: hidden;
 `;
 
-export const ImgInput = styled.div`
+export const ImgInput = styled.button`
   ${theme.fonts.pretendard};
   color: ${theme.colors.territory};
   font-size: 0.875rem;
@@ -78,6 +85,8 @@ export const ExText = styled.div`
   line-height: 1.5;
 `;
 
+export const FieldLabel = ExText.withComponent("label");
+
 export const exText = styled.div`
   color: var(--fg-subtle, ${theme.colors["grey-400"]});
 
@@ -104,12 +113,43 @@ export const TextBox = styled.div`
   gap: 0;
 `;
 
+export const FieldMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+`;
+
 export const LimitText = styled.div`
-  align-self: flex-end;
-  margin-top: -1.5rem;
+  margin-left: auto;
   ${theme.fonts.pretendard};
   color: ${theme.colors["grey-400"]};
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.5;
+`;
+
+export const VisuallyHidden = styled.span`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+`;
+
+export const ErrorMessage = styled.p`
+  margin: 0;
+  color: ${theme.colors.red};
+  ${theme.fonts.pretendard}
+  font-size: 0.875rem;
+  line-height: 1.5;
+`;
+
+export const SaveError = styled(ErrorMessage)`
+  width: 100%;
+  padding: 1rem 1.5rem;
 `;
