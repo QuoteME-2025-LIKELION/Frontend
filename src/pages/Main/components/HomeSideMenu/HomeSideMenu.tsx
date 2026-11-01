@@ -68,6 +68,8 @@ export default function HomeSideMenu({
             <S.ImgPreview $profileImage={profileImage}>
               {!profileImage && (
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="80"
                   height="80"
@@ -94,6 +96,8 @@ export default function HomeSideMenu({
                 }
               >
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
                   height="20"

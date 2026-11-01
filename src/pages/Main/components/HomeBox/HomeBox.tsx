@@ -167,7 +167,11 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       <S.Bottom>
         {hasFeed && (
           <S.TagBox ref={tagBoxRef}>
-            <S.TagButton type="button" onClick={handleTagButtonClick}>
+            <S.TagButton
+              type="button"
+              aria-label={`태그된 친구 ${taggedNicknames.length}명`}
+              onClick={handleTagButtonClick}
+            >
               <img src={userIcon} alt="" />
               {taggedNicknames.length}
             </S.TagButton>

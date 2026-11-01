@@ -123,6 +123,8 @@ export default function Archive() {
             onClick={() => navigate("/home")}
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -149,6 +151,8 @@ export default function Archive() {
               onClick={() => moveMonth(-1)}
             >
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -176,6 +180,8 @@ export default function Archive() {
               onClick={() => moveMonth(1)}
             >
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -257,6 +263,8 @@ export default function Archive() {
                   onClick={() => movePickerYear(-1)}
                 >
                   <svg
+                    aria-hidden="true"
+                    focusable="false"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -279,6 +287,8 @@ export default function Archive() {
                   onClick={() => movePickerYear(1)}
                 >
                   <svg
+                    aria-hidden="true"
+                    focusable="false"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"

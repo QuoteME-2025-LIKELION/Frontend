@@ -34,6 +34,8 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
           onClick={() => navigate("/archive")}
         >
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="18"
@@ -49,11 +51,17 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
         <S.IconBox>
           <S.IconButton
             type="button"
-            aria-label="알림으로 이동"
+            aria-label={
+              hasUnread
+                ? "알림으로 이동 (읽지 않은 알림 있음)"
+                : "알림으로 이동"
+            }
             onClick={() => navigate("/notification")}
           >
             {hasUnread ? (
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="22"
@@ -74,6 +82,8 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
               </svg>
             ) : (
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="22"
@@ -93,9 +103,12 @@ export default function DateHeader({ onToggleMenu }: DateHeaderProps) {
 
           <S.IconButton
             type="button"
+            aria-label="메뉴 열기"
             onClick={onToggleMenu}
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="16"

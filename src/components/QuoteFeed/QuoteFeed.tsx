@@ -229,6 +229,8 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                     $isInArchive={isInArchive}
                   >
                     <svg
+                      aria-hidden="true"
+                      focusable="false"
                       xmlns="http://www.w3.org/2000/svg"
                       width="8"
                       height="8"
@@ -283,6 +285,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             </button>
             <button
               type="button"
+              aria-label="공유하기"
               disabled={isShareDisabled}
               onClick={(e) => {
                 e.stopPropagation(); // 이벤트 버블링 중단 (Archive 클릭 방지)

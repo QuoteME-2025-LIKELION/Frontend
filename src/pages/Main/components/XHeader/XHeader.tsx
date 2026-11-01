@@ -20,8 +20,14 @@ export default function XHeader({
     <S.Container>
       <S.Header $showHomeButton={showHomeButton}>
         {showHomeButton && (
-          <S.IconButton type="button" onClick={handleClose}>
+          <S.IconButton
+            type="button"
+            aria-label={onClose ? "이전 화면으로 돌아가기" : "홈으로 돌아가기"}
+            onClick={handleClose}
+          >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -39,8 +45,10 @@ export default function XHeader({
           </S.IconButton>
         )}
         <S.IconBox>
-          <S.IconButton type="button" onClick={handleClose}>
+          <S.IconButton type="button" aria-label="닫기" onClick={handleClose}>
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"

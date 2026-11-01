@@ -91,6 +91,8 @@ export default function RecommendList({
           }}
         >
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="16"
             height="16"
@@ -118,6 +120,7 @@ export default function RecommendList({
           >
             <S.FirstLine $isSelected={selectedId === q.id}>
               <svg
+                focusable="false"
                 width="11"
                 height="10"
                 viewBox="0 0 11 10"
@@ -134,6 +137,7 @@ export default function RecommendList({
                 {q.text}
               </S.QuoteText>
               <svg
+                focusable="false"
                 width="11"
                 height="10"
                 viewBox="0 0 11 10"
