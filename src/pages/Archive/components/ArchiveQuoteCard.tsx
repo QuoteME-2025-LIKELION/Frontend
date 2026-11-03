@@ -13,12 +13,22 @@ type ArchiveQuoteCardProps = {
   showOriginalContent?: boolean;
   onClick?: () => void;
   onBookmark?: () => void;
+  isBookmarked?: boolean;
+  isBookmarkDisabled?: boolean;
   onShare?: () => void;
 };
 
 const ArchiveQuoteCard = forwardRef<HTMLDivElement, ArchiveQuoteCardProps>(
   (
-    { feed, showOriginalContent = false, onClick, onBookmark, onShare },
+    {
+      feed,
+      showOriginalContent = false,
+      onClick,
+      onBookmark,
+      onShare,
+      isBookmarked = feed.isBookmarked,
+      isBookmarkDisabled = false,
+    },
     ref
   ) => {
     const authorName = feed.authorName ?? feed.authorNickname ?? "닉네임";
@@ -59,16 +69,16 @@ const ArchiveQuoteCard = forwardRef<HTMLDivElement, ArchiveQuoteCardProps>(
           <S.IconBox>
             <S.IconButton
               type="button"
-              aria-label="북마크"
+              aria-label={isBookmarked ? "북마크 취소" : "북마크"}
+              aria-pressed={isBookmarked}
+              disabled={isBookmarkDisabled || !onBookmark}
               onClick={(event) => {
                 event.stopPropagation();
                 onBookmark?.();
               }}
             >
               <img
-                src={
-                  feed.isBookmarked ? bookmarkFilledIcon : bookmarkOutlineIcon
-                }
+                src={isBookmarked ? bookmarkFilledIcon : bookmarkOutlineIcon}
                 alt=""
               />
             </S.IconButton>

@@ -117,6 +117,11 @@ export const IconButton = styled.button`
   justify-content: center;
   cursor: pointer;
 
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
   img {
     width: 1rem;
     height: 1rem;

@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import { useArchiveBookmarks } from "@/hooks/useArchiveBookmarks";
 import { useBookmarkedArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
@@ -10,6 +12,13 @@ import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function Bookmarks() {
+  const {
+    getBookmarkProps,
+    toastMessage,
+    closeBookmarkToast,
+    isBookmarkError,
+    retryBookmarks,
+  } = useArchiveBookmarks();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const {
@@ -18,7 +27,8 @@ export default function Bookmarks() {
     closeDateNavigationConfirm,
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
-  const { data: bookmarkedFeeds = [] } = useBookmarkedArchivesQuery();
+  const { data: bookmarkedFeeds = [], isSuccess } =
+    useBookmarkedArchivesQuery();
 
   const { onShare } = useOutletContext<ArchiveOutletContext>();
 
@@ -35,6 +45,19 @@ export default function Bookmarks() {
 
   return (
     <S.Container>
+      <ToastModal
+        isVisible={Boolean(toastMessage)}
+        text={toastMessage}
+        onClose={closeBookmarkToast}
+      />
+      {isBookmarkError && (
+        <S.StatusMessage role="status">
+          북마크 상태를 확인하지 못했습니다.
+          <S.RetryButton type="button" onClick={retryBookmarks}>
+            다시 확인
+          </S.RetryButton>
+        </S.StatusMessage>
+      )}
       {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
@@ -43,7 +66,7 @@ export default function Bookmarks() {
           showOverlay={true}
         />
       )}
-      {bookmarkedFeeds.length === 0 && (
+      {isSuccess && bookmarkedFeeds.length === 0 && (
         <S.EmptyMessage>북마크한 명언이 없습니다.</S.EmptyMessage>
       )}
       {bookmarkedFeeds.map((data, index) => {
@@ -59,9 +82,9 @@ export default function Bookmarks() {
             key={data.quoteId ?? data.id}
             feed={{
               ...data,
-              isBookmarked: true,
               taggedMemberNames: taggedNames,
             }}
+            {...getBookmarkProps(data)}
             onClick={() => openDateNavigationConfirm(date)}
             onShare={() => handleShare(date, authorName, index)}
           />

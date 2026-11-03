@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import ToastModal from "@/components/ToastModal/ToastModal";
+import { useArchiveBookmarks } from "@/hooks/useArchiveBookmarks";
 import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
 import { useElementImageDownload } from "@/hooks/useElementImageDownload";
@@ -10,6 +12,13 @@ import * as List from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function CalendarPage() {
+  const {
+    getBookmarkProps,
+    toastMessage,
+    closeBookmarkToast,
+    isBookmarkError,
+    retryBookmarks,
+  } = useArchiveBookmarks();
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const {
@@ -37,6 +46,19 @@ export default function CalendarPage() {
 
   return (
     <List.Container>
+      <ToastModal
+        isVisible={Boolean(toastMessage)}
+        text={toastMessage}
+        onClose={closeBookmarkToast}
+      />
+      {isBookmarkError && (
+        <List.StatusMessage role="status">
+          북마크 상태를 확인하지 못했습니다.
+          <List.RetryButton type="button" onClick={retryBookmarks}>
+            다시 확인
+          </List.RetryButton>
+        </List.StatusMessage>
+      )}
       {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"
@@ -59,6 +81,7 @@ export default function CalendarPage() {
               feedRefs.current[index] = el;
             }}
             feed={feed}
+            {...getBookmarkProps(feed)}
             onClick={() => openDateNavigationConfirm(date)}
             onShare={() => handleShare(date, authorName, index)}
           />
