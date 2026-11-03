@@ -221,20 +221,29 @@ export default function AccountSetting() {
                   <S.ProviderIcon src={googleIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>구글</S.ProviderName>
-                <S.ProviderStatus>연동됨</S.ProviderStatus>
+                <S.ProviderStatus>
+                  {isAccountProfilePending
+                    ? "확인 중"
+                    : !isAccountProfileError &&
+                        accountProfile?.provider === "GOOGLE"
+                      ? "연동됨"
+                      : "확인 불가"}
+                </S.ProviderStatus>
               </S.LinkedRow>
-              <S.LinkedActionRow
-                type="button"
-                onClick={() =>
-                  setToastMessage("아직 구현되지 않은 기능입니다.")
-                }
-              >
+              <S.LinkedRow>
                 <S.ProviderIconFrame>
                   <S.ProviderIcon src={kakaoIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>카카오</S.ProviderName>
-                <S.ProviderStatus>연동하기</S.ProviderStatus>
-              </S.LinkedActionRow>
+                <S.ProviderStatus>
+                  {isAccountProfilePending
+                    ? "확인 중"
+                    : !isAccountProfileError &&
+                        accountProfile?.provider === "KAKAO"
+                      ? "연동됨"
+                      : "확인 불가"}
+                </S.ProviderStatus>
+              </S.LinkedRow>
             </S.LinkedList>
           </S.Section>
         </S.Content>

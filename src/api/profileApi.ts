@@ -23,6 +23,7 @@ export interface DeleteAccountRequest {
 }
 
 export interface AccountProfileResponse {
+  provider?: "LOCAL" | "GOOGLE" | "KAKAO" | null;
   email?: string;
   birthYear?: string | number | null;
   gender?: "MALE" | "FEMALE" | "ETC" | null;

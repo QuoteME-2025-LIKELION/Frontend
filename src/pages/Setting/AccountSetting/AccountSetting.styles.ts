@@ -91,18 +91,6 @@ export const LinkedRow = styled.div`
   border-bottom: 1px solid ${theme.colors["grey-100"]};
 `;
 
-export const LinkedActionRow = styled.button`
-  width: 100%;
-  min-height: 4.25rem;
-  display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.8125rem;
-  border-bottom: 1px solid ${theme.colors["grey-100"]};
-  text-align: left;
-  cursor: pointer;
-`;
-
 export const ProviderIcon = styled.img`
   width: 2.75rem;
   height: 2.75rem;
@@ -269,7 +257,8 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   width: 100%;
   min-height: 1.75rem;
   ${theme.fonts.batang}
-  color: ${({ $selected }) => ($selected ? theme.colors["grey-950"] : theme.colors["grey-400"])};
+  color: ${({ $selected }) =>
+    $selected ? theme.colors["grey-950"] : theme.colors["grey-400"]};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   line-height: 1.35;
