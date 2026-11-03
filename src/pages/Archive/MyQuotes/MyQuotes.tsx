@@ -12,7 +12,7 @@ import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function MyQuotes() {
-  const { data: myQuotes = [] } = useMyArchivesQuery();
+  const { data: myQuotes = [], isSuccess } = useMyArchivesQuery();
 
   const {
     getBookmarkProps,
@@ -66,8 +66,8 @@ export default function MyQuotes() {
           showOverlay={true}
         />
       )}
-      {myQuotes.length === 0 && (
-        <S.EmptyMessage>작성된 명언이 없습니다.</S.EmptyMessage>
+      {isSuccess && myQuotes.length === 0 && (
+        <S.EmptyMessage>작성된 명언이 없어요</S.EmptyMessage>
       )}
       {myQuotes.map((feed, index) => {
         const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);

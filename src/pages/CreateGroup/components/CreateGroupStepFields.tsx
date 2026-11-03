@@ -111,7 +111,7 @@ export default function CreateGroupStepFields({
             뒤로가기
           </S.ActionButton>
           <S.ActionButton type="button" onClick={() => onMoveStep(3)}>
-            다음으로
+            {motto.trim().length === 0 ? "건너뛰기" : "다음으로"}
           </S.ActionButton>
         </S.BottomActionBar>
       )}

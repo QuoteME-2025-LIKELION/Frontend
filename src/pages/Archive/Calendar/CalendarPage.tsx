@@ -30,7 +30,7 @@ export default function CalendarPage() {
 
   const { onShare, selectedDateString } =
     useOutletContext<ArchiveOutletContext>();
-  const { data: filteredFeeds = [] } =
+  const { data: filteredFeeds = [], isSuccess } =
     useArchivesByDateQuery(selectedDateString);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
@@ -67,8 +67,8 @@ export default function CalendarPage() {
           showOverlay={true}
         />
       )}
-      {filteredFeeds.length === 0 && (
-        <List.EmptyMessage>작성된 명언이 없습니다.</List.EmptyMessage>
+      {isSuccess && filteredFeeds.length === 0 && (
+        <List.EmptyMessage>이날 작성된 명언이 없어요</List.EmptyMessage>
       )}
       {filteredFeeds.map((feed, index) => {
         const date = (feed.createDate ?? feed.createdAt ?? "").slice(0, 10);

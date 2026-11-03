@@ -67,7 +67,9 @@ export default function Bookmarks() {
         />
       )}
       {isSuccess && bookmarkedFeeds.length === 0 && (
-        <S.EmptyMessage>북마크한 명언이 없습니다.</S.EmptyMessage>
+        <S.EmptyMessage>
+          마음에 드는 명언은 북마크를 통해 모아보세요
+        </S.EmptyMessage>
       )}
       {bookmarkedFeeds.map((data, index) => {
         const date = (data.createDate ?? data.createdAt ?? "").slice(0, 10);
