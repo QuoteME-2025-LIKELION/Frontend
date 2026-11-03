@@ -188,7 +188,7 @@ export default function CreateGroup() {
       }
 
       navigate("/friend-group", {
-        state: { toastMessage: "새로운 그룹을 만들었습니다." },
+        state: { toastMessage: "새로운 그룹이 만들어졌어요" },
       });
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);

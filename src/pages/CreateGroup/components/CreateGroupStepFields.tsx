@@ -84,7 +84,7 @@ export default function CreateGroupStepFields({
               <Input
                 aria-labelledby={titleId}
                 aria-describedby={`${helpId} ${metaId}`}
-                placeholder="그룹 메시지를 입력해 주세요"
+                placeholder="그룹 메시지를 자유롭게 적어주세요"
                 value={motto}
                 onChange={(e) => onChangeMotto(e.target.value)}
                 maxLength={20}
