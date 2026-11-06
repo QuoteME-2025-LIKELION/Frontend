@@ -9,13 +9,13 @@ export interface SearchFriendsAndGroupsResponse {
 
 export interface FriendRequest {
   requestId: number;
-  direction: "RECEIVED" | "SENT";
+  direction?: "RECEIVED" | "SENT";
   senderId: number;
   senderNickname: string;
   senderProfileImage?: string | null;
   senderIntroduction?: string | null;
-  receiverId: number;
-  receiverNickname: string;
+  receiverId?: number;
+  receiverNickname?: string;
   receiverProfileImage?: string | null;
   receiverIntroduction?: string | null;
 }

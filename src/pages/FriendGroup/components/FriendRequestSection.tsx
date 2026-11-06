@@ -19,7 +19,7 @@ export default function FriendRequestSection({
   onReject,
 }: FriendRequestSectionProps) {
   const receivedRequests = requests.filter(
-    (request) => request.direction === "RECEIVED"
+    (request) => request.direction !== "SENT"
   );
 
   return (

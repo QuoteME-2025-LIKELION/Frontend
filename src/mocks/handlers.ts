@@ -267,15 +267,10 @@ const createFriendRequest = (
   const member = getMockMember(senderId);
   return {
     requestId: 10 + index,
-    direction: "RECEIVED",
     senderId,
     senderNickname: member.nickname,
     senderProfileImage: member.profileImage,
     senderIntroduction: member.introduction,
-    receiverId: 1,
-    receiverNickname: "손지수",
-    receiverProfileImage: MOCK_PROFILE_IMAGE,
-    receiverIntroduction: "긍정의 힘을 믿어요",
   };
 };
 let mockFriendRequests = mockFriendRequestIds.map(createFriendRequest);
@@ -629,7 +624,7 @@ export const handlers = [
     const item = mockFriendRequests.find(
       (request) =>
         request.requestId === Number(params.requestId) &&
-        request.direction === "RECEIVED"
+        request.direction !== "SENT"
     );
     if (!item) return new HttpResponse(null, { status: 404 });
     if (!mockFriendIds.includes(item.senderId))
@@ -644,7 +639,7 @@ export const handlers = [
     const item = mockFriendRequests.find(
       (request) =>
         request.requestId === Number(params.requestId) &&
-        request.direction === "RECEIVED"
+        request.direction !== "SENT"
     );
     if (!item) return new HttpResponse(null, { status: 404 });
     mockFriendRequests = mockFriendRequests.filter(

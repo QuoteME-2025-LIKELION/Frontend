@@ -35,10 +35,11 @@ export default function FriendListSection({
     requests
       ?.filter((request) => request.direction === "SENT")
       .map((request) => request.receiverId)
+      .filter((id): id is number => id !== undefined)
   );
   const receivedIds = new Set(
     requests
-      ?.filter((request) => request.direction === "RECEIVED")
+      ?.filter((request) => request.direction !== "SENT")
       .map((request) => request.senderId)
   );
   const visibleUsers = keyword ? searchMembers : friends;
