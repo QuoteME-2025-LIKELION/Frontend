@@ -15,7 +15,7 @@ function formatNoticeDate(date: string | null) {
 }
 
 function isImportantNotice(notice: NoticeSummary) {
-  return notice.type === "IMPORTANT" || notice.type === "NOTICE";
+  return notice.important;
 }
 
 export default function Notice() {
