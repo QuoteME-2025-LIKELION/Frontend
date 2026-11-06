@@ -76,7 +76,11 @@ export default function Notification() {
         case "GROUP":
         case "GROUP_ACCEPT":
         case "GROUP_JOIN_REQUEST":
-          // 그룹 알림은 그룹 페이지로 이동
+          // 대상이 없는 알림에서는 잘못된 /group/null 경로로 이동하지 않는다.
+          if (notification.targetId === null) {
+            setNavigationError("알림의 대상 그룹을 확인할 수 없어요.");
+            break;
+          }
           navigate(`/group/${notification.targetId}`, {
             state: { returnTo: "/notification" },
           });
@@ -128,7 +132,7 @@ export default function Notification() {
           break;
         case "TAG_REQUEST": {
           const date = getNotificationQuoteDate(notification.quoteDate);
-          if (!date) {
+          if (!date || notification.targetId === null) {
             navigate("/home", { state: { returnTo: "/notification" } });
             break;
           }

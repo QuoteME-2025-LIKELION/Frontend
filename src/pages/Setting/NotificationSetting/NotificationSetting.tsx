@@ -24,7 +24,7 @@ type SettingKey =
 type Meridiem = "오전" | "오후";
 
 function parseReminderTime(value: string | null) {
-  const [hour, minute] = (value ?? "21:00").split(":").map(Number);
+  const [hour, minute] = (value ?? "10:00").split(":").map(Number);
   return {
     meridiem: (hour < 12 ? "오전" : "오후") as Meridiem,
     hour: hour % 12 || 12,
@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS: NotificationSettingsType = {
   pokeEnabled: true,
   likeEnabled: true,
   quoteReminderEnabled: true,
-  quoteReminderTime: "21:00",
+  quoteReminderTime: "10:00",
   marketingEnabled: false,
 };
 

@@ -13,14 +13,14 @@ let mockNotificationSettings = {
   pokeEnabled: false,
   likeEnabled: true,
   quoteReminderEnabled: true,
-  quoteReminderTime: "21:00",
+  quoteReminderTime: "10:00",
   marketingEnabled: false,
 };
 
 type MockNotification = Notification & {
-  category: "GROUP" | "FRIEND" | "TAG";
+  category: "GROUP" | "FRIEND" | "TAG" | null;
   createdAt: string;
-  referenceId: number;
+  referenceId: number | null;
 };
 
 let mockNotifications: MockNotification[] = [
@@ -59,6 +59,18 @@ let mockNotifications: MockNotification[] = [
     referenceId: 6,
     targetId: 6,
     senderName: "조니님",
+  },
+  {
+    id: 4,
+    category: null,
+    type: "QUOTE_REMINDER",
+    message: "오늘의 명언을 작성할 시간이에요!",
+    isRead: false,
+    createdAt: "2026-11-06T10:00:00",
+    createDate: "2026-11-06T10:00:00",
+    referenceId: null,
+    targetId: null,
+    senderName: null,
   },
 ];
 
@@ -1204,7 +1216,7 @@ export const handlers = [
 
   http.put("/api/notifications/settings", async ({ request }) => {
     const body = await request.json();
-    mockNotificationSettings = body as typeof mockNotificationSettings;
+    mockNotificationSettings = { ...mockNotificationSettings, ...body };
     return HttpResponse.json(mockNotificationSettings);
   }),
 
