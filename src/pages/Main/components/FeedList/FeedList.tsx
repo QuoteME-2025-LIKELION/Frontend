@@ -34,7 +34,6 @@ type FeedListProps = {
   groups: Group[] | [];
   isGroupsReady: boolean;
   selectedGroupId: number | null;
-  myNickname: string;
   myMemberId?: number;
   onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
@@ -50,7 +49,6 @@ export default function FeedList({
   groups,
   isGroupsReady,
   selectedGroupId,
-  myNickname,
   myMemberId,
   onSelectGroup,
   onShare,
@@ -353,7 +351,7 @@ export default function FeedList({
             onRequest={openTagRequestConfirm}
             onTagRequestInfo={setToastMessage}
             onPoke={handlePoke}
-            myNickname={myNickname}
+            myMemberId={myMemberId}
           />
         ))
       ) : !isLoading ? (
@@ -400,7 +398,7 @@ interface FeedListItemProps {
   onRequest: (quoteId: number) => void;
   onTagRequestInfo: (message: string) => void;
   onPoke: (friendId: number) => void;
-  myNickname: string;
+  myMemberId?: number;
 }
 
 function FeedListItem({
@@ -413,9 +411,10 @@ function FeedListItem({
   onRequest,
   onTagRequestInfo,
   onPoke,
-  myNickname,
+  myMemberId,
 }: FeedListItemProps) {
-  const isAlreadyTagged = Boolean(quote.taggedNicknames?.includes(myNickname));
+  const isAlreadyTagged = quote.myTagStatus === "TAGGED" ||
+    Boolean(quote.tags?.some((tag) => tag.memberId === myMemberId));
   const canRequestTag =
     !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
   const shouldCheckTagRequest = canRequestTag && quote.quoteId !== undefined;
@@ -437,7 +436,7 @@ function FeedListItem({
       bio={quote.authorIntroduction}
       createDate={quote.createDate}
       content={quote.content}
-      tag={quote.taggedNicknames}
+      tag={quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames}
       isBookmarked={quote.isBookmarked}
       isBookmarkDisabled={quote.isSilenced || isBookmarkPending}
       isShareDisabled={quote.isSilenced}
@@ -452,7 +451,7 @@ function FeedListItem({
           canRequestTag &&
           !isTagRequestLoading &&
           !isTagRequestError &&
-          tagRequest?.status === "NONE" &&
+          (tagRequest?.status === "NONE" || tagRequest?.status === "REJECTED") &&
           quote.quoteId !== undefined
         ) {
           onRequest(quote.quoteId);
@@ -460,7 +459,7 @@ function FeedListItem({
       }}
       canRequestTag={canRequestTag}
       onTagRequestInfo={onTagRequestInfo}
-      tagRequestStatus={tagRequest?.status ?? "NONE"}
+      tagRequestStatus={tagRequest?.status ?? (quote.myTagStatus === "REQUESTED" ? "PENDING" : "NONE")}
       isTagRequestLoading={isTagRequestLoading}
       isTagRequestError={isTagRequestError}
       onPoke={() => {

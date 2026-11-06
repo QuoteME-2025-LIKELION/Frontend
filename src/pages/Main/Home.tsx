@@ -82,9 +82,17 @@ export default function Home() {
             archiveMyQuote.taggedMembers ??
             apiMyQuote?.taggedNicknames ??
             [],
+          tags: archiveMyQuote.tags ?? apiMyQuote?.tags,
           isBookmarked: archiveMyQuote.isBookmarked ?? apiMyQuote?.isBookmarked,
         };
-  const otherQuotes = feedData?.items ?? [];
+  const otherQuotes = (feedData?.items ?? []).map((quote) => {
+    const detail = quotesData?.otherQuotes.find((item) => item.id === quote.id);
+    return {
+      ...quote,
+      tags: detail?.tags ?? quote.tags,
+      myTagStatus: detail?.myTagStatus ?? quote.myTagStatus,
+    };
+  });
   const isLoading =
     isQuotesLoading ||
     isFeedLoading ||
@@ -146,7 +154,6 @@ export default function Home() {
           groups={groups}
           isGroupsReady={isGroupsReady}
           selectedGroupId={selectedGroupId}
-          myNickname={profileNickname}
           myMemberId={myProfile?.id}
           onSelectGroup={setSelectedGroupId}
           onShare={executeShare}

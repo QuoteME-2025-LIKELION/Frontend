@@ -105,6 +105,7 @@ export default function EditQuoteTags() {
             authorName: myQuote.authorNickname,
             authorBirthYear: myQuote.birthYear,
             taggedNicknames: myQuote.taggedNicknames,
+            tags: myQuote.tags,
           }}
           mode="fix"
         />

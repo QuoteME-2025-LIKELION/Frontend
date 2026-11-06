@@ -49,7 +49,12 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
     quoteId !== undefined
       ? (bookmarkOverrides[quoteId] ?? Boolean(myQuote?.isBookmarked))
       : false;
-  const taggedNicknames = myQuote?.taggedNicknames ?? [];
+  const tagMembers = myQuote?.tags?.map((tag) => ({
+    key: String(tag.memberId), nickname: tag.nickname,
+  })) ?? (myQuote?.taggedNicknames ?? []).map((nickname, index) => ({
+    key: String(index), nickname,
+  }));
+  const taggedNicknames = tagMembers.map((tag) => tag.nickname);
   let line1: string, line2: string;
 
   // 내 피드 내용이 존재한다면 두 줄로 분리
@@ -194,8 +199,8 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
             </S.TagButton>
             {isTagMenuOpen && (
               <S.TagMenu>
-                {taggedNicknames.map((nickname) => (
-                  <S.TagName key={nickname}>{nickname}</S.TagName>
+                {tagMembers.map((tag) => (
+                  <S.TagName key={tag.key}>{tag.nickname}</S.TagName>
                 ))}
                 <S.TagEditButton type="button" onClick={handleTagEditClick}>
                   {taggedNicknames.length > 0 ? "수정하기" : "추가하기"}

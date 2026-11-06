@@ -12,7 +12,7 @@ import {
   useUpdateQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
-import type { Friend } from "@/types/friend.type";
+import { getTagCandidates } from "@/utils/quoteTags";
 
 import * as S from "./NewQuote.styles";
 
@@ -45,33 +45,20 @@ export default function NewQuote({
     () => new Set(tagRequests.map((request) => request.requesterId)),
     [tagRequests]
   );
-  const tagCandidates = useMemo(() => {
-    const candidates = new Map<number, Friend>(
-      friends.map((friend) => [friend.id, friend])
-    );
-    for (const request of tagRequests) {
-      if (!candidates.has(request.requesterId)) {
-        candidates.set(request.requesterId, {
-          id: request.requesterId,
-          nickname: request.requesterName,
-        });
-      }
-    }
-    return [...candidates.values()];
-  }, [friends, tagRequests]);
+  const tagCandidates = useMemo(
+    () => getTagCandidates(friends, quote.tags ?? [], tagRequests),
+    [friends, quote.tags, tagRequests]
+  );
   const initialSelectedIds = useMemo(() => {
     if (mode !== "fix") {
       return [];
     }
 
-    return tagCandidates
-      .filter(
-        (friend) =>
-          quote.taggedNicknames?.includes(friend.nickname) ||
-          pendingRequesterIds.has(friend.id)
-      )
-      .map((friend) => friend.id);
-  }, [tagCandidates, mode, pendingRequesterIds, quote.taggedNicknames]);
+    return [...new Set([
+      ...(quote.tags ?? []).map((tag) => tag.memberId),
+      ...tagRequests.map((request) => request.requesterId),
+    ])];
+  }, [mode, quote.tags, tagRequests]);
   const selectedIds = selectedIdsDraft ?? initialSelectedIds;
   const selectedFriends = tagCandidates.filter((friend) =>
     selectedIds.includes(friend.id)
@@ -109,6 +96,11 @@ export default function NewQuote({
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    if (mode === "fix" && !Array.isArray(quote.tags)) {
+      setErrorMessage("태그 정보를 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
     if (mode === "create") {
       try {
         await createQuote({

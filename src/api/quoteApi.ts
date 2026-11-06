@@ -1,5 +1,5 @@
 import api from "@/api/api";
-import type { MyQuote, OtherQuote } from "@/types/feed.type";
+import type { MyQuote, OtherQuote, QuoteTag, QuoteTagStatus } from "@/types/feed.type";
 
 interface RsData<T> {
   resultCode: string;
@@ -28,6 +28,8 @@ export interface QuoteFeedItem {
   authorProfileImage?: string;
   content: string;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
+  myTagStatus?: QuoteTagStatus;
   isLiked?: boolean;
   isBookmarked?: boolean;
   isFriendQuote?: boolean;

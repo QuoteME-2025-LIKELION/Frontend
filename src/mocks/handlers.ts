@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 
 import type { FriendRequest } from "@/api/friendApi";
+import type { QuoteTag } from "@/types/feed.type";
 import type { Notification } from "@/types/notification.type";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
@@ -298,7 +299,10 @@ const mockQuoteTagRequestsByQuoteId: Record<
 > = {
   1: [{ requestId: 101, requesterId: 2, requesterName: "라라진" }],
 };
-let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
+let mockMyQuoteTags: QuoteTag[] = [
+  { memberId: 91, nickname: "뮤랄라", profileImage: MOCK_PROFILE_IMAGE },
+  { memberId: 92, nickname: "스페이스", profileImage: MOCK_PROFILE_IMAGE },
+];
 let mockMyQuoteIsBookmarked = false;
 
 const mockMyTagRequestStatusByQuoteId: Record<
@@ -453,7 +457,16 @@ function getMockFeedQuotes(groupIdParam: string | null) {
       timeAgo: "30분 전",
       createDate: "2025-11-03T19:02:00",
     },
-  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname));
+  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname))
+    .map((quote) => ({
+      ...quote,
+      tags: quote.taggedNicknames.map((nickname, index) => ({
+        memberId: Object.values(mockMembersById).find((member) => member.nickname === nickname)?.id ?? 100 + index,
+        nickname,
+        profileImage: MOCK_PROFILE_IMAGE,
+      })),
+      myTagStatus: mockMyTagRequestStatusByQuoteId[quote.id] === "PENDING" ? "REQUESTED" : "NONE",
+    }));
 }
 
 export const handlers = [
@@ -888,7 +901,8 @@ export const handlers = [
           authorNickname: "손지수",
           birthYear: 2000,
           originalContent: null,
-          taggedNicknames: mockMyQuoteTaggedNicknames,
+          taggedNicknames: mockMyQuoteTags.map((tag) => tag.nickname),
+          tags: mockMyQuoteTags,
           isBookmarked: mockMyQuoteIsBookmarked,
         },
       ],
@@ -926,9 +940,13 @@ export const handlers = [
   // ==========================================
   http.patch("/api/quotes/:quoteId/tags", async ({ request }) => {
     const body = (await request.json()) as { taggedMemberIds?: number[] };
-    mockMyQuoteTaggedNicknames = (body.taggedMemberIds ?? [])
-      .map((id) => getMockMember(id)?.nickname)
-      .filter(Boolean);
+    mockMyQuoteTags = (body.taggedMemberIds ?? []).flatMap((id) => {
+      const existing = mockMyQuoteTags.find((tag) => tag.memberId === id);
+      const member = getMockMember(id);
+      return existing ? [existing] : member ? [{
+        memberId: member.id, nickname: member.nickname, profileImage: member.profileImage,
+      }] : [];
+    });
 
     return HttpResponse.json(body);
   }),
@@ -937,7 +955,7 @@ export const handlers = [
     const quoteId = Number(params.quoteId);
     const currentStatus = mockMyTagRequestStatusByQuoteId[quoteId];
 
-    if (currentStatus && currentStatus !== "NONE") {
+    if (currentStatus === "PENDING" || currentStatus === "ACCEPTED") {
       return HttpResponse.json(
         { message: "이미 태그를 요청했습니다." },
         { status: 400 }

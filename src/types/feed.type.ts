@@ -1,3 +1,11 @@
+export interface QuoteTag {
+  memberId: number;
+  nickname: string;
+  profileImage?: string | null;
+}
+
+export type QuoteTagStatus = "TAGGED" | "REQUESTED" | "NONE";
+
 /**
  * API 명세서에 따라 내 명언과 다른 사람 명언으로 구분
  */
@@ -20,6 +28,7 @@ export interface MyQuote {
   birthYear: number;
   createDate?: string;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
   isBookmarked?: boolean;
 }
 
@@ -42,6 +51,8 @@ export interface OtherQuote {
   quoteId?: number;
   content: string;
   taggedNicknames: string[];
+  tags?: QuoteTag[];
+  myTagStatus?: QuoteTagStatus;
   taggedMembers?: string[];
   authorNickname: string;
   authorProfileImage?: string;
@@ -85,4 +96,5 @@ export interface CreatedQuote {
   authorName: string;
   authorBirthYear?: number | null;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
 }
