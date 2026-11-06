@@ -35,7 +35,13 @@ export default function NewQuote({
   const [keyword, setKeyword] = useState("");
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { data: friends = [], isSuccess: areFriendsReady } = useFriendsQuery();
+  const {
+    data: friends = [],
+    isSuccess: areFriendsReady,
+    isError: isFriendsError,
+    isFetching: isFriendsFetching,
+    refetch: refetchFriends,
+  } = useFriendsQuery();
   const { data: myProfile, isSuccess: isProfileReady } = useMyProfileQuery();
   const { data: tagRequests = [], isError: isRequestsError, isSuccess: areRequestsReady, refetch: refetchRequests } = useQuoteTagRequestsQuery(
     mode === "fix" ? quote.id : undefined
@@ -159,14 +165,28 @@ export default function NewQuote({
         <S.Description>
           나중에 태그를 추가하거나 수정할 수 있어요.
         </S.Description>
+        {!areFriendsReady && !isFriendsError && (
+          <S.Description role="status">친구 목록을 불러오는 중입니다.</S.Description>
+        )}
         {mode === "fix" && isRequestsError && (
           <>
             <S.Description role="alert">태그 요청을 불러오지 못했어요.</S.Description>
             <S.ActionButton type="button" onClick={() => void refetchRequests()}>다시 시도</S.ActionButton>
           </>
         )}
-        {tagCandidates.length === 0 ? (
+        {isFriendsError ? (
           <S.EmptyBox>
+            <S.EmptyTitle role="alert">친구 목록을 불러오지 못했어요.</S.EmptyTitle>
+            <S.RetryButton
+              type="button"
+              disabled={isFriendsFetching || isSubmitting}
+              onClick={() => void refetchFriends()}
+            >
+              다시 불러오기
+            </S.RetryButton>
+          </S.EmptyBox>
+        ) : tagCandidates.length === 0 ? (
+          areFriendsReady && (mode !== "fix" || areRequestsReady) && <S.EmptyBox>
             <S.EmptyTitle>태그할 수 있는 친구가 없어요.</S.EmptyTitle>
             <S.EmptyDescription>
               친구를 추가하고 나중에 태그를 추가할 수 있어요.
