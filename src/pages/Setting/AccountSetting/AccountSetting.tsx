@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import type { LinkedProvider } from "@/api/profileApi";
 import googleIcon from "@/assets/icons/account/google.png";
 import kakaoIcon from "@/assets/icons/account/kakao.png";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -28,8 +29,9 @@ const GENDER_OPTIONS: Array<{ value: GenderValue; label: string }> = [
 const DEFAULT_GENDER: GenderValue = "ETC";
 
 const CURRENT_YEAR = new Date().getFullYear();
+const MIN_BIRTH_YEAR = 1900;
 const YEAR_OPTIONS = Array.from(
-  { length: 121 },
+  { length: CURRENT_YEAR - MIN_BIRTH_YEAR + 1 },
   (_, index) => CURRENT_YEAR - index
 );
 
@@ -42,7 +44,9 @@ function normalizeGender(gender: string | null | undefined): GenderValue {
 function parseBirthYear(year: string | number | null | undefined) {
   const parsed = typeof year === "number" ? year : Number(year);
 
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+  return /^\d{4}$/.test(String(year)) &&
+    Number.isInteger(parsed) && parsed >= MIN_BIRTH_YEAR && parsed <= CURRENT_YEAR
+    ? parsed : null;
 }
 
 function formatGender(gender: GenderValue) {
@@ -74,6 +78,17 @@ export default function AccountSetting() {
   const currentBirthYear: number | null =
     birthYearDraft ?? parseBirthYear(accountProfile?.birthYear);
 
+  const getProviderStatus = (provider: LinkedProvider) => {
+    if (isAccountProfilePending) return "확인 중";
+    if (isAccountProfileError || !accountProfile) return "확인 불가";
+    if (Array.isArray(accountProfile.linkedAccounts)) {
+      return accountProfile.linkedAccounts.some((account) => account.provider === provider)
+        ? "연동됨" : "미연동";
+    }
+    // 이전 응답에서는 확인 가능한 단일 provider만 연동으로 표시한다.
+    return accountProfile.provider === provider ? "연동됨" : "확인 불가";
+  };
+
   useEffect(() => {
     if (sheetType !== "birth") return;
     const frame = window.requestAnimationFrame(() => {
@@ -101,7 +116,7 @@ export default function AccountSetting() {
       return;
     }
 
-    if (!nextBirthYear) {
+    if (nextBirthYear === null || parseBirthYear(nextBirthYear) === null) {
       resetDrafts();
       setToastMessage("출생연도를 선택해 주세요.");
       return;
@@ -229,12 +244,7 @@ export default function AccountSetting() {
                 </S.ProviderIconFrame>
                 <S.ProviderName>구글</S.ProviderName>
                 <S.ProviderStatus>
-                  {isAccountProfilePending
-                    ? "확인 중"
-                    : !isAccountProfileError &&
-                        accountProfile?.provider === "GOOGLE"
-                      ? "연동됨"
-                      : "확인 불가"}
+                  {getProviderStatus("GOOGLE")}
                 </S.ProviderStatus>
               </S.LinkedRow>
               <S.LinkedRow>
@@ -243,12 +253,7 @@ export default function AccountSetting() {
                 </S.ProviderIconFrame>
                 <S.ProviderName>카카오</S.ProviderName>
                 <S.ProviderStatus>
-                  {isAccountProfilePending
-                    ? "확인 중"
-                    : !isAccountProfileError &&
-                        accountProfile?.provider === "KAKAO"
-                      ? "연동됨"
-                      : "확인 불가"}
+                  {getProviderStatus("KAKAO")}
                 </S.ProviderStatus>
               </S.LinkedRow>
             </S.LinkedList>

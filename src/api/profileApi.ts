@@ -22,7 +22,11 @@ export interface DeleteAccountRequest {
   otherReason?: string;
 }
 
+export type LinkedProvider = "GOOGLE" | "KAKAO";
+
 export interface AccountProfileResponse {
+  linkedAccounts?: Array<{ provider: LinkedProvider; linkedAt: string }>;
+  providerId?: string | null;
   provider?: "LOCAL" | "GOOGLE" | "KAKAO" | null;
   email?: string;
   birthYear?: string | number | null;

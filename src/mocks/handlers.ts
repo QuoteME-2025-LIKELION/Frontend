@@ -575,6 +575,11 @@ export const handlers = [
       gender: "MALE",
       birthYear: 2000,
       email: "guest@quoteme.com",
+      provider: "GOOGLE",
+      linkedAccounts: [
+        { provider: "GOOGLE", linkedAt: "2026-03-01T10:00:00" },
+        { provider: "KAKAO", linkedAt: "2026-03-02T10:00:00" },
+      ],
     });
   }),
 
