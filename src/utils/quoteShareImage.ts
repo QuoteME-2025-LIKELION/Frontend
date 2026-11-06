@@ -31,7 +31,7 @@ export function getShareAuthor(name: string, birthYear: QuoteShareData["authorBi
 }
 
 /** 단어 경계를 우선하며 긴 단어/이모지는 코드포인트 경계로 줄바꿈한다. */
-export function wrapShareText(text: string, maxWidth: number, measure: (text: string) => number): string[] {
+export function wrapShareText(text: string, maxWidth: number, measure: (text: string) => number, preferWords = true): string[] {
   const lines: string[] = [];
   for (const paragraph of text.split(/\r?\n/)) {
     let remaining = Array.from(paragraph.trim());
@@ -40,7 +40,7 @@ export function wrapShareText(text: string, maxWidth: number, measure: (text: st
       let count = 0;
       while (count < remaining.length && measure(remaining.slice(0, count + 1).join("")) <= maxWidth) count++;
       count = Math.max(1, count);
-      if (count < remaining.length) {
+      if (preferWords && count < remaining.length) {
         const space = remaining.slice(0, count + 1).lastIndexOf(" ");
         if (space > 0) count = space;
       }
@@ -63,12 +63,14 @@ function loadBackground() {
 
 /** 사용자 제공 배경 위에 실제 명언 데이터만 그린다. 화면 버튼/원문 일기는 포함하지 않는다. */
 export async function createQuoteShareImage(data: QuoteShareData): Promise<Blob> {
-  if (!data.content.trim()) throw new Error("공유할 명언이 없습니다.");
+  // 저장된 원문은 유지하고, 이미지에서는 입력 개행 대신 폭에 맞춰 다시 줄바꿈한다.
+  const content = data.content.replace(/\s+/gu, " ").trim();
+  if (!content) throw new Error("공유할 명언이 없습니다.");
   const date = getShareDate(data.date);
   const [background] = await Promise.all([
     loadBackground(),
     document.fonts.load('400 160px "HSBombaram"', `${date.month} ${date.day}`),
-    document.fonts.load('500 92px "KoPubWorldBatang"', data.content),
+    document.fonts.load('500 92px "KoPubWorldBatang"', content),
     document.fonts.load('300 80px "KoPubWorldBatang"', `${data.authorName} ${data.taggedNames?.join(" ") ?? ""} oct 화요일 31 QuoteMe “`),
   ]);
   const canvas = document.createElement("canvas");
@@ -93,7 +95,10 @@ export async function createQuoteShareImage(data: QuoteShareData): Promise<Blob>
   const fontSize = 92;
   const lineHeight = fontSize * 1.44;
   ctx.font = `500 ${fontSize}px "KoPubWorldBatang"`;
-  const lines = wrapShareText(data.content.trim(), 952, (text) => ctx.measureText(text).width);
+  const measureQuote = (text: string) => ctx.measureText(text).width;
+  let lines = wrapShareText(content, 952, measureQuote);
+  // 긴 단어 때문에 불필요하게 줄이 늘어나면 글자 단위로 배치해 92px을 유지한다.
+  if (lines.length > 3) lines = wrapShareText(content, 952, measureQuote, false);
   // 마지막 줄의 실제 글자 하단을 구분선에서 64px 위에 고정한다.
   ctx.textBaseline = "alphabetic";
   const descent = ctx.measureText(lines.at(-1) ?? "").actualBoundingBoxDescent || 0;

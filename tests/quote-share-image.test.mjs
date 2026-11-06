@@ -36,6 +36,11 @@ test('wraps on words and preserves all content when a long word or emoji wraps',
     assert.equal(lines.join('').replaceAll(' ', ''), text.replaceAll(' ', ''));
   }
   assert.deepEqual(wrapShareText('첫째\n둘째', 10, measure), ['첫째', '둘째']);
+  const words = 'abcdef ghijkl mnopqr stuvwx';
+  assert.equal(wrapShareText(words, 10, measure).length, 4);
+  const packed = wrapShareText(words, 10, measure, false);
+  assert.equal(packed.length, 3);
+  assert.equal(packed.join('').replaceAll(' ', ''), words.replaceAll(' ', ''));
 });
 
 test('renders a fixed 1080x1350 card using local background and selected quote data', async () => {
@@ -95,6 +100,18 @@ test('renders a fixed 1080x1350 card using local background and selected quote d
     const longLines = text.filter(([value]) => /^가+$/.test(value));
     assert.ok(longLines.every(([, , y]) => y < 993));
     assert.equal(longLines[0][2] - text.find(([value]) => value === '“')[2], markGap);
+    for (const content of ['가\n나\n다\n라\n마', '가\r\n\r\n나\r\n다', '첫째\n\n둘째\n\n셋째',
+      '가나다라마바 사아자차카타 파하가나다라 마바사아자차']) {
+      text.length = 0;
+      const data = { date: '2026-11-02', content, authorName: '사용자' };
+      await createQuoteShareImage(data);
+      assert.equal(data.content, content);
+      const bodyLines = text.filter(([value]) => textFonts.get(value) === '500 92px "KoPubWorldBatang"');
+      assert.ok(bodyLines.length <= 3);
+      assert.equal(bodyLines.map(([value]) => value).join('').replace(/\s/g, ''), content.replace(/\s/g, ''));
+      assert.ok(bodyLines.every(([, , y]) => y < 993));
+      assert.equal(bodyLines[0][2] - text.find(([value]) => value === '“')[2], markGap);
+    }
     await assert.rejects(createQuoteShareImage({ date: '2026-11-02', content: ' ', authorName: '사용자' }));
   } finally {
     if (originalDocument === undefined) delete globalThis.document; else globalThis.document = originalDocument;
