@@ -103,7 +103,8 @@ export async function createQuoteShareImage(data: QuoteShareData): Promise<Blob>
   lines.forEach((line, index) => ctx.fillText(line, 64, firstBaseline + index * lineHeight));
   ctx.textBaseline = "top";
   ctx.font = '300 140px "KoPubWorldBatang"';
-  ctx.fillText("“", 64, Math.min(562, firstBaseline - fontSize - 130));
+  // 줄 수와 관계없이 명언 첫 줄을 기준으로 같은 간격을 둔다.
+  ctx.fillText("“", 64, firstBaseline - fontSize - 130);
 
   ctx.strokeStyle = "#aec2d4";
   ctx.lineWidth = 2;

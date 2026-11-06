@@ -78,15 +78,23 @@ test('renders a fixed 1080x1350 card using local background and selected quote d
     assert.equal(quoteLines.length, 2);
     assert.ok(quoteLines.every(([value]) => textFonts.get(value) === '500 92px "KoPubWorldBatang"'));
     const lastQuoteY = quoteLines.at(-1)[2];
+    const twoLineMarkY = text.find(([value]) => value === '“')[2];
+    const markGap = quoteLines[0][2] - twoLineMarkY;
     text.length = 0;
     await createQuoteShareImage({ date: '2026-11-02', content: '한 줄 명언', authorName: '사용자' });
-    assert.equal(text.find(([value]) => value === '한 줄 명언')[2], lastQuoteY);
+    const singleLineY = text.find(([value]) => value === '한 줄 명언')[2];
+    const singleLineMarkY = text.find(([value]) => value === '“')[2];
+    assert.equal(singleLineY, lastQuoteY);
+    assert.equal(singleLineY - singleLineMarkY, markGap);
+    assert.ok(singleLineMarkY > twoLineMarkY);
     text.length = 0;
     await createQuoteShareImage({ date: '2026-11-02', content: '가'.repeat(30), authorName: '사용자' });
     assert.ok(text.some(([value]) => value === '사용자'));
     assert.ok(!text.some(([value]) => value.startsWith('with ')));
     assert.equal(text.filter(([value]) => /^가+$/.test(value)).map(([value]) => value).join(''), '가'.repeat(30));
-    assert.ok(text.filter(([value]) => /^가+$/.test(value)).every(([, , y]) => y < 993));
+    const longLines = text.filter(([value]) => /^가+$/.test(value));
+    assert.ok(longLines.every(([, , y]) => y < 993));
+    assert.equal(longLines[0][2] - text.find(([value]) => value === '“')[2], markGap);
     await assert.rejects(createQuoteShareImage({ date: '2026-11-02', content: ' ', authorName: '사용자' }));
   } finally {
     if (originalDocument === undefined) delete globalThis.document; else globalThis.document = originalDocument;
