@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -14,6 +15,12 @@ export const Container = styled.div`
   padding-top: 1.5rem;
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 export const ComendList = styled.div`
@@ -24,6 +31,12 @@ export const ComendList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 export const Head = styled.div`
@@ -57,7 +70,8 @@ export const QuoteText = styled(Text)<{ $isSelected?: boolean }>`
   min-width: 0;
   font-size: 15px;
   line-height: 135%;
-  color: ${({ $isSelected }) => ($isSelected ? theme.colors.white : theme.colors.black)};
+  color: ${({ $isSelected }) =>
+    $isSelected ? theme.colors.white : theme.colors.black};
 `;
 
 export const RefreshButton = styled.button`
@@ -100,7 +114,9 @@ export const Commend = styled.div<{ $isSelected: boolean }>`
   cursor: pointer;
 
   border: ${({ $isSelected }) =>
-    $isSelected ? `1px solid ${theme.colors.primary}` : "1px solid transparent"};
+    $isSelected
+      ? `1px solid ${theme.colors.primary}`
+      : "1px solid transparent"};
 
   &:active {
     background-color: ${({ $isSelected }) =>
@@ -121,7 +137,8 @@ export const FirstLine = styled.div<{ $isSelected?: boolean }>`
   }
 
   path {
-    fill: ${({ $isSelected }) => ($isSelected ? theme.colors.white : theme.colors.black)};
+    fill: ${({ $isSelected }) =>
+      $isSelected ? theme.colors.white : theme.colors.black};
   }
 `;
 

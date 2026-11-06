@@ -6,7 +6,8 @@ export const archiveQueryKeys = {
   all: ["archives"] as const,
   myQuotes: () => [...archiveQueryKeys.all, "my-quotes"] as const,
   likes: () => [...archiveQueryKeys.all, "likes"] as const,
-  bookmarks: () => [...archiveQueryKeys.all, "bookmarks"] as const,
+  bookmarks: (month?: string) =>
+    [...archiveQueryKeys.all, "bookmarks", month ?? "all"] as const,
   byDate: (date: string) => [...archiveQueryKeys.all, "date", date] as const,
 };
 
@@ -39,11 +40,11 @@ export function useLikedArchivesQuery() {
 /**
  * 북마크한 아카이브 명언 목록 조회
  */
-export function useBookmarkedArchivesQuery() {
+export function useBookmarkedArchivesQuery(month?: string) {
   return useQuery({
-    queryKey: archiveQueryKeys.bookmarks(),
+    queryKey: archiveQueryKeys.bookmarks(month),
     queryFn: async () => {
-      const res = await archiveApi.getBookmarkedArchives();
+      const res = await archiveApi.getBookmarkedArchives(month);
       return res.data;
     },
   });

@@ -8,7 +8,7 @@ import esPluginImport from "eslint-plugin-import"; // import 관련 플러그인
 import eslintPluginUnusedImports from "eslint-plugin-unused-imports"; // 사용되지 않는 import 제거 플러그인
 
 export default defineConfig([
-  globalIgnores(["dist", "node_modules"]),
+  globalIgnores(["dist", "node_modules", "public/mockServiceWorker.js"]),
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {

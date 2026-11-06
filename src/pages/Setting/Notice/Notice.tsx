@@ -15,7 +15,7 @@ function formatNoticeDate(date: string | null) {
 }
 
 function isImportantNotice(notice: NoticeSummary) {
-  return notice.type === "IMPORTANT" || notice.type === "NOTICE";
+  return notice.important;
 }
 
 export default function Notice() {
@@ -44,8 +44,12 @@ export default function Notice() {
           backgroundColor="primary"
           onClickBackBtn={() => navigate("/home")}
         />
-        {isPending && <S.Empty>공지사항을 불러오는 중입니다.</S.Empty>}
-        {isError && <S.Empty>공지사항을 불러오지 못했습니다.</S.Empty>}
+        {isPending && (
+          <S.Empty role="status">공지사항을 불러오는 중입니다.</S.Empty>
+        )}
+        {isError && (
+          <S.Empty role="alert">공지사항을 불러오지 못했습니다.</S.Empty>
+        )}
         {!isPending && !isError && (
           <>
             <S.TopSection>

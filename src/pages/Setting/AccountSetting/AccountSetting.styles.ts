@@ -10,7 +10,7 @@ export const Container = styled.div`
   background-color: ${theme.colors.secondary};
 `;
 
-export const Content = styled.main`
+export const Content = styled.div`
   width: 100%;
   padding: 3.25rem 1.5rem 0;
 `;
@@ -91,18 +91,6 @@ export const LinkedRow = styled.div`
   border-bottom: 1px solid ${theme.colors["grey-100"]};
 `;
 
-export const LinkedActionRow = styled.button`
-  width: 100%;
-  min-height: 4.25rem;
-  display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.8125rem;
-  border-bottom: 1px solid ${theme.colors["grey-100"]};
-  text-align: left;
-  cursor: pointer;
-`;
-
 export const ProviderIcon = styled.img`
   width: 2.75rem;
   height: 2.75rem;
@@ -140,6 +128,23 @@ export const ProviderStatus = styled.span`
   white-space: nowrap;
 `;
 
+export const ProviderLink = styled.a`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors["grey-400"]};
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.26px;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 0.75rem 0;
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.primary};
+    outline-offset: 2px;
+  }
+`;
+
 export const BottomActions = styled.div`
   position: absolute;
   left: 0;
@@ -169,17 +174,35 @@ export const DeleteButton = styled.button`
   letter-spacing: -0.28px;
 `;
 
-export const SheetOverlay = styled.div`
+export const SheetOverlay = styled.dialog`
   position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   inset: 0;
   z-index: 9997;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   background-color: rgba(0, 0, 0, 0.36);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const Sheet = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
   width: 100%;
   max-width: 393px;
   padding: 2rem 1.5rem 3rem;
@@ -251,7 +274,8 @@ export const PickerOption = styled.button<{ $selected?: boolean }>`
   width: 100%;
   min-height: 1.75rem;
   ${theme.fonts.batang}
-  color: ${({ $selected }) => ($selected ? theme.colors["grey-950"] : theme.colors["grey-400"])};
+  color: ${({ $selected }) =>
+    $selected ? theme.colors["grey-950"] : theme.colors["grey-400"]};
   font-size: 1.25rem;
   font-weight: ${({ $selected }) => ($selected ? 700 : 500)};
   line-height: 1.35;

@@ -26,7 +26,7 @@ export interface GroupJoinRequest {
   requestId: number;
   requesterId: number;
   requesterNickname: string;
-  requesterProfileImageUrl?: string;
+  requesterProfileImage?: string | null;
   requesterIntroduction?: string;
   createdAt?: string;
 }

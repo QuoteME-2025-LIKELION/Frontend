@@ -29,6 +29,8 @@ export default function NotificationFilterTabs({
       {FILTER_TABS.map(({ label, value }) => (
         <S.Btn
           key={label}
+          type="button"
+          aria-pressed={selectedFilter === value}
           onClick={() =>
             onChangeFilter(selectedFilter === value ? null : value)
           }

@@ -14,6 +14,7 @@ export const Input = styled.input<InputStyleProps>`
   display: flex;
   align-items: center;
   outline: none;
+  border-radius: var(--spacing-radius-xs, 2px);
 
   ${theme.fonts.pretendard}
   color: ${theme.colors.black};
@@ -24,10 +25,17 @@ export const Input = styled.input<InputStyleProps>`
   &::placeholder {
     color: ${theme.colors.territory};
   }
-  &:focus {
-    border-radius: var(--spacing-radius-xs, 2px);
-    border: 0.5px solid var(--stroke-brand, ${theme.colors.primary});
+  &&:focus {
+    outline: 1px solid var(--input-focus-color, ${theme.colors.primary});
+    outline-offset: -1px;
+    box-shadow: none;
     background: var(--bg-white, ${theme.colors["grey-00"]});
+  }
+
+  @media (forced-colors: active) {
+    &&:focus {
+      outline-color: Highlight;
+    }
   }
 
   /* Spin 감추려고 코드 추가 */

@@ -1,12 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
+import type { AiRequestState } from "@/utils/aiUsage";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
+import { getQuoteInputError } from "@/utils/quoteInput";
 
 import * as S from "./WriteBox.styles";
 
 interface WriteBoxProps {
   value: string;
+  aiRequestState: AiRequestState;
+  onRetryAiUsage: () => void;
   isRecommendMode?: boolean;
   isResultMode?: boolean;
   onChange: (value: string) => void;
@@ -16,12 +21,19 @@ interface WriteBoxProps {
 
 export default function WriteBox({
   value,
+  aiRequestState,
+  onRetryAiUsage,
   isRecommendMode = false,
   isResultMode = false,
   onChange,
   onComplete,
   onAI,
 }: WriteBoxProps) {
+  const fieldId = useId();
+  const countId = `${fieldId}-count`;
+  const guideId = `${fieldId}-guide`;
+  const infoId = `${fieldId}-info`;
+  const infoButtonRef = useRef<HTMLButtonElement>(null);
   const infoWrapRef = useRef<HTMLDivElement | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -41,20 +53,38 @@ export default function WriteBox({
   ];
   const day = dayNames[today.getDay()];
   const trimmedText = value.trim();
-  const canUseAi = trimmedText.length > 0;
-  const canGoNext = trimmedText.length > 0 && trimmedText.length <= 30;
-  const isShortAiText = trimmedText.length <= 15;
+  const trimmedLength = countCodePoints(trimmedText);
+  const canUseAi =
+    trimmedLength > 0 &&
+    aiRequestState !== "loading" &&
+    aiRequestState !== "exhausted";
+  const aiButtonLabel = {
+    loading: "사용량 확인 중",
+    unavailable: "사용량 다시 확인",
+    exhausted: "오늘 추천 횟수 소진",
+    available: "AI 추천 받기",
+  }[aiRequestState];
+  const canGoNext = trimmedLength > 0 && trimmedLength <= 30;
   const handleAiClick = () => {
     if (!canUseAi) return;
-
-    if (isShortAiText) {
-      setToastMessage("16자 이상부터 추천받을 수 있어요.");
+    const error = getQuoteInputError(value, "ai");
+    if (error) {
+      setToastMessage(error);
+      return;
+    }
+    if (aiRequestState === "unavailable") {
+      onRetryAiUsage();
       return;
     }
 
     onAI(value);
   };
   const handleSubmit = () => {
+    const error = getQuoteInputError(value, "quote");
+    if (error) {
+      setToastMessage(error);
+      return;
+    }
     onComplete({
       content: trimmedText,
       authorName: "", // 서버 저장 전이므로 비워도 됨
@@ -97,15 +127,20 @@ export default function WriteBox({
         </S.Datebox>
         <S.WriteBox>
           <S.TextArea
+            aria-label="명언 내용"
+            aria-describedby={
+              !isRecommendMode && !isResultMode
+                ? `${countId} ${guideId}`
+                : countId
+            }
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            {...codePointInputProps(onChange, 50)}
             readOnly={isRecommendMode || isResultMode}
             placeholder={
               isResultMode
                 ? ""
                 : "오늘 있었던 일을 바탕으로\n나만의 명언을 남겨보세요."
             }
-            maxLength={50}
           />
           <S.LineWrap>
             <S.Line />
@@ -113,27 +148,43 @@ export default function WriteBox({
             <S.Line />
           </S.LineWrap>
         </S.WriteBox>
-        <S.CountText>{value.length}자/50자</S.CountText>
+        <S.CountText id={countId}>{countCodePoints(value)}자/50자</S.CountText>
       </S.Container>
       {!isRecommendMode && !isResultMode && (
         <S.WriteBody>
           <S.GuideBox>
-            <S.Guide>
+            <S.Guide id={guideId}>
               오늘의 명언을 직접 적고 <br />
               그대로 게시하거나 <br />
               AI에게 명언을 추천 받을 수 있어요.
             </S.Guide>
-            <S.InfoWrap ref={infoWrapRef}>
+            <S.InfoWrap
+              ref={infoWrapRef}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape" || !showInfo) return;
+                event.preventDefault();
+                event.stopPropagation();
+                setShowInfo(false);
+                infoButtonRef.current?.focus({ preventScroll: true });
+              }}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setShowInfo(false);
+                }
+              }}
+            >
               <S.InfoButton
+                ref={infoButtonRef}
                 type="button"
                 aria-label="명언 작성 안내"
                 aria-expanded={showInfo}
+                aria-controls={showInfo ? infoId : undefined}
                 onClick={() => setShowInfo((prev) => !prev)}
               >
                 i
               </S.InfoButton>
               {showInfo && (
-                <S.InfoBubble role="status">
+                <S.InfoBubble id={infoId} role="status">
                   30자가 넘어가는 글은 AI 추천 받기를 사용해야 등록할 수
                   있습니다.
                 </S.InfoBubble>
@@ -146,7 +197,7 @@ export default function WriteBox({
               disabled={!canUseAi}
               onClick={handleAiClick}
             >
-              AI 추천 받기
+              {aiButtonLabel}
             </S.ActionButton>
             <S.ActionButton
               type="button"

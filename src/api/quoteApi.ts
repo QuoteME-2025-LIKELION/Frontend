@@ -1,5 +1,5 @@
 import api from "@/api/api";
-import type { MyQuote, OtherQuote } from "@/types/feed.type";
+import type { MyQuote, OtherQuote, QuoteTag, QuoteTagStatus } from "@/types/feed.type";
 
 interface RsData<T> {
   resultCode: string;
@@ -28,6 +28,8 @@ export interface QuoteFeedItem {
   authorProfileImage?: string;
   content: string;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
+  myTagStatus?: QuoteTagStatus;
   isLiked?: boolean;
   isBookmarked?: boolean;
   isFriendQuote?: boolean;
@@ -131,6 +133,8 @@ export const quoteApi = {
     api.post(`/api/quotes/${quoteId}/tag-request`),
   getMyTagRequest: (quoteId: number) =>
     api.get<MyTagRequestResponse>(`/api/quotes/${quoteId}/my-tag-request`),
+  acceptTagRequest: (requestId: number) =>
+    api.post(`/api/quotes/requests/${requestId}/accept`),
   getTagRequests: (quoteId: number) =>
     api.get<QuoteTagRequest[]>(`/api/quotes/${quoteId}/requests`),
   likeQuote: (quoteId: number) => api.post(`/api/quotes/${quoteId}/like`),

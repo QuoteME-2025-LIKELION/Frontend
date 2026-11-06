@@ -1,9 +1,22 @@
 import { http, HttpResponse } from "msw";
 
 import type { FriendRequest } from "@/api/friendApi";
+import type { AccountProfileResponse, UpdateAccountRequest } from "@/api/profileApi";
+import type { QuoteTag } from "@/types/feed.type";
 import type { Notification } from "@/types/notification.type";
 
-const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
+const MOCK_PROFILE_IMAGE = "/favicons/favicon-96x96.png";
+
+let mockAccountInfo: AccountProfileResponse = {
+  gender: "MALE",
+  birthYear: "2000",
+  email: "guest@quoteme.com",
+  provider: "GOOGLE",
+  linkedAccounts: [
+    { provider: "GOOGLE", linkedAt: "2026-03-01T10:00:00" },
+    { provider: "KAKAO", linkedAt: "2026-03-02T10:00:00" },
+  ],
+};
 
 let mockNotificationSettings = {
   groupEnabled: true,
@@ -12,14 +25,14 @@ let mockNotificationSettings = {
   pokeEnabled: false,
   likeEnabled: true,
   quoteReminderEnabled: true,
-  quoteReminderTime: "21:00",
+  quoteReminderTime: "10:00",
   marketingEnabled: false,
 };
 
 type MockNotification = Notification & {
-  category: "GROUP" | "FRIEND" | "TAG";
+  category: "GROUP" | "FRIEND" | "TAG" | null;
   createdAt: string;
-  referenceId: number;
+  referenceId: number | null;
 };
 
 let mockNotifications: MockNotification[] = [
@@ -59,26 +72,41 @@ let mockNotifications: MockNotification[] = [
     targetId: 6,
     senderName: "조니님",
   },
+  {
+    id: 4,
+    category: null,
+    type: "QUOTE_REMINDER",
+    message: "오늘의 명언을 작성할 시간이에요!",
+    isRead: false,
+    createdAt: "2026-11-06T10:00:00",
+    createDate: "2026-11-06T10:00:00",
+    referenceId: null,
+    targetId: null,
+    senderName: null,
+  },
 ];
 
 const mockNotices = [
   {
     id: 1,
-    type: "IMPORTANT",
+    type: "NOTICE",
+    important: true,
     title: "QuoteMe 베타 서비스 운영 안내",
     content: "베타 기간 동안 일부 기능이 예고 없이 변경될 수 있습니다.",
     createDate: "2026-02-02T10:00:00",
   },
   {
     id: 2,
-    type: "IMPORTANT",
+    type: "UPDATE",
+    important: true,
     title: "알림 수신 설정 변경 안내",
     content: "알림 설정 화면에서 수신 항목을 직접 조정할 수 있습니다.",
     createDate: "2026-02-02T09:00:00",
   },
   {
     id: 3,
-    type: "UPDATE",
+    type: "NOTICE",
+    important: false,
     title: "오늘의 QuoteMe 작성 화면이 개선되었어요.",
     content:
       "친구 태그와 AI 추천 결과를 더 자연스럽게 확인할 수 있도록 작성 흐름을 다듬었어요.",
@@ -87,6 +115,7 @@ const mockNotices = [
   {
     id: 4,
     type: "UPDATE",
+    important: false,
     title: "친구와 그룹 화면 사용성이 좋아졌어요.",
     content:
       "친구 요청, 그룹 초대, 참여 요청을 한 화면에서 더 쉽게 확인할 수 있도록 정리했어요.",
@@ -95,6 +124,7 @@ const mockNotices = [
   {
     id: 5,
     type: "UPDATE",
+    important: false,
     title: "공지사항 화면이 추가되었어요.",
     content:
       "서비스 안내와 업데이트 소식을 환경설정의 공지사항 메뉴에서 확인할 수 있어요.",
@@ -267,15 +297,10 @@ const createFriendRequest = (
   const member = getMockMember(senderId);
   return {
     requestId: 10 + index,
-    direction: "RECEIVED",
     senderId,
     senderNickname: member.nickname,
     senderProfileImage: member.profileImage,
     senderIntroduction: member.introduction,
-    receiverId: 1,
-    receiverNickname: "손지수",
-    receiverProfileImage: MOCK_PROFILE_IMAGE,
-    receiverIntroduction: "긍정의 힘을 믿어요",
   };
 };
 let mockFriendRequests = mockFriendRequestIds.map(createFriendRequest);
@@ -296,10 +321,17 @@ const mockQuoteTagRequestsByQuoteId: Record<
     requesterName: string;
   }>
 > = {
-  1: [{ requestId: 101, requesterId: 2, requesterName: "라라진" }],
+  1: [
+    { requestId: 101, requesterId: 2, requesterName: "라라진" },
+    { requestId: 102, requesterId: 8, requesterName: "기록친구" },
+  ],
 };
-let mockMyQuoteTaggedNicknames = ["뮤랄라", "스페이스"];
+let mockMyQuoteTags: QuoteTag[] = [
+  { memberId: 91, nickname: "뮤랄라", profileImage: MOCK_PROFILE_IMAGE },
+  { memberId: 92, nickname: "스페이스", profileImage: MOCK_PROFILE_IMAGE },
+];
 let mockMyQuoteIsBookmarked = false;
+const mockArchiveBookmarkIds = new Set([6]);
 
 const mockMyTagRequestStatusByQuoteId: Record<
   number,
@@ -334,7 +366,7 @@ type MockGroupJoinRequest = {
   requestId: number;
   requesterId: number;
   requesterNickname: string;
-  requesterProfileImageUrl?: string;
+  requesterProfileImage?: string;
   createdAt: string;
 };
 
@@ -344,7 +376,7 @@ const mockGroupJoinRequestsByGroupId: Record<number, MockGroupJoinRequest[]> = {
       requestId: 5,
       requesterId: 10,
       requesterNickname: "신규신청자",
-      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      requesterProfileImage: MOCK_PROFILE_IMAGE,
       createdAt: "2025-11-07T10:00:00",
     },
   ],
@@ -353,7 +385,7 @@ const mockGroupJoinRequestsByGroupId: Record<number, MockGroupJoinRequest[]> = {
       requestId: 6,
       requesterId: 11,
       requesterNickname: "정원확인",
-      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      requesterProfileImage: MOCK_PROFILE_IMAGE,
       createdAt: "2025-11-07T10:10:00",
     },
   ],
@@ -453,8 +485,34 @@ function getMockFeedQuotes(groupIdParam: string | null) {
       timeAgo: "30분 전",
       createDate: "2025-11-03T19:02:00",
     },
-  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname));
+  ].filter((quote) => groupMemberNicknames.includes(quote.authorNickname))
+    .map((quote) => ({
+      ...quote,
+      tags: quote.taggedNicknames.map((nickname, index) => ({
+        memberId: Object.values(mockMembersById).find((member) => member.nickname === nickname)?.id ?? 100 + index,
+        nickname,
+        profileImage: MOCK_PROFILE_IMAGE,
+      })),
+      myTagStatus: mockMyTagRequestStatusByQuoteId[quote.id] === "PENDING" ? "REQUESTED" : "NONE",
+    }));
 }
+
+const mockGroupInvitations = [
+  {
+    requestId: 1,
+    groupId: 2,
+    groupName: "무니니",
+    inviterNickname: "라라진",
+    createdAt: "2025-11-07T10:00:00",
+  },
+  {
+    requestId: 2,
+    groupId: 3,
+    groupName: "문장수집가",
+    inviterNickname: "조니님",
+    createdAt: "2025-11-07T10:05:00",
+  },
+];
 
 export const handlers = [
   // ==========================================
@@ -513,7 +571,8 @@ export const handlers = [
 
   http.post("/api/auth/refresh", () => {
     return HttpResponse.json({
-      accessToken: "new-mock-access-token-67890",
+      resultCode: "200-1",
+      data: { accessToken: "new-mock-access-token-67890" },
     });
   }),
 
@@ -553,17 +612,17 @@ export const handlers = [
     });
   }),
 
-  http.get("/api/profile/account", () => {
-    return HttpResponse.json({
-      gender: "MALE",
-      birthYear: 2000,
-      email: "guest@quoteme.com",
-    });
-  }),
+  http.get("/api/profile/account", () => HttpResponse.json(mockAccountInfo)),
 
   http.put("/api/profile/account", async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json(body);
+    const body = (await request.json()) as Partial<UpdateAccountRequest>;
+    if (!body.email || !/^\d{4}$/.test(body.birthYear ?? "") ||
+        Number(body.birthYear) < 1900 || Number(body.birthYear) > new Date().getFullYear() ||
+        !["MALE", "FEMALE", "ETC"].includes(body.gender ?? "")) {
+      return HttpResponse.json({ message: "계정 정보를 확인해 주세요." }, { status: 400 });
+    }
+    mockAccountInfo = { ...mockAccountInfo, ...body };
+    return HttpResponse.json("계정 정보가 수정되었습니다.");
   }),
 
   http.delete("/api/profile/account", () => {
@@ -629,7 +688,7 @@ export const handlers = [
     const item = mockFriendRequests.find(
       (request) =>
         request.requestId === Number(params.requestId) &&
-        request.direction === "RECEIVED"
+        request.direction !== "SENT"
     );
     if (!item) return new HttpResponse(null, { status: 404 });
     if (!mockFriendIds.includes(item.senderId))
@@ -644,7 +703,7 @@ export const handlers = [
     const item = mockFriendRequests.find(
       (request) =>
         request.requestId === Number(params.requestId) &&
-        request.direction === "RECEIVED"
+        request.direction !== "SENT"
     );
     if (!item) return new HttpResponse(null, { status: 404 });
     mockFriendRequests = mockFriendRequests.filter(
@@ -675,22 +734,7 @@ export const handlers = [
   }),
 
   http.get("/api/groups/invitations", () => {
-    return HttpResponse.json([
-      {
-        requestId: 1,
-        groupId: 2,
-        groupName: "무니니",
-        inviterNickname: "라라진",
-        createdAt: "2025-11-07T10:00:00",
-      },
-      {
-        requestId: 2,
-        groupId: 3,
-        groupName: "문장수집가",
-        inviterNickname: "조니님",
-        createdAt: "2025-11-07T10:05:00",
-      },
-    ]);
+    return HttpResponse.json(mockGroupInvitations);
   }),
 
   http.get("/api/groups/:groupId", ({ params }) => {
@@ -719,7 +763,15 @@ export const handlers = [
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/groups/invitations/:requestId/accept", () => {
+  http.post("/api/groups/invitations/:requestId/accept", ({ params }) => {
+    const invitation = mockGroupInvitations.find((item) => item.requestId === Number(params.requestId));
+    const group = mockGroups.find((item) => item.id === invitation?.groupId);
+    if (group && group.members.length >= 5) {
+      return HttpResponse.json(
+        { resultCode: "400", message: "400-1 - 최대 인원 5명이 가득 차 들어갈 수 없어요", data: null, statusCode: 400 },
+        { status: 400 }
+      );
+    }
     return new HttpResponse(null, { status: 200 });
   }),
 
@@ -769,7 +821,7 @@ export const handlers = [
       nickname: joinRequest.request.requesterNickname,
       role: "MEMBER",
       introduction: "그룹 가입 요청으로 합류했어요",
-      profileImage: joinRequest.request.requesterProfileImageUrl ?? "",
+      profileImage: joinRequest.request.requesterProfileImage ?? "",
     });
     group.memberCount = group.members.length;
     mockGroupJoinRequestsByGroupId[joinRequest.groupId].splice(
@@ -813,6 +865,9 @@ export const handlers = [
       summary?: string | null;
       taggedMemberIds?: number[];
     };
+    if ((body.taggedMemberIds ?? []).some((id) => id === 1 || !mockFriendIds.includes(id))) {
+      return HttpResponse.json({ message: "수락된 친구만 태그할 수 있습니다." }, { status: 400 });
+    }
     const taggedMemberNames = (body.taggedMemberIds || [])
       .map((id) => getMockMember(id)?.nickname)
       .filter(Boolean);
@@ -885,9 +940,10 @@ export const handlers = [
           content: "여자니까 이해해주길",
           groupName: "야매철학자들",
           authorNickname: "손지수",
-          birthYear: 2000,
+          birthYear: "2000",
           originalContent: null,
-          taggedNicknames: mockMyQuoteTaggedNicknames,
+          taggedNicknames: mockMyQuoteTags.map((tag) => tag.nickname),
+          tags: mockMyQuoteTags,
           isBookmarked: mockMyQuoteIsBookmarked,
         },
       ],
@@ -925,18 +981,47 @@ export const handlers = [
   // ==========================================
   http.patch("/api/quotes/:quoteId/tags", async ({ request }) => {
     const body = (await request.json()) as { taggedMemberIds?: number[] };
-    mockMyQuoteTaggedNicknames = (body.taggedMemberIds ?? [])
-      .map((id) => getMockMember(id)?.nickname)
-      .filter(Boolean);
+    if ((body.taggedMemberIds ?? []).some((id) =>
+      id === 1 || (!mockFriendIds.includes(id) && !mockMyQuoteTags.some((tag) => tag.memberId === id))
+    )) {
+      return HttpResponse.json({ message: "새 태그는 수락된 친구만 가능합니다." }, { status: 400 });
+    }
+    mockMyQuoteTags = (body.taggedMemberIds ?? []).flatMap((id) => {
+      const existing = mockMyQuoteTags.find((tag) => tag.memberId === id);
+      const member = getMockMember(id);
+      return existing ? [existing] : member ? [{
+        memberId: member.id, nickname: member.nickname, profileImage: member.profileImage,
+      }] : [];
+    });
 
     return HttpResponse.json(body);
   }),
+
+  ...(["accept", "reject"] as const).map((action) =>
+    http.post(`/api/quotes/requests/:requestId/${action}`, ({ params }) => {
+      const entry = Object.entries(mockQuoteTagRequestsByQuoteId).find(([, requests]) =>
+        requests.some((request) => request.requestId === Number(params.requestId))
+      );
+      if (!entry) return new HttpResponse(null, { status: 404 });
+      const [quoteId, requests] = entry;
+      const request = requests.find((item) => item.requestId === Number(params.requestId))!;
+      if (action === "accept" && Number(quoteId) === 1 && !mockMyQuoteTags.some((tag) => tag.memberId === request.requesterId)) {
+        mockMyQuoteTags.push({
+          memberId: request.requesterId,
+          nickname: request.requesterName,
+          profileImage: getMockMember(request.requesterId)?.profileImage ?? null,
+        });
+      }
+      mockQuoteTagRequestsByQuoteId[Number(quoteId)] = requests.filter((item) => item.requestId !== request.requestId);
+      return HttpResponse.json({ resultCode: "200-1", message: "처리되었습니다.", data: null });
+    })
+  ),
 
   http.post("/api/quotes/:quoteId/tag-request", ({ params }) => {
     const quoteId = Number(params.quoteId);
     const currentStatus = mockMyTagRequestStatusByQuoteId[quoteId];
 
-    if (currentStatus && currentStatus !== "NONE") {
+    if (currentStatus === "PENDING" || currentStatus === "ACCEPTED") {
       return HttpResponse.json(
         { message: "이미 태그를 요청했습니다." },
         { status: 400 }
@@ -966,6 +1051,7 @@ export const handlers = [
   // 7. 북마크 (Bookmark)
   // ==========================================
   http.post("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    mockArchiveBookmarkIds.add(Number(params.quoteId));
     if (Number(params.quoteId) === 1) {
       mockMyQuoteIsBookmarked = true;
     }
@@ -977,6 +1063,7 @@ export const handlers = [
   }),
 
   http.delete("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    mockArchiveBookmarkIds.delete(Number(params.quoteId));
     if (Number(params.quoteId) === 1) {
       mockMyQuoteIsBookmarked = false;
     }
@@ -1078,8 +1165,12 @@ export const handlers = [
     ]);
   }),
 
-  http.get("/api/archives/bookmarks", () => {
-    return HttpResponse.json([
+  http.get("/api/archives/bookmarks", ({ request }) => {
+    const month = new URL(request.url).searchParams.get("month");
+    if (month && !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      return HttpResponse.json({ message: "월 형식을 확인해 주세요." }, { status: 400 });
+    }
+    const bookmarks = [
       {
         id: 6,
         quoteId: 6,
@@ -1096,7 +1187,10 @@ export const handlers = [
         isBookmarked: true,
         isLiked: false,
       },
-    ]);
+    ];
+    return HttpResponse.json(bookmarks.filter((quote) =>
+      mockArchiveBookmarkIds.has(quote.id) && (!month || quote.createDate.slice(0, 7) === month)
+    ));
   }),
 
   // ==========================================
@@ -1148,8 +1242,8 @@ export const handlers = [
   }),
 
   http.put("/api/notifications/settings", async ({ request }) => {
-    const body = await request.json();
-    mockNotificationSettings = body as typeof mockNotificationSettings;
+    const body = (await request.json()) as Partial<typeof mockNotificationSettings>;
+    mockNotificationSettings = { ...mockNotificationSettings, ...body };
     return HttpResponse.json(mockNotificationSettings);
   }),
 

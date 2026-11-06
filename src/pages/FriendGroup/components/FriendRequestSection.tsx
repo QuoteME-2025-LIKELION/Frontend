@@ -19,12 +19,12 @@ export default function FriendRequestSection({
   onReject,
 }: FriendRequestSectionProps) {
   const receivedRequests = requests.filter(
-    (request) => request.direction === "RECEIVED"
+    (request) => request.direction !== "SENT"
   );
 
   return (
     <S.Section>
-      <S.Title>받은 친구 요청</S.Title>
+      <S.Title role="heading" aria-level={2}>받은 친구 요청</S.Title>
       <S.FriendList>
         {receivedRequests.length > 0 ? (
           receivedRequests.map((request) => {
@@ -35,7 +35,7 @@ export default function FriendRequestSection({
                 {request.senderProfileImage ? (
                   <S.RequestProfileImg
                     src={request.senderProfileImage}
-                    alt="프로필 이미지"
+                    alt={`${request.senderNickname} 프로필 이미지`}
                   />
                 ) : (
                   <S.RequestDefaultProfileImg />
@@ -54,6 +54,7 @@ export default function FriendRequestSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${request.senderNickname} 친구 요청 승인`}
                     onClick={() => onAccept(request.requestId)}
                   >
                     승인
@@ -61,6 +62,7 @@ export default function FriendRequestSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${request.senderNickname} 친구 요청 거절`}
                     onClick={() => onReject(request.requestId)}
                   >
                     거절

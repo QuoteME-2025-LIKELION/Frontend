@@ -1,3 +1,11 @@
+export interface QuoteTag {
+  memberId: number;
+  nickname: string;
+  profileImage?: string | null;
+}
+
+export type QuoteTagStatus = "TAGGED" | "REQUESTED" | "NONE";
+
 /**
  * API 명세서에 따라 내 명언과 다른 사람 명언으로 구분
  */
@@ -7,7 +15,7 @@
  * @property {string} content: 명언 내용
  * @property {string} groupName: 내가 속한 그룹 이름
  * @property {string} authorNickname: 명언 작성자 닉네임
- * @property {number} birthYear: 명언 작성자 출생 연도
+ * @property {string} birthYear: 명언 작성자 출생 연도
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  * @property {string[]} taggedNicknames: 명언에 태그된 닉네임 배열 (선택적)
  * @property {boolean} isBookmarked: 현재 사용자가 이 명언을 북마크했는지 여부 (선택적)
@@ -17,9 +25,10 @@ export interface MyQuote {
   content: string;
   groupName: string;
   authorNickname: string;
-  birthYear: number;
+  birthYear: string;
   createDate?: string;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
   isBookmarked?: boolean;
 }
 
@@ -42,6 +51,8 @@ export interface OtherQuote {
   quoteId?: number;
   content: string;
   taggedNicknames: string[];
+  tags?: QuoteTag[];
+  myTagStatus?: QuoteTagStatus;
   taggedMembers?: string[];
   authorNickname: string;
   authorProfileImage?: string;
@@ -85,4 +96,5 @@ export interface CreatedQuote {
   authorName: string;
   authorBirthYear?: number | null;
   taggedNicknames?: string[];
+  tags?: QuoteTag[];
 }

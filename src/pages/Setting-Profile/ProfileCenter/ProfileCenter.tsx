@@ -1,16 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import axios from "axios";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import DefaultProfileImage from "@/components/DefaultProfileImage/DefaultProfileImage";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useSettingsProfileQuery,
   useUpdateSettingsProfileMutation,
 } from "@/hooks/useProfileQueries";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
+import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 
 import * as S from "./ProfileCenter.styles";
 
@@ -18,6 +23,10 @@ const NICKNAME_MAX_LENGTH = 10;
 const INTRO_MAX_LENGTH = 20;
 
 export default function ProfileCenter() {
+  const fieldId = useId();
+  const nicknameLabelId = `${fieldId}-nickname-label`;
+  const nicknameMetaId = `${fieldId}-nickname-meta`;
+  const introLabelId = `${fieldId}-intro-label`;
   const navigate = useNavigate();
   const location = useLocation();
   const fromPath = location.state?.from || "default";
@@ -26,6 +35,7 @@ export default function ProfileCenter() {
 
   const { data } = useSettingsProfileQuery();
   const updateSettingsProfile = useUpdateSettingsProfileMutation();
+  const savingRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const profile = useMemo(
@@ -54,8 +64,8 @@ export default function ProfileCenter() {
   const currentPreview = preview ?? profile?.imageUrl ?? null;
   const trimmedNickname = currentNickname.trim();
   const isNicknameEmpty = Boolean(profile) && trimmedNickname.length === 0;
-  const isNicknameTooLong = currentNickname.length > NICKNAME_MAX_LENGTH;
-  const isIntroTooLong = currentIntro.length > INTRO_MAX_LENGTH;
+  const isNicknameTooLong = countCodePoints(currentNickname) > NICKNAME_MAX_LENGTH;
+  const isIntroTooLong = countCodePoints(currentIntro) > INTRO_MAX_LENGTH;
   const hasChanges =
     trimmedNickname !== (profile?.nickname ?? "") ||
     currentIntro !== (profile?.intro ?? "") ||
@@ -77,21 +87,29 @@ export default function ProfileCenter() {
   }, [preview]);
 
   const handleClickUpload = () => {
-    if (!isEditing) return;
+    if (!isEditing || savingRef.current) return;
 
     fileRef.current?.click();
   };
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    e.target.value = "";
+    if (!file || savingRef.current) return;
 
+    const error = validateProfileImage(file);
+    if (error) {
+      setToastMessage(error);
+      return;
+    }
+    setToastMessage("");
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
-    e.target.value = "";
   };
 
   const handleSave = async () => {
+    if (!canSave || savingRef.current) return;
+    savingRef.current = true;
     try {
       await updateSettingsProfile.mutateAsync({
         nickname: trimmedNickname,
@@ -107,10 +125,14 @@ export default function ProfileCenter() {
     } catch (e) {
       console.error("프로필 저장 실패", e);
       setToastMessage(
-        selectedFile
-          ? "이미지 업로드에 실패했습니다."
-          : "프로필 저장에 실패했습니다."
+        axios.isAxiosError(e) && e.response?.status === 413
+          ? "이미지는 5MB 이하로 선택해 주세요."
+          : selectedFile
+            ? "이미지 업로드에 실패했습니다."
+            : "프로필 저장에 실패했습니다."
       );
+    } finally {
+      savingRef.current = false;
     }
   };
 
@@ -119,6 +141,7 @@ export default function ProfileCenter() {
   };
 
   const handleRequestExit = (path: string) => {
+    if (savingRef.current) return;
     if (isEditing && hasChanges) {
       setPendingPath(path);
       setShowExitModal(true);
@@ -146,7 +169,8 @@ export default function ProfileCenter() {
   return (
     <>
       <PageTitle title="프로필 관리" />
-      <S.Container>
+      <S.Container aria-busy={updateSettingsProfile.isPending}>
+        {updateSettingsProfile.isPending && <Spinner />}
         {toastMessage && (
           <ToastModal
             text={toastMessage}
@@ -180,18 +204,22 @@ export default function ProfileCenter() {
         <S.ProfileWrapper>
           <S.ImgPreview
             type="button"
-            disabled={!isEditing}
+            disabled={!isEditing || updateSettingsProfile.isPending}
             onClick={handleClickUpload}
-            aria-label="프로필 이미지"
+            aria-label={isEditing ? "프로필 이미지 변경" : "프로필 이미지"}
             style={{
               backgroundImage: currentPreview
                 ? `url(${currentPreview})`
                 : "none",
             }}
-          />
+          >
+            {!currentPreview && <DefaultProfileImage />}
+          </S.ImgPreview>
           <input
+            disabled={updateSettingsProfile.isPending}
             type="file"
-            accept="image/*"
+            aria-label="프로필 이미지 파일 선택"
+            accept={PROFILE_IMAGE_ACCEPT}
             ref={fileRef}
             onChange={handleChangeFile}
             style={{ display: "none" }}
@@ -199,6 +227,7 @@ export default function ProfileCenter() {
           <S.ImgInput
             type="button"
             onClick={handleClickUpload}
+            disabled={updateSettingsProfile.isPending}
             $hidden={!isEditing}
             aria-hidden={!isEditing}
             tabIndex={isEditing ? 0 : -1}
@@ -207,17 +236,20 @@ export default function ProfileCenter() {
           </S.ImgInput>
         </S.ProfileWrapper>
         <S.InputBox>
-          <S.TextName>닉네임</S.TextName>
+          <S.TextName id={nicknameLabelId}>닉네임</S.TextName>
           {isEditing ? (
             <>
               <S.Field $error={isNicknameEmpty}>
                 <Input
+                  aria-labelledby={nicknameLabelId}
+                  aria-describedby={nicknameMetaId}
+                  aria-invalid={isNicknameEmpty || isNicknameTooLong}
+                  disabled={updateSettingsProfile.isPending}
                   value={currentNickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  {...codePointInputProps(setNickname, NICKNAME_MAX_LENGTH)}
                   placeholder="닉네임"
                   type="text"
                   name="nickname"
-                  maxLength={NICKNAME_MAX_LENGTH}
                   required
                 />
               </S.Field>
@@ -225,22 +257,28 @@ export default function ProfileCenter() {
           ) : (
             <S.InfoBox>{currentNickname}</S.InfoBox>
           )}
-          <S.FieldMeta $error={isNicknameEmpty} $hidden={!isEditing}>
+          <S.FieldMeta
+            id={nicknameMetaId}
+            $error={isNicknameEmpty}
+            $hidden={!isEditing}
+          >
             {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요.</span>}
             <span>
-              {currentNickname.length}자/{NICKNAME_MAX_LENGTH}자
+              {countCodePoints(currentNickname)}자/{NICKNAME_MAX_LENGTH}자
             </span>
           </S.FieldMeta>
-          <S.TextName>자기소개</S.TextName>
+          <S.TextName id={introLabelId}>자기소개</S.TextName>
           {isEditing ? (
             <S.Field>
               <Input
+                aria-labelledby={introLabelId}
+                aria-invalid={isIntroTooLong}
+                disabled={updateSettingsProfile.isPending}
                 value={currentIntro}
-                onChange={(e) => setIntro(e.target.value)}
+                {...codePointInputProps(setIntro, INTRO_MAX_LENGTH)}
                 placeholder="자기소개"
                 type="text"
                 name="intro"
-                maxLength={INTRO_MAX_LENGTH}
                 required
               />
             </S.Field>

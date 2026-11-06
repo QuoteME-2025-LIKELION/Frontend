@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -13,6 +14,13 @@ export const Container = styled.div`
   align-items: center;
   padding: 1.5rem 1.5rem 2.4375rem;
   overflow: hidden;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+  }
 `;
 
 export const TagBox = styled.div`
@@ -23,6 +31,12 @@ export const TagBox = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 export const TagScrollArea = styled.div`
@@ -36,6 +50,13 @@ export const TagScrollArea = styled.div`
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
   }
 `;
 
@@ -90,6 +111,8 @@ export const EmptyDescription = styled.div`
   letter-spacing: 0;
   text-align: center;
 `;
+
+export const RetryButton = EmptyDescription.withComponent("button");
 
 export const SelectedList = styled.div<{ $isEmpty: boolean }>`
   width: calc(100% + 3rem);
@@ -198,8 +221,7 @@ export const TagItem = styled.button<{
   padding: 0.5rem 0;
   border-bottom: ${({ $showBorder }) =>
     $showBorder ? `1px solid ${theme.colors["grey-100"]}` : "0"};
-  margin-bottom: ${({ $separateAfter }) =>
-    $separateAfter ? "1.375rem" : "0"};
+  margin-bottom: ${({ $separateAfter }) => ($separateAfter ? "1.375rem" : "0")};
   background-color: transparent;
   cursor: pointer;
 `;

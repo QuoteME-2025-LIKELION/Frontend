@@ -29,3 +29,18 @@ export const EmptyMessage = styled.p`
   letter-spacing: -0.32px;
   text-align: center;
 `;
+
+export const StatusMessage = styled.p`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.white};
+  text-align: center;
+  line-height: 1.5;
+`;
+
+export const RetryButton = styled.button`
+  min-height: 44px;
+  margin-left: 0.5rem;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+`;

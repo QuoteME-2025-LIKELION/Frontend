@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useAiUsageQuery } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
+import { getAiRequestState } from "@/utils/aiUsage";
 
 import NewQuote from "./components/NewQuote/NewQuote";
 import RecommendList from "./components/RecommendList/RecommendList";
@@ -19,13 +20,28 @@ export default function Write() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeStep, setActiveStep] = useState<WriteStep>("write");
+  const scrollContentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollContentRef.current) scrollContentRef.current.scrollTop = 0;
+  }, [activeStep]);
   const [quoteSource, setQuoteSource] = useState<QuoteSource>("direct");
   const [createdQuote, setCreatedQuote] = useState<CreatedQuote | null>(null);
   const [draftText, setDraftText] = useState("");
   const [diaryText, setDiaryText] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
-  const { data: aiUsage, isLoading: isAiUsageLoading } = useAiUsageQuery();
-  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
+  const {
+    data: aiUsage,
+    isFetching: isAiUsageLoading,
+    isError: isAiUsageError,
+    refetch: retryAiUsage,
+  } = useAiUsageQuery();
+  const aiRequestState = getAiRequestState(
+    aiUsage,
+    isAiUsageLoading,
+    isAiUsageError
+  );
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const hasDraft =
     draftText.trim().length > 0 ||
     diaryText.trim().length > 0 ||
@@ -42,7 +58,7 @@ export default function Write() {
 
   return (
     <>
-      <PageTitle title="명언 작성하기" />
+      <PageTitle title="명언 작성하기" heading />
       <S.Container>
         {showExitModal && (
           <ConfirmModal
@@ -59,59 +75,68 @@ export default function Write() {
         )}
         <XHeader showHomeButton={false} onClose={handleClose} />
 
-        <WriteBox
-          value={
-            activeStep === "tag" && createdQuote
-              ? createdQuote.content
-              : draftText
-          }
-          onChange={setDraftText}
-          isRecommendMode={activeStep === "recommend"}
-          isResultMode={activeStep === "tag"}
-          onComplete={(data) => {
-            setQuoteSource("direct");
-            setCreatedQuote({
-              content: data.content,
-              authorName: data.authorName || "",
-              authorBirthYear: data.authorBirthYear ?? null,
-              taggedNicknames: data.taggedMemberNames,
-            });
-            setActiveStep("tag");
-          }}
-          onAI={(text) => {
-            setDiaryText(text);
-            setActiveStep("recommend");
-          }}
-        />
-
-        {activeStep === "recommend" && (
-          <RecommendList
-            content={diaryText}
-            aiUsage={aiUsage}
-            isAiUsageLoading={isAiUsageLoading}
-            onBack={() => setActiveStep("write")}
-            onSelectComplete={(aiText) => {
-              setQuoteSource("ai");
+        <S.ScrollContent ref={scrollContentRef} data-page-scroll="">
+          <WriteBox
+            value={
+              activeStep === "tag" && createdQuote
+                ? createdQuote.content
+                : draftText
+            }
+            onChange={setDraftText}
+            aiRequestState={aiRequestState}
+            onRetryAiUsage={() => {
+              void retryAiUsage();
+            }}
+            isRecommendMode={activeStep === "recommend"}
+            isResultMode={activeStep === "tag"}
+            onComplete={(data) => {
+              setQuoteSource("direct");
               setCreatedQuote({
-                content: aiText,
-                originalContent: diaryText,
-                summary: aiText,
-                authorName: "QuoteMe AI",
-                authorBirthYear: null,
+                content: data.content,
+                authorName: data.authorName || "",
+                authorBirthYear: data.authorBirthYear ?? null,
+                taggedNicknames: data.taggedMemberNames,
               });
               setActiveStep("tag");
             }}
+            onAI={(text) => {
+              setDiaryText(text);
+              setActiveStep("recommend");
+            }}
           />
-        )}
 
-        {activeStep === "tag" && createdQuote && (
-          <NewQuote
-            quote={createdQuote}
-            onBack={() =>
-              setActiveStep(quoteSource === "ai" ? "recommend" : "write")
-            }
-          />
-        )}
+          {activeStep === "recommend" && (
+            <RecommendList
+              content={diaryText}
+              aiUsage={aiUsage}
+              aiRequestState={aiRequestState}
+              onRetryAiUsage={() => {
+                void retryAiUsage();
+              }}
+              onBack={() => setActiveStep("write")}
+              onSelectComplete={(aiText) => {
+                setQuoteSource("ai");
+                setCreatedQuote({
+                  content: aiText,
+                  originalContent: diaryText,
+                  summary: aiText,
+                  authorName: "QuoteMe AI",
+                  authorBirthYear: null,
+                });
+                setActiveStep("tag");
+              }}
+            />
+          )}
+
+          {activeStep === "tag" && createdQuote && (
+            <NewQuote
+              quote={createdQuote}
+              onBack={() =>
+                setActiveStep(quoteSource === "ai" ? "recommend" : "write")
+              }
+            />
+          )}
+        </S.ScrollContent>
       </S.Container>
     </>
   );

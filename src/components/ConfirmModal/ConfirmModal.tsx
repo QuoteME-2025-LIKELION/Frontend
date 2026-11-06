@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
+
+import useModalDialog from "@/hooks/useModalDialog";
 
 import * as S from "./ConfirmModal.styles";
 
@@ -58,42 +61,83 @@ export default function ConfirmModal({
   descriptionLines,
   lines,
 }: ConfirmModalProps) {
-  // 모달 영역을 클릭해도 onClose가 호출되지 않도록 이벤트 버블링을 막음
-  const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
+  const titleId = useId();
+  const descriptionId = useId();
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useModalDialog(true, {
+    initialFocusRef: cancelRef,
+    restoreFocusFallback: true,
+  });
+  const confirmRef = useRef<HTMLButtonElement>(null);
+  const closingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const hasDescription = Boolean(description || descriptionLines?.length);
 
-  const handleClose = () => {
-    if (isClosing) {
-      return;
-    }
+  useEffect(
+    () => () => {
+      if (closingTimer.current !== null) {
+        clearTimeout(closingTimer.current);
+        closingTimer.current = null;
+      }
+    },
+    []
+  );
 
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 300); // 애니메이션 시간(0.3초)과 동일하게 설정
-  };
-
-  const handleConfirm = () => {
-    if (confirmDisabled || isClosing) {
-      return;
-    }
+  const scheduleAction = (action: () => void) => {
+    if (isClosing || closingTimer.current !== null) return;
 
     setIsClosing(true);
-    setTimeout(() => {
-      onConfirm();
+    closingTimer.current = setTimeout(() => {
+      closingTimer.current = null;
+      action();
     }, 300);
   };
+
+  const handleClose = () => scheduleAction(onClose);
+  const handleConfirm = () => {
+    if (!confirmDisabled) scheduleAction(onConfirm);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key !== "Tab") return;
+
+    const buttons = [cancelRef.current, confirmRef.current].filter(
+      (button): button is HTMLButtonElement =>
+        button !== null && !button.disabled
+    );
+    const first = buttons[0];
+    const last = buttons[buttons.length - 1];
+    if (!first || !last) return;
+
+    const focused = document.activeElement;
+    const isOutside = !dialogRef.current?.contains(focused);
+    if (event.shiftKey && (focused === first || isOutside)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (focused === last || isOutside)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
   return (
-    <S.Overlay $showOverlay={showOverlay} onClick={handleClose}>
-      <S.Container
-        $isClosing={isClosing}
-        $variant={variant}
-        onClick={stopPropagation}
-      >
-        <S.Question $variant={variant}>
+    <S.Overlay
+      ref={dialogRef}
+      aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={hasDescription ? descriptionId : undefined}
+      $showOverlay={showOverlay}
+      onCancel={(event) => {
+        event.preventDefault();
+        handleClose();
+      }}
+      onKeyDown={handleKeyDown}
+      onClick={(event) => {
+        event.stopPropagation();
+        if (event.target === event.currentTarget) handleClose();
+      }}
+    >
+      <S.Container $isClosing={isClosing} $variant={variant}>
+        <S.Question id={titleId} $variant={variant}>
           {lines ? (
             lines.map((line) => <span key={line}>{line}</span>)
           ) : (
@@ -104,20 +148,28 @@ export default function ConfirmModal({
             </>
           )}
         </S.Question>
-        {(description || descriptionLines) && (
-          <S.Description>
+        {hasDescription && (
+          <S.Description id={descriptionId}>
             {descriptionLines
               ? descriptionLines.map((line) => <span key={line}>{line}</span>)
               : description}
           </S.Description>
         )}
         <S.BtnBox $variant={variant}>
-          <S.Btn type="button" $variant={variant} onClick={handleClose}>
+          <S.Btn
+            ref={cancelRef}
+            type="button"
+            $variant={variant}
+            aria-disabled={isClosing}
+            onClick={handleClose}
+          >
             {cancelText}
           </S.Btn>
           <S.Div $variant={variant}></S.Div>
           <S.Btn
+            ref={confirmRef}
             type="button"
+            aria-disabled={isClosing || confirmDisabled}
             $variant={variant}
             $confirmColor={confirmColor}
             disabled={confirmDisabled}

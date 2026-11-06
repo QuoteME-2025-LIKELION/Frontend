@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import theme from "@/styles/theme";
 
-const ErrorScreen = styled.main`
+const ErrorScreen = styled.div`
   min-height: 100vh;
   padding: 40px 24px;
   display: flex;

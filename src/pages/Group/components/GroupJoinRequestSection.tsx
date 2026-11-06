@@ -24,17 +24,17 @@ export default function GroupJoinRequestSection({
 
   return (
     <S.Section>
-      <S.Title>가입 요청</S.Title>
+      <S.Title role="heading" aria-level={2}>가입 요청</S.Title>
       <S.RequestList>
         {requests.map((request) => {
           const isProcessing = pendingRequestId !== null;
 
           return (
             <S.RequestItem key={request.requestId}>
-              {request.requesterProfileImageUrl ? (
+              {request.requesterProfileImage ? (
                 <S.RequestProfileImg
-                  src={request.requesterProfileImageUrl}
-                  alt="프로필 이미지"
+                  src={request.requesterProfileImage}
+                  alt={`${request.requesterNickname} 프로필 이미지`}
                 />
               ) : (
                 <S.RequestDefaultProfileImg />
@@ -49,6 +49,7 @@ export default function GroupJoinRequestSection({
                 <button
                   type="button"
                   disabled={isProcessing}
+                  aria-label={`${request.requesterNickname} 그룹 가입 요청 수락`}
                   onClick={() => onAccept(request.requestId)}
                 >
                   수락
@@ -56,6 +57,7 @@ export default function GroupJoinRequestSection({
                 <button
                   type="button"
                   disabled={isProcessing}
+                  aria-label={`${request.requesterNickname} 그룹 가입 요청 거절`}
                   onClick={() => onReject(request.requestId)}
                 >
                   거절

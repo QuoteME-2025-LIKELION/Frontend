@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
+import { Link } from "react-router-dom";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const FeedList = styled.div`
@@ -18,6 +20,14 @@ export const FeedList = styled.div`
   & > div:not([data-toast-overlay]) {
     width: 100%;
     padding: 0;
+  }
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      height: auto;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
   }
 `;
 
@@ -61,7 +71,8 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   padding: 0 0.5rem;
   border-bottom: 1px solid ${theme.colors["grey-100"]};
   ${theme.fonts.pretendard}
-  color: ${({ $active }) => ($active ? theme.colors.black : theme.colors.territory)};
+  color: ${({ $active }) =>
+    $active ? theme.colors.black : theme.colors.territory};
   font-size: 0.875rem;
   font-weight: ${({ $active }) => ($active ? 700 : 500)};
   text-align: center;
@@ -99,4 +110,29 @@ export const NoFeedSubText = styled.div`
   font-weight: var(--font-weight-regular, 400);
   line-height: var(--line-height-t2, 21px); /* 150% */
   letter-spacing: -0.28px;
+`;
+
+export const FilterCreateLink = styled(Link)`
+  width: 100%;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.black};
+  font-size: 0.875rem;
+`;
+
+export const EmptyActionLink = styled(Link)`
+  width: fit-content;
+  min-height: 2.75rem;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.primary};
+  font-size: 0.875rem;
+  font-weight: 600;
 `;

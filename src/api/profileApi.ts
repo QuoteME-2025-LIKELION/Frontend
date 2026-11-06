@@ -3,7 +3,6 @@ import api from "@/api/api";
 export interface UpdateSettingsProfileRequest {
   nickname: string;
   introduction: string;
-  birthYear?: number;
   image?: File | null;
 }
 
@@ -22,7 +21,12 @@ export interface DeleteAccountRequest {
   otherReason?: string;
 }
 
+export type LinkedProvider = "GOOGLE" | "KAKAO";
+
 export interface AccountProfileResponse {
+  linkedAccounts?: Array<{ provider: LinkedProvider; linkedAt: string }>;
+  providerId?: string | null;
+  provider?: "LOCAL" | "GOOGLE" | "KAKAO" | null;
   email?: string;
   birthYear?: string | number | null;
   gender?: "MALE" | "FEMALE" | "ETC" | null;
@@ -46,7 +50,6 @@ export type SettingsProfileResponse = MyProfileResponse;
 function createProfileFormData({
   nickname,
   introduction,
-  birthYear,
   image,
 }: UpdateSettingsProfileRequest) {
   const formData = new FormData();
@@ -57,7 +60,7 @@ function createProfileFormData({
 
   formData.append(
     "data",
-    new Blob([JSON.stringify({ nickname, introduction, birthYear })], {
+    new Blob([JSON.stringify({ nickname, introduction })], {
       type: "application/json",
     })
   );
@@ -69,14 +72,17 @@ function createProfileFormData({
  * 프로필 관련 API 함수 분리
  */
 export const profileApi = {
-  setupProfile: (payload: SetupProfileRequest) =>
+  setupProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
-  getMyProfile: () => api.get<MyProfileResponse>("/api/profile"),
+  getMyProfile: (signal?: AbortSignal) =>
+    api.get<MyProfileResponse>("/api/profile", { signal, timeout: 15_000 }),
   getOtherProfile: (memberId: number | string) =>
     api.get<MyProfileResponse>(`/api/profile/${memberId}`),
   getSettingsProfile: () => api.get<SettingsProfileResponse>("/api/profile"),
   updateSettingsProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
+  getAccountLinkUrl: (provider: LinkedProvider) =>
+    `${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/api/profile/account/link/${provider.toLowerCase()}`,
   getAccountProfile: () =>
     api.get<AccountProfileResponse>("/api/profile/account"),
   updateAccount: (payload: UpdateAccountRequest) =>

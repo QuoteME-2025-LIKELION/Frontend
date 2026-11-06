@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 import type { Notification } from "@/types/notification.type";
 import { formatTimeAgo } from "@/utils/formatTimeAgo";
 
@@ -24,15 +26,19 @@ export default function NotificationLog({
   notification,
   onClick,
 }: NotificationLogProps) {
+  const readStatusId = useId();
   const { message, senderName, type, createDate } = notification;
   const formattedTimeAgo = createDate ? formatTimeAgo(createDate) : "";
   const isGroupNotification = type.startsWith("GROUP");
   const isTagNotification = type.startsWith("TAG");
-  const category = isGroupNotification
-    ? "그룹"
-    : isTagNotification
-      ? "태그"
-      : "친구";
+  const category =
+    type === "QUOTE_REMINDER"
+      ? "명언"
+      : isGroupNotification
+        ? "그룹"
+        : isTagNotification
+          ? "태그"
+          : "친구";
   const iconVariant = isGroupNotification
     ? "group"
     : isTagNotification
@@ -46,6 +52,8 @@ export default function NotificationLog({
     }
 
     switch (type) {
+      case "QUOTE_REMINDER":
+        return <>오늘의 명언을 작성할 시간이에요!</>;
       case "GROUP":
       case "GROUP_INVITE":
         return <>님이 그룹에 초대했습니다.</>;
@@ -73,15 +81,26 @@ export default function NotificationLog({
   };
 
   return (
-    <S.Container onClick={onClick}>
-      <S.Icon $variant={iconVariant} $isRead={notification.isRead}>
+    <S.Container
+      type="button"
+      onClick={onClick}
+      aria-describedby={readStatusId}
+    >
+      <span id={readStatusId} hidden>
+        {notification.isRead ? "읽은 알림" : "읽지 않은 알림"}
+      </span>
+      <S.Icon
+        aria-hidden="true"
+        $variant={iconVariant}
+        $isRead={notification.isRead}
+      >
         {iconText}
       </S.Icon>
       <S.Wrapper>
         <S.TextBox>
           <S.Category>{category}</S.Category>
           <S.Message>
-            {!message && senderName}
+            {!message && type !== "QUOTE_REMINDER" && senderName}
             {renderMessage()}
           </S.Message>
         </S.TextBox>

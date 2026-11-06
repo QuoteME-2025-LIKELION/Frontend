@@ -1,3 +1,5 @@
+import type { QuoteTag } from "@/types/feed.type";
+
 /**
  * ArchiveFeed 타입 정의
  * @property {number} id - 피드 고유 식별자
@@ -21,6 +23,7 @@ export interface ArchiveFeed {
   authorNickname?: string;
   authorBirthYear: number;
   taggedMemberNames?: string[];
+  tags?: QuoteTag[];
   taggedMembers?: string[];
   isBookmarked?: boolean;
   isLiked?: boolean;

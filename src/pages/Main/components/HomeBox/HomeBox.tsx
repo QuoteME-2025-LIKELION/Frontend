@@ -6,7 +6,7 @@ import bookmarkFilledIcon from "@/assets/icons/archive/bookmark-filled.svg";
 import bookmarkOutlineIcon from "@/assets/icons/archive/bookmark-outline.svg";
 import shareIcon from "@/assets/icons/archive/share.svg";
 import userIcon from "@/assets/icons/archive/user.svg";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import {
   useBookmarkQuoteMutation,
   useUnbookmarkQuoteMutation,
@@ -25,9 +25,9 @@ interface HomeBoxProps {
 
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const tagButtonRef = useRef<HTMLButtonElement>(null);
   const tagBoxRef = useRef<HTMLDivElement | null>(null);
-  const downloadElementImage = useElementImageDownload();
+  const downloadQuoteImage = useQuoteImageDownload();
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
@@ -48,7 +48,12 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
     quoteId !== undefined
       ? (bookmarkOverrides[quoteId] ?? Boolean(myQuote?.isBookmarked))
       : false;
-  const taggedNicknames = myQuote?.taggedNicknames ?? [];
+  const tagMembers = myQuote?.tags?.map((tag) => ({
+    key: String(tag.memberId), nickname: tag.nickname,
+  })) ?? (myQuote?.taggedNicknames ?? []).map((nickname, index) => ({
+    key: String(index), nickname,
+  }));
+  const taggedNicknames = tagMembers.map((tag) => tag.nickname);
   let line1: string, line2: string;
 
   // 내 피드 내용이 존재한다면 두 줄로 분리
@@ -74,8 +79,14 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
 
   const handleShare = () => {
     const shareProcess = () =>
-      downloadElementImage(
-        containerRef.current,
+      downloadQuoteImage(
+        {
+          date: displayDate,
+          content: quoteContent,
+          authorName: myQuote?.authorNickname ?? "",
+          authorBirthYear: myQuote?.birthYear,
+          taggedNames: taggedNicknames,
+        },
         `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`
       );
 
@@ -140,7 +151,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   }, [isTagMenuOpen]);
 
   return (
-    <S.Container ref={containerRef} onClick={() => setIsTagMenuOpen(false)}>
+    <S.Container onClick={() => setIsTagMenuOpen(false)}>
       <S.DateBox>
         <S.Month>{month}</S.Month>
         <S.Weekday>{weekday}</S.Weekday>
@@ -166,15 +177,35 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
       </S.Wrapper>
       <S.Bottom>
         {hasFeed && (
-          <S.TagBox ref={tagBoxRef}>
-            <S.TagButton type="button" onClick={handleTagButtonClick}>
+          <S.TagBox
+            ref={tagBoxRef}
+            onKeyDown={(event) => {
+              if (event.key !== "Escape" || !isTagMenuOpen) return;
+              event.preventDefault();
+              event.stopPropagation();
+              setIsTagMenuOpen(false);
+              tagButtonRef.current?.focus({ preventScroll: true });
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setIsTagMenuOpen(false);
+              }
+            }}
+          >
+            <S.TagButton
+              ref={tagButtonRef}
+              type="button"
+              aria-label={`태그된 친구 ${taggedNicknames.length}명`}
+              aria-expanded={isTagMenuOpen}
+              onClick={handleTagButtonClick}
+            >
               <img src={userIcon} alt="" />
               {taggedNicknames.length}
             </S.TagButton>
             {isTagMenuOpen && (
               <S.TagMenu>
-                {taggedNicknames.map((nickname) => (
-                  <S.TagName key={nickname}>{nickname}</S.TagName>
+                {tagMembers.map((tag) => (
+                  <S.TagName key={tag.key}>{tag.nickname}</S.TagName>
                 ))}
                 <S.TagEditButton type="button" onClick={handleTagEditClick}>
                   {taggedNicknames.length > 0 ? "수정하기" : "추가하기"}

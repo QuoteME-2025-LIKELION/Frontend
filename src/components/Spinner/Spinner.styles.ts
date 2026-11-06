@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 
 import theme from "@/styles/theme";
 
-
 export const SpinnerContainer = styled.div`
   position: fixed;
   top: 0;

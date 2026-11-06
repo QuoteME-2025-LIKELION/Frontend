@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 
+import { shortViewport } from "@/styles/responsive";
 import theme from "@/styles/theme";
 
 export const Container = styled.div`
@@ -11,6 +12,12 @@ export const Container = styled.div`
   max-width: 393px;
   min-height: 180px;
   padding-bottom: 1rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 export const Datebox = styled.div`
@@ -140,6 +147,14 @@ export const WriteBody = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0 1.5rem 2.4375rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex: 0 0 auto;
+      justify-content: flex-start;
+      padding-top: 1.5rem;
+    }
+  }
 `;
 
 export const GuideBox = styled.div`
@@ -149,6 +164,15 @@ export const GuideBox = styled.div`
   justify-content: center;
   width: 100%;
   margin-bottom: 4.75rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0;
+    }
+  }
 `;
 
 export const InfoWrap = styled.div`
@@ -156,6 +180,15 @@ export const InfoWrap = styled.div`
   right: 0.5rem;
   bottom: -5rem;
   flex: 0 0 auto;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      align-self: flex-end;
+    }
+  }
 `;
 
 export const InfoButton = styled.button`
@@ -214,6 +247,14 @@ export const ActionBar = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+
+  ${shortViewport} {
+    [data-page-scroll] & {
+      position: static;
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+  }
 `;
 
 export const ActionButton = styled.button`

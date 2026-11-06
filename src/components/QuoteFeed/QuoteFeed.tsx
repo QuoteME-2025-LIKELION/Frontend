@@ -117,7 +117,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
       !canRequestTag ||
       isTagRequestLoading ||
       isTagRequestError ||
-      tagRequestStatus !== "NONE";
+      (tagRequestStatus !== "NONE" && tagRequestStatus !== "REJECTED");
     const tagRequestLabel = isTagRequestError
       ? "태그 요청 상태 확인 불가"
       : isTagRequestLoading
@@ -126,7 +126,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             NONE: "태그 요청하기",
             PENDING: "태그 요청됨",
             ACCEPTED: "태그 재요청 불가",
-            REJECTED: "태그 요청 거절됨",
+            REJECTED: "태그 다시 요청하기",
           }[tagRequestStatus] ?? "태그 재요청 불가";
     const tagRequestMessage = isTagRequestError
       ? "태그 요청 상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요."
@@ -136,7 +136,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             NONE: "태그를 요청할 수 있어요.",
             PENDING: "이미 태그를 요청했어요. 수락을 기다려 주세요.",
             ACCEPTED: "태그 요청이 이미 수락된 명언에는 다시 요청할 수 없어요.",
-            REJECTED: "태그 요청이 거절되어 다시 요청할 수 없어요.",
+            REJECTED: "태그를 다시 요청할 수 있어요.",
           }[tagRequestStatus] ?? "이 명언에는 태그를 다시 요청할 수 없어요.";
 
     // 아카이브 페이지에 있을 땐 피드 클릭 가능
@@ -160,7 +160,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         {!isInArchive && (
           <S.ProfileContainer>
             {profileImageUrl ? (
-              <S.ProfileImg src={profileImageUrl} alt="프로필 이미지" />
+              <S.ProfileImg src={profileImageUrl} alt={`${authorName} 프로필 이미지`} />
             ) : (
               <S.DefaultProfileImg />
             )}
@@ -229,6 +229,8 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
                     $isInArchive={isInArchive}
                   >
                     <svg
+                      aria-hidden="true"
+                      focusable="false"
                       xmlns="http://www.w3.org/2000/svg"
                       width="8"
                       height="8"
@@ -283,6 +285,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             </button>
             <button
               type="button"
+              aria-label="공유하기"
               disabled={isShareDisabled}
               onClick={(e) => {
                 e.stopPropagation(); // 이벤트 버블링 중단 (Archive 클릭 방지)

@@ -8,6 +8,7 @@ export interface NoticeSummary {
   title: string;
   content?: string;
   createDate: string;
+  important: boolean;
 }
 
 export interface NoticeDetail extends NoticeSummary {

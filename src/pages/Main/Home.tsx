@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
+import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
@@ -48,7 +49,11 @@ export default function Home() {
   const { data: archiveQuotes = [], isLoading: isArchivesLoading } =
     useArchivesByDateQuery(displayDate);
   const { data: myProfile, isLoading: isProfileLoading } = useMyProfileQuery();
-  const { data: groups = [], isLoading: isGroupsLoading } = useMyGroupsQuery();
+  const {
+    data: groups = [],
+    isLoading: isGroupsLoading,
+    isSuccess: isGroupsReady,
+  } = useMyGroupsQuery();
   const apiMyQuote = quotesData?.myQuotes[0] || null;
   const archiveMyQuote = myProfile?.nickname
     ? archiveQuotes.find(
@@ -70,16 +75,24 @@ export default function Home() {
             apiMyQuote?.authorNickname ??
             "사용자",
           birthYear:
-            archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0,
+            String(archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0),
           createDate: archiveMyQuote.createDate,
           taggedNicknames:
             archiveMyQuote.taggedMemberNames ??
             archiveMyQuote.taggedMembers ??
             apiMyQuote?.taggedNicknames ??
             [],
+          tags: archiveMyQuote.tags ?? apiMyQuote?.tags,
           isBookmarked: archiveMyQuote.isBookmarked ?? apiMyQuote?.isBookmarked,
         };
-  const otherQuotes = feedData?.items ?? [];
+  const otherQuotes = (feedData?.items ?? []).map((quote) => {
+    const detail = quotesData?.otherQuotes.find((item) => item.id === quote.id);
+    return {
+      ...quote,
+      tags: detail?.tags ?? quote.tags,
+      myTagStatus: detail?.myTagStatus ?? quote.myTagStatus,
+    };
+  });
   const isLoading =
     isQuotesLoading ||
     isFeedLoading ||
@@ -89,7 +102,8 @@ export default function Home() {
   const profileImage = myProfile?.profileImage;
   const profileNickname = myProfile?.nickname || "사용자";
   const profileIntroduction = myProfile?.introduction || "자기소개가 없습니다.";
-  const returnTo = location.state?.returnTo === "/notification" ? "/notification" : "/home";
+  const returnTo =
+    location.state?.returnTo === "/notification" ? "/notification" : "/home";
   const {
     shareStatus,
     showShareErrorToast,
@@ -111,13 +125,14 @@ export default function Home() {
 
   return (
     <S.Container>
+      <PageTitle title="홈" heading />
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
       {date ? (
         <XHeader onClose={() => navigate(returnTo)} />
       ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
+        <DateHeader onToggleMenu={toggleMenu} isMenuOpen={isToggleVisible} />
       )}
 
       {isToggleVisible && (
@@ -130,45 +145,47 @@ export default function Home() {
         />
       )}
 
-      <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
-      <FeedList
-        date={date}
-        otherQuotes={otherQuotes}
-        unwrittenMembers={quotesData?.unwrittenMembers ?? []}
-        groups={groups}
-        selectedGroupId={selectedGroupId}
-        myNickname={profileNickname}
-        myMemberId={myProfile?.id}
-        onSelectGroup={setSelectedGroupId}
-        onShare={executeShare}
-        isLoading={isLoading}
-        isFeedError={isFeedError || isQuotesError}
-        emptyMessage={feedData?.emptyMessage}
-      />
-      {shareStatus !== "nothing" && (
-        <ToastModal
-          isVisible={true}
-          onClose={resetShareStatus}
-          text={
-            shareStatus === "sharing"
-              ? "명언 이미지를 저장중입니다."
-              : "명언 이미지를 저장했습니다."
-          }
-          isOnShare={shareStatus === "sharing"}
-          showOverlay={false}
-          variant="snackbar"
+      <S.ScrollContent data-page-scroll="">
+        <HomeBox date={date} myQuote={myQuote} onShare={executeShare} />
+        <FeedList
+          date={date}
+          otherQuotes={otherQuotes}
+          unwrittenMembers={quotesData?.unwrittenMembers ?? []}
+          groups={groups}
+          isGroupsReady={isGroupsReady}
+          selectedGroupId={selectedGroupId}
+          myMemberId={myProfile?.id}
+          onSelectGroup={setSelectedGroupId}
+          onShare={executeShare}
+          isLoading={isLoading}
+          isFeedError={isFeedError || isQuotesError}
+          emptyMessage={feedData?.emptyMessage}
         />
-      )}
+        {shareStatus !== "nothing" && (
+          <ToastModal
+            isVisible={true}
+            onClose={resetShareStatus}
+            text={
+              shareStatus === "sharing"
+                ? "명언 이미지를 저장중입니다."
+                : "명언 이미지를 저장했습니다."
+            }
+            isOnShare={shareStatus === "sharing"}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
 
-      {showShareErrorToast && (
-        <ToastModal
-          isVisible={showShareErrorToast}
-          onClose={closeShareErrorToast}
-          text="이미지 저장에 실패했습니다."
-          showOverlay={false}
-          variant="snackbar"
-        />
-      )}
+        {showShareErrorToast && (
+          <ToastModal
+            isVisible={showShareErrorToast}
+            onClose={closeShareErrorToast}
+            text="이미지 저장에 실패했습니다."
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
+      </S.ScrollContent>
     </S.Container>
   );
 }

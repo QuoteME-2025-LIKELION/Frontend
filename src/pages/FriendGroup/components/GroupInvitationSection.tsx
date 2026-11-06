@@ -20,7 +20,7 @@ export default function GroupInvitationSection({
 }: GroupInvitationSectionProps) {
   return (
     <S.Section>
-      <S.Title>받은 그룹 초대</S.Title>
+      <S.Title role="heading" aria-level={2}>받은 그룹 초대</S.Title>
       <S.FriendList>
         {invitations.length > 0 ? (
           invitations.map((invitation) => {
@@ -39,6 +39,7 @@ export default function GroupInvitationSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${invitation.groupName} 그룹 초대 수락`}
                     onClick={() => onAccept(invitation.requestId)}
                   >
                     수락
@@ -46,6 +47,7 @@ export default function GroupInvitationSection({
                   <button
                     type="button"
                     disabled={isPending}
+                    aria-label={`${invitation.groupName} 그룹 초대 거절`}
                     onClick={() => onReject(invitation.requestId)}
                   >
                     거절

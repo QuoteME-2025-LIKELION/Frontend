@@ -9,6 +9,6 @@ export const archiveApi = {
     api.get<ArchiveFeed[]>("/api/archives", { params: { date } }),
   getMyArchives: () => api.get<ArchiveFeed[]>("/api/archives/me"),
   getLikedArchives: () => api.get<ArchiveFeed[]>("/api/archives/likes"),
-  getBookmarkedArchives: () =>
-    api.get<ArchiveFeed[]>("/api/archives/bookmarks"),
+  getBookmarkedArchives: (month?: string) =>
+    api.get<ArchiveFeed[]>("/api/archives/bookmarks", { params: { month } }),
 };

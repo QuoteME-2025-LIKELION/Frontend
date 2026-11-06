@@ -1,3 +1,5 @@
+import VisuallyHidden from "@/components/VisuallyHidden/VisuallyHidden";
+
 import * as S from "./Spinner.styles";
 
 /**
@@ -5,8 +7,9 @@ import * as S from "./Spinner.styles";
  */
 export default function Spinner() {
   return (
-    <S.SpinnerContainer>
-      <S.Spinner />
+    <S.SpinnerContainer role="status" aria-atomic="true">
+      <VisuallyHidden>불러오는 중입니다.</VisuallyHidden>
+      <S.Spinner aria-hidden="true" />
     </S.SpinnerContainer>
   );
 }

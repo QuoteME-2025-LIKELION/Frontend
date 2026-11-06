@@ -6,15 +6,14 @@ import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
+import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
-import theme from "@/styles/theme";
 import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
@@ -32,8 +31,8 @@ type FeedListProps = {
   otherQuotes: QuoteFeedItem[];
   unwrittenMembers: UnwrittenMember[];
   groups: Group[] | [];
+  isGroupsReady: boolean;
   selectedGroupId: number | null;
-  myNickname: string;
   myMemberId?: number;
   onSelectGroup: (groupId: number | null) => void;
   onShare: (shareProcess: () => Promise<void>) => void;
@@ -47,8 +46,8 @@ export default function FeedList({
   otherQuotes,
   unwrittenMembers,
   groups,
+  isGroupsReady,
   selectedGroupId,
-  myNickname,
   myMemberId,
   onSelectGroup,
   onShare,
@@ -59,9 +58,9 @@ export default function FeedList({
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const isNoFriendsMessage =
     emptyMessage === "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요";
-  const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
   const filterBoxRef = useRef<HTMLDivElement | null>(null);
-  const downloadElementImage = useElementImageDownload();
+  const downloadQuoteImage = useQuoteImageDownload();
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
   >({});
@@ -86,7 +85,8 @@ export default function FeedList({
         quoteId: quote.id,
         isSilenced: false,
         taggedNicknames: quote.taggedNicknames ?? [],
-        isBookmarked: bookmarkOverrides[quote.id] ?? Boolean(quote.isBookmarked),
+        isBookmarked:
+          bookmarkOverrides[quote.id] ?? Boolean(quote.isBookmarked),
       })),
       ...unwrittenMembers
         .filter((member) => member.memberId !== myMemberId)
@@ -103,6 +103,15 @@ export default function FeedList({
     ],
     [bookmarkOverrides, otherQuotes, unwrittenMembers, myMemberId]
   );
+
+  const canCreateGroup =
+    isGroupsReady && !isLoading && !isFeedError && groups.length === 0;
+  const canAddFriend =
+    !isLoading &&
+    !isFeedError &&
+    selectedGroupId === null &&
+    isNoFriendsMessage &&
+    quotes.length === 0;
 
   const tagRequestQuote = quotes.find(
     (quote) => quote.quoteId === tagRequestQuoteId
@@ -181,18 +190,18 @@ export default function FeedList({
   };
 
   const handleShare = (authorNickname: string, index: number) => {
-    const shareProcess = () =>
-      downloadElementImage(
-        feedRefs.current[index],
-        `QuoteMe-${displayDate}-${authorNickname}.png`,
-        {
-          backgroundColor: theme.colors.secondary,
-          horizontalPadding: 24,
-          verticalPadding: 9,
-        }
-      );
-
-    onShare(shareProcess);
+    const quote = quotes[index];
+    if (!quote || quote.isSilenced) return;
+    onShare(() => downloadQuoteImage(
+      {
+        date: displayDate,
+        content: quote.content,
+        authorName: authorNickname,
+        authorBirthYear: quote.authorBirthYear,
+        taggedNames: quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames,
+      },
+      `QuoteMe-${displayDate}-${authorNickname}.png`
+    ));
   };
 
   const handlePoke = async (friendId: number) => {
@@ -255,9 +264,25 @@ export default function FeedList({
           onConfirm={handleRequest}
         />
       )}
-      <S.FilterBox ref={filterBoxRef}>
+      <S.FilterBox
+        ref={filterBoxRef}
+        onKeyDown={(event) => {
+          if (event.key !== "Escape" || !isFilterOpen) return;
+          event.preventDefault();
+          event.stopPropagation();
+          setIsFilterOpen(false);
+          filterButtonRef.current?.focus({ preventScroll: true });
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            setIsFilterOpen(false);
+          }
+        }}
+      >
         <S.FilterButton
+          ref={filterButtonRef}
           type="button"
+          aria-expanded={isFilterOpen}
           onClick={() => setIsFilterOpen((prev) => !prev)}
         >
           <img src={funnelIcon} alt="" />
@@ -267,10 +292,12 @@ export default function FeedList({
           <S.FilterMenu>
             <S.FilterOption
               type="button"
+              aria-pressed={selectedGroupId === null}
               $active={selectedGroupId === null}
               onClick={() => {
                 onSelectGroup(null);
                 setIsFilterOpen(false);
+                filterButtonRef.current?.focus({ preventScroll: true });
               }}
             >
               전체보기
@@ -279,20 +306,27 @@ export default function FeedList({
               <S.FilterOption
                 key={group.id}
                 type="button"
+                aria-pressed={selectedGroupId === group.id}
                 $active={selectedGroupId === group.id}
                 onClick={() => {
                   onSelectGroup(group.id);
                   setIsFilterOpen(false);
+                  filterButtonRef.current?.focus({ preventScroll: true });
                 }}
               >
                 {group.name ?? "그룹"}
               </S.FilterOption>
             ))}
+            {canCreateGroup && (
+              <S.FilterCreateLink to="/create-group">
+                그룹 만들기
+              </S.FilterCreateLink>
+            )}
           </S.FilterMenu>
         )}
       </S.FilterBox>
       {isFeedError ? (
-        <S.NoFeedbox>
+        <S.NoFeedbox role="alert">
           <S.NoFeedText>명언을 불러오지 못했어요.</S.NoFeedText>
           <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
         </S.NoFeedbox>
@@ -300,20 +334,19 @@ export default function FeedList({
         quotes.map((quote, index) => (
           <FeedListItem
             key={
-              quote.isSilenced ? `member-${quote.memberId}` : `quote-${quote.id}`
+              quote.isSilenced
+                ? `member-${quote.memberId}`
+                : `quote-${quote.id}`
             }
             quote={quote}
             index={index}
-            refCallback={(el) => {
-              feedRefs.current[index] = el;
-            }}
             isBookmarkPending={Boolean(pendingBookmarkIds[quote.id])}
             onBookmark={handleBookmark}
             onShare={handleShare}
             onRequest={openTagRequestConfirm}
             onTagRequestInfo={setToastMessage}
             onPoke={handlePoke}
-            myNickname={myNickname}
+            myMemberId={myMemberId}
           />
         ))
       ) : !isLoading ? (
@@ -332,6 +365,11 @@ export default function FeedList({
                 : "아직 함께 볼 그룹 멤버가 없어요.")
             )}
           </S.NoFeedText>
+          {canAddFriend && (
+            <S.EmptyActionLink to="/friend-group/add">
+              친구 추가
+            </S.EmptyActionLink>
+          )}
           {!isNoFriendsMessage && (
             <S.NoFeedSubText>
               {selectedGroupId === null
@@ -348,29 +386,28 @@ export default function FeedList({
 interface FeedListItemProps {
   quote: QuotesItem;
   index: number;
-  refCallback: (el: HTMLDivElement | null) => void;
   isBookmarkPending: boolean;
   onBookmark: (quoteId: number, isBookmarked: boolean) => void;
   onShare: (authorNickname: string, index: number) => void;
   onRequest: (quoteId: number) => void;
   onTagRequestInfo: (message: string) => void;
   onPoke: (friendId: number) => void;
-  myNickname: string;
+  myMemberId?: number;
 }
 
 function FeedListItem({
   quote,
   index,
-  refCallback,
   isBookmarkPending,
   onBookmark,
   onShare,
   onRequest,
   onTagRequestInfo,
   onPoke,
-  myNickname,
+  myMemberId,
 }: FeedListItemProps) {
-  const isAlreadyTagged = Boolean(quote.taggedNicknames?.includes(myNickname));
+  const isAlreadyTagged = quote.myTagStatus === "TAGGED" ||
+    Boolean(quote.tags?.some((tag) => tag.memberId === myMemberId));
   const canRequestTag =
     !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
   const shouldCheckTagRequest = canRequestTag && quote.quoteId !== undefined;
@@ -386,13 +423,12 @@ function FeedListItem({
 
   return (
     <QuoteFeed
-      ref={refCallback}
       profileImageUrl={quote.authorProfileImage}
       authorName={quote.authorNickname}
       bio={quote.authorIntroduction}
       createDate={quote.createDate}
       content={quote.content}
-      tag={quote.taggedNicknames}
+      tag={quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames}
       isBookmarked={quote.isBookmarked}
       isBookmarkDisabled={quote.isSilenced || isBookmarkPending}
       isShareDisabled={quote.isSilenced}
@@ -407,7 +443,7 @@ function FeedListItem({
           canRequestTag &&
           !isTagRequestLoading &&
           !isTagRequestError &&
-          tagRequest?.status === "NONE" &&
+          (tagRequest?.status === "NONE" || tagRequest?.status === "REJECTED") &&
           quote.quoteId !== undefined
         ) {
           onRequest(quote.quoteId);
@@ -415,7 +451,7 @@ function FeedListItem({
       }}
       canRequestTag={canRequestTag}
       onTagRequestInfo={onTagRequestInfo}
-      tagRequestStatus={tagRequest?.status ?? "NONE"}
+      tagRequestStatus={tagRequest?.status ?? (quote.myTagStatus === "REQUESTED" ? "PENDING" : "NONE")}
       isTagRequestLoading={isTagRequestLoading}
       isTagRequestError={isTagRequestError}
       onPoke={() => {

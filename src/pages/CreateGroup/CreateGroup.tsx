@@ -12,6 +12,7 @@ import {
   useInviteGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
+import { countCodePoints } from "@/utils/codePoint";
 
 import CreateGroupInviteStep from "./components/CreateGroupInviteStep";
 import CreateGroupStepFields from "./components/CreateGroupStepFields";
@@ -108,14 +109,14 @@ export default function CreateGroup() {
       return false;
     }
 
-    if (groupName.length > 10) {
+    if (countCodePoints(groupName) > 10) {
       setErrorMessage("그룹명은 10자 이내로");
       setErrorMessage3("입력해 주세요.");
       setShowErrorToast(true);
       return false;
     }
 
-    if (motto.length > 20) {
+    if (countCodePoints(motto) > 20) {
       setErrorMessage("메시지는 20자 이내로");
       setErrorMessage3("입력해 주세요.");
       setShowErrorToast(true);
@@ -188,7 +189,7 @@ export default function CreateGroup() {
       }
 
       navigate("/friend-group", {
-        state: { toastMessage: "새로운 그룹을 만들었습니다." },
+        state: { toastMessage: "새로운 그룹이 만들어졌어요" },
       });
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);
@@ -249,7 +250,7 @@ export default function CreateGroup() {
         )}
         {showInviteToast && (
           <ToastModal
-            text="초대 요청을 보냈습니다."
+            text="초대할 멤버에 추가했습니다."
             isVisible={showInviteToast}
             onClose={() => setShowInviteToast(false)}
             showOverlay={false}

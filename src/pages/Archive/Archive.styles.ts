@@ -58,6 +58,11 @@ export const MonthButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
 `;
 
 export const MonthText = styled.button`
@@ -130,6 +135,11 @@ export const DayButton = styled.button<{
       color: ${theme.colors.white};
       border: 0;
     `}
+
+  &:disabled {
+    color: ${theme.colors["grey-200"]};
+    cursor: default;
+  }
 `;
 
 export const ContentArea = styled.div`
@@ -160,7 +170,6 @@ export const Btn = styled.button<{ $active: boolean }>`
   align-items: center;
   text-align: center;
   background-color: transparent;
-  outline: none;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
@@ -180,17 +189,35 @@ export const Btn = styled.button<{ $active: boolean }>`
     `}
 `;
 
-export const MonthPickerOverlay = styled.div`
+export const MonthPickerOverlay = styled.dialog`
   position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   inset: 0;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.38);
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const MonthPicker = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
   width: min(18.625rem, calc(100% - 4rem));
   padding: 1.5rem 1.75rem 1rem;
   border-radius: 4px;
@@ -234,4 +261,9 @@ export const MonthOption = styled.button<{ $active: boolean }>`
       background-color: ${theme.colors.primary};
       color: ${theme.colors.white};
     `}
+
+  &:disabled {
+    color: ${theme.colors["grey-200"]};
+    cursor: default;
+  }
 `;

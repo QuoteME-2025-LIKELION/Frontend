@@ -34,7 +34,9 @@ export default function GroupListSection({
   return (
     <S.Section>
       <S.Title>
-        <div>{keyword ? "그룹" : "나의 그룹"}</div>
+        <div role="heading" aria-level={2}>
+          {keyword ? "그룹" : "나의 그룹"}
+        </div>
         {showManagementButtons && (
           <S.BtnBox>
             <button onClick={onCreateGroup}>그룹 만들기</button>
@@ -45,13 +47,21 @@ export default function GroupListSection({
         {visibleGroups.length > 0 ? (
           visibleGroups.map((group) => {
             const isMyGroup = myGroupIdSet.has(group.id);
+            const memberCount = group.memberCount ?? group.members?.length;
             const handleClick = () =>
               isMyGroup || !keyword
                 ? onOpenGroup(group.id)
                 : onJoinGroup(group.id);
 
             return (
-              <S.GroupBox key={group.id} onClick={handleClick}>
+              <S.GroupBox
+                key={group.id}
+                type="button"
+                aria-label={memberCount === undefined
+                  ? group.name || "그룹"
+                  : `${group.name || "그룹"}, 멤버 ${memberCount}명`}
+                onClick={handleClick}
+              >
                 <S.GroupName>{group.name}</S.GroupName>
                 <S.GroupCount>{group.memberCount}</S.GroupCount>
               </S.GroupBox>

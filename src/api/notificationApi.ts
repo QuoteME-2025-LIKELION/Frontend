@@ -32,6 +32,10 @@ export const notificationApi = {
     api.patch(`/api/notifications/${notificationId}/read`),
   getSettings: () =>
     api.get<NotificationSettings>("/api/notifications/settings"),
-  updateSettings: (payload: NotificationSettings) =>
-    api.put<NotificationSettings>("/api/notifications/settings", payload),
+  updateSettings: ({ quoteReminderTime, ...settings }: NotificationSettings) =>
+    api.put<NotificationSettings>("/api/notifications/settings", {
+      ...settings,
+      // 서버는 시간 생략 시 기존 값을 유지한다. null은 전송하지 않는다.
+      ...(quoteReminderTime != null ? { quoteReminderTime } : {}),
+    }),
 };

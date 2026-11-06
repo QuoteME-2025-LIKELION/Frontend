@@ -1,11 +1,13 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import calendarIcon from "@/assets/icons/archive/calendar.svg";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
+import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
+import { getArchiveDateInMonth, getArchiveMonthInYear, isFutureArchiveDate, isFutureArchiveMonth } from "@/utils/archiveDate";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./Archive.styles";
@@ -18,33 +20,42 @@ function getCalendarDates(monthDate: Date) {
   const month = monthDate.getMonth();
   const firstDate = new Date(year, month, 1);
   const startDate = new Date(year, month, 1 - firstDate.getDay());
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const weekCount = Math.max(5, Math.ceil((firstDate.getDay() + lastDay) / 7));
 
-  return Array.from({ length: 42 }, (_, index) => {
+  return Array.from({ length: weekCount * 7 }, (_, index) => {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + index);
     return date;
   });
 }
 
-function getDateInMonth(baseDate: Date, year: number, month: number) {
-  const lastDate = new Date(year, month + 1, 0).getDate();
-  return new Date(year, month, Math.min(baseDate.getDate(), lastDate));
-}
-
 export default function Archive() {
+  const selectedMonthRef = useRef<HTMLButtonElement>(null);
+  const pickerYearId = useId();
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname.split("/").pop();
   const isCalendarTab = path === "archive";
+  const hasMonthNavigation = isCalendarTab || path === "my-quotes" || path === "bookmarks";
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
+  const monthDialogRef = useModalDialog(isMonthPickerOpen && hasMonthNavigation, {
+    initialFocusRef: selectedMonthRef,
+  });
+
   const calendarDates = useMemo(
     () => getCalendarDates(currentMonth),
     [currentMonth]
   );
   const selectedDateString = formatDateToYYYYMMDD(selectedDate);
-  const todayString = formatDateToYYYYMMDD(new Date());
+  const selectedMonthString = formatDateToYYYYMMDD(currentMonth).slice(0, 7);
+  const today = new Date();
+  const todayString = formatDateToYYYYMMDD(today);
+  const isNextMonthDisabled = isFutureArchiveMonth(
+    new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1), today
+  );
   const currentMonthText = `${currentMonth.getFullYear()}.${String(
     currentMonth.getMonth() + 1
   ).padStart(2, "0")}`;
@@ -59,8 +70,9 @@ export default function Archive() {
   const moveMonth = (amount: number) => {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), prev.getMonth() + amount, 1);
+      if (isFutureArchiveMonth(next)) return prev;
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
@@ -68,15 +80,17 @@ export default function Archive() {
 
   const movePickerYear = (amount: number) => {
     setCurrentMonth((prev) => {
-      const next = new Date(prev.getFullYear() + amount, prev.getMonth(), 1);
+      const next = getArchiveMonthInYear(prev, prev.getFullYear() + amount);
+      if (!next) return prev;
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
   };
 
   const handleSelectDate = (date: Date) => {
+    if (isFutureArchiveDate(date)) return;
     setSelectedDate(date);
     setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
   };
@@ -84,8 +98,9 @@ export default function Archive() {
   const handleSelectMonth = (month: number) => {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), month - 1, 1);
+      if (isFutureArchiveMonth(next)) return prev;
       setSelectedDate((selected) =>
-        getDateInMonth(selected, next.getFullYear(), next.getMonth())
+        getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
       return next;
     });
@@ -123,6 +138,8 @@ export default function Archive() {
             onClick={() => navigate("/home")}
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -141,7 +158,7 @@ export default function Archive() {
           <S.HeaderTitle>아카이브</S.HeaderTitle>
           <span />
         </S.TopBar>
-        {isCalendarTab && (
+        {hasMonthNavigation && (
           <S.MonthBar>
             <S.MonthButton
               type="button"
@@ -149,6 +166,8 @@ export default function Archive() {
               onClick={() => moveMonth(-1)}
             >
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -166,6 +185,8 @@ export default function Archive() {
             </S.MonthButton>
             <S.MonthText
               type="button"
+              aria-expanded={isMonthPickerOpen}
+              aria-haspopup="dialog"
               onClick={() => setIsMonthPickerOpen(true)}
             >
               {currentMonthText}
@@ -173,9 +194,12 @@ export default function Archive() {
             <S.MonthButton
               type="button"
               aria-label="다음 달"
+              disabled={isNextMonthDisabled}
               onClick={() => moveMonth(1)}
             >
               <svg
+                aria-hidden="true"
+                focusable="false"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -194,6 +218,8 @@ export default function Archive() {
             <S.CalendarButton
               type="button"
               aria-label="월 선택"
+              aria-expanded={isMonthPickerOpen}
+              aria-haspopup="dialog"
               onClick={() => setIsMonthPickerOpen(true)}
             >
               <img src={calendarIcon} alt="" width={24} height={24} />
@@ -213,8 +239,12 @@ export default function Archive() {
                 <S.DayButton
                   key={dateString}
                   type="button"
+                  disabled={isFutureArchiveDate(date)}
                   $outside={date.getMonth() !== currentMonth.getMonth()}
                   $today={dateString === todayString}
+                  aria-label={`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`}
+                  aria-pressed={dateString === selectedDateString}
+                  aria-current={dateString === todayString ? "date" : undefined}
                   $selected={dateString === selectedDateString}
                   onClick={() => handleSelectDate(date)}
                 >
@@ -228,27 +258,43 @@ export default function Archive() {
           <S.Menu>
             <S.Btn
               onClick={() => navigate("/archive")}
+              aria-current={path === "archive" ? "page" : undefined}
               $active={path === "archive"}
             >
               전체보기
             </S.Btn>
             <S.Btn
               onClick={() => navigate("/archive/my-quotes")}
+              aria-current={path === "my-quotes" ? "page" : undefined}
               $active={path === "my-quotes"}
             >
               나의 명언
             </S.Btn>
             <S.Btn
               onClick={() => navigate("/archive/bookmarks")}
+              aria-current={path === "bookmarks" ? "page" : undefined}
               $active={path === "bookmarks"}
             >
               북마크
             </S.Btn>
           </S.Menu>
-          <Outlet context={{ onShare: executeShare, selectedDateString }} />
+          <Outlet context={{ onShare: executeShare, selectedDateString, selectedMonthString }} />
         </S.ContentArea>
-        {isCalendarTab && isMonthPickerOpen && (
-          <S.MonthPickerOverlay onClick={() => setIsMonthPickerOpen(false)}>
+        {hasMonthNavigation && isMonthPickerOpen && (
+          <S.MonthPickerOverlay
+            ref={monthDialogRef}
+            aria-label="월 선택"
+            aria-describedby={pickerYearId}
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setIsMonthPickerOpen(false);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget)
+                setIsMonthPickerOpen(false);
+            }}
+          >
             <S.MonthPicker onClick={(event) => event.stopPropagation()}>
               <S.PickerHeader>
                 <S.MonthButton
@@ -257,6 +303,8 @@ export default function Archive() {
                   onClick={() => movePickerYear(-1)}
                 >
                   <svg
+                    aria-hidden="true"
+                    focusable="false"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -272,13 +320,18 @@ export default function Archive() {
                     />
                   </svg>
                 </S.MonthButton>
-                <S.PickerYear>{currentMonth.getFullYear()}</S.PickerYear>
+                <S.PickerYear id={pickerYearId} aria-live="polite">
+                  {currentMonth.getFullYear()}
+                </S.PickerYear>
                 <S.MonthButton
                   type="button"
                   aria-label="다음 해"
+                  disabled={currentMonth.getFullYear() >= today.getFullYear()}
                   onClick={() => movePickerYear(1)}
                 >
                   <svg
+                    aria-hidden="true"
+                    focusable="false"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -299,7 +352,14 @@ export default function Archive() {
                 {MONTHS.map((month) => (
                   <S.MonthOption
                     key={month}
+                    ref={
+                      month === currentMonth.getMonth() + 1
+                        ? selectedMonthRef
+                        : undefined
+                    }
                     type="button"
+                    disabled={isFutureArchiveMonth(new Date(currentMonth.getFullYear(), month - 1, 1), today)}
+                    aria-pressed={month === currentMonth.getMonth() + 1}
                     $active={month === currentMonth.getMonth() + 1}
                     onClick={() => handleSelectMonth(month)}
                   >

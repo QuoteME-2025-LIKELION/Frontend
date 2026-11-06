@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -59,6 +60,10 @@ export default function Group() {
   >(null);
 
   const joinRequestInFlight = useRef(false);
+  const [joinRequestRejection, setJoinRequestRejection] = useState<{
+    requestId: number;
+    nickname: string;
+  } | null>(null);
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -191,6 +196,26 @@ export default function Group() {
     [groupId, joinRequests, rejectGroupJoinRequest]
   );
 
+  const handleOpenRejectJoinRequest = useCallback(
+    (requestId: number) => {
+      if (joinRequestInFlight.current) return;
+      const request = joinRequests.find((item) => item.requestId === requestId);
+      if (request) {
+        setJoinRequestRejection({
+          requestId,
+          nickname: request.requesterNickname,
+        });
+      }
+    },
+    [joinRequests]
+  );
+
+  const handleConfirmRejectJoinRequest = useCallback(async () => {
+    if (!joinRequestRejection) return;
+    await handleRejectJoinRequest(joinRequestRejection.requestId);
+    setJoinRequestRejection(null);
+  }, [joinRequestRejection, handleRejectJoinRequest]);
+
   const handleQuitGroup = useCallback(() => {
     setGroupActionConfirm("quit");
   }, []);
@@ -251,6 +276,26 @@ export default function Group() {
   return (
     <>
       <PageTitle title={groupData?.name || "그룹 상세"} />
+      {joinRequestRejection && (
+        <ConfirmModal
+          question=""
+          lines={[
+            `${joinRequestRejection.nickname}님의 가입 요청을`,
+            "거절하시겠어요?",
+          ]}
+          cancelText="취소"
+          confirmText="거절"
+          confirmColor="danger"
+          confirmDisabled={pendingJoinRequestId !== null}
+          onClose={() => {
+            if (!joinRequestInFlight.current) setJoinRequestRejection(null);
+          }}
+          onConfirm={() => {
+            void handleConfirmRejectJoinRequest();
+          }}
+          variant="card"
+        />
+      )}
       <S.Container>
         <GroupActionModals
           deleteMemberTarget={deleteMemberTarget}
@@ -291,7 +336,7 @@ export default function Group() {
             onEditMessage={() => navigate(`/group/${groupId}/change-message`)}
             onDeleteMember={handleDeleteMember}
             onAcceptJoinRequest={handleAcceptJoinRequest}
-            onRejectJoinRequest={handleRejectJoinRequest}
+            onRejectJoinRequest={handleOpenRejectJoinRequest}
             onInviteGroup={handleInviteGroup}
             onQuitGroup={handleQuitGroup}
             onDeleteGroup={handleDeleteGroup}

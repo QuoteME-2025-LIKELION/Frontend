@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import useAnimatedToggle from "@/hooks/useAnimatedToggle";
+import useModalDialog from "@/hooks/useModalDialog";
 import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
@@ -24,7 +26,10 @@ export default function EditQuoteTags() {
     active,
     toggle: toggleMenu,
     isVisible: isToggleVisible,
+    close: closeToggle,
   } = useAnimatedToggle();
+
+  const dialogRef = useModalDialog(isToggleVisible);
 
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const { data: quotesData, isLoading } = useQuotesByDateQuery(displayDate);
@@ -46,18 +51,31 @@ export default function EditQuoteTags() {
 
   return (
     <S.Container>
+      <PageTitle title="태그 수정" heading />
       {isLoading && <Spinner />}
 
       {/* 아카이브 기능으로 다른 날짜로 이동했을 땐 홈으로 돌아가는 버튼 있는 헤더가 뜨는 게 나을 것 같아서 수정 */}
       {date ? (
         <XHeader onClose={() => navigate(returnTo)} />
       ) : (
-        <DateHeader onToggleMenu={toggleMenu} />
+        <DateHeader onToggleMenu={toggleMenu} isMenuOpen={isToggleVisible} />
       )}
 
       {isToggleVisible && (
-        <S.Toggle $active={active}>
-          <S.ToggleBtn onClick={() => navigate("/friend-group")}>
+        <S.Toggle
+          ref={dialogRef}
+          $active={active}
+          aria-label="내 메뉴"
+          aria-modal="true"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeToggle();
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeToggle();
+          }}
+        >
+          <S.ToggleBtn type="button" onClick={() => navigate("/friend-group")}>
             친구 및 그룹
           </S.ToggleBtn>
           <S.ToggleBtn
@@ -69,7 +87,10 @@ export default function EditQuoteTags() {
           >
             프로필 관리
           </S.ToggleBtn>
-          <S.ToggleBtn onClick={() => navigate("/notification-setting")}>
+          <S.ToggleBtn
+            type="button"
+            onClick={() => navigate("/notification-setting")}
+          >
             알림 설정
           </S.ToggleBtn>
         </S.Toggle>
@@ -82,8 +103,8 @@ export default function EditQuoteTags() {
             id: myQuote.id,
             content: myQuote.content,
             authorName: myQuote.authorNickname,
-            authorBirthYear: myQuote.birthYear,
             taggedNicknames: myQuote.taggedNicknames,
+            tags: myQuote.tags,
           }}
           mode="fix"
         />

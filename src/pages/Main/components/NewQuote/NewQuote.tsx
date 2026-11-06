@@ -6,13 +6,15 @@ import tagCheckboxUncheckedIcon from "@/assets/icons/quote-feed/tag-checkbox-unc
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 import {
   useCreateQuoteMutation,
   useQuoteTagRequestsQuery,
-  useUpdateQuoteTagsMutation,
+  useSaveQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
-import type { Friend } from "@/types/friend.type";
+import { getQuoteInputError } from "@/utils/quoteInput";
+import { getTagCandidates, hasInvalidTagSelection } from "@/utils/quoteTags";
 
 import * as S from "./NewQuote.styles";
 
@@ -33,72 +35,44 @@ export default function NewQuote({
   const [keyword, setKeyword] = useState("");
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { data: friends = [] } = useFriendsQuery();
-  const { data: tagRequests = [] } = useQuoteTagRequestsQuery(
+  const {
+    data: friends = [],
+    isSuccess: areFriendsReady,
+    isError: isFriendsError,
+    isFetching: isFriendsFetching,
+    refetch: refetchFriends,
+  } = useFriendsQuery();
+  const { data: myProfile, isSuccess: isProfileReady } = useMyProfileQuery();
+  const { data: tagRequests = [], isError: isRequestsError, isSuccess: areRequestsReady, refetch: refetchRequests } = useQuoteTagRequestsQuery(
     mode === "fix" ? quote.id : undefined
   );
   const { mutateAsync: createQuote, isPending: isCreatingQuote } =
     useCreateQuoteMutation();
-  const { mutateAsync: updateQuoteTags, isPending: isUpdatingQuoteTags } =
-    useUpdateQuoteTagsMutation();
-  const pendingRequesterIds = useMemo(
-    () => new Set(tagRequests.map((request) => request.requesterId)),
-    [tagRequests]
+  const { mutateAsync: saveTags, isPending: isUpdatingQuoteTags } =
+    useSaveQuoteTagsMutation();
+  const tagCandidates = useMemo(
+    () => getTagCandidates(friends, mode === "fix" ? quote.tags ?? [] : [], myProfile?.id, mode === "fix" ? tagRequests : []),
+    [friends, mode, quote.tags, myProfile?.id, tagRequests]
   );
-  const tagCandidates = useMemo(() => {
-    const candidates = new Map<number, Friend>(
-      friends.map((friend) => [friend.id, friend])
-    );
-    for (const request of tagRequests) {
-      if (!candidates.has(request.requesterId)) {
-        candidates.set(request.requesterId, {
-          id: request.requesterId,
-          nickname: request.requesterName,
-        });
-      }
-    }
-    return [...candidates.values()];
-  }, [friends, tagRequests]);
   const initialSelectedIds = useMemo(() => {
     if (mode !== "fix") {
       return [];
     }
 
-    return tagCandidates
-      .filter(
-        (friend) =>
-          quote.taggedNicknames?.includes(friend.nickname) ||
-          pendingRequesterIds.has(friend.id)
-      )
-      .map((friend) => friend.id);
-  }, [tagCandidates, mode, pendingRequesterIds, quote.taggedNicknames]);
+    return (quote.tags ?? []).map((tag) => tag.memberId).filter((id) => id !== myProfile?.id);
+  }, [mode, quote.tags, myProfile?.id]);
   const selectedIds = selectedIdsDraft ?? initialSelectedIds;
   const selectedFriends = tagCandidates.filter((friend) =>
     selectedIds.includes(friend.id)
   );
-  const filteredFriends = tagCandidates
-    .filter((friend) =>
-      friend.nickname.toLowerCase().includes(keyword.trim().toLowerCase())
-    )
-    .sort((a, b) => {
-      const aPending = pendingRequesterIds.has(a.id);
-      const bPending = pendingRequesterIds.has(b.id);
-
-      if (aPending === bPending) {
-        return 0;
-      }
-
-      return aPending ? -1 : 1;
-    });
-  const lastPendingRequesterIndex = filteredFriends.reduce(
-    (lastIndex, friend, index) =>
-      pendingRequesterIds.has(friend.id) ? index : lastIndex,
-    -1
+  const filteredFriends = tagCandidates.filter((friend) =>
+    friend.nickname.toLowerCase().includes(keyword.trim().toLowerCase())
   );
-  const hasVisiblePendingRequesterFriend = lastPendingRequesterIndex >= 0;
   const isSubmitting = isCreatingQuote || isUpdatingQuoteTags;
+  const requesterIds = new Set(tagRequests.map((request) => request.requesterId));
 
   const toggleSelect = (id: number) => {
+    if (isSubmitting) return;
     if (selectedIds.includes(id)) {
       setSelectedIdsDraft(selectedIds.filter((item) => item !== id));
     } else {
@@ -109,6 +83,40 @@ export default function NewQuote({
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+    if (mode === "create") {
+      const error = getQuoteInputError(quote.content, "quote") ??
+        (typeof quote.originalContent === "string"
+          ? getQuoteInputError(quote.originalContent, "ai")
+          : null);
+      if (error) {
+        setErrorMessage(error);
+        setShowErrorToast(true);
+        return;
+      }
+    }
+    if (!areFriendsReady || !isProfileReady || !myProfile) {
+      setErrorMessage("친구와 내 정보를 불러온 뒤 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+    if (mode === "fix" && !areRequestsReady) {
+      setErrorMessage("태그 요청을 불러온 뒤 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+    // 요청자는 수락 API를 통해 처리하므로 일반 태그 추가 검증에서 분리한다.
+    const directIds = mode === "fix" ? selectedIds.filter((id) => !requesterIds.has(id)) : selectedIds;
+    if (selectedIds.includes(myProfile.id) || hasInvalidTagSelection(directIds, friends, mode === "fix" ? quote.tags ?? [] : [], myProfile.id)) {
+      setErrorMessage("새 태그는 친구만 선택할 수 있어요. 선택한 회원을 다시 확인해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
+    if (mode === "fix" && !Array.isArray(quote.tags)) {
+      setErrorMessage("태그 정보를 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.");
+      setShowErrorToast(true);
+      return;
+    }
     if (mode === "create") {
       try {
         await createQuote({
@@ -133,16 +141,11 @@ export default function NewQuote({
       }
 
       try {
-        await updateQuoteTags({
-          quoteId: quote.id,
-          payload: {
-            taggedMemberIds: selectedIds,
-          },
-        });
+        await saveTags({ quoteId: quote.id, selectedIds, requests: tagRequests });
 
         navigate("/home");
       } catch {
-        setErrorMessage("태그 수정에 실패했어요.");
+        setErrorMessage("저장을 완료하지 못했어요. 일부 요청은 수락됐을 수 있으니 목록을 확인하고 다시 시도해 주세요.");
         setShowErrorToast(true);
       }
     }
@@ -162,8 +165,28 @@ export default function NewQuote({
         <S.Description>
           나중에 태그를 추가하거나 수정할 수 있어요.
         </S.Description>
-        {tagCandidates.length === 0 ? (
+        {!areFriendsReady && !isFriendsError && (
+          <S.Description role="status">친구 목록을 불러오는 중입니다.</S.Description>
+        )}
+        {mode === "fix" && isRequestsError && (
+          <>
+            <S.Description role="alert">태그 요청을 불러오지 못했어요.</S.Description>
+            <S.ActionButton type="button" onClick={() => void refetchRequests()}>다시 시도</S.ActionButton>
+          </>
+        )}
+        {isFriendsError ? (
           <S.EmptyBox>
+            <S.EmptyTitle role="alert">친구 목록을 불러오지 못했어요.</S.EmptyTitle>
+            <S.RetryButton
+              type="button"
+              disabled={isFriendsFetching || isSubmitting}
+              onClick={() => void refetchFriends()}
+            >
+              다시 불러오기
+            </S.RetryButton>
+          </S.EmptyBox>
+        ) : tagCandidates.length === 0 ? (
+          areFriendsReady && (mode !== "fix" || areRequestsReady) && <S.EmptyBox>
             <S.EmptyTitle>태그할 수 있는 친구가 없어요.</S.EmptyTitle>
             <S.EmptyDescription>
               친구를 추가하고 나중에 태그를 추가할 수 있어요.
@@ -172,7 +195,8 @@ export default function NewQuote({
         ) : (
           <>
             <Search
-              placeholder="검색어를 입력해 주세요"
+              label="태그할 친구 검색"
+              placeholder="태그할 친구를 검색하세요"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onClear={() => setKeyword("")}
@@ -199,26 +223,18 @@ export default function NewQuote({
                   </S.SelectedUser>
                 ))}
               </S.SelectedList>
-              {mode === "fix" && hasVisiblePendingRequesterFriend && (
-                <S.TagRequestListTitle>태그 요청</S.TagRequestListTitle>
-              )}
               <S.TagList>
                 {filteredFriends.map((friend, index) => {
                   const isSelected = selectedIds.includes(friend.id);
                   const isLast = index === filteredFriends.length - 1;
-                  const isPendingRequester = pendingRequesterIds.has(friend.id);
-                  const shouldSeparateFromDefaultFriends =
-                    isPendingRequester &&
-                    index === lastPendingRequesterIndex &&
-                    index < filteredFriends.length - 1;
 
                   return (
                     <S.TagItem
                       key={friend.id}
                       type="button"
                       aria-pressed={isSelected}
+                      disabled={isSubmitting}
                       $showBorder={!isLast}
-                      $separateAfter={shouldSeparateFromDefaultFriends}
                       onClick={() => toggleSelect(friend.id)}
                     >
                       {friend.profileImage ? (
@@ -229,9 +245,7 @@ export default function NewQuote({
                       <S.UserBox>
                         <S.Username>{friend.nickname}</S.Username>
                         <S.Intro>
-                          {isPendingRequester
-                            ? "태그 요청을 보낸 분이에요."
-                            : friend.introduction}
+                          {requesterIds.has(friend.id) ? "태그 요청을 보낸 분이에요." : friend.introduction}
                         </S.Intro>
                       </S.UserBox>
                       <S.Checkbox>
@@ -260,7 +274,7 @@ export default function NewQuote({
         )}
         <S.ActionButton
           type="button"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !areFriendsReady || !isProfileReady || (mode === "fix" && !areRequestsReady)}
           onClick={handleSubmit}
         >
           {mode === "create" ? "게시하기" : "수정하기"}

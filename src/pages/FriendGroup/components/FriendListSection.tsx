@@ -35,10 +35,11 @@ export default function FriendListSection({
     requests
       ?.filter((request) => request.direction === "SENT")
       .map((request) => request.receiverId)
+      .filter((id): id is number => id !== undefined)
   );
   const receivedIds = new Set(
     requests
-      ?.filter((request) => request.direction === "RECEIVED")
+      ?.filter((request) => request.direction !== "SENT")
       .map((request) => request.senderId)
   );
   const visibleUsers = keyword ? searchMembers : friends;
@@ -48,7 +49,9 @@ export default function FriendListSection({
 
   return (
     <S.Section>
-      {!keyword ? <S.Title>친구</S.Title> : <S.Title>사용자</S.Title>}
+      <S.Title role="heading" aria-level={2}>
+        {keyword ? "사용자" : "친구"}
+      </S.Title>
       <S.FriendList>
         {visibleUsers.length > 0 ? (
           visibleUsers.map((user) => {

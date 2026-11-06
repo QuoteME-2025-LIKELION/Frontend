@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
 
 import * as S from "./HomeSideMenu.styles";
@@ -23,6 +24,7 @@ export default function HomeSideMenu({
   onClose,
 }: HomeSideMenuProps) {
   const navigate = useNavigate();
+  const dialogRef = useModalDialog();
   const [copyToastMessage, setCopyToastMessage] = useState("");
 
   const handleCopyMail = async () => {
@@ -62,12 +64,25 @@ export default function HomeSideMenu({
 
   return (
     <>
-      <S.ToggleWrapper onClick={onClose}>
+      <S.ToggleWrapper
+        ref={dialogRef}
+        aria-label="내 메뉴"
+        aria-modal="true"
+        onCancel={(event) => {
+          event.preventDefault();
+          if (active) onClose();
+        }}
+        onClick={(event) => {
+          if (event.target === event.currentTarget && active) onClose();
+        }}
+      >
         <S.Toggle $active={active} onClick={(event) => event.stopPropagation()}>
           <S.ImgBox>
             <S.ImgPreview $profileImage={profileImage}>
               {!profileImage && (
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="80"
                   height="80"
@@ -94,6 +109,8 @@ export default function HomeSideMenu({
                 }
               >
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
                   height="20"
@@ -111,10 +128,16 @@ export default function HomeSideMenu({
             <S.UserIntro>{introduction}</S.UserIntro>
           </S.ImgBox>
           <S.ToggleBtnBox>
-            <S.ToggleBtn type="button" onClick={() => navigate("/friend-group")}>
+            <S.ToggleBtn
+              type="button"
+              onClick={() => navigate("/friend-group")}
+            >
               친구 및 그룹
             </S.ToggleBtn>
-            <S.ToggleBtn type="button" onClick={() => navigate("/account-setting")}>
+            <S.ToggleBtn
+              type="button"
+              onClick={() => navigate("/account-setting")}
+            >
               계정 관리
             </S.ToggleBtn>
             <S.ToggleBtn
@@ -138,7 +161,9 @@ export default function HomeSideMenu({
             <S.ToggleInfoText>버전 1.0</S.ToggleInfoText>
           </S.ToggleInfoBox>
         </S.Toggle>
-        {copyToastMessage && <S.CopyToast>{copyToastMessage}</S.CopyToast>}
+        {copyToastMessage && (
+          <S.CopyToast role="status">{copyToastMessage}</S.CopyToast>
+        )}
       </S.ToggleWrapper>
     </>
   );

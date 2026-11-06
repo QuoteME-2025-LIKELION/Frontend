@@ -153,6 +153,10 @@ export const Overlay = styled.div<{ $isClosing: boolean }>`
     forwards;
 `;
 export const Loginbox = styled.div<{ $isClosing: boolean }>`
+  > button {
+    flex-shrink: 0;
+  }
+
   position: absolute;
   left: 0;
   bottom: 0;
@@ -161,7 +165,9 @@ export const Loginbox = styled.div<{ $isClosing: boolean }>`
   width: 100%;
   box-sizing: border-box;
 
-  min-height: 13.625rem;
+  min-height: min(13.625rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
   padding: 2.25rem 1.5rem 4.25rem;
   display: flex;
   flex-direction: column;
@@ -171,5 +177,27 @@ export const Loginbox = styled.div<{ $isClosing: boolean }>`
   border-radius: 0.625rem 0.625rem 0 0;
   background: var(--bg-basement-neutral, ${theme.colors.secondary});
   animation: ${({ $isClosing }) => ($isClosing ? slideDown : slideUp)} 180ms
-    ease-out forwards;
+    ease-out both;
+`;
+
+export const LoginDialog = styled.dialog`
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 393px;
+  height: 100%;
+  max-height: none;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  overflow: clip;
+
+  &:not([open]) {
+    display: none;
+  }
+  &::backdrop {
+    background: transparent;
+  }
 `;

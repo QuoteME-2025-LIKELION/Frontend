@@ -1,27 +1,23 @@
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
+import Spinner from "@/components/Spinner/Spinner";
+import { useMyProfileQuery } from "@/hooks/useProfileQueries";
 import useAuthStore from "@/stores/useAuthStore";
 
-/**
- * 인증이 필요한 보호된 경로 레이아웃
- * @returns 로딩 중엔 로딩 스피너 반환
- * @returns 비인증 상태면 시작 페이지로 리디렉션
- * @returns 인증 상태면 요청한 페이지 렌더링
- */
+/** 서버 확인 실패 시 세션을 종료하고 첫 화면으로 돌아간다. */
 export default function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, logout } = useAuthStore();
+  const profile = useMyProfileQuery(true);
+  const verificationFailed = profile.isError ||
+    (profile.isPending ? profile.fetchStatus === "paused" : !profile.data);
 
-  // 인증 상태를 확인하는 동안 (로딩 중) - 튕기는 오류 방지를 위해 스피너 제거
-  if (isLoading) {
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && verificationFailed) logout();
+  }, [isAuthenticated, isLoading, logout, verificationFailed]);
 
-  // 로그인하지 않은 상태일 경우
-  if (!isAuthenticated) {
-    // 시작 페이지로 리디렉션
-    return <Navigate to="/" replace />;
-  }
-
-  // 로그인한 상태일 경우, 요청한 페이지를 보여줌
+  if (isLoading) return <Spinner />;
+  if (!isAuthenticated || verificationFailed) return <Navigate to="/" replace />;
+  if (profile.isPending) return <Spinner />;
   return <Outlet />;
 }

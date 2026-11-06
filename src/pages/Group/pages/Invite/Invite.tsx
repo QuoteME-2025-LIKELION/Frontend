@@ -64,7 +64,7 @@ export default function Invite() {
       sentInvitations.map((invitation) => ({
         id: invitation.requesterId,
         nickname: invitation.requesterNickname,
-        profileImage: invitation.requesterProfileImageUrl,
+        profileImage: invitation.requesterProfileImage ?? undefined,
         introduction: invitation.requesterIntroduction,
       })),
     [sentInvitations]
@@ -195,6 +195,7 @@ export default function Invite() {
         />
         <S.Content>
           <Search
+            label="그룹에 초대할 친구 검색"
             placeholder="검색어를 입력해 주세요"
             desc={
               keyword && filteredFriends.length === 0

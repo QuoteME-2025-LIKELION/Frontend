@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { profileApi, type LinkedProvider } from "@/api/profileApi";
 import googleIcon from "@/assets/icons/account/google.png";
 import kakaoIcon from "@/assets/icons/account/kakao.png";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useLogoutMutation } from "@/hooks/useAuthQueries";
+import useModalDialog from "@/hooks/useModalDialog";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
-import useAuthStore from "@/stores/useAuthStore";
+import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";
 
@@ -26,8 +29,9 @@ const GENDER_OPTIONS: Array<{ value: GenderValue; label: string }> = [
 const DEFAULT_GENDER: GenderValue = "ETC";
 
 const CURRENT_YEAR = new Date().getFullYear();
+const MIN_BIRTH_YEAR = 1900;
 const YEAR_OPTIONS = Array.from(
-  { length: 121 },
+  { length: CURRENT_YEAR - MIN_BIRTH_YEAR + 1 },
   (_, index) => CURRENT_YEAR - index
 );
 
@@ -40,7 +44,9 @@ function normalizeGender(gender: string | null | undefined): GenderValue {
 function parseBirthYear(year: string | number | null | undefined) {
   const parsed = typeof year === "number" ? year : Number(year);
 
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+  return /^\d{4}$/.test(String(year)) &&
+    Number.isInteger(parsed) && parsed >= MIN_BIRTH_YEAR && parsed <= CURRENT_YEAR
+    ? parsed : null;
 }
 
 function formatGender(gender: GenderValue) {
@@ -53,7 +59,8 @@ function formatBirthYear(year: number | null) {
 
 export default function AccountSetting() {
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
+  const location = useLocation();
+  const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
   const {
     data: accountProfile,
     isError: isAccountProfileError,
@@ -63,25 +70,37 @@ export default function AccountSetting() {
   const [genderDraft, setGenderDraft] = useState<GenderValue | null>(null);
   const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
   const [sheetType, setSheetType] = useState<SheetType>(null);
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState(
+    typeof location.state?.oauthMessage === "string" ? location.state.oauthMessage : ""
+  );
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const sheetRef = useModalDialog(sheetType !== null);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);
   const selectedBirthYearRef = useRef<number | null>(null);
   const currentGender = genderDraft ?? normalizeGender(accountProfile?.gender);
   const currentBirthYear: number | null =
     birthYearDraft ?? parseBirthYear(accountProfile?.birthYear);
 
-  useEffect(() => {
-    if (sheetType !== "birth") {
-      return;
+  const getProviderStatus = (provider: LinkedProvider) => {
+    if (isAccountProfilePending) return "확인 중";
+    if (isAccountProfileError || !accountProfile) return "확인 불가";
+    if (Array.isArray(accountProfile.linkedAccounts)) {
+      return accountProfile.linkedAccounts.some((account) => account.provider === provider)
+        ? "연동됨" : "미연동";
     }
+    // 이전 응답에서는 확인 가능한 단일 provider만 연동으로 표시한다.
+    return accountProfile.provider === provider ? "연동됨" : "확인 불가";
+  };
 
-    window.requestAnimationFrame(() => {
+  useEffect(() => {
+    if (sheetType !== "birth") return;
+    const frame = window.requestAnimationFrame(() => {
       selectedYearRef.current?.scrollIntoView({
         block: "center",
         behavior: "auto",
       });
     });
+    return () => window.cancelAnimationFrame(frame);
   }, [sheetType]);
 
   const saveAccount = async (
@@ -100,7 +119,7 @@ export default function AccountSetting() {
       return;
     }
 
-    if (!nextBirthYear) {
+    if (nextBirthYear === null || parseBirthYear(nextBirthYear) === null) {
       resetDrafts();
       setToastMessage("출생연도를 선택해 주세요.");
       return;
@@ -142,13 +161,19 @@ export default function AccountSetting() {
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
-      behavior: "smooth",
+      behavior: getPreferredScrollBehavior(),
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch {
+      setShowLogoutConfirm(false);
+      setToastMessage("로그아웃에 실패했습니다. 다시 시도해 주세요.");
+    }
   };
 
   return (
@@ -170,6 +195,7 @@ export default function AccountSetting() {
             variant="card"
             onClose={() => setShowLogoutConfirm(false)}
             onConfirm={handleLogout}
+            confirmDisabled={isLoggingOut}
           />
         )}
         <Header
@@ -183,12 +209,19 @@ export default function AccountSetting() {
           <S.Section>
             <S.SectionTitle>계정 정보</S.SectionTitle>
             <S.InfoList>
-              <S.InfoRow type="button" onClick={() => setSheetType("gender")}>
+              <S.InfoRow
+                type="button"
+                aria-haspopup="dialog"
+                aria-expanded={sheetType === "gender"}
+                onClick={() => setSheetType("gender")}
+              >
                 <S.RowLabel>성별</S.RowLabel>
                 <S.RowValue>{formatGender(currentGender)}</S.RowValue>
               </S.InfoRow>
               <S.InfoRow
                 type="button"
+                aria-haspopup="dialog"
+                aria-expanded={sheetType === "birth"}
                 onClick={() => {
                   selectedBirthYearRef.current = currentBirthYear;
                   setSheetType("birth");
@@ -213,20 +246,33 @@ export default function AccountSetting() {
                   <S.ProviderIcon src={googleIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>구글</S.ProviderName>
-                <S.ProviderStatus>연동됨</S.ProviderStatus>
+                {getProviderStatus("GOOGLE") === "미연동" ? (
+                  <S.ProviderLink
+                    href={profileApi.getAccountLinkUrl("GOOGLE")}
+                    aria-label="구글 계정 연동하기"
+                  >
+                    연동하기
+                  </S.ProviderLink>
+                ) : (
+                  <S.ProviderStatus>{getProviderStatus("GOOGLE")}</S.ProviderStatus>
+                )}
               </S.LinkedRow>
-              <S.LinkedActionRow
-                type="button"
-                onClick={() =>
-                  setToastMessage("아직 구현되지 않은 기능입니다.")
-                }
-              >
+              <S.LinkedRow>
                 <S.ProviderIconFrame>
                   <S.ProviderIcon src={kakaoIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>카카오</S.ProviderName>
-                <S.ProviderStatus>연동하기</S.ProviderStatus>
-              </S.LinkedActionRow>
+                {getProviderStatus("KAKAO") === "미연동" ? (
+                  <S.ProviderLink
+                    href={profileApi.getAccountLinkUrl("KAKAO")}
+                    aria-label="카카오 계정 연동하기"
+                  >
+                    연동하기
+                  </S.ProviderLink>
+                ) : (
+                  <S.ProviderStatus>{getProviderStatus("KAKAO")}</S.ProviderStatus>
+                )}
+              </S.LinkedRow>
             </S.LinkedList>
           </S.Section>
         </S.Content>
@@ -234,6 +280,7 @@ export default function AccountSetting() {
         <S.BottomActions>
           <S.LogoutButton
             type="button"
+            disabled={isLoggingOut}
             onClick={() => setShowLogoutConfirm(true)}
           >
             로그아웃
@@ -247,13 +294,25 @@ export default function AccountSetting() {
         </S.BottomActions>
 
         {sheetType === "gender" && (
-          <S.SheetOverlay onClick={() => setSheetType(null)}>
+          <S.SheetOverlay
+            ref={sheetRef}
+            aria-label="성별 선택"
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setSheetType(null);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setSheetType(null);
+            }}
+          >
             <S.Sheet onClick={(event) => event.stopPropagation()}>
               <S.GenderList>
                 {GENDER_OPTIONS.map((option) => (
                   <S.GenderOption
                     key={option.label}
                     type="button"
+                    aria-pressed={currentGender === option.value}
                     onClick={() => setGenderDraft(option.value)}
                   >
                     <span>{option.label}</span>
@@ -269,7 +328,18 @@ export default function AccountSetting() {
         )}
 
         {sheetType === "birth" && (
-          <S.SheetOverlay onClick={() => setSheetType(null)}>
+          <S.SheetOverlay
+            ref={sheetRef}
+            aria-label="출생연도 선택"
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
+              setSheetType(null);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setSheetType(null);
+            }}
+          >
             <S.Sheet onClick={(event) => event.stopPropagation()}>
               <S.YearPicker>
                 {YEAR_OPTIONS.map((year) => (
@@ -279,6 +349,7 @@ export default function AccountSetting() {
                       currentBirthYear === year ? selectedYearRef : undefined
                     }
                     type="button"
+                    aria-pressed={currentBirthYear === year}
                     $selected={currentBirthYear === year}
                     onClick={(event) => {
                       selectedBirthYearRef.current = year;

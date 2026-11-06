@@ -126,7 +126,7 @@ export const GroupName = styled.div`
   position: relative;
   z-index: 1;
   width: 4rem; /* 64px */
-  font-family: "HCR Batang", serif;
+  ${theme.fonts.batang}
   line-height: 1.35;
   font-size: 0.875rem; /* 14px */
   font-weight: 700;

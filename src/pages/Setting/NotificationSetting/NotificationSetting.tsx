@@ -5,10 +5,12 @@ import type { NotificationSettings as NotificationSettingsType } from "@/api/not
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import useModalDialog from "@/hooks/useModalDialog";
 import {
   useNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
 } from "@/hooks/useNotificationsQuery";
+import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./NotificationSetting.styles";
 
@@ -22,7 +24,7 @@ type SettingKey =
 type Meridiem = "오전" | "오후";
 
 function parseReminderTime(value: string | null) {
-  const [hour, minute] = (value ?? "21:00").split(":").map(Number);
+  const [hour, minute] = (value ?? "10:00").split(":").map(Number);
   return {
     meridiem: (hour < 12 ? "오전" : "오후") as Meridiem,
     hour: hour % 12 || 12,
@@ -42,7 +44,7 @@ const DEFAULT_SETTINGS: NotificationSettingsType = {
   pokeEnabled: true,
   likeEnabled: true,
   quoteReminderEnabled: true,
-  quoteReminderTime: "21:00",
+  quoteReminderTime: "10:00",
   marketingEnabled: false,
 };
 
@@ -92,6 +94,7 @@ export default function NotificationSetting() {
     useState(true);
   const [toastMessage, setToastMessage] = useState("");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+  const dialogRef = useModalDialog(isTimePickerOpen);
   const [reminderTime, setReminderTime] = useState(() =>
     parseReminderTime(DEFAULT_SETTINGS.quoteReminderTime)
   );
@@ -204,7 +207,7 @@ export default function NotificationSetting() {
   const centerSelectedOption = (element: HTMLButtonElement) => {
     element.scrollIntoView({
       block: "center",
-      behavior: "smooth",
+      behavior: getPreferredScrollBehavior(),
     });
   };
 
@@ -212,7 +215,7 @@ export default function NotificationSetting() {
     <>
       <PageTitle title="알림 설정" />
       <S.Container>
-        {toastMessage && (
+        {toastMessage && !isTimePickerOpen && (
           <ToastModal
             isVisible={Boolean(toastMessage)}
             onClose={() => setToastMessage("")}
@@ -223,18 +226,36 @@ export default function NotificationSetting() {
         )}
         {isTimePickerOpen && (
           <S.PickerOverlay
-            onClick={() => {
+            ref={dialogRef}
+            aria-label="명언 알림 시간 선택"
+            aria-modal="true"
+            onCancel={(event) => {
+              event.preventDefault();
               if (!isPending) setIsTimePickerOpen(false);
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget && !isPending)
+                setIsTimePickerOpen(false);
             }}
           >
             <S.PickerSheet onClick={(event) => event.stopPropagation()}>
+              {toastMessage && (
+                <ToastModal
+                  isVisible={true}
+                  text={toastMessage}
+                  onClose={() => setToastMessage("")}
+                  showOverlay={false}
+                  variant="snackbar"
+                />
+              )}
               <S.PickerGrid>
-                <S.PickerColumn>
+                <S.PickerColumn role="group" aria-label="오전·오후">
                   {(["오전", "오후"] as Meridiem[]).map((meridiem) => (
                     <S.PickerOption
                       key={meridiem}
                       type="button"
                       disabled={isPending}
+                      aria-pressed={reminderTime.meridiem === meridiem}
                       $selected={reminderTime.meridiem === meridiem}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, meridiem }));
@@ -245,12 +266,13 @@ export default function NotificationSetting() {
                     </S.PickerOption>
                   ))}
                 </S.PickerColumn>
-                <S.PickerColumn>
+                <S.PickerColumn role="group" aria-label="시">
                   {HOUR_OPTIONS.map((hour) => (
                     <S.PickerOption
                       key={hour}
                       type="button"
                       disabled={isPending}
+                      aria-pressed={reminderTime.hour === hour}
                       $selected={reminderTime.hour === hour}
                       onClick={(event) => {
                         setReminderTime((prev) => ({ ...prev, hour }));
@@ -261,7 +283,7 @@ export default function NotificationSetting() {
                     </S.PickerOption>
                   ))}
                 </S.PickerColumn>
-                <S.PickerColumn>
+                <S.PickerColumn role="group" aria-label="분">
                   {Array.from(new Set([...MINUTE_OPTIONS, reminderTime.minute]))
                     .sort((a, b) => a - b)
                     .map((minute) => (
@@ -269,6 +291,7 @@ export default function NotificationSetting() {
                         key={minute}
                         type="button"
                         disabled={isPending}
+                        aria-pressed={reminderTime.minute === minute}
                         $selected={reminderTime.minute === minute}
                         onClick={(event) => {
                           setReminderTime((prev) => ({ ...prev, minute }));
@@ -326,6 +349,14 @@ export default function NotificationSetting() {
               <S.Row
                 key={item.key}
                 type="button"
+                aria-haspopup={
+                  item.key === "quoteReminderEnabled" ? "dialog" : undefined
+                }
+                aria-expanded={
+                  item.key === "quoteReminderEnabled"
+                    ? isTimePickerOpen
+                    : undefined
+                }
                 $disabled={disabled}
                 disabled={disabled}
                 onClick={() =>

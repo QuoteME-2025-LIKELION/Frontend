@@ -25,18 +25,34 @@ const fadeOut = keyframes`
   }
 `;
 
-export const Overlay = styled.div<{ $showOverlay: boolean }>`
+export const Overlay = styled.dialog<{ $showOverlay: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 9998;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   background-color: ${({ $showOverlay }) =>
     $showOverlay ? "rgba(0, 0, 0, 0.55)" : "transparent"};
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
 `;
 
 export const Container = styled.div<{
@@ -118,11 +134,13 @@ export const BtnBox = styled.div<{ $variant: "default" | "card" }>`
     $variant === "card" ? "none" : "1px solid rgba(0, 0, 0, 0.1)"};
 
   button:first-of-type {
-    border-bottom-left-radius: 1.875rem; /* 30px */
+    border-bottom-left-radius: ${({ $variant }) =>
+      $variant === "card" ? "0.25rem" : "calc(1.875rem - 1px)"};
   }
 
   button:last-of-type {
-    border-bottom-right-radius: 1.875rem; /* 30px */
+    border-bottom-right-radius: ${({ $variant }) =>
+      $variant === "card" ? "0.25rem" : "calc(1.875rem - 1px)"};
   }
 `;
 

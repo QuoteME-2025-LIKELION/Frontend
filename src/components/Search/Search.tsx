@@ -1,66 +1,56 @@
+import { useId, useImperativeHandle, useRef } from "react";
+import type { ComponentPropsWithRef } from "react";
+
 import theme from "@/styles/theme";
 
 import * as S from "./Search.styles";
 
-interface SearchProps {
-  placeholder?: string;
-  desc?: string;
+interface SearchProps extends Omit<ComponentPropsWithRef<"input">, "children"> {
+  label: string;
   value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-  name?: string;
-  disabled?: boolean;
-  readOnly?: boolean;
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  desc?: string;
   onClear?: () => void;
 }
 
-/**
- * 검색창 컴포넌트
- * @param props
- * @param props.placeholder - 검색창의 placeholder 텍스트
- * @param props.desc - 검색창 아래에 표시되는 설명 텍스트
- * @param props.value - 검색창의 값
- * @param props.onChange - 검색창 값 변경 시 호출되는 함수
- * @param props.type - 검색창의 타입 (기본값 text)
- * @param props.name - 검색창의 이름
- * @param props.disabled - 검색창 비활성화 여부
- * @param props.readOnly - 검색창 읽기 전용 여부
- * @param props.required - 검색창 필수 입력 여부
- * @param props.minLength - 검색창의 최소 입력 길이
- * @param props.maxLength - 검색창의 최대 입력 길이
- * @param props.onClear - X 버튼 클릭 시 호출되는 함수 (setValue("") 이런 식으로 구현)
- * @example
- * <Search
- *  placeholder="검색"
- *  desc="이메일, 닉네임, 그룹명으로 계정을 검색할 수 있어요."
- *  value={text}
- *  onChange={(e) => setText(e.target.value)}
- *  name="text"
- *  onSearch={() => console.log("검색됨")}
- *  onClear={() => console.log("삭제됨")}
- * />
- */
+/** 입력 이름·설명을 연결하고 검색어를 지운 뒤 입력으로 초점을 돌려준다. */
 export default function Search({
-  placeholder,
+  label,
   desc,
   value,
-  onChange,
   type = "text",
-  name,
+  required = true,
   disabled,
   readOnly,
-  required = true,
-  minLength,
-  maxLength,
   onClear,
+  id,
+  ref,
+  "aria-describedby": describedBy,
+  ...inputProps
 }: SearchProps) {
+  const generatedId = useId();
+  const inputId = id ?? `${generatedId}-input`;
+  const descriptionId = `${generatedId}-description`;
+  const clearClipId = `${generatedId}-clear-icon`;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const descriptionIds =
+    [describedBy, desc ? descriptionId : undefined].filter(Boolean).join(" ") ||
+    undefined;
+
+  useImperativeHandle(ref, () => inputRef.current!, []);
+
+  const handleClear = () => {
+    if (disabled || readOnly) return;
+
+    onClear?.();
+    inputRef.current?.focus();
+  };
+
   return (
     <S.Wrapper>
       <S.Container>
         <svg
+          aria-hidden="true"
+          focusable="false"
           xmlns="http://www.w3.org/2000/svg"
           width="16"
           height="16"
@@ -76,27 +66,35 @@ export default function Search({
           />
         </svg>
         <S.SearchInput
+          {...inputProps}
+          ref={inputRef}
+          id={inputId}
+          aria-label={label}
+          aria-describedby={descriptionIds}
           value={value}
-          onChange={onChange}
-          placeholder={placeholder}
           type={type}
-          name={name}
           disabled={disabled}
           readOnly={readOnly}
           required={required}
-          minLength={minLength}
-          maxLength={maxLength}
         />
         {value && onClear && (
-          <button type="button" onClick={onClear}>
+          <button
+            type="button"
+            aria-label="검색어 지우기"
+            aria-controls={inputId}
+            disabled={disabled || readOnly}
+            onClick={handleClear}
+          >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
               viewBox="0 0 16 16"
               fill="none"
             >
-              <g clipPath="url(#clip0_636_1003)">
+              <g clipPath={`url(#${clearClipId})`}>
                 <path
                   d="M10 6L6.00004 10M6.00004 6L10 10M14.6667 8C14.6667 11.6819 11.6819 14.6667 8.00004 14.6667C4.31814 14.6667 1.33337 11.6819 1.33337 8C1.33337 4.3181 4.31814 1.33334 8.00004 1.33334C11.6819 1.33334 14.6667 4.3181 14.6667 8Z"
                   stroke={theme.colors.territory}
@@ -106,7 +104,7 @@ export default function Search({
                 />
               </g>
               <defs>
-                <clipPath id="clip0_636_1003">
+                <clipPath id={clearClipId}>
                   <rect width="16" height="16" fill={theme.colors.white} />
                 </clipPath>
               </defs>
@@ -114,7 +112,7 @@ export default function Search({
           </button>
         )}
       </S.Container>
-      {desc && <S.Desc>{desc}</S.Desc>}
+      {desc && <S.Desc id={descriptionId}>{desc}</S.Desc>}
     </S.Wrapper>
   );
 }
