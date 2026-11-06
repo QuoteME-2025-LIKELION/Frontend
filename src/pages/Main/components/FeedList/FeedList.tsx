@@ -6,15 +6,14 @@ import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
 import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
+import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
 } from "@/hooks/useQuoteQueries";
-import theme from "@/styles/theme";
 import type { Group } from "@/types/group.type";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
@@ -59,10 +58,9 @@ export default function FeedList({
   const displayDate = date ? date : formatDateToYYYYMMDD(new Date());
   const isNoFriendsMessage =
     emptyMessage === "친구를 추가하면 매일 피드에서 명언을 확인할 수 있어요";
-  const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const filterBoxRef = useRef<HTMLDivElement | null>(null);
-  const downloadElementImage = useElementImageDownload();
+  const downloadQuoteImage = useQuoteImageDownload();
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
   >({});
@@ -192,18 +190,18 @@ export default function FeedList({
   };
 
   const handleShare = (authorNickname: string, index: number) => {
-    const shareProcess = () =>
-      downloadElementImage(
-        feedRefs.current[index],
-        `QuoteMe-${displayDate}-${authorNickname}.png`,
-        {
-          backgroundColor: theme.colors.secondary,
-          horizontalPadding: 24,
-          verticalPadding: 9,
-        }
-      );
-
-    onShare(shareProcess);
+    const quote = quotes[index];
+    if (!quote || quote.isSilenced) return;
+    onShare(() => downloadQuoteImage(
+      {
+        date: displayDate,
+        content: quote.content,
+        authorName: authorNickname,
+        authorBirthYear: quote.authorBirthYear,
+        taggedNames: quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames,
+      },
+      `QuoteMe-${displayDate}-${authorNickname}.png`
+    ));
   };
 
   const handlePoke = async (friendId: number) => {
@@ -342,9 +340,6 @@ export default function FeedList({
             }
             quote={quote}
             index={index}
-            refCallback={(el) => {
-              feedRefs.current[index] = el;
-            }}
             isBookmarkPending={Boolean(pendingBookmarkIds[quote.id])}
             onBookmark={handleBookmark}
             onShare={handleShare}
@@ -391,7 +386,6 @@ export default function FeedList({
 interface FeedListItemProps {
   quote: QuotesItem;
   index: number;
-  refCallback: (el: HTMLDivElement | null) => void;
   isBookmarkPending: boolean;
   onBookmark: (quoteId: number, isBookmarked: boolean) => void;
   onShare: (authorNickname: string, index: number) => void;
@@ -404,7 +398,6 @@ interface FeedListItemProps {
 function FeedListItem({
   quote,
   index,
-  refCallback,
   isBookmarkPending,
   onBookmark,
   onShare,
@@ -430,7 +423,6 @@ function FeedListItem({
 
   return (
     <QuoteFeed
-      ref={refCallback}
       profileImageUrl={quote.authorProfileImage}
       authorName={quote.authorNickname}
       bio={quote.authorIntroduction}

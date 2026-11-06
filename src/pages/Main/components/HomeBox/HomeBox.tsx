@@ -6,7 +6,7 @@ import bookmarkFilledIcon from "@/assets/icons/archive/bookmark-filled.svg";
 import bookmarkOutlineIcon from "@/assets/icons/archive/bookmark-outline.svg";
 import shareIcon from "@/assets/icons/archive/share.svg";
 import userIcon from "@/assets/icons/archive/user.svg";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import {
   useBookmarkQuoteMutation,
   useUnbookmarkQuoteMutation,
@@ -25,10 +25,9 @@ interface HomeBoxProps {
 
 export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
   const tagButtonRef = useRef<HTMLButtonElement>(null);
   const tagBoxRef = useRef<HTMLDivElement | null>(null);
-  const downloadElementImage = useElementImageDownload();
+  const downloadQuoteImage = useQuoteImageDownload();
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
@@ -80,8 +79,14 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
 
   const handleShare = () => {
     const shareProcess = () =>
-      downloadElementImage(
-        containerRef.current,
+      downloadQuoteImage(
+        {
+          date: displayDate,
+          content: quoteContent,
+          authorName: myQuote?.authorNickname ?? "",
+          authorBirthYear: myQuote?.birthYear,
+          taggedNames: taggedNicknames,
+        },
         `QuoteMe-${displayDate}-${myQuote?.authorNickname}.png`
       );
 
@@ -146,7 +151,7 @@ export default function HomeBox({ date, myQuote, onShare }: HomeBoxProps) {
   }, [isTagMenuOpen]);
 
   return (
-    <S.Container ref={containerRef} onClick={() => setIsTagMenuOpen(false)}>
+    <S.Container onClick={() => setIsTagMenuOpen(false)}>
       <S.DateBox>
         <S.Month>{month}</S.Month>
         <S.Weekday>{weekday}</S.Weekday>

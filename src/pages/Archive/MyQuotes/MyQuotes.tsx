@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -6,7 +5,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useArchiveBookmarks } from "@/hooks/useArchiveBookmarks";
 import { useMyArchivesQuery } from "@/hooks/useArchiveQueries";
 import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
-import { useElementImageDownload } from "@/hooks/useElementImageDownload";
+import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
@@ -25,8 +24,7 @@ export default function MyQuotes() {
     isBookmarkError,
     retryBookmarks,
   } = useArchiveBookmarks();
-  const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const downloadElementImage = useElementImageDownload();
+  const downloadQuoteImage = useQuoteImageDownload();
   const {
     isDateNavigationConfirmOpen,
     openDateNavigationConfirm,
@@ -35,14 +33,18 @@ export default function MyQuotes() {
   } = useConfirmNavigationToDate();
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
-    const shareProcess = () =>
-      downloadElementImage(
-        feedRefs.current[index],
-        `QuoteMe-${date}-${authorNickname}.png`,
-        { horizontalPadding: 24, paddingBottom: 9 }
-      );
-
-    onShare(shareProcess);
+    const feed = myQuotes[index];
+    if (!feed) return;
+    onShare(() => downloadQuoteImage(
+      {
+        date,
+        content: feed.content,
+        authorName: authorNickname,
+        authorBirthYear: feed.authorBirthYear,
+        taggedNames: feed.tags?.map((tag) => tag.nickname) ?? feed.taggedMemberNames ?? feed.taggedMembers,
+      },
+      `QuoteMe-${date}-${authorNickname}.png`
+    ));
   };
 
   return (
@@ -78,9 +80,6 @@ export default function MyQuotes() {
         return (
           <ArchiveQuoteCard
             key={feed.id ?? feed.quoteId}
-            ref={(el: HTMLDivElement | null) => {
-              feedRefs.current[index] = el;
-            }}
             feed={feed}
             {...getBookmarkProps(feed)}
             showOriginalContent={true}
