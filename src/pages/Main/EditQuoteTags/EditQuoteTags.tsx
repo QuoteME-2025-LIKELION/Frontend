@@ -103,7 +103,6 @@ export default function EditQuoteTags() {
             id: myQuote.id,
             content: myQuote.content,
             authorName: myQuote.authorNickname,
-            authorBirthYear: myQuote.birthYear,
             taggedNicknames: myQuote.taggedNicknames,
             tags: myQuote.tags,
           }}

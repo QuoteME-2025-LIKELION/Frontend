@@ -75,7 +75,7 @@ export default function Home() {
             apiMyQuote?.authorNickname ??
             "사용자",
           birthYear:
-            archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0,
+            String(archiveMyQuote.authorBirthYear ?? apiMyQuote?.birthYear ?? 0),
           createDate: archiveMyQuote.createDate,
           taggedNicknames:
             archiveMyQuote.taggedMemberNames ??

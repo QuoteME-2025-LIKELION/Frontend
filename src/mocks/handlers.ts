@@ -930,7 +930,7 @@ export const handlers = [
           content: "여자니까 이해해주길",
           groupName: "야매철학자들",
           authorNickname: "손지수",
-          birthYear: 2000,
+          birthYear: "2000",
           originalContent: null,
           taggedNicknames: mockMyQuoteTags.map((tag) => tag.nickname),
           tags: mockMyQuoteTags,

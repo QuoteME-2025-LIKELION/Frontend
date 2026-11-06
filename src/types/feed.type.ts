@@ -15,7 +15,7 @@ export type QuoteTagStatus = "TAGGED" | "REQUESTED" | "NONE";
  * @property {string} content: 명언 내용
  * @property {string} groupName: 내가 속한 그룹 이름
  * @property {string} authorNickname: 명언 작성자 닉네임
- * @property {number} birthYear: 명언 작성자 출생 연도
+ * @property {string} birthYear: 명언 작성자 출생 연도
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  * @property {string[]} taggedNicknames: 명언에 태그된 닉네임 배열 (선택적)
  * @property {boolean} isBookmarked: 현재 사용자가 이 명언을 북마크했는지 여부 (선택적)
@@ -25,7 +25,7 @@ export interface MyQuote {
   content: string;
   groupName: string;
   authorNickname: string;
-  birthYear: number;
+  birthYear: string;
   createDate?: string;
   taggedNicknames?: string[];
   tags?: QuoteTag[];
