@@ -128,6 +128,23 @@ export const ProviderStatus = styled.span`
   white-space: nowrap;
 `;
 
+export const ProviderLink = styled.a`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors["grey-400"]};
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.26px;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 0.75rem 0;
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.primary};
+    outline-offset: 2px;
+  }
+`;
+
 export const BottomActions = styled.div`
   position: absolute;
   left: 0;

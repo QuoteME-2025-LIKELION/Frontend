@@ -82,6 +82,8 @@ export const profileApi = {
   getSettingsProfile: () => api.get<SettingsProfileResponse>("/api/profile"),
   updateSettingsProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
+  getAccountLinkUrl: (provider: LinkedProvider) =>
+    `${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/api/profile/account/link/${provider.toLowerCase()}`,
   getAccountProfile: () =>
     api.get<AccountProfileResponse>("/api/profile/account"),
   updateAccount: (payload: UpdateAccountRequest) =>

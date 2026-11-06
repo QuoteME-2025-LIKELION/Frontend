@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import type { LinkedProvider } from "@/api/profileApi";
+import { profileApi, type LinkedProvider } from "@/api/profileApi";
 import googleIcon from "@/assets/icons/account/google.png";
 import kakaoIcon from "@/assets/icons/account/kakao.png";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -246,18 +246,32 @@ export default function AccountSetting() {
                   <S.ProviderIcon src={googleIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>구글</S.ProviderName>
-                <S.ProviderStatus>
-                  {getProviderStatus("GOOGLE")}
-                </S.ProviderStatus>
+                {getProviderStatus("GOOGLE") === "미연동" ? (
+                  <S.ProviderLink
+                    href={profileApi.getAccountLinkUrl("GOOGLE")}
+                    aria-label="구글 계정 연동하기"
+                  >
+                    연동하기
+                  </S.ProviderLink>
+                ) : (
+                  <S.ProviderStatus>{getProviderStatus("GOOGLE")}</S.ProviderStatus>
+                )}
               </S.LinkedRow>
               <S.LinkedRow>
                 <S.ProviderIconFrame>
                   <S.ProviderIcon src={kakaoIcon} alt="" />
                 </S.ProviderIconFrame>
                 <S.ProviderName>카카오</S.ProviderName>
-                <S.ProviderStatus>
-                  {getProviderStatus("KAKAO")}
-                </S.ProviderStatus>
+                {getProviderStatus("KAKAO") === "미연동" ? (
+                  <S.ProviderLink
+                    href={profileApi.getAccountLinkUrl("KAKAO")}
+                    aria-label="카카오 계정 연동하기"
+                  >
+                    연동하기
+                  </S.ProviderLink>
+                ) : (
+                  <S.ProviderStatus>{getProviderStatus("KAKAO")}</S.ProviderStatus>
+                )}
               </S.LinkedRow>
             </S.LinkedList>
           </S.Section>
