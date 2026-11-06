@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -11,6 +12,7 @@ import {
   useSettingsProfileQuery,
   useUpdateSettingsProfileMutation,
 } from "@/hooks/useProfileQueries";
+import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 
 import * as S from "./ProfileCenter.styles";
 
@@ -88,11 +90,17 @@ export default function ProfileCenter() {
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
 
+    const error = validateProfileImage(file);
+    if (error) {
+      setToastMessage(error);
+      return;
+    }
+    setToastMessage("");
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
-    e.target.value = "";
   };
 
   const handleSave = async () => {
@@ -111,9 +119,11 @@ export default function ProfileCenter() {
     } catch (e) {
       console.error("프로필 저장 실패", e);
       setToastMessage(
-        selectedFile
-          ? "이미지 업로드에 실패했습니다."
-          : "프로필 저장에 실패했습니다."
+        axios.isAxiosError(e) && e.response?.status === 413
+          ? "이미지는 5MB 이하로 선택해 주세요."
+          : selectedFile
+            ? "이미지 업로드에 실패했습니다."
+            : "프로필 저장에 실패했습니다."
       );
     }
   };
@@ -196,7 +206,7 @@ export default function ProfileCenter() {
           <input
             type="file"
             aria-label="프로필 이미지 파일 선택"
-            accept="image/*"
+            accept={PROFILE_IMAGE_ACCEPT}
             ref={fileRef}
             onChange={handleChangeFile}
             style={{ display: "none" }}

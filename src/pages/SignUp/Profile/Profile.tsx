@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +7,7 @@ import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 import theme from "@/styles/theme";
+import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 
 import * as S from "./Profile.styles";
 
@@ -65,8 +67,15 @@ export default function Profile() {
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
 
+    const error = validateProfileImage(file);
+    if (error) {
+      setSubmitError(error);
+      return;
+    }
+    setSubmitError("");
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreview(url);
@@ -96,7 +105,11 @@ export default function Profile() {
       navigate("/home");
     } catch (error) {
       console.error("프로필 저장 실패:", error);
-      setSubmitError("프로필 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      setSubmitError(
+        axios.isAxiosError(error) && error.response?.status === 413
+          ? "이미지는 5MB 이하로 선택해 주세요."
+          : "프로필 저장에 실패했습니다. 잠시 후 다시 시도해 주세요."
+      );
     } finally {
       submittingRef.current = false;
     }
@@ -320,7 +333,7 @@ export default function Profile() {
                   id="profile-image"
                   type="file"
                   aria-label="프로필 이미지 파일 선택"
-                  accept="image/*"
+                  accept={PROFILE_IMAGE_ACCEPT}
                   disabled={isPending}
                   ref={fileRef}
                   onChange={handleChangeFile}
