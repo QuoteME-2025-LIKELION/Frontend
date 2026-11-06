@@ -7,7 +7,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import { useImageShare } from "@/hooks/useImageShare";
 import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
-import { getArchiveDateInMonth, isFutureArchiveDate } from "@/utils/archiveDate";
+import { getArchiveDateInMonth, getArchiveMonthInYear, isFutureArchiveDate, isFutureArchiveMonth } from "@/utils/archiveDate";
 import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
 
 import * as S from "./Archive.styles";
@@ -51,7 +51,11 @@ export default function Archive() {
   );
   const selectedDateString = formatDateToYYYYMMDD(selectedDate);
   const selectedMonthString = formatDateToYYYYMMDD(currentMonth).slice(0, 7);
-  const todayString = formatDateToYYYYMMDD(new Date());
+  const today = new Date();
+  const todayString = formatDateToYYYYMMDD(today);
+  const isNextMonthDisabled = isFutureArchiveMonth(
+    new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1), today
+  );
   const currentMonthText = `${currentMonth.getFullYear()}.${String(
     currentMonth.getMonth() + 1
   ).padStart(2, "0")}`;
@@ -66,6 +70,7 @@ export default function Archive() {
   const moveMonth = (amount: number) => {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), prev.getMonth() + amount, 1);
+      if (isFutureArchiveMonth(next)) return prev;
       setSelectedDate((selected) =>
         getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
@@ -75,7 +80,8 @@ export default function Archive() {
 
   const movePickerYear = (amount: number) => {
     setCurrentMonth((prev) => {
-      const next = new Date(prev.getFullYear() + amount, prev.getMonth(), 1);
+      const next = getArchiveMonthInYear(prev, prev.getFullYear() + amount);
+      if (!next) return prev;
       setSelectedDate((selected) =>
         getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
@@ -92,6 +98,7 @@ export default function Archive() {
   const handleSelectMonth = (month: number) => {
     setCurrentMonth((prev) => {
       const next = new Date(prev.getFullYear(), month - 1, 1);
+      if (isFutureArchiveMonth(next)) return prev;
       setSelectedDate((selected) =>
         getArchiveDateInMonth(selected, next.getFullYear(), next.getMonth())
       );
@@ -187,6 +194,7 @@ export default function Archive() {
             <S.MonthButton
               type="button"
               aria-label="다음 달"
+              disabled={isNextMonthDisabled}
               onClick={() => moveMonth(1)}
             >
               <svg
@@ -318,6 +326,7 @@ export default function Archive() {
                 <S.MonthButton
                   type="button"
                   aria-label="다음 해"
+                  disabled={currentMonth.getFullYear() >= today.getFullYear()}
                   onClick={() => movePickerYear(1)}
                 >
                   <svg
@@ -349,6 +358,7 @@ export default function Archive() {
                         : undefined
                     }
                     type="button"
+                    disabled={isFutureArchiveMonth(new Date(currentMonth.getFullYear(), month - 1, 1), today)}
                     aria-pressed={month === currentMonth.getMonth() + 1}
                     $active={month === currentMonth.getMonth() + 1}
                     onClick={() => handleSelectMonth(month)}

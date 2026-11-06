@@ -58,6 +58,11 @@ export const MonthButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
 `;
 
 export const MonthText = styled.button`
@@ -256,4 +261,9 @@ export const MonthOption = styled.button<{ $active: boolean }>`
       background-color: ${theme.colors.primary};
       color: ${theme.colors.white};
     `}
+
+  &:disabled {
+    color: ${theme.colors["grey-200"]};
+    cursor: default;
+  }
 `;

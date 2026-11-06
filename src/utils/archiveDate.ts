@@ -23,3 +23,18 @@ export function getArchiveDateInMonth(
     ? new Date(today.getFullYear(), today.getMonth(), today.getDate())
     : candidate;
 }
+
+/** 날짜가 아닌 월 단위로 미래 이동을 검사한다. */
+export function isFutureArchiveMonth(date: Date, today = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth(), 1).getTime() >
+    new Date(today.getFullYear(), today.getMonth(), 1).getTime();
+}
+
+/** 연도 이동 시 올해의 미래 월은 현재 월로 보정하고 미래 연도는 차단한다. */
+export function getArchiveMonthInYear(baseMonth: Date, year: number, today = new Date()) {
+  if (year > today.getFullYear()) return null;
+  const month = year === today.getFullYear()
+    ? Math.min(baseMonth.getMonth(), today.getMonth())
+    : baseMonth.getMonth();
+  return new Date(year, month, 1);
+}
