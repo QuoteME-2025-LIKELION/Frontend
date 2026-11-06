@@ -3,7 +3,6 @@ import api from "@/api/api";
 export interface UpdateSettingsProfileRequest {
   nickname: string;
   introduction: string;
-  birthYear?: number;
   image?: File | null;
 }
 
@@ -51,7 +50,6 @@ export type SettingsProfileResponse = MyProfileResponse;
 function createProfileFormData({
   nickname,
   introduction,
-  birthYear,
   image,
 }: UpdateSettingsProfileRequest) {
   const formData = new FormData();
@@ -62,7 +60,7 @@ function createProfileFormData({
 
   formData.append(
     "data",
-    new Blob([JSON.stringify({ nickname, introduction, birthYear })], {
+    new Blob([JSON.stringify({ nickname, introduction })], {
       type: "application/json",
     })
   );
@@ -74,7 +72,7 @@ function createProfileFormData({
  * 프로필 관련 API 함수 분리
  */
 export const profileApi = {
-  setupProfile: (payload: SetupProfileRequest) =>
+  setupProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
   getMyProfile: () => api.get<MyProfileResponse>("/api/profile"),
   getOtherProfile: (memberId: number | string) =>

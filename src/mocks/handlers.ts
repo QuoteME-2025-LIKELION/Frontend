@@ -1,10 +1,22 @@
 import { http, HttpResponse } from "msw";
 
 import type { FriendRequest } from "@/api/friendApi";
+import type { AccountProfileResponse, UpdateAccountRequest } from "@/api/profileApi";
 import type { QuoteTag } from "@/types/feed.type";
 import type { Notification } from "@/types/notification.type";
 
 const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
+
+let mockAccountInfo: AccountProfileResponse = {
+  gender: "MALE",
+  birthYear: "2000",
+  email: "guest@quoteme.com",
+  provider: "GOOGLE",
+  linkedAccounts: [
+    { provider: "GOOGLE", linkedAt: "2026-03-01T10:00:00" },
+    { provider: "KAKAO", linkedAt: "2026-03-02T10:00:00" },
+  ],
+};
 
 let mockNotificationSettings = {
   groupEnabled: true,
@@ -583,22 +595,17 @@ export const handlers = [
     });
   }),
 
-  http.get("/api/profile/account", () => {
-    return HttpResponse.json({
-      gender: "MALE",
-      birthYear: 2000,
-      email: "guest@quoteme.com",
-      provider: "GOOGLE",
-      linkedAccounts: [
-        { provider: "GOOGLE", linkedAt: "2026-03-01T10:00:00" },
-        { provider: "KAKAO", linkedAt: "2026-03-02T10:00:00" },
-      ],
-    });
-  }),
+  http.get("/api/profile/account", () => HttpResponse.json(mockAccountInfo)),
 
   http.put("/api/profile/account", async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json(body);
+    const body = (await request.json()) as Partial<UpdateAccountRequest>;
+    if (!body.email || !/^\d{4}$/.test(body.birthYear ?? "") ||
+        Number(body.birthYear) < 1900 || Number(body.birthYear) > new Date().getFullYear() ||
+        !["MALE", "FEMALE", "ETC"].includes(body.gender ?? "")) {
+      return HttpResponse.json({ message: "계정 정보를 확인해 주세요." }, { status: 400 });
+    }
+    mockAccountInfo = { ...mockAccountInfo, ...body };
+    return HttpResponse.json("계정 정보가 수정되었습니다.");
   }),
 
   http.delete("/api/profile/account", () => {

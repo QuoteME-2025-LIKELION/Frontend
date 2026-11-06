@@ -7,6 +7,7 @@ import {
   type UpdateSettingsProfileRequest,
   type UpdateAccountRequest,
 } from "@/api/profileApi";
+import { saveSignupProfile } from "@/utils/saveSignupProfile";
 
 export const profileQueryKeys = {
   all: ["profile"] as const,
@@ -81,11 +82,10 @@ export function useSetupProfileMutation() {
 
   return useMutation({
     mutationFn: (payload: SetupProfileRequest) =>
-      profileApi.setupProfile(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() });
-      queryClient.invalidateQueries({ queryKey: profileQueryKeys.settings() });
-    },
+      saveSignupProfile(payload, profileApi),
+    retry: false,
+    // 두 저장 중 하나만 성공해도 실제 계정/프로필 상태를 다시 불러온다.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileQueryKeys.all }),
   });
 }
 
