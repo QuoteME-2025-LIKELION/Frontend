@@ -334,7 +334,7 @@ type MockGroupJoinRequest = {
   requestId: number;
   requesterId: number;
   requesterNickname: string;
-  requesterProfileImageUrl?: string;
+  requesterProfileImage?: string;
   createdAt: string;
 };
 
@@ -344,7 +344,7 @@ const mockGroupJoinRequestsByGroupId: Record<number, MockGroupJoinRequest[]> = {
       requestId: 5,
       requesterId: 10,
       requesterNickname: "신규신청자",
-      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      requesterProfileImage: MOCK_PROFILE_IMAGE,
       createdAt: "2025-11-07T10:00:00",
     },
   ],
@@ -353,7 +353,7 @@ const mockGroupJoinRequestsByGroupId: Record<number, MockGroupJoinRequest[]> = {
       requestId: 6,
       requesterId: 11,
       requesterNickname: "정원확인",
-      requesterProfileImageUrl: MOCK_PROFILE_IMAGE,
+      requesterProfileImage: MOCK_PROFILE_IMAGE,
       createdAt: "2025-11-07T10:10:00",
     },
   ],
@@ -770,7 +770,7 @@ export const handlers = [
       nickname: joinRequest.request.requesterNickname,
       role: "MEMBER",
       introduction: "그룹 가입 요청으로 합류했어요",
-      profileImage: joinRequest.request.requesterProfileImageUrl ?? "",
+      profileImage: joinRequest.request.requesterProfileImage ?? "",
     });
     group.memberCount = group.members.length;
     mockGroupJoinRequestsByGroupId[joinRequest.groupId].splice(

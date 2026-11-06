@@ -31,9 +31,9 @@ export default function GroupJoinRequestSection({
 
           return (
             <S.RequestItem key={request.requestId}>
-              {request.requesterProfileImageUrl ? (
+              {request.requesterProfileImage ? (
                 <S.RequestProfileImg
-                  src={request.requesterProfileImageUrl}
+                  src={request.requesterProfileImage}
                   alt={`${request.requesterNickname} 프로필 이미지`}
                 />
               ) : (

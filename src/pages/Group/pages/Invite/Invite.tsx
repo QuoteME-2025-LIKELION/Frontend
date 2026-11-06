@@ -64,7 +64,7 @@ export default function Invite() {
       sentInvitations.map((invitation) => ({
         id: invitation.requesterId,
         nickname: invitation.requesterNickname,
-        profileImage: invitation.requesterProfileImageUrl,
+        profileImage: invitation.requesterProfileImage ?? undefined,
         introduction: invitation.requesterIntroduction,
       })),
     [sentInvitations]
