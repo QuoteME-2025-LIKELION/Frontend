@@ -3,9 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   quoteApi,
   type CreateQuoteRequest,
+  type QuoteTagRequest,
   type UpdateQuoteTagsRequest,
 } from "@/api/quoteApi";
 import { normalizeAiUsage } from "@/utils/aiUsage";
+import { saveQuoteTags } from "@/utils/saveQuoteTags";
 
 export const quoteQueryKeys = {
   all: ["quotes"] as const,
@@ -241,5 +243,25 @@ export function useUnbookmarkQuoteMutation() {
       queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all });
       queryClient.invalidateQueries({ queryKey: ["archives"] });
     },
+  });
+}
+
+/** 체크한 태그를 저장하고 선택하지 않은 요청은 대기로 남긴다. */
+export function useSaveQuoteTagsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ quoteId, selectedIds, requests }: {
+      quoteId: number; selectedIds: number[]; requests: QuoteTagRequest[];
+    }) => saveQuoteTags(
+      selectedIds, requests,
+      (requestId) => quoteApi.acceptTagRequest(requestId),
+      (taggedMemberIds) => quoteApi.updateTags(quoteId, { taggedMemberIds })
+    ),
+    // 여러 요청은 하나의 트랜잭션이 아니므로 부분 실패 시에도 서버 상태를 다시 조회한다.
+    onSettled: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: quoteQueryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: ["archives"] }),
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    ]),
   });
 }

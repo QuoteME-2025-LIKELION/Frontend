@@ -297,7 +297,10 @@ const mockQuoteTagRequestsByQuoteId: Record<
     requesterName: string;
   }>
 > = {
-  1: [{ requestId: 101, requesterId: 2, requesterName: "라라진" }],
+  1: [
+    { requestId: 101, requesterId: 2, requesterName: "라라진" },
+    { requestId: 102, requesterId: 8, requesterName: "기록친구" },
+  ],
 };
 let mockMyQuoteTags: QuoteTag[] = [
   { memberId: 91, nickname: "뮤랄라", profileImage: MOCK_PROFILE_IMAGE },
@@ -827,6 +830,9 @@ export const handlers = [
       summary?: string | null;
       taggedMemberIds?: number[];
     };
+    if ((body.taggedMemberIds ?? []).some((id) => id === 1 || !mockFriendIds.includes(id))) {
+      return HttpResponse.json({ message: "수락된 친구만 태그할 수 있습니다." }, { status: 400 });
+    }
     const taggedMemberNames = (body.taggedMemberIds || [])
       .map((id) => getMockMember(id)?.nickname)
       .filter(Boolean);
@@ -940,6 +946,11 @@ export const handlers = [
   // ==========================================
   http.patch("/api/quotes/:quoteId/tags", async ({ request }) => {
     const body = (await request.json()) as { taggedMemberIds?: number[] };
+    if ((body.taggedMemberIds ?? []).some((id) =>
+      id === 1 || (!mockFriendIds.includes(id) && !mockMyQuoteTags.some((tag) => tag.memberId === id))
+    )) {
+      return HttpResponse.json({ message: "새 태그는 수락된 친구만 가능합니다." }, { status: 400 });
+    }
     mockMyQuoteTags = (body.taggedMemberIds ?? []).flatMap((id) => {
       const existing = mockMyQuoteTags.find((tag) => tag.memberId === id);
       const member = getMockMember(id);
@@ -950,6 +961,26 @@ export const handlers = [
 
     return HttpResponse.json(body);
   }),
+
+  ...(["accept", "reject"] as const).map((action) =>
+    http.post(`/api/quotes/requests/:requestId/${action}`, ({ params }) => {
+      const entry = Object.entries(mockQuoteTagRequestsByQuoteId).find(([, requests]) =>
+        requests.some((request) => request.requestId === Number(params.requestId))
+      );
+      if (!entry) return new HttpResponse(null, { status: 404 });
+      const [quoteId, requests] = entry;
+      const request = requests.find((item) => item.requestId === Number(params.requestId))!;
+      if (action === "accept" && Number(quoteId) === 1 && !mockMyQuoteTags.some((tag) => tag.memberId === request.requesterId)) {
+        mockMyQuoteTags.push({
+          memberId: request.requesterId,
+          nickname: request.requesterName,
+          profileImage: getMockMember(request.requesterId)?.profileImage ?? null,
+        });
+      }
+      mockQuoteTagRequestsByQuoteId[Number(quoteId)] = requests.filter((item) => item.requestId !== request.requestId);
+      return HttpResponse.json({ resultCode: "200-1", message: "처리되었습니다.", data: null });
+    })
+  ),
 
   http.post("/api/quotes/:quoteId/tag-request", ({ params }) => {
     const quoteId = Number(params.quoteId);
