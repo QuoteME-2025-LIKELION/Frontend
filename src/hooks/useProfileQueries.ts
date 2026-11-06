@@ -7,6 +7,8 @@ import {
   type UpdateSettingsProfileRequest,
   type UpdateAccountRequest,
 } from "@/api/profileApi";
+import useAuthStore from "@/stores/useAuthStore";
+import { getSessionCheckDelay } from "@/utils/accessTokenExpiry";
 import { saveSignupProfile } from "@/utils/saveSignupProfile";
 
 export const profileQueryKeys = {
@@ -21,13 +23,24 @@ export const profileQueryKeys = {
 /**
  * 현재 로그인한 내 프로필 정보 조회
  */
-export function useMyProfileQuery() {
+export function useMyProfileQuery(verifySession = false) {
+  const { isAuthenticated, isLoading, accessTokenExpiresAt } = useAuthStore();
   return useQuery({
     queryKey: profileQueryKeys.my(),
-    queryFn: async () => {
-      const res = await profileApi.getMyProfile();
+    queryFn: async ({ signal }) => {
+      const res = await profileApi.getMyProfile(signal);
+      if (!res.data || !Number.isSafeInteger(res.data.id) || res.data.id <= 0 ||
+          typeof res.data.nickname !== "string") {
+        throw new Error("Invalid profile response");
+      }
       return res.data;
     },
+    enabled: !isLoading && isAuthenticated,
+    retry: verifySession ? false : 1,
+    refetchOnMount: verifySession ? "always" : true,
+    refetchOnWindowFocus: verifySession ? "always" : false,
+    refetchOnReconnect: verifySession ? "always" : true,
+    refetchInterval: verifySession ? () => getSessionCheckDelay(accessTokenExpiresAt) : false,
   });
 }
 

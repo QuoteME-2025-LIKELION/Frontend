@@ -77,7 +77,7 @@ test('permission errors, login errors and network errors do not refresh or log o
     return config.url === '/api/auth/login' ? unauthorized : { status: 403, data: { resultCode: '403-2' } };
   });
   await assert.rejects(api.post('/api/auth/login'));
-  await assert.rejects(api.get('/api/profile'));
+  await assert.rejects(api.get('/api/groups/1/join-requests'));
   await assert.rejects(api.get('/network'));
   assert.equal(state.token, 'old');
   assert.equal(state.logouts, 0);
@@ -142,4 +142,31 @@ test('late failure from old token reuses new token without another refresh', asy
   release();
   assert.equal((await slow).data, 'ok');
   assert.equal(state.refreshes, 1);
+});
+
+test('own-profile 403 without resultCode cannot leave an invalid session authenticated', async () => {
+  const { api, state } = fixture(async (config, state) => {
+    if (config.url === '/api/auth/refresh') {
+      state.refreshes++;
+      assert.equal(config.timeout, 15_000);
+      return unauthorized;
+    }
+    return { status: 403, data: { message: 'Forbidden' } };
+  });
+  await assert.rejects(api.get('/api/profile'));
+  assert.equal(state.refreshes, 1);
+  assert.equal(state.logouts, 1);
+  assert.equal(state.token, null);
+});
+
+test('Spring authentication-required message is recognized without swallowing permission errors', async () => {
+  const { api, state } = fixture(async config => {
+    if (config.url === '/api/auth/refresh') return renewed;
+    if (config.headers.Authorization === 'Bearer old') return {
+      status: 403, data: { message: '/api/groups, Full authentication is required to access this resource' },
+    };
+    return { data: 'ok' };
+  });
+  assert.equal((await api.get('/api/groups/me')).data, 'ok');
+  assert.equal(state.logouts, 0);
 });

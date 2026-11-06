@@ -21,7 +21,7 @@ export function createSessionApi(
 ) {
   const api = axios.create(defaults);
   // 인터셉터를 분리해 재발급 요청 자체의 재시도를 방지한다.
-  const refreshApi = axios.create(defaults);
+  const refreshApi = axios.create({ ...defaults, timeout: defaults.timeout || 15_000 });
   const refreshes = new Map<number, Promise<void>>();
 
   const refresh = (version: number) => {
@@ -72,9 +72,14 @@ export function createSessionApi(
       const config = error.config as SessionConfig;
       const status = error.response?.status;
       const data = error.response?.data;
+      const path = new URL(config.url ?? "", "http://localhost").pathname;
+      const isOwnProfile = config.method === "get" && path === "/api/profile";
       const isUnauthenticated = status === 401 || (
-        status === 403 &&
-        (data?.resultCode === "403-1" || data?.message === "403-1")
+        status === 403 && (
+          data?.resultCode === "403-1" || data?.message === "403-1" ||
+          (typeof data?.message === "string" && data.message.includes("Full authentication is required")) ||
+          isOwnProfile
+        )
       );
       // 잘못된 로그인 및 로그아웃 실패를 재발급 대상으로 취급하지 않는다.
       const isAuthRequest = /\/api\/auth(?:\/|$)/.test(config.url ?? "");

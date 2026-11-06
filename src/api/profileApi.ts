@@ -74,7 +74,8 @@ function createProfileFormData({
 export const profileApi = {
   setupProfile: (payload: UpdateSettingsProfileRequest) =>
     api.put("/api/profile", createProfileFormData(payload)),
-  getMyProfile: () => api.get<MyProfileResponse>("/api/profile"),
+  getMyProfile: (signal?: AbortSignal) =>
+    api.get<MyProfileResponse>("/api/profile", { signal, timeout: 15_000 }),
   getOtherProfile: (memberId: number | string) =>
     api.get<MyProfileResponse>(`/api/profile/${memberId}`),
   getSettingsProfile: () => api.get<SettingsProfileResponse>("/api/profile"),
