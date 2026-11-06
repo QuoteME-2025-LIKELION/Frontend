@@ -12,6 +12,7 @@ import {
   useSettingsProfileQuery,
   useUpdateSettingsProfileMutation,
 } from "@/hooks/useProfileQueries";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 
 import * as S from "./ProfileCenter.styles";
@@ -60,8 +61,8 @@ export default function ProfileCenter() {
   const currentPreview = preview ?? profile?.imageUrl ?? null;
   const trimmedNickname = currentNickname.trim();
   const isNicknameEmpty = Boolean(profile) && trimmedNickname.length === 0;
-  const isNicknameTooLong = currentNickname.length > NICKNAME_MAX_LENGTH;
-  const isIntroTooLong = currentIntro.length > INTRO_MAX_LENGTH;
+  const isNicknameTooLong = countCodePoints(currentNickname) > NICKNAME_MAX_LENGTH;
+  const isIntroTooLong = countCodePoints(currentIntro) > INTRO_MAX_LENGTH;
   const hasChanges =
     trimmedNickname !== (profile?.nickname ?? "") ||
     currentIntro !== (profile?.intro ?? "") ||
@@ -231,11 +232,10 @@ export default function ProfileCenter() {
                   aria-describedby={nicknameMetaId}
                   aria-invalid={isNicknameEmpty || isNicknameTooLong}
                   value={currentNickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  {...codePointInputProps(setNickname, NICKNAME_MAX_LENGTH)}
                   placeholder="닉네임"
                   type="text"
                   name="nickname"
-                  maxLength={NICKNAME_MAX_LENGTH}
                   required
                 />
               </S.Field>
@@ -250,7 +250,7 @@ export default function ProfileCenter() {
           >
             {isNicknameEmpty && <span>닉네임을 비워둘 수 없어요.</span>}
             <span>
-              {currentNickname.length}자/{NICKNAME_MAX_LENGTH}자
+              {countCodePoints(currentNickname)}자/{NICKNAME_MAX_LENGTH}자
             </span>
           </S.FieldMeta>
           <S.TextName id={introLabelId}>자기소개</S.TextName>
@@ -260,11 +260,10 @@ export default function ProfileCenter() {
                 aria-labelledby={introLabelId}
                 aria-invalid={isIntroTooLong}
                 value={currentIntro}
-                onChange={(e) => setIntro(e.target.value)}
+                {...codePointInputProps(setIntro, INTRO_MAX_LENGTH)}
                 placeholder="자기소개"
                 type="text"
                 name="intro"
-                maxLength={INTRO_MAX_LENGTH}
                 required
               />
             </S.Field>

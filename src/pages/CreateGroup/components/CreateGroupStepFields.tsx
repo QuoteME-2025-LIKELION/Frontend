@@ -1,6 +1,7 @@
 import { useId } from "react";
 
 import Input from "@/components/Input/Input";
+import { codePointInputProps } from "@/utils/codePoint";
 
 import * as S from "../CreateGroup.styles";
 
@@ -58,8 +59,7 @@ export default function CreateGroupStepFields({
                 placeholder="그룹 이름을 입력해 주세요"
                 required={true}
                 value={groupName}
-                onChange={(e) => onChangeGroupName(e.target.value)}
-                maxLength={10}
+                {...codePointInputProps(onChangeGroupName, 10)}
               />
               {isGroupNameInvalid ? (
                 <S.ErrorMsg id={metaId}>그룹명을 입력해주세요.</S.ErrorMsg>
@@ -86,8 +86,7 @@ export default function CreateGroupStepFields({
                 aria-describedby={`${helpId} ${metaId}`}
                 placeholder="그룹 메시지를 자유롭게 적어주세요"
                 value={motto}
-                onChange={(e) => onChangeMotto(e.target.value)}
-                maxLength={20}
+                {...codePointInputProps(onChangeMotto, 20)}
               />
               <div id={metaId}>20자 이내</div>
             </S.InputBox>

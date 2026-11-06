@@ -10,6 +10,7 @@ import {
   useGroupQuery,
   useUpdateGroupMottoMutation,
 } from "@/hooks/useGroupQueries";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 
 import * as S from "./ChangeMessage.styles";
 
@@ -97,7 +98,7 @@ export default function ChangeMessage() {
   const handleSave = async () => {
     const newMotto = message.trim();
 
-    if (newMotto.length > 20) {
+    if (countCodePoints(newMotto) > 20) {
       setErrorMessage("메시지는 20자 이내로 입력해 주세요.");
       setShowErrorToast(true);
       return;
@@ -185,18 +186,17 @@ export default function ChangeMessage() {
               placeholder="어떤 이야기를 나눌까요?"
               name="message"
               value={message}
-              onChange={(e) => {
-                setDraftMessage(e.target.value);
+              {...codePointInputProps((value) => {
+                setDraftMessage(value);
                 setHasStartedEditing(true);
-              }}
+              }, 20)}
               onFocus={() => setIsMessageFocused(true)}
               onBlur={() => setIsMessageFocused(false)}
-              maxLength={20}
             />
             <S.QuoteMark aria-hidden="true">”</S.QuoteMark>
           </S.MessageField>
           {isMessageFocused && (
-            <S.Desc id={messageMetaId}>{message.length}자/20자</S.Desc>
+            <S.Desc id={messageMetaId}>{countCodePoints(message)}자/20자</S.Desc>
           )}
         </S.Content>
         <S.BottomActionBar>

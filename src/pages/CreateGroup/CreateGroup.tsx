@@ -12,6 +12,7 @@ import {
   useInviteGroupMemberMutation,
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
+import { countCodePoints } from "@/utils/codePoint";
 
 import CreateGroupInviteStep from "./components/CreateGroupInviteStep";
 import CreateGroupStepFields from "./components/CreateGroupStepFields";
@@ -108,14 +109,14 @@ export default function CreateGroup() {
       return false;
     }
 
-    if (groupName.length > 10) {
+    if (countCodePoints(groupName) > 10) {
       setErrorMessage("그룹명은 10자 이내로");
       setErrorMessage3("입력해 주세요.");
       setShowErrorToast(true);
       return false;
     }
 
-    if (motto.length > 20) {
+    if (countCodePoints(motto) > 20) {
       setErrorMessage("메시지는 20자 이내로");
       setErrorMessage3("입력해 주세요.");
       setShowErrorToast(true);

@@ -7,6 +7,7 @@ import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
 import theme from "@/styles/theme";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 
 import * as S from "./Profile.styles";
@@ -158,12 +159,11 @@ export default function Profile() {
                     setTouched((previous) => ({ ...previous, nickname: true }))
                   }
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  {...codePointInputProps(setNickname, 10)}
                   placeholder="닉네임을 입력해 주세요"
                   type="text"
                   name="nickname"
                   autoComplete="nickname"
-                  maxLength={10}
                   required
                 />
                 <S.VisuallyHidden id="profile-nickname-limit">
@@ -203,11 +203,10 @@ export default function Profile() {
                     setTouched((previous) => ({ ...previous, intro: true }))
                   }
                   value={intro}
-                  onChange={(e) => setIntro(e.target.value)}
+                  {...codePointInputProps(setIntro, 20)}
                   placeholder="자기소개를 입력해주세요"
                   type="text"
                   name="intro"
-                  maxLength={20}
                   required
                 />
 
@@ -220,7 +219,7 @@ export default function Profile() {
                       자기소개를 입력해 주세요.
                     </S.ErrorMessage>
                   )}
-                  <S.LimitText>{intro.length}/20자</S.LimitText>
+                  <S.LimitText>{countCodePoints(intro)}/20자</S.LimitText>
                 </S.FieldMeta>
               </S.Field>
             </>

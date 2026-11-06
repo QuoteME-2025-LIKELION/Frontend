@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
 import type { AiRequestState } from "@/utils/aiUsage";
+import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 
 import * as S from "./WriteBox.styles";
 
@@ -51,8 +52,9 @@ export default function WriteBox({
   ];
   const day = dayNames[today.getDay()];
   const trimmedText = value.trim();
+  const trimmedLength = countCodePoints(trimmedText);
   const canUseAi =
-    trimmedText.length > 0 &&
+    trimmedLength > 0 &&
     aiRequestState !== "loading" &&
     aiRequestState !== "exhausted";
   const aiButtonLabel = {
@@ -61,8 +63,8 @@ export default function WriteBox({
     exhausted: "오늘 추천 횟수 소진",
     available: "AI 추천 받기",
   }[aiRequestState];
-  const canGoNext = trimmedText.length > 0 && trimmedText.length <= 30;
-  const isShortAiText = trimmedText.length <= 15;
+  const canGoNext = trimmedLength > 0 && trimmedLength <= 30;
+  const isShortAiText = trimmedLength <= 15;
   const handleAiClick = () => {
     if (!canUseAi) return;
     if (aiRequestState === "unavailable") {
@@ -127,14 +129,13 @@ export default function WriteBox({
                 : countId
             }
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            {...codePointInputProps(onChange, 50)}
             readOnly={isRecommendMode || isResultMode}
             placeholder={
               isResultMode
                 ? ""
                 : "오늘 있었던 일을 바탕으로\n나만의 명언을 남겨보세요."
             }
-            maxLength={50}
           />
           <S.LineWrap>
             <S.Line />
@@ -142,7 +143,7 @@ export default function WriteBox({
             <S.Line />
           </S.LineWrap>
         </S.WriteBox>
-        <S.CountText id={countId}>{value.length}자/50자</S.CountText>
+        <S.CountText id={countId}>{countCodePoints(value)}자/50자</S.CountText>
       </S.Container>
       {!isRecommendMode && !isResultMode && (
         <S.WriteBody>
