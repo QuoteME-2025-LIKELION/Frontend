@@ -497,6 +497,23 @@ function getMockFeedQuotes(groupIdParam: string | null) {
     }));
 }
 
+const mockGroupInvitations = [
+  {
+    requestId: 1,
+    groupId: 2,
+    groupName: "무니니",
+    inviterNickname: "라라진",
+    createdAt: "2025-11-07T10:00:00",
+  },
+  {
+    requestId: 2,
+    groupId: 3,
+    groupName: "문장수집가",
+    inviterNickname: "조니님",
+    createdAt: "2025-11-07T10:05:00",
+  },
+];
+
 export const handlers = [
   // ==========================================
   // 1. 인증 (Auth)
@@ -717,22 +734,7 @@ export const handlers = [
   }),
 
   http.get("/api/groups/invitations", () => {
-    return HttpResponse.json([
-      {
-        requestId: 1,
-        groupId: 2,
-        groupName: "무니니",
-        inviterNickname: "라라진",
-        createdAt: "2025-11-07T10:00:00",
-      },
-      {
-        requestId: 2,
-        groupId: 3,
-        groupName: "문장수집가",
-        inviterNickname: "조니님",
-        createdAt: "2025-11-07T10:05:00",
-      },
-    ]);
+    return HttpResponse.json(mockGroupInvitations);
   }),
 
   http.get("/api/groups/:groupId", ({ params }) => {
@@ -761,7 +763,15 @@ export const handlers = [
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/groups/invitations/:requestId/accept", () => {
+  http.post("/api/groups/invitations/:requestId/accept", ({ params }) => {
+    const invitation = mockGroupInvitations.find((item) => item.requestId === Number(params.requestId));
+    const group = mockGroups.find((item) => item.id === invitation?.groupId);
+    if (group && group.members.length >= 5) {
+      return HttpResponse.json(
+        { resultCode: "400", message: "400-1 - 최대 인원 5명이 가득 차 들어갈 수 없어요", data: null, statusCode: 400 },
+        { status: 400 }
+      );
+    }
     return new HttpResponse(null, { status: 200 });
   }),
 

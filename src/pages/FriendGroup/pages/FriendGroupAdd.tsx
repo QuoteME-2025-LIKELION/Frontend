@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +25,7 @@ import {
 } from "@/hooks/useGroupQueries";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
+import { getGroupInvitationErrorMessage } from "@/utils/groupInvitationError";
 
 import FriendListSection from "../components/FriendListSection";
 import FriendRequestSection from "../components/FriendRequestSection";
@@ -222,7 +224,10 @@ export default function FriendGroupAdd() {
         setResponseToastMessage("그룹 초대를 수락했습니다.");
       } catch (err) {
         console.error("그룹 초대 수락 처리 중 오류:", err);
-        setErrorMessage("그룹 초대 수락에 실패했습니다.");
+        setErrorMessage(getGroupInvitationErrorMessage(
+          axios.isAxiosError(err) ? err.response?.status : undefined,
+          axios.isAxiosError(err) ? err.response?.data : undefined
+        ));
         setShowErrorToast(true);
       } finally {
         setPendingGroupInvitationId(null);
