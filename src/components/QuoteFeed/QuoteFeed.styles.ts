@@ -45,7 +45,7 @@ export const DefaultProfileImg = styled.div`
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background-color: ${theme.colors.territory};
+  background: ${theme.colors.primary} url("/favicons/favicon-96x96.png") center / cover no-repeat;
 `;
 
 export const ProfileInfo = styled.div`

@@ -5,7 +5,7 @@ import type { AccountProfileResponse, UpdateAccountRequest } from "@/api/profile
 import type { QuoteTag } from "@/types/feed.type";
 import type { Notification } from "@/types/notification.type";
 
-const MOCK_PROFILE_IMAGE = "/favicons/favicon.svg";
+const MOCK_PROFILE_IMAGE = "/favicons/favicon-96x96.png";
 
 let mockAccountInfo: AccountProfileResponse = {
   gender: "MALE",

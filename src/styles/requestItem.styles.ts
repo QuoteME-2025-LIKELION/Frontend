@@ -24,7 +24,7 @@ export const RequestDefaultProfileImgBase = styled.div`
   width: 2.8125rem;
   height: 2.8125rem;
   border-radius: 50%;
-  background-color: ${theme.colors.territory};
+  background: ${theme.colors.primary} url("/favicons/favicon-96x96.png") center / cover no-repeat;
 `;
 
 export const RequestUserBoxBase = styled.div`

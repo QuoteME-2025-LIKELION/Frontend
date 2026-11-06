@@ -80,10 +80,11 @@ export function useUpdateSettingsProfileMutation() {
   return useMutation({
     mutationFn: (payload: UpdateSettingsProfileRequest) =>
       profileApi.updateSettingsProfile(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() });
-      queryClient.invalidateQueries({ queryKey: profileQueryKeys.settings() });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: profileQueryKeys.my() }),
+        queryClient.invalidateQueries({ queryKey: profileQueryKeys.settings() }),
+      ]),
   });
 }
 

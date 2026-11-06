@@ -4,9 +4,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
+import DefaultProfileImage from "@/components/DefaultProfileImage/DefaultProfileImage";
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useSettingsProfileQuery,
@@ -33,6 +35,7 @@ export default function ProfileCenter() {
 
   const { data } = useSettingsProfileQuery();
   const updateSettingsProfile = useUpdateSettingsProfileMutation();
+  const savingRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const profile = useMemo(
@@ -84,7 +87,7 @@ export default function ProfileCenter() {
   }, [preview]);
 
   const handleClickUpload = () => {
-    if (!isEditing) return;
+    if (!isEditing || savingRef.current) return;
 
     fileRef.current?.click();
   };
@@ -92,7 +95,7 @@ export default function ProfileCenter() {
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
+    if (!file || savingRef.current) return;
 
     const error = validateProfileImage(file);
     if (error) {
@@ -105,6 +108,8 @@ export default function ProfileCenter() {
   };
 
   const handleSave = async () => {
+    if (!canSave || savingRef.current) return;
+    savingRef.current = true;
     try {
       await updateSettingsProfile.mutateAsync({
         nickname: trimmedNickname,
@@ -126,6 +131,8 @@ export default function ProfileCenter() {
             ? "이미지 업로드에 실패했습니다."
             : "프로필 저장에 실패했습니다."
       );
+    } finally {
+      savingRef.current = false;
     }
   };
 
@@ -134,6 +141,7 @@ export default function ProfileCenter() {
   };
 
   const handleRequestExit = (path: string) => {
+    if (savingRef.current) return;
     if (isEditing && hasChanges) {
       setPendingPath(path);
       setShowExitModal(true);
@@ -161,7 +169,8 @@ export default function ProfileCenter() {
   return (
     <>
       <PageTitle title="프로필 관리" />
-      <S.Container>
+      <S.Container aria-busy={updateSettingsProfile.isPending}>
+        {updateSettingsProfile.isPending && <Spinner />}
         {toastMessage && (
           <ToastModal
             text={toastMessage}
@@ -195,7 +204,7 @@ export default function ProfileCenter() {
         <S.ProfileWrapper>
           <S.ImgPreview
             type="button"
-            disabled={!isEditing}
+            disabled={!isEditing || updateSettingsProfile.isPending}
             onClick={handleClickUpload}
             aria-label={isEditing ? "프로필 이미지 변경" : "프로필 이미지"}
             style={{
@@ -203,8 +212,11 @@ export default function ProfileCenter() {
                 ? `url(${currentPreview})`
                 : "none",
             }}
-          />
+          >
+            {!currentPreview && <DefaultProfileImage />}
+          </S.ImgPreview>
           <input
+            disabled={updateSettingsProfile.isPending}
             type="file"
             aria-label="프로필 이미지 파일 선택"
             accept={PROFILE_IMAGE_ACCEPT}
@@ -215,6 +227,7 @@ export default function ProfileCenter() {
           <S.ImgInput
             type="button"
             onClick={handleClickUpload}
+            disabled={updateSettingsProfile.isPending}
             $hidden={!isEditing}
             aria-hidden={!isEditing}
             tabIndex={isEditing ? 0 : -1}
@@ -231,6 +244,7 @@ export default function ProfileCenter() {
                   aria-labelledby={nicknameLabelId}
                   aria-describedby={nicknameMetaId}
                   aria-invalid={isNicknameEmpty || isNicknameTooLong}
+                  disabled={updateSettingsProfile.isPending}
                   value={currentNickname}
                   {...codePointInputProps(setNickname, NICKNAME_MAX_LENGTH)}
                   placeholder="닉네임"
@@ -259,6 +273,7 @@ export default function ProfileCenter() {
               <Input
                 aria-labelledby={introLabelId}
                 aria-invalid={isIntroTooLong}
+                disabled={updateSettingsProfile.isPending}
                 value={currentIntro}
                 {...codePointInputProps(setIntro, INTRO_MAX_LENGTH)}
                 placeholder="자기소개"
