@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
+import GuestRoute from "@/layouts/GuestRoute";
 import ProtectedRoute from "@/layouts/ProtectedRoute";
 import OAuthCallback from "@/OAuthCallback";
 import NotFound from "@/pages/NotFound/NotFound";
@@ -60,7 +61,9 @@ export default function AppRoutes() {
           {/* 인증 없이 접근 가능한 진입/인증 플로우 라우트 */}
           <Route path="/" element={<Start />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
           <Route path="/oauth2/callback" element={<OAuthCallback />} />
           <Route
             path="/account-delete-complete"

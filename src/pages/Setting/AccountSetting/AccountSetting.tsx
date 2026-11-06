@@ -7,12 +7,12 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import { useLogoutMutation } from "@/hooks/useAuthQueries";
 import useModalDialog from "@/hooks/useModalDialog";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
-import useAuthStore from "@/stores/useAuthStore";
 import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";
@@ -55,7 +55,7 @@ function formatBirthYear(year: number | null) {
 
 export default function AccountSetting() {
   const navigate = useNavigate();
-  const logout = useAuthStore((state) => state.logout);
+  const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
   const {
     data: accountProfile,
     isError: isAccountProfileError,
@@ -147,9 +147,15 @@ export default function AccountSetting() {
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch {
+      setShowLogoutConfirm(false);
+      setToastMessage("로그아웃에 실패했습니다. 다시 시도해 주세요.");
+    }
   };
 
   return (
@@ -171,6 +177,7 @@ export default function AccountSetting() {
             variant="card"
             onClose={() => setShowLogoutConfirm(false)}
             onConfirm={handleLogout}
+            confirmDisabled={isLoggingOut}
           />
         )}
         <Header
@@ -251,6 +258,7 @@ export default function AccountSetting() {
         <S.BottomActions>
           <S.LogoutButton
             type="button"
+            disabled={isLoggingOut}
             onClick={() => setShowLogoutConfirm(true)}
           >
             로그아웃

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -62,12 +62,10 @@ export function useSignUpMutation() {
  * 로그아웃 요청 후 전체 React Query 캐시 제거
  */
 export function useLogoutMutation() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
-      queryClient.clear();
+      useAuthStore.getState().logout();
     },
   });
 }

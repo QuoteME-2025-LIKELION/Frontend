@@ -508,7 +508,8 @@ export const handlers = [
 
   http.post("/api/auth/refresh", () => {
     return HttpResponse.json({
-      accessToken: "new-mock-access-token-67890",
+      resultCode: "200-1",
+      data: { accessToken: "new-mock-access-token-67890" },
     });
   }),
 

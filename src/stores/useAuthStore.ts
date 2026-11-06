@@ -1,11 +1,15 @@
 // src/stores/useAuthStore.ts
 import { create } from "zustand";
 
+import { queryClient } from "@/app/queryClient";
+import useNotificationStore from "@/stores/useNotificationStore";
 import { tokenStorage } from "@/utils/tokenStorage";
 
 interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
+  sessionVersion: number;
+  refreshAccessToken: (token: string) => void;
   login: (token: string) => void;
   logout: () => void;
   initializeAuth: () => void; // 앱 초기 로딩 시 토큰 확인
@@ -16,7 +20,8 @@ interface AuthState {
  * - isAuthenticated: 토큰이 유효하여 인증되었는지 여부
  * - isLoading: 앱 초기화 시 토큰을 확인하는 중인지 여부
  */
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create<AuthState>((set, get) => ({
+  sessionVersion: 0,
   isAuthenticated: false,
   isLoading: true, // 초기 로딩 상태는 true로 설정
 
@@ -32,14 +37,23 @@ const useAuthStore = create<AuthState>((set) => ({
 
   // 로그인 성공 시 토큰 저장 및 상태 업데이트
   login: (token) => {
+    queryClient.clear();
+    useNotificationStore.getState().setHasUnread(false);
     tokenStorage.setAccessToken(token);
-    set({ isAuthenticated: true, isLoading: false });
+    set({ isAuthenticated: true, isLoading: false, sessionVersion: get().sessionVersion + 1 });
   },
 
-  // 로그아웃 시 토큰 제거 및 상태 업데이트 (로그아웃 백엔드 API는 아직 미구현)
+  // 재발급은 계정 전환이 아니므로 캐시와 세션 버전을 유지한다.
+  refreshAccessToken: (token) => {
+    tokenStorage.setAccessToken(token);
+  },
+
+  // 로컬 세션 종료. 사용자 로그아웃은 서버 API 성공 후 호출한다.
   logout: () => {
+    queryClient.clear();
+    useNotificationStore.getState().setHasUnread(false);
     tokenStorage.removeAccessToken();
-    set({ isAuthenticated: false, isLoading: false });
+    set({ isAuthenticated: false, isLoading: false, sessionVersion: get().sessionVersion + 1 });
   },
 }));
 
