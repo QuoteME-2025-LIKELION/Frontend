@@ -17,9 +17,9 @@ const mutationKey = ["archive-bookmark"];
 const getQuoteId = (feed: ArchiveFeed) => feed.quoteId ?? feed.id;
 
 /** 아카이브 응답에 없는 북마크 상태를 북마크 목록의 명언 ID로 확인한다. */
-export function useArchiveBookmarks() {
+export function useArchiveBookmarks(month?: string) {
   const queryClient = useQueryClient();
-  const bookmarks = useBookmarkedArchivesQuery();
+  const bookmarks = useBookmarkedArchivesQuery(month);
   const pendingCount = useIsMutating({ mutationKey });
   const inFlight = useRef(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -31,17 +31,18 @@ export function useArchiveBookmarks() {
     }: {
       feed: ArchiveFeed;
       isBookmarked: boolean;
+      month?: string;
     }) => {
       const quoteId = getQuoteId(feed);
       if (isBookmarked) await quoteApi.unbookmarkQuote(quoteId);
       else await quoteApi.bookmarkQuote(quoteId);
     },
-    onSuccess: async (_, { feed, isBookmarked }) => {
+    onSuccess: async (_, { feed, isBookmarked, month: submittedMonth }) => {
       // 진행 중이던 조회가 성공한 변경을 오래된 목록으로 덮어쓰지 않게 한다.
       await queryClient.cancelQueries({ queryKey: archiveQueryKeys.all });
       const quoteId = getQuoteId(feed);
       queryClient.setQueryData<ArchiveFeed[]>(
-        archiveQueryKeys.bookmarks(),
+        archiveQueryKeys.bookmarks(submittedMonth),
         (previous) => {
           if (!previous) return previous;
           const remaining = previous.filter(
@@ -88,7 +89,7 @@ export function useArchiveBookmarks() {
           return;
         inFlight.current = true;
         try {
-          await mutation.mutateAsync({ feed, isBookmarked });
+          await mutation.mutateAsync({ feed, isBookmarked, month });
         } catch {
           // mutation의 onError에서 안내하며 실패 시 목록은 유지한다.
         } finally {

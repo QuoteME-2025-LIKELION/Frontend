@@ -37,10 +37,11 @@ export default function Archive() {
   const location = useLocation();
   const path = location.pathname.split("/").pop();
   const isCalendarTab = path === "archive";
+  const hasMonthNavigation = isCalendarTab || path === "my-quotes" || path === "bookmarks";
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
-  const monthDialogRef = useModalDialog(isMonthPickerOpen && isCalendarTab, {
+  const monthDialogRef = useModalDialog(isMonthPickerOpen && hasMonthNavigation, {
     initialFocusRef: selectedMonthRef,
   });
 
@@ -49,6 +50,7 @@ export default function Archive() {
     [currentMonth]
   );
   const selectedDateString = formatDateToYYYYMMDD(selectedDate);
+  const selectedMonthString = formatDateToYYYYMMDD(currentMonth).slice(0, 7);
   const todayString = formatDateToYYYYMMDD(new Date());
   const currentMonthText = `${currentMonth.getFullYear()}.${String(
     currentMonth.getMonth() + 1
@@ -149,7 +151,7 @@ export default function Archive() {
           <S.HeaderTitle>아카이브</S.HeaderTitle>
           <span />
         </S.TopBar>
-        {isCalendarTab && (
+        {hasMonthNavigation && (
           <S.MonthBar>
             <S.MonthButton
               type="button"
@@ -268,9 +270,9 @@ export default function Archive() {
               북마크
             </S.Btn>
           </S.Menu>
-          <Outlet context={{ onShare: executeShare, selectedDateString }} />
+          <Outlet context={{ onShare: executeShare, selectedDateString, selectedMonthString }} />
         </S.ContentArea>
-        {isCalendarTab && isMonthPickerOpen && (
+        {hasMonthNavigation && isMonthPickerOpen && (
           <S.MonthPickerOverlay
             ref={monthDialogRef}
             aria-label="월 선택"

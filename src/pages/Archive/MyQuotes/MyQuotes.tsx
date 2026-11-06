@@ -12,7 +12,11 @@ import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function MyQuotes() {
-  const { data: myQuotes = [], isSuccess } = useMyArchivesQuery();
+  const { onShare, selectedMonthString } = useOutletContext<ArchiveOutletContext>();
+  const { data: allMyQuotes = [], isSuccess } = useMyArchivesQuery();
+  const myQuotes = allMyQuotes.filter((quote) =>
+    (quote.createDate ?? quote.createdAt ?? "").slice(0, 7) === selectedMonthString
+  );
 
   const {
     getBookmarkProps,
@@ -29,8 +33,6 @@ export default function MyQuotes() {
     closeDateNavigationConfirm,
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
-
-  const { onShare } = useOutletContext<ArchiveOutletContext>();
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>

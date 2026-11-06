@@ -1,4 +1,5 @@
 export type ArchiveOutletContext = {
   onShare: (shareProcess: () => Promise<void>) => void;
   selectedDateString: string;
+  selectedMonthString: string;
 };

@@ -12,13 +12,14 @@ import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";
 
 export default function Bookmarks() {
+  const { onShare, selectedMonthString } = useOutletContext<ArchiveOutletContext>();
   const {
     getBookmarkProps,
     toastMessage,
     closeBookmarkToast,
     isBookmarkError,
     retryBookmarks,
-  } = useArchiveBookmarks();
+  } = useArchiveBookmarks(selectedMonthString);
   const feedRefs = useRef<(HTMLDivElement | null)[]>([]);
   const downloadElementImage = useElementImageDownload();
   const {
@@ -28,9 +29,7 @@ export default function Bookmarks() {
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
   const { data: bookmarkedFeeds = [], isSuccess } =
-    useBookmarkedArchivesQuery();
-
-  const { onShare } = useOutletContext<ArchiveOutletContext>();
+    useBookmarkedArchivesQuery(selectedMonthString);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
     const shareProcess = () =>

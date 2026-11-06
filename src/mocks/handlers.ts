@@ -319,6 +319,7 @@ let mockMyQuoteTags: QuoteTag[] = [
   { memberId: 92, nickname: "스페이스", profileImage: MOCK_PROFILE_IMAGE },
 ];
 let mockMyQuoteIsBookmarked = false;
+const mockArchiveBookmarkIds = new Set([6]);
 
 const mockMyTagRequestStatusByQuoteId: Record<
   number,
@@ -1033,6 +1034,7 @@ export const handlers = [
   // 7. 북마크 (Bookmark)
   // ==========================================
   http.post("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    mockArchiveBookmarkIds.add(Number(params.quoteId));
     if (Number(params.quoteId) === 1) {
       mockMyQuoteIsBookmarked = true;
     }
@@ -1044,6 +1046,7 @@ export const handlers = [
   }),
 
   http.delete("/api/quotes/:quoteId/bookmark", ({ params }) => {
+    mockArchiveBookmarkIds.delete(Number(params.quoteId));
     if (Number(params.quoteId) === 1) {
       mockMyQuoteIsBookmarked = false;
     }
@@ -1145,8 +1148,12 @@ export const handlers = [
     ]);
   }),
 
-  http.get("/api/archives/bookmarks", () => {
-    return HttpResponse.json([
+  http.get("/api/archives/bookmarks", ({ request }) => {
+    const month = new URL(request.url).searchParams.get("month");
+    if (month && !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      return HttpResponse.json({ message: "월 형식을 확인해 주세요." }, { status: 400 });
+    }
+    const bookmarks = [
       {
         id: 6,
         quoteId: 6,
@@ -1163,7 +1170,10 @@ export const handlers = [
         isBookmarked: true,
         isLiked: false,
       },
-    ]);
+    ];
+    return HttpResponse.json(bookmarks.filter((quote) =>
+      mockArchiveBookmarkIds.has(quote.id) && (!month || quote.createDate.slice(0, 7) === month)
+    ));
   }),
 
   // ==========================================
