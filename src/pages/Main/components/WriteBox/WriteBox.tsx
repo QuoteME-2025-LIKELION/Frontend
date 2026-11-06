@@ -4,6 +4,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
 import type { AiRequestState } from "@/utils/aiUsage";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
+import { getQuoteInputError } from "@/utils/quoteInput";
 
 import * as S from "./WriteBox.styles";
 
@@ -64,22 +65,26 @@ export default function WriteBox({
     available: "AI 추천 받기",
   }[aiRequestState];
   const canGoNext = trimmedLength > 0 && trimmedLength <= 30;
-  const isShortAiText = trimmedLength <= 15;
   const handleAiClick = () => {
     if (!canUseAi) return;
-    if (aiRequestState === "unavailable") {
-      onRetryAiUsage();
+    const error = getQuoteInputError(value, "ai");
+    if (error) {
+      setToastMessage(error);
       return;
     }
-
-    if (isShortAiText) {
-      setToastMessage("16자 이상부터 추천받을 수 있어요.");
+    if (aiRequestState === "unavailable") {
+      onRetryAiUsage();
       return;
     }
 
     onAI(value);
   };
   const handleSubmit = () => {
+    const error = getQuoteInputError(value, "quote");
+    if (error) {
+      setToastMessage(error);
+      return;
+    }
     onComplete({
       content: trimmedText,
       authorName: "", // 서버 저장 전이므로 비워도 됨

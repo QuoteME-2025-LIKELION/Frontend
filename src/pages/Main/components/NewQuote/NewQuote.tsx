@@ -13,6 +13,7 @@ import {
   useSaveQuoteTagsMutation,
 } from "@/hooks/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
+import { getQuoteInputError } from "@/utils/quoteInput";
 import { getTagCandidates, hasInvalidTagSelection } from "@/utils/quoteTags";
 
 import * as S from "./NewQuote.styles";
@@ -77,6 +78,17 @@ export default function NewQuote({
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    if (mode === "create") {
+      const error = getQuoteInputError(quote.content, "quote") ??
+        (typeof quote.originalContent === "string"
+          ? getQuoteInputError(quote.originalContent, "ai")
+          : null);
+      if (error) {
+        setErrorMessage(error);
+        setShowErrorToast(true);
+        return;
+      }
+    }
     if (!areFriendsReady || !isProfileReady || !myProfile) {
       setErrorMessage("친구와 내 정보를 불러온 뒤 다시 시도해 주세요.");
       setShowErrorToast(true);
