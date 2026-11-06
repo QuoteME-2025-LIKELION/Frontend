@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -9,13 +9,19 @@ import { useOAuthRedirect } from "@/hooks/useAuthQueries";
 import useModalDialog from "@/hooks/useModalDialog";
 import useAuthStore from "@/stores/useAuthStore";
 import theme from "@/styles/theme";
+import { getOAuthFailureMessage } from "@/utils/oauthCallback";
 
 import * as S from "./Start.styles";
 
 export default function Start() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const reason = searchParams.get("reason");
+  const oauthMessage = typeof location.state?.oauthMessage === "string"
+    ? location.state.oauthMessage : reason ? getOAuthFailureMessage(reason) : "";
   const redirectToOAuthProvider = useOAuthRedirect();
-  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(true);
 
   const { isAuthenticated, isLoading } = useAuthStore();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -53,10 +59,10 @@ export default function Start() {
   };
   useEffect(() => {
     // 인증 상태 로딩이 끝나고, 로그인된 상태라면 /home으로 이동
-    if (!isLoading && isAuthenticated) {
+    if (!isLoading && isAuthenticated && !(showErrorToast && oauthMessage)) {
       navigate("/home", { replace: true });
     }
-  }, [isLoading, isAuthenticated, navigate]);
+  }, [isLoading, isAuthenticated, navigate, showErrorToast, oauthMessage]);
 
   const handleSignup = (provider: string) => {
     redirectToOAuthProvider(provider, "signup");
@@ -67,18 +73,25 @@ export default function Start() {
   };
 
   // 로딩 중이거나 리디렉션 될 사용자에게는 페이지 내용을 보여주지 않음
-  if (isLoading || isAuthenticated) {
+  if (isLoading || (isAuthenticated && !(showErrorToast && oauthMessage))) {
     return <Spinner />;
   }
 
   return (
     <S.Container>
       <PageTitle title="시작" heading />
-      {showErrorToast && (
+      {showErrorToast && oauthMessage && (
         <ToastModal
           isVisible={showErrorToast}
-          onClose={() => setShowErrorToast(false)}
-          text="회원가입에 실패했습니다."
+          onClose={() => {
+            setShowErrorToast(false);
+            if (reason) {
+              const nextParams = new URLSearchParams(searchParams);
+              nextParams.delete("reason");
+              setSearchParams(nextParams, { replace: true });
+            }
+          }}
+          text={oauthMessage}
         />
       )}
       <S.TextBox>

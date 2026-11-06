@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -9,6 +9,7 @@ import {
   type SignUpRequest,
 } from "@/api/authApi";
 import useAuthStore from "@/stores/useAuthStore";
+import { resolveOAuthCallback } from "@/utils/oauthCallback";
 
 /**
  * OAuth provider 인증 페이지로 이동
@@ -26,18 +27,21 @@ export function useOAuthCallbackFlow() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const queryClient = useQueryClient();
+  const handled = useRef(false);
 
   useEffect(() => {
-    const token = searchParams.get("accessToken");
-
-    if (!token) {
-      navigate("/", { replace: true });
-      return;
-    }
-
-    login(token);
-    navigate("/profile", { replace: true });
-  }, [login, navigate, searchParams]);
+    if (isLoading || handled.current) return;
+    handled.current = true;
+    const result = resolveOAuthCallback(searchParams);
+    if (result.token) login(result.token);
+    if (result.linked) void queryClient.invalidateQueries({ queryKey: ["profile"] });
+    navigate(result.path, {
+      replace: true,
+      state: result.message ? { oauthMessage: result.message } : null,
+    });
+  }, [isLoading, login, navigate, queryClient, searchParams]);
 }
 
 /**

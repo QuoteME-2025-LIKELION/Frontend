@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import type { LinkedProvider } from "@/api/profileApi";
 import googleIcon from "@/assets/icons/account/google.png";
@@ -59,6 +59,7 @@ function formatBirthYear(year: number | null) {
 
 export default function AccountSetting() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
   const {
     data: accountProfile,
@@ -69,7 +70,9 @@ export default function AccountSetting() {
   const [genderDraft, setGenderDraft] = useState<GenderValue | null>(null);
   const [birthYearDraft, setBirthYearDraft] = useState<number | null>(null);
   const [sheetType, setSheetType] = useState<SheetType>(null);
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState(
+    typeof location.state?.oauthMessage === "string" ? location.state.oauthMessage : ""
+  );
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const sheetRef = useModalDialog(sheetType !== null);
   const selectedYearRef = useRef<HTMLButtonElement | null>(null);

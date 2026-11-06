@@ -1215,7 +1215,7 @@ export const handlers = [
   }),
 
   http.put("/api/notifications/settings", async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as Partial<typeof mockNotificationSettings>;
     mockNotificationSettings = { ...mockNotificationSettings, ...body };
     return HttpResponse.json(mockNotificationSettings);
   }),
