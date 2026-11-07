@@ -412,9 +412,9 @@ const findGroupJoinRequest = (requestId: number) => {
 };
 
 const mockAiUsage = {
-  usedCount: 1,
-  remainingCount: 2,
-  limitPerDay: 3,
+  used: 0,
+  remaining: 1,
+  limit: 1,
 };
 
 function getMockFeedQuotes(groupIdParam: string | null) {
@@ -888,16 +888,16 @@ export const handlers = [
   }),
 
   http.post("/api/quotes/summarize", () => {
-    if (mockAiUsage.remainingCount <= 0) {
+    if (mockAiUsage.remaining <= 0) {
       return HttpResponse.json(
-        { message: "하루 AI 추천 사용량을 초과했습니다." },
+        { resultCode: "429-1", message: "AI 추천은 하루 1회까지만 사용할 수 있습니다.", data: {} },
         { status: 429 }
       );
     }
 
-    mockAiUsage.usedCount += 1;
-    mockAiUsage.remainingCount = Math.max(
-      mockAiUsage.limitPerDay - mockAiUsage.usedCount,
+    mockAiUsage.used += 1;
+    mockAiUsage.remaining = Math.max(
+      mockAiUsage.limit - mockAiUsage.used,
       0
     );
 
