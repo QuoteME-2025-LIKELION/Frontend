@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { groupApi } from "@/api/groupApi";
+import { friendQueryKeys } from "@/hooks/useFriendQueries";
+import { notificationQueryKeys } from "@/hooks/useNotificationsQuery";
 
 export const groupQueryKeys = {
   all: ["groups"] as const,
   myGroups: () => [...groupQueryKeys.all, "my-groups"] as const,
   invitations: () => [...groupQueryKeys.all, "invitations"] as const,
+  sentJoinRequests: () => [...groupQueryKeys.all, "sent-join-requests"] as const,
   detail: (groupId: number | string) =>
     [...groupQueryKeys.all, "detail", String(groupId)] as const,
   joinRequests: (groupId: number | string) =>
@@ -13,6 +16,28 @@ export const groupQueryKeys = {
   sentInvitations: (groupId: number | string) =>
     [...groupQueryKeys.detail(groupId), "sent-invitations"] as const,
 };
+
+/** 내가 보낸 대기 중인 그룹 가입 신청 목록. 그룹장이 보낸 초대와 별개다. */
+export function useGroupSentJoinRequestsQuery(enabled = true) {
+  return useQuery({
+    queryKey: groupQueryKeys.sentJoinRequests(),
+    queryFn: async () => (await groupApi.getSentJoinRequests()).data,
+    enabled,
+  });
+}
+
+export function useCancelGroupJoinRequestMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (requestId: number) => groupApi.cancelJoinRequest(requestId),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all }),
+    ]),
+  });
+}
 
 /**
  * 내가 참여 중인 그룹 목록 조회
@@ -219,10 +244,11 @@ export function useRequestJoinGroupMutation() {
   return useMutation({
     mutationFn: (groupId: number | string) => groupApi.requestJoin(groupId),
     onSuccess: (_, groupId) => {
-      queryClient.invalidateQueries({
-        queryKey: groupQueryKeys.detail(groupId),
-      });
-      queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.detail(groupId) }),
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() }),
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.sentJoinRequests() }),
+      ]);
     },
   });
 }

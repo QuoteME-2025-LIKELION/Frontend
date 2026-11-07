@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { friendApi } from "@/api/friendApi";
+import { notificationQueryKeys } from "@/hooks/useNotificationsQuery";
 
 export const friendQueryKeys = {
   all: ["friends"] as const,
@@ -77,6 +78,19 @@ export function useRequestFriendMutation() {
     onSuccess: () => {
       return queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
     },
+  });
+}
+
+/** 본인이 보낸 대기 요청 취소 후 검색·요청·알림을 다시 조회한다. */
+export function useCancelFriendRequestMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (receiverId: number) => friendApi.cancelFriendRequest(receiverId),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all }),
+      queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all }),
+    ]),
   });
 }
 

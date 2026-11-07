@@ -36,6 +36,8 @@ export const friendApi = {
   requestFriend: (targetId: number) =>
     api.post(`/api/friends/request/${targetId}`),
   getFriendRequests: () => api.get<FriendRequest[]>("/api/friends/requests"),
+  cancelFriendRequest: (receiverId: number) =>
+    api.delete(`/api/friends/request/${receiverId}`),
   acceptFriendRequest: (requestId: number) =>
     api.post(`/api/friends/requests/${requestId}/accept`),
   rejectFriendRequest: (requestId: number) =>

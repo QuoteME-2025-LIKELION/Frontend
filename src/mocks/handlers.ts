@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 
 import type { FriendRequest } from "@/api/friendApi";
+import type { GroupJoinRequestSent } from "@/api/groupApi";
 import type { AccountProfileResponse, UpdateAccountRequest } from "@/api/profileApi";
 import type { QuoteTag } from "@/types/feed.type";
 import type { Notification } from "@/types/notification.type";
@@ -297,10 +298,14 @@ const createFriendRequest = (
   const member = getMockMember(senderId);
   return {
     requestId: 10 + index,
+    direction: "RECEIVED",
     senderId,
     senderNickname: member.nickname,
     senderProfileImage: member.profileImage,
     senderIntroduction: member.introduction,
+    receiverId: 1,
+    receiverNickname: "손지수",
+    receiverProfileImage: MOCK_PROFILE_IMAGE,
   };
 };
 let mockFriendRequests = mockFriendRequestIds.map(createFriendRequest);
@@ -361,6 +366,9 @@ const searchableGroups = [
     leaderNickname: "기록친구",
   },
 ];
+
+const mockSentJoinRequests: GroupJoinRequestSent[] = [];
+let nextSentJoinRequestId = 100;
 
 type MockGroupJoinRequest = {
   requestId: number;
@@ -684,6 +692,24 @@ export const handlers = [
     return HttpResponse.json(mockFriendRequests);
   }),
 
+  http.delete("/api/friends/request/:receiverId", ({ params }) => {
+    const receiverId = Number(params.receiverId);
+    const index = mockFriendRequests.findIndex(
+      (item) => item.direction === "SENT" && item.receiverId === receiverId
+    );
+    if (index < 0) {
+      const isReceived = mockFriendRequests.some(
+        (item) => item.direction === "RECEIVED" && item.senderId === receiverId
+      );
+      return HttpResponse.json(
+        { message: isReceived ? "내가 보낸 요청만 취소할 수 있습니다." : "요청을 찾을 수 없습니다." },
+        { status: isReceived ? 403 : 404 }
+      );
+    }
+    mockFriendRequests.splice(index, 1);
+    return HttpResponse.json({ resultCode: "200-1", message: "친구 요청이 취소되었습니다.", data: null });
+  }),
+
   http.post("/api/friends/requests/:requestId/accept", ({ params }) => {
     const item = mockFriendRequests.find(
       (request) =>
@@ -779,8 +805,41 @@ export const handlers = [
     return new HttpResponse(null, { status: 200 });
   }),
 
-  http.post("/api/groups/:groupId/join-request", () => {
-    return new HttpResponse(null, { status: 200 });
+  http.post("/api/groups/:groupId/join-request", ({ params }) => {
+    const groupId = Number(params.groupId);
+    const group = searchableGroups.find((item) => item.id === groupId);
+    if (mockGroups.some((item) => item.id === groupId)) {
+      return HttpResponse.json({ message: "이미 가입한 그룹입니다." }, { status: 400 });
+    }
+    if (!group) return new HttpResponse(null, { status: 404 });
+    if (mockSentJoinRequests.some((item) => item.groupId === groupId)) {
+      return HttpResponse.json({ message: "이미 가입 승인 대기 중입니다." }, { status: 400 });
+    }
+    mockSentJoinRequests.unshift({
+      requestId: nextSentJoinRequestId++,
+      groupId,
+      groupName: group.name,
+      requestedAt: new Date().toISOString(),
+    });
+    return HttpResponse.json({ resultCode: "200-1", message: "가입을 요청했습니다.", data: null });
+  }),
+
+  http.get("/api/groups/join-requests/sent", () => {
+    return HttpResponse.json(mockSentJoinRequests);
+  }),
+
+  http.delete("/api/groups/join-requests/:requestId", ({ params }) => {
+    const requestId = Number(params.requestId);
+    const index = mockSentJoinRequests.findIndex((item) => item.requestId === requestId);
+    if (index < 0) {
+      const isOtherRequest = findGroupJoinRequest(requestId) !== null;
+      return HttpResponse.json(
+        { message: isOtherRequest ? "권한이 없습니다." : "요청을 찾을 수 없습니다." },
+        { status: isOtherRequest ? 403 : 404 }
+      );
+    }
+    mockSentJoinRequests.splice(index, 1);
+    return HttpResponse.json({ resultCode: "200-1", message: "가입 신청이 취소되었습니다.", data: null });
   }),
 
   http.get("/api/groups/:groupId/join-requests", ({ params }) => {
