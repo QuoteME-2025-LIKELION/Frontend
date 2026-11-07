@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useAppVersionQuery } from "@/hooks/useAppVersionQuery";
 import useModalDialog from "@/hooks/useModalDialog";
 import theme from "@/styles/theme";
 
@@ -15,6 +16,7 @@ type HomeSideMenuProps = {
 };
 
 const CONTACT_EMAIL = "abc123456@gmail.com";
+const TERMS_PRIVACY_URL = import.meta.env.VITE_TERMS_PRIVACY_URL?.trim();
 
 export default function HomeSideMenu({
   active,
@@ -25,7 +27,28 @@ export default function HomeSideMenu({
 }: HomeSideMenuProps) {
   const navigate = useNavigate();
   const dialogRef = useModalDialog();
-  const [copyToastMessage, setCopyToastMessage] = useState("");
+  const { data: appVersion, isPending: isVersionPending, isError: isVersionError } =
+    useAppVersionQuery(active);
+  const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const toastSequence = useRef(0);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  const showToast = (message: string) => {
+    setToast({ id: ++toastSequence.current, message });
+  };
+
+  const handleOpenTerms = () => {
+    if (!TERMS_PRIVACY_URL) {
+      showToast("약관 문서가 아직 등록되지 않았어요.");
+      return;
+    }
+    window.open(TERMS_PRIVACY_URL, "_blank", "noopener,noreferrer");
+  };
 
   const handleCopyMail = async () => {
     try {
@@ -36,29 +59,26 @@ export default function HomeSideMenu({
         textArea.value = CONTACT_EMAIL;
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        const didCopy = document.execCommand("copy");
-        document.body.removeChild(textArea);
-
-        if (!didCopy) {
-          throw new Error("document.execCommand('copy') returned false");
+        const previousFocus = document.activeElement;
+        (dialogRef.current ?? document.body).appendChild(textArea);
+        try {
+          textArea.focus();
+          textArea.select();
+          if (!document.execCommand("copy")) {
+            throw new Error("document.execCommand('copy') returned false");
+          }
+        } finally {
+          textArea.remove();
+          if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+            previousFocus.focus({ preventScroll: true });
+          }
         }
       }
 
-      setCopyToastMessage("메일 주소가 복사되었습니다.");
-
-      setTimeout(() => {
-        setCopyToastMessage("");
-      }, 2000);
+      showToast("메일 주소가 복사되었습니다.");
     } catch (error) {
       console.error("메일 주소 복사 실패:", error);
-      setCopyToastMessage("메일 주소 복사에 실패했습니다.");
-
-      setTimeout(() => {
-        setCopyToastMessage("");
-      }, 2000);
+      showToast("메일 주소 복사에 실패했습니다.");
     }
   };
 
@@ -151,18 +171,30 @@ export default function HomeSideMenu({
             </S.ToggleBtn>
           </S.ToggleBtnBox>
           <S.ToggleInfoBox>
-            <S.ToggleInfoText>이용약관 및 개인정보 처리</S.ToggleInfoText>
+            <S.TermsButton type="button" onClick={handleOpenTerms}>
+              이용약관 및 개인정보 처리
+            </S.TermsButton>
             <S.ToggleInfoRow>
               <S.ToggleInfoText>문의</S.ToggleInfoText>
-              <S.CopyMailText type="button" onClick={handleCopyMail}>
+              <S.CopyMailText
+                type="button"
+                aria-label={`문의 이메일 ${CONTACT_EMAIL} 복사`}
+                onClick={handleCopyMail}
+              >
                 {CONTACT_EMAIL}
               </S.CopyMailText>
             </S.ToggleInfoRow>
-            <S.ToggleInfoText>버전 1.0</S.ToggleInfoText>
+            <S.ToggleInfoText aria-live="polite">
+              {isVersionError
+                ? "버전 확인 불가"
+                : isVersionPending
+                  ? "버전 확인 중"
+                  : `버전 ${appVersion.latestVersion}`}
+            </S.ToggleInfoText>
           </S.ToggleInfoBox>
         </S.Toggle>
-        {copyToastMessage && (
-          <S.CopyToast role="status">{copyToastMessage}</S.CopyToast>
+        {toast && (
+          <S.CopyToast key={toast.id} role="status">{toast.message}</S.CopyToast>
         )}
       </S.ToggleWrapper>
     </>

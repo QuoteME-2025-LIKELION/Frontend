@@ -523,6 +523,9 @@ const mockGroupInvitations = [
 ];
 
 export const handlers = [
+  http.get("/api/app-version", () => {
+    return HttpResponse.json({ latestVersion: "1.0.0", updateNote: "버전 1.0.0 업데이트 내용" });
+  }),
   // ==========================================
   // 1. 인증 (Auth)
   // ==========================================
