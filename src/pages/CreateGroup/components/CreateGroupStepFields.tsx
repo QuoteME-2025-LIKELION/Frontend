@@ -10,6 +10,9 @@ interface CreateGroupStepFieldsProps {
   groupName: string;
   motto: string;
   isSubmitted: boolean;
+  isCheckingGroupName: boolean;
+  groupNameError: string;
+  onCheckGroupName: () => void;
   onChangeGroupName: (value: string) => void;
   onChangeMotto: (value: string) => void;
   onMoveStep: (step: number) => void;
@@ -23,6 +26,9 @@ export default function CreateGroupStepFields({
   groupName,
   motto,
   isSubmitted,
+  isCheckingGroupName,
+  groupNameError,
+  onCheckGroupName,
   onChangeGroupName,
   onChangeMotto,
   onMoveStep,
@@ -31,7 +37,8 @@ export default function CreateGroupStepFields({
   const titleId = `${fieldId}-title`;
   const helpId = `${fieldId}-help`;
   const metaId = `${fieldId}-meta`;
-  const isGroupNameInvalid = isSubmitted && groupName.trim().length === 0;
+  const isGroupNameInvalid =
+    Boolean(groupNameError) || (isSubmitted && groupName.trim().length === 0);
 
   if (step === 3) {
     return null;
@@ -58,11 +65,14 @@ export default function CreateGroupStepFields({
                 aria-invalid={isGroupNameInvalid}
                 placeholder="그룹 이름을 입력해 주세요"
                 required={true}
+                disabled={isCheckingGroupName}
                 value={groupName}
                 {...codePointInputProps(onChangeGroupName, 10)}
               />
               {isGroupNameInvalid ? (
-                <S.ErrorMsg id={metaId}>그룹명을 입력해주세요.</S.ErrorMsg>
+                <S.ErrorMsg id={metaId} role="alert">
+                  {groupNameError || "그룹명을 입력해주세요."}
+                </S.ErrorMsg>
               ) : (
                 <div id={metaId}>10자 이내</div>
               )}
@@ -97,10 +107,11 @@ export default function CreateGroupStepFields({
         <S.BottomActionBar>
           <S.ActionButton
             type="button"
-            disabled={groupName.trim().length === 0}
-            onClick={() => onMoveStep(2)}
+            disabled={groupName.trim().length === 0 || isCheckingGroupName}
+            aria-busy={isCheckingGroupName}
+            onClick={onCheckGroupName}
           >
-            다음으로
+            {isCheckingGroupName ? "확인 중" : "다음으로"}
           </S.ActionButton>
         </S.BottomActionBar>
       )}
