@@ -25,9 +25,9 @@ export const ArchiveContainer = styled.div`
   color: ${theme.colors.white};
 `;
 
-export const ProfileContainer = styled.div`
+export const ProfileContainer = styled.div<{ $hasActions?: boolean }>`
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-columns: ${({ $hasActions }) => $hasActions ? "2.5rem minmax(0, 1fr) auto" : "2.5rem minmax(0, 1fr)"};
   justify-content: space-between;
   align-items: center;
   gap: 0.625rem;

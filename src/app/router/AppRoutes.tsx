@@ -41,6 +41,7 @@ const AccountDelete = lazy(
 const AccountSetting = lazy(
   () => import("@/pages/Setting/AccountSetting/AccountSetting")
 );
+const BlockedMembers = lazy(() => import("@/pages/Setting/BlockedMembers/BlockedMembers"));
 const Notice = lazy(() => import("@/pages/Setting/Notice/Notice"));
 const NotificationSetting = lazy(
   () => import("@/pages/Setting/NotificationSetting/NotificationSetting")
@@ -85,6 +86,7 @@ export default function AppRoutes() {
 
             <Route path="/profile-center" element={<ProfileCenter />} />
             <Route path="/account-setting" element={<AccountSetting />} />
+            <Route path="/blocked-members" element={<BlockedMembers />} />
             <Route path="/account-delete" element={<AccountDelete />} />
             <Route
               path="/notification-setting"

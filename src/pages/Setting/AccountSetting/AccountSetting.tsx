@@ -8,12 +8,18 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
+import {
+  EMPTY_BLOCKED_MEMBERS,
+  isModerationPreview,
+  useModerationPreviewStore,
+} from "@/features/moderation/moderationPreview";
 import { useLogoutMutation } from "@/hooks/useAuthQueries";
 import useModalDialog from "@/hooks/useModalDialog";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
 } from "@/hooks/useProfileQueries";
+import useAuthStore from "@/stores/useAuthStore";
 import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";
@@ -60,6 +66,8 @@ function formatBirthYear(year: number | null) {
 export default function AccountSetting() {
   const navigate = useNavigate();
   const location = useLocation();
+  const session = useAuthStore((state) => state.sessionVersion);
+  const blockedMembers = useModerationPreviewStore((state) => state.blockedBySession[session] ?? EMPTY_BLOCKED_MEMBERS);
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
   const {
     data: accountProfile,
@@ -229,6 +237,10 @@ export default function AccountSetting() {
               >
                 <S.RowLabel>출생연도</S.RowLabel>
                 <S.RowValue>{formatBirthYear(currentBirthYear)}</S.RowValue>
+              </S.InfoRow>
+              <S.InfoRow type="button" onClick={() => navigate("/blocked-members")}>
+                <S.RowLabel>차단 목록</S.RowLabel>
+                <S.RowValue>{isModerationPreview ? `${blockedMembers.length}명` : "보기"} &gt;</S.RowValue>
               </S.InfoRow>
             </S.InfoList>
             {isAccountProfileError && (
