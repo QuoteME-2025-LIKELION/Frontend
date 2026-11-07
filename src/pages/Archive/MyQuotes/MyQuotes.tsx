@@ -2,10 +2,10 @@ import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useArchiveBookmarks } from "@/hooks/useArchiveBookmarks";
-import { useMyArchivesQuery } from "@/hooks/useArchiveQueries";
-import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
-import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
+import { useArchiveBookmarks } from "@/hooks/archive/useArchiveBookmarks";
+import { useConfirmNavigationToDate } from "@/hooks/archive/useConfirmNavigationToDate";
+import { useMyArchivesQuery } from "@/hooks/queries/useArchiveQueries";
+import { useQuoteImageDownload } from "@/hooks/share/useQuoteImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";

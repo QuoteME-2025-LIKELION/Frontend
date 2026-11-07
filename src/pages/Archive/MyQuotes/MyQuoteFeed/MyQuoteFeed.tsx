@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 import theme from "@/styles/theme";
 import type { ArchiveFeed } from "@/types/archiveFeed.type";
-import { formatDateDay } from "@/utils/formatDateDay";
+import { formatDateDay } from "@/utils/date/formatDateDay";
 
 import * as S from "./MyQuoteFeed.styles";
 

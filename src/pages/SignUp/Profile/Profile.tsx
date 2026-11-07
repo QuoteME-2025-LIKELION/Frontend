@@ -6,7 +6,7 @@ import Button from "@/components/Button/Button";
 import DefaultProfileImage from "@/components/DefaultProfileImage/DefaultProfileImage";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
+import { useSetupProfileMutation } from "@/hooks/queries/useProfileQueries";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 

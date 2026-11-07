@@ -10,7 +10,7 @@ async function loadModule(path, transform = source => source) {
   });
   return import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 }
-const { saveSignupProfile } = await loadModule('../src/utils/saveSignupProfile.ts');
+const { saveSignupProfile } = await loadModule('../src/hooks/queries/saveSignupProfile.ts');
 const payload = { nickname: '이름', introduction: '소개', birthYear: 1995 };
 function fixture(account, failure) {
   const calls = [];

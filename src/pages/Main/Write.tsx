@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { useAiUsageQuery } from "@/hooks/useQuoteQueries";
+import { useAiUsageQuery } from "@/hooks/queries/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
-import { getAiRequestState } from "@/utils/aiUsage";
+import { getAiRequestState } from "@/utils/quote/aiUsage";
 
 import NewQuote from "./components/NewQuote/NewQuote";
 import RecommendList from "./components/RecommendList/RecommendList";

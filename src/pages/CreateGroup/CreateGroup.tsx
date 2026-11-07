@@ -7,12 +7,12 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useDebounce from "@/hooks/useDebounce";
-import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useFriendsQuery } from "@/hooks/queries/useFriendQueries";
 import {
   useCreateGroupMutation,
   useInviteGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import { countCodePoints } from "@/utils/codePoint";
 

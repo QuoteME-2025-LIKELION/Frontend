@@ -7,7 +7,6 @@ import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useDebounce from "@/hooks/useDebounce";
 import {
   useAcceptFriendRequestMutation,
   useFriendRequestsQuery,
@@ -15,14 +14,15 @@ import {
   useFriendsQuery,
   useRejectFriendRequestMutation,
   useRequestFriendMutation,
-} from "@/hooks/useFriendQueries";
+} from "@/hooks/queries/useFriendQueries";
 import {
   useAcceptGroupInvitationMutation,
   useGroupInvitationsQuery,
   useMyGroupsQuery,
   useRejectGroupInvitationMutation,
   useRequestJoinGroupMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 import { getGroupInvitationErrorMessage } from "@/utils/groupInvitationError";

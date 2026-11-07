@@ -8,18 +8,14 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import {
-  EMPTY_BLOCKED_MEMBERS,
-  isModerationPreview,
-  useModerationPreviewStore,
-} from "@/features/moderation/moderationPreview";
-import { useLogoutMutation } from "@/hooks/useAuthQueries";
-import useModalDialog from "@/hooks/useModalDialog";
+import { useLogoutMutation } from "@/hooks/queries/useAuthQueries";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
-} from "@/hooks/useProfileQueries";
+} from "@/hooks/queries/useProfileQueries";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 import useAuthStore from "@/stores/useAuthStore";
+import { EMPTY_BLOCKED_MEMBERS, isModerationPreview, useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";

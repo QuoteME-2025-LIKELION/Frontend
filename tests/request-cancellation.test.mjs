@@ -1,3 +1,4 @@
+import { createSourceLoader } from './helpers/loadSource.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -12,8 +13,7 @@ const compile = code => ts.transpileModule(code, {
 }).outputText;
 const read = file => readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
 globalThis.location = new URL('http://localhost');
-const { handlers } = await import(url(compile(await read('mocks/handlers.ts'))
-  .replace('from "msw"', `from "${import.meta.resolve('msw')}"`)));
+const { handlers } = await import(await createSourceLoader()('mocks/handlers.ts'));
 const server = setupServer(...handlers);
 const apiUrl = url(`import axios from "${import.meta.resolve('axios')}"; export default axios.create({baseURL:'http://localhost'});`);
 const apiModule = async file => url(compile((await read(`api/${file}.ts`)).replace('"@/api/api"', JSON.stringify(apiUrl))));
@@ -25,16 +25,16 @@ const fakeHooks = url(`export const useMutation = options => options;
 export const useQuery = options => options;
 export const useQueryClient = () => globalThis.__cancellationClient;`);
 const notificationUrl = url('export const notificationQueryKeys={all:["notifications"]};');
-const friendHooksUrl = url(compile(await read('hooks/useFriendQueries.ts'))
+const friendHooksUrl = url(compile(await read('hooks/queries/useFriendQueries.ts'))
   .replace('"@tanstack/react-query"', JSON.stringify(fakeHooks))
   .replace('"@/api/friendApi"', JSON.stringify(friendUrl))
-  .replace('"@/hooks/useNotificationsQuery"', JSON.stringify(notificationUrl)));
+  .replace('"@/hooks/queries/useNotificationsQuery"', JSON.stringify(notificationUrl)));
 const friendHooks = await import(friendHooksUrl);
-const groupHooks = await import(url(compile(await read('hooks/useGroupQueries.ts'))
+const groupHooks = await import(url(compile(await read('hooks/queries/useGroupQueries.ts'))
   .replace('"@tanstack/react-query"', JSON.stringify(fakeHooks))
   .replace('"@/api/groupApi"', JSON.stringify(groupUrl))
-  .replace('"@/hooks/useFriendQueries"', JSON.stringify(friendHooksUrl))
-  .replace('"@/hooks/useNotificationsQuery"', JSON.stringify(notificationUrl))));
+  .replace('"@/hooks/queries/useFriendQueries"', JSON.stringify(friendHooksUrl))
+  .replace('"@/hooks/queries/useNotificationsQuery"', JSON.stringify(notificationUrl))));
 
 const keys = [['friends', 'requests'], ['friends', 'search', 'test'], ['groups', 'sent-join-requests'], ['groups', 'detail', '20'], ['notifications', 'unread-count']];
 function client() {

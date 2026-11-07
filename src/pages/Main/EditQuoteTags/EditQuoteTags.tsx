@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
-import useAnimatedToggle from "@/hooks/useAnimatedToggle";
-import useModalDialog from "@/hooks/useModalDialog";
-import { useQuotesByDateQuery } from "@/hooks/useQuoteQueries";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { useQuotesByDateQuery } from "@/hooks/queries/useQuoteQueries";
+import useAnimatedToggle from "@/hooks/ui/useAnimatedToggle";
+import useModalDialog from "@/hooks/ui/useModalDialog";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import * as S from "./EditQuoteTags.styles";
 import DateHeader from "../components/DateHeader/DateHeader";

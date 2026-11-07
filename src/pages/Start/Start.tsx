@@ -5,11 +5,11 @@ import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useOAuthRedirect } from "@/hooks/useAuthQueries";
-import useModalDialog from "@/hooks/useModalDialog";
+import { useOAuthRedirect } from "@/hooks/queries/useAuthQueries";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 import useAuthStore from "@/stores/useAuthStore";
 import theme from "@/styles/theme";
-import { getOAuthFailureMessage } from "@/utils/oauthCallback";
+import { getOAuthFailureMessage } from "@/utils/auth/oauthCallback";
 
 import * as S from "./Start.styles";
 

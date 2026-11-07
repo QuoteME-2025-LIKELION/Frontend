@@ -4,16 +4,16 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Spinner from "@/components/Spinner/Spinner";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useAnimatedToggle from "@/hooks/useAnimatedToggle";
-import { useArchivesByDateQuery } from "@/hooks/useArchiveQueries";
-import { useMyGroupsQuery } from "@/hooks/useGroupQueries";
-import { useImageShare } from "@/hooks/useImageShare";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+import { useArchivesByDateQuery } from "@/hooks/queries/useArchiveQueries";
+import { useMyGroupsQuery } from "@/hooks/queries/useGroupQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 import {
   useQuotesByDateQuery,
   useQuotesFeedQuery,
-} from "@/hooks/useQuoteQueries";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+} from "@/hooks/queries/useQuoteQueries";
+import { useImageShare } from "@/hooks/share/useImageShare";
+import useAnimatedToggle from "@/hooks/ui/useAnimatedToggle";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import DateHeader from "./components/DateHeader/DateHeader";
 import FeedList from "./components/FeedList/FeedList";

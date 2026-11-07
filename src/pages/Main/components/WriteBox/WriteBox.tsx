@@ -2,10 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
-import type { AiRequestState } from "@/utils/aiUsage";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
-import { getQuoteInputError } from "@/utils/quoteInput";
-import { bindQuoteInputBoundary } from "@/utils/quoteInputBoundary";
+import type { AiRequestState } from "@/utils/quote/aiUsage";
+import { getQuoteInputError } from "@/utils/quote/quoteInput";
+import { bindQuoteInputBoundary } from "@/utils/quote/quoteInputBoundary";
 
 import * as S from "./WriteBox.styles";
 

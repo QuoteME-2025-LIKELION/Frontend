@@ -9,7 +9,7 @@ const url = code => `data:text/javascript;base64,${Buffer.from(code).toString('b
 const transpile = source => ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const utility = async file => url(transpile(await readFile(new URL(`../src/utils/${file}.ts`, import.meta.url), 'utf8')));
+const utility = async file => url(transpile(await readFile(new URL(`../src/utils/quote/${file}.ts`, import.meta.url), 'utf8')));
 globalThis.__quoteFriendsReact = React;
 globalThis.__quoteFriendsButtons = [];
 globalThis.__quoteFriendsState = {};
@@ -25,13 +25,13 @@ const modules = {
   'react-router-dom': url('export const useNavigate=()=>()=>{};'),
   '@/components/Search/Search': url('export default ()=>null;'),
   '@/components/ToastModal/ToastModal': url('export default ()=>null;'),
-  '@/hooks/useFriendQueries': url('export const useFriendsQuery=()=>globalThis.__quoteFriendsState;'),
-  '@/hooks/useProfileQueries': url('export const useMyProfileQuery=()=>({data:{id:1},isSuccess:true});'),
-  '@/hooks/useQuoteQueries': url(`export const useQuoteTagRequestsQuery=()=>globalThis.__quoteRequestsState;
+  '@/hooks/queries/useFriendQueries': url('export const useFriendsQuery=()=>globalThis.__quoteFriendsState;'),
+  '@/hooks/queries/useProfileQueries': url('export const useMyProfileQuery=()=>({data:{id:1},isSuccess:true});'),
+  '@/hooks/queries/useQuoteQueries': url(`export const useQuoteTagRequestsQuery=()=>globalThis.__quoteRequestsState;
     export const useCreateQuoteMutation=()=>({mutateAsync:async()=>{},isPending:false});
     export const useSaveQuoteTagsMutation=useCreateQuoteMutation;`),
-  '@/utils/quoteInput': await utility('quoteInput'),
-  '@/utils/quoteTags': await utility('quoteTags'),
+  '@/utils/quote/quoteInput': await utility('quoteInput'),
+  '@/utils/quote/quoteTags': await utility('quoteTags'),
   './NewQuote.styles': url(styles),
 };
 for (const path of ['tag-checkbox-checked', 'tag-checkbox-unchecked']) {

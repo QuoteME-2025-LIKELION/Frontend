@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useUnreadNotificationCountQuery } from "@/hooks/useNotificationsQuery";
+import { useUnreadNotificationCountQuery } from "@/hooks/queries/useNotificationsQuery";
 import useNotificationStore from "@/stores/useNotificationStore";
 import theme from "@/styles/theme";
 

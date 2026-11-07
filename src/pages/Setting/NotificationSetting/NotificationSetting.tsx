@@ -5,11 +5,11 @@ import type { NotificationSettings as NotificationSettingsType } from "@/api/not
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useModalDialog from "@/hooks/useModalDialog";
 import {
   useNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
-} from "@/hooks/useNotificationsQuery";
+} from "@/hooks/queries/useNotificationsQuery";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./NotificationSetting.styles";

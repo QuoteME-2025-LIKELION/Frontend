@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { NoticeSummary } from "@/api/noticeApi";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { useNoticesQuery } from "@/hooks/useNoticeQueries";
+import { useNoticesQuery } from "@/hooks/queries/useNoticeQueries";
 
 import * as S from "./Notice.styles";
 

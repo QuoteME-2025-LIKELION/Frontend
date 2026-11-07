@@ -7,8 +7,8 @@ const compile = source => ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const codePointUrl = `data:text/javascript;base64,${Buffer.from(compile(await readFile(new URL('../src/utils/codePoint.ts', import.meta.url), 'utf8'))).toString('base64')}`;
-const source = (await readFile(new URL('../src/utils/quoteInputBoundary.ts', import.meta.url), 'utf8'))
-  .replace('"./codePoint"', JSON.stringify(codePointUrl));
+const source = (await readFile(new URL('../src/utils/quote/quoteInputBoundary.ts', import.meta.url), 'utf8'))
+  .replace('"../codePoint"', JSON.stringify(codePointUrl));
 const { fitQuoteInsertion, bindQuoteInputBoundary } = await import(
   `data:text/javascript;base64,${Buffer.from(compile(source)).toString('base64')}`
 );

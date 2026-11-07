@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppVersionQuery } from "@/hooks/useAppVersionQuery";
-import useModalDialog from "@/hooks/useModalDialog";
+import { useAppVersionQuery } from "@/hooks/queries/useAppVersionQuery";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 import theme from "@/styles/theme";
 
 import * as S from "./HomeSideMenu.styles";

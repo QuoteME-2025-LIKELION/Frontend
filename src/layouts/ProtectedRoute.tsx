@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 import useAuthStore from "@/stores/useAuthStore";
 
 /** 서버 확인 실패 시 세션을 종료하고 첫 화면으로 돌아간다. */

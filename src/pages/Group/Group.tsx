@@ -12,8 +12,8 @@ import {
   useGroupQuery,
   useRejectGroupJoinRequestMutation,
   useRemoveGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+} from "@/hooks/queries/useGroupQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 
 import GroupActionModals, {
   type GroupActionConfirm,

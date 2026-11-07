@@ -1,5 +1,5 @@
 import UserListItem from "@/components/UserListItem/UserListItem";
-import { useFriendRequestsQuery } from "@/hooks/useFriendQueries";
+import { useFriendRequestsQuery } from "@/hooks/queries/useFriendQueries";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "../FriendGroup.styles";

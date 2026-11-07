@@ -4,14 +4,14 @@ import test from 'node:test';
 import ts from 'typescript';
 import { QueryClient, QueryObserver } from '@tanstack/react-query';
 
-const utility = await readFile(new URL('../src/utils/aiUsage.ts', import.meta.url), 'utf8');
+const utility = await readFile(new URL('../src/utils/quote/aiUsage.ts', import.meta.url), 'utf8');
 const { outputText } = ts.transpileModule(utility, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 });
 const { normalizeAiUsage, getAiRequestState } = await import(
   `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`
 );
-const hooks = await readFile(new URL('../src/hooks/useQuoteQueries.ts', import.meta.url), 'utf8');
+const hooks = await readFile(new URL('../src/hooks/queries/useQuoteQueries.ts', import.meta.url), 'utf8');
 const summaryHook = hooks.match(/export function useQuoteSummaryQuery\([\s\S]*?\n\}/)[0];
 const compiled = ts.transpileModule(summaryHook.replace('export ', ''), {
   compilerOptions: { target: ts.ScriptTarget.ES2022 },

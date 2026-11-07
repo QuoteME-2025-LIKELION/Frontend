@@ -13,7 +13,7 @@ const compile = source => ts.transpileModule(source, {
 const read = file => readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
 const clientUrl = url(`import axios from "${import.meta.resolve('axios')}"; export default axios.create({baseURL:'http://localhost'});`);
 const apiUrl = url(compile((await read('api/appVersionApi.ts')).replace('"@/api/api"', JSON.stringify(clientUrl))));
-const query = await import(url(compile(await read('hooks/useAppVersionQuery.ts'))
+const query = await import(url(compile(await read('hooks/queries/useAppVersionQuery.ts'))
   .replace('"@tanstack/react-query"', JSON.stringify(url('export const useQuery=options=>options;')))
   .replace('"@/api/appVersionApi"', JSON.stringify(apiUrl))));
 const server = setupServer(http.get('http://localhost/api/app-version', () => HttpResponse.json({latestVersion:'2.3.4',updateNote:'업데이트'})));

@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 import { queryClient } from "@/app/queryClient";
 import useNotificationStore from "@/stores/useNotificationStore";
-import { getAccessTokenExpiry } from "@/utils/accessTokenExpiry";
-import { tokenStorage } from "@/utils/tokenStorage";
+import { getAccessTokenExpiry } from "@/utils/auth/accessTokenExpiry";
+import { tokenStorage } from "@/utils/auth/tokenStorage";
 
 interface AuthState {
   isAuthenticated: boolean;

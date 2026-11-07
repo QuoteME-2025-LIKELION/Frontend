@@ -4,11 +4,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import calendarIcon from "@/assets/icons/archive/calendar.svg";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useImageShare } from "@/hooks/useImageShare";
-import useModalDialog from "@/hooks/useModalDialog";
+import { useImageShare } from "@/hooks/share/useImageShare";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 import theme from "@/styles/theme";
-import { getArchiveDateInMonth, getArchiveMonthInYear, isFutureArchiveDate, isFutureArchiveMonth } from "@/utils/archiveDate";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { getArchiveDateInMonth, getArchiveMonthInYear, isFutureArchiveDate, isFutureArchiveMonth } from "@/utils/date/archiveDate";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import * as S from "./Archive.styles";
 

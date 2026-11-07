@@ -5,12 +5,8 @@ import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import UserListItem from "@/components/UserListItem/UserListItem";
-import {
-  EMPTY_BLOCKED_MEMBERS,
-  isModerationPreview,
-  useModerationPreviewStore,
-} from "@/features/moderation/moderationPreview";
 import useAuthStore from "@/stores/useAuthStore";
+import { EMPTY_BLOCKED_MEMBERS, isModerationPreview, useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 
 import * as S from "./BlockedMembers.styles";
 

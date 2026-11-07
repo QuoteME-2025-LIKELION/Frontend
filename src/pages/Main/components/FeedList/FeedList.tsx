@@ -6,23 +6,20 @@ import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import {
-  isModerationPreview,
-  type ModerationTarget,
-  useModerationPreviewStore,
-} from "@/features/moderation/moderationPreview";
-import ReportDialog from "@/features/moderation/ReportDialog";
-import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
-import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
+import { usePokeFriendMutation } from "@/hooks/queries/useFriendQueries";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
-} from "@/hooks/useQuoteQueries";
+} from "@/hooks/queries/useQuoteQueries";
+import { useQuoteImageDownload } from "@/hooks/share/useQuoteImageDownload";
+import ReportDialog from "@/pages/Main/components/ReportDialog/ReportDialog";
 import useAuthStore from "@/stores/useAuthStore";
+import { isModerationPreview, useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import type { Group } from "@/types/group.type";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { type ModerationTarget } from "@/types/moderation.type";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import * as S from "./FeedList.styles";
 

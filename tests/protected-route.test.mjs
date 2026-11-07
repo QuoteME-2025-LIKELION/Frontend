@@ -12,7 +12,7 @@ const url = code => `data:text/javascript;base64,${Buffer.from(code).toString('b
 const modules = {
   'react-router-dom': url(`export const Navigate = ({to}) => globalThis.__sessionRouteReact.createElement('span', {'data-redirect': to}); export const Outlet = () => globalThis.__sessionRouteReact.createElement('span', {}, 'PROTECTED_HOME');`),
   '@/components/Spinner/Spinner': url(`export default () => globalThis.__sessionRouteReact.createElement('span', {}, 'CHECKING_SESSION');`),
-  '@/hooks/useProfileQueries': url('export const useMyProfileQuery = () => globalThis.__sessionRouteProfile;'),
+  '@/hooks/queries/useProfileQueries': url('export const useMyProfileQuery = () => globalThis.__sessionRouteProfile;'),
   '@/stores/useAuthStore': url('export default () => globalThis.__sessionRouteState;'),
 };
 const source = await readFile(new URL('../src/layouts/ProtectedRoute.tsx', import.meta.url), 'utf8');

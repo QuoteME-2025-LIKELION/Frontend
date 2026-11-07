@@ -1,9 +1,9 @@
 import { useOutletContext } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
-import { useLikedArchivesQuery } from "@/hooks/useArchiveQueries";
-import { useConfirmNavigationToDate } from "@/hooks/useConfirmNavigationToDate";
-import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
+import { useConfirmNavigationToDate } from "@/hooks/archive/useConfirmNavigationToDate";
+import { useLikedArchivesQuery } from "@/hooks/queries/useArchiveQueries";
+import { useQuoteImageDownload } from "@/hooks/share/useQuoteImageDownload";
 import type { ArchiveOutletContext } from "@/pages/Archive/archiveOutletContext.type";
 import * as S from "@/pages/Archive/components/ArchiveFeedList.styles";
 import ArchiveQuoteCard from "@/pages/Archive/components/ArchiveQuoteCard";

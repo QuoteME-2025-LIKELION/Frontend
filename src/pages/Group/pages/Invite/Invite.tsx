@@ -8,16 +8,16 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import UserListItem from "@/components/UserListItem/UserListItem";
-import useDebounce from "@/hooks/useDebounce";
 import {
   useFriendSearchQuery,
   useFriendsQuery,
-} from "@/hooks/useFriendQueries";
+} from "@/hooks/queries/useFriendQueries";
 import {
   useGroupQuery,
   useGroupSentInvitationsQuery,
   useInviteGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "./Invite.styles";

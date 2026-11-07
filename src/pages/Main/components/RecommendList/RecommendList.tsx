@@ -3,9 +3,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 import type { AiUsageResponse } from "@/api/quoteApi";
-import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
+import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/queries/useQuoteQueries";
 import theme from "@/styles/theme";
-import type { AiRequestState } from "@/utils/aiUsage";
+import type { AiRequestState } from "@/utils/quote/aiUsage";
 
 import * as S from "./RecommendList.styles";
 

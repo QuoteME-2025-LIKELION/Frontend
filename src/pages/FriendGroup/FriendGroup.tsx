@@ -5,17 +5,17 @@ import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useDebounce from "@/hooks/useDebounce";
 import {
   useDeleteFriendMutation,
   useFriendSearchQuery,
   useFriendsQuery,
   useRequestFriendMutation,
-} from "@/hooks/useFriendQueries";
+} from "@/hooks/queries/useFriendQueries";
 import {
   useMyGroupsQuery,
   useRequestJoinGroupMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import theme from "@/styles/theme";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";

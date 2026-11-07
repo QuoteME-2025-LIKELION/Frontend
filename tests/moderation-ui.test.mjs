@@ -1,3 +1,4 @@
+import { createSourceLoader } from './helpers/loadSource.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -7,11 +8,10 @@ const url = code => `data:text/javascript;base64,${Buffer.from(code).toString('b
 const compile = source => ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const read = file => readFile(new URL(`../src/features/moderation/${file}`, import.meta.url), 'utf8');
-const storeCode = compile(await read('moderationPreview.ts'))
-  .replace('from "zustand"', `from "${import.meta.resolve('zustand')}"`);
-const previewUrl = url(storeCode.replace('import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true"', 'true'));
-const productionUrl = url(storeCode.replace('import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true"', 'false'));
+const read = file => readFile(new URL(`../src/${file}`, import.meta.url), 'utf8');
+const previewUrl = await createSourceLoader(source => source.replace('import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true"', 'true'))('stores/useModerationPreviewStore.ts');
+const productionUrl = await createSourceLoader(source => source.replace('import.meta.env.DEV && import.meta.env.VITE_ENABLE_MSW === "true"', 'false'))('stores/useModerationPreviewStore.ts');
+const reasonsUrl = await createSourceLoader()('pages/Main/components/ReportDialog/reportReasons.ts');
 const preview = await import(previewUrl);
 const production = await import(productionUrl);
 
@@ -37,14 +37,15 @@ async function component(file) {
   for (const [from, to] of Object.entries({
     'react/jsx-runtime': import.meta.resolve('react/jsx-runtime'),
     react: reactStub,
-    './Moderation.styles': styleUrl,
-    './moderationPreview': previewUrl,
-    '@/hooks/useModalDialog': modalUrl,
+    './QuoteActionsMenu.styles': styleUrl,
+    './ReportDialog.styles': styleUrl,
+    './reportReasons': reasonsUrl,
+    '@/hooks/ui/useModalDialog': modalUrl,
   })) code = code.replaceAll(`"${from}"`, JSON.stringify(to));
   return (await import(url(code))).default;
 }
-const Menu = await component('QuoteActionsMenu.tsx');
-const Report = await component('ReportDialog.tsx');
+const Menu = await component('components/QuoteFeed/QuoteActionsMenu.tsx');
+const Report = await component('pages/Main/components/ReportDialog/ReportDialog.tsx');
 function harness(Component, props) {
   const state={next:0,values:[]};
   return () => {globalThis.__moderationHarness=state;state.next=0;return Component(props);};

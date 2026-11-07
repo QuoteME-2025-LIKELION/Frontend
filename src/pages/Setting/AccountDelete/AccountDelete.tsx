@@ -6,7 +6,7 @@ import tagCheckboxUncheckedIcon from "@/assets/icons/quote-feed/tag-checkbox-unc
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useDeleteAccountMutation } from "@/hooks/useProfileQueries";
+import { useDeleteAccountMutation } from "@/hooks/queries/useProfileQueries";
 
 import * as S from "./AccountDelete.styles";
 
