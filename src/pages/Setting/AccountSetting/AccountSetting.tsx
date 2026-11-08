@@ -236,7 +236,12 @@ export default function AccountSetting() {
               </S.InfoRow>
               <S.InfoRow type="button" onClick={() => navigate("/blocked-members")}>
                 <S.RowLabel>차단 목록</S.RowLabel>
-                <S.RowValue>{isModerationPreview ? `${blockedMembers.length}명` : "보기"} &gt;</S.RowValue>
+                <S.BlockedValue>
+                  {isModerationPreview && `${blockedMembers.length}명`}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </S.BlockedValue>
               </S.InfoRow>
             </S.InfoList>
             {isAccountProfileError && (

@@ -4,7 +4,7 @@ import theme from "@/styles/theme";
 
 export const MenuWrap = styled.div`
   position: relative;
-  align-self: start;
+  align-self: center;
 `;
 export const MoreButton = styled.button`
   width: 1.75rem;

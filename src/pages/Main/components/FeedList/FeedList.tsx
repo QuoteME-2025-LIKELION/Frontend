@@ -294,9 +294,9 @@ export default function FeedList({
       {moderation?.kind === "block" && (
         <ConfirmModal
           question={`${moderation.target.nickname}님을 차단하시겠어요?`}
-          description="차단한 친구 관리는 계정 관리의 차단 목록에서 할 수 있습니다."
+          description="차단하면 친구 관계가 해제되며, 차단 목록은 계정 관리에서 확인할 수 있습니다"
           cancelText="돌아가기"
-          confirmText="차단하기"
+          confirmText="차단"
           confirmColor="danger"
           onClose={() => setModeration(null)}
           onConfirm={() => {

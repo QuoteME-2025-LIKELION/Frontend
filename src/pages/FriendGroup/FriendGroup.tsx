@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
@@ -16,6 +17,8 @@ import {
   useRequestJoinGroupMutation,
 } from "@/hooks/queries/useGroupQueries";
 import useDebounce from "@/hooks/ui/useDebounce";
+import useAuthStore from "@/stores/useAuthStore";
+import { useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import theme from "@/styles/theme";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
@@ -55,6 +58,10 @@ export default function FriendGroup() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialLocationState = location.state as FriendGroupLocationState;
+
+  const [blockTarget, setBlockTarget] = useState<Friend | null>(null);
+  const session = useAuthStore((state) => state.sessionVersion);
+  const blockMember = useModerationPreviewStore((state) => state.blockMember);
 
   // 검색 관련 상태
   const [keyword, setKeyword] = useState("");
@@ -206,6 +213,17 @@ export default function FriendGroup() {
 
   return (
     <>
+      {blockTarget && <ConfirmModal
+        question={`${blockTarget.nickname}님을 차단하시겠어요?`}
+        description="차단하면 친구 관계가 해제되며, 차단 목록은 계정 관리에서 확인할 수 있습니다"
+        cancelText="돌아가기" confirmText="차단" confirmColor="danger"
+        onClose={() => setBlockTarget(null)}
+        onConfirm={() => {
+          const blocked = blockMember(session, blockTarget);
+          setBlockTarget(null);
+          setRouteToastMessage(blocked ? "차단했어요." : "차단 기능을 준비 중이에요.");
+        }}
+      />}
       <PageTitle title="친구 및 그룹" />
       <S.Container>
         <FriendGroupModals
@@ -297,6 +315,7 @@ export default function FriendGroup() {
             searchMembers={searchResultMembers}
             friendIdSet={friendIdSet}
             onDeleteFriend={handleDeleteFriend}
+            onBlockFriend={setBlockTarget}
             onAddFriend={handleAddFriend}
           />
         </S.Content>

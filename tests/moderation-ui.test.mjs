@@ -30,21 +30,31 @@ export const useRef = initial => {
   return state.values[index] ??= {current:initial};
 };`);
 const styleUrl = url(`export const MenuWrap='div', MoreButton='button', Menu='div', MenuItem='button',
-Overlay='dialog', ReportPanel='form', Title='h2', ReasonList='fieldset', Reason='label', Details='textarea', Actions='div';`);
+Overlay='dialog', ReportPanel='form', Title='h2', ReasonList='fieldset', Reason='label', Details='textarea', Actions='div', Container='div', List='div', Empty='p';`);
 const modalUrl = url('export default ()=>({current:null});');
 async function component(file) {
   let code = compile(await read(file));
   for (const [from, to] of Object.entries({
     'react/jsx-runtime': import.meta.resolve('react/jsx-runtime'),
     react: reactStub,
-    './QuoteActionsMenu.styles': styleUrl,
+    './UserActionsMenu.styles': styleUrl,
     './ReportDialog.styles': styleUrl,
+    './BlockedMembers.styles': styleUrl,
+    'react-router-dom': url('export const useNavigate=()=>()=>{};'),
+    '@/components/ConfirmModal/ConfirmModal': url('export default function ConfirmModal(){}'),
+    '@/components/Header/Header': url('export default function Header(){}'),
+    '@/components/PageTitle/PageTitle': url('export default function PageTitle(){}'),
+    '@/components/ToastModal/ToastModal': url('export default function ToastModal(){}'),
+    '@/components/UserListItem/UserListItem': url('export default function UserListItem(){}'),
+    '@/stores/useAuthStore': url('export default selector=>selector({sessionVersion:1});'),
+    '@/stores/useModerationPreviewStore': url('export const isModerationPreview=true, EMPTY_BLOCKED_MEMBERS=[]; export const useModerationPreviewStore=selector=>selector(globalThis.__blockedState);'),
     './reportReasons': reasonsUrl,
     '@/hooks/ui/useModalDialog': modalUrl,
   })) code = code.replaceAll(`"${from}"`, JSON.stringify(to));
   return (await import(url(code))).default;
 }
-const Menu = await component('components/QuoteFeed/QuoteActionsMenu.tsx');
+const Menu = await component('components/UserActionsMenu/UserActionsMenu.tsx');
+const Blocked = await component('pages/Setting/BlockedMembers/BlockedMembers.tsx');
 const Report = await component('pages/Main/components/ReportDialog/ReportDialog.tsx');
 function harness(Component, props) {
   const state={next:0,values:[]};
@@ -132,4 +142,47 @@ test('preview blocking uses fixture IDs, deduplicates and separates sessions; li
   assert.deepEqual(preview.useModerationPreviewStore.getState().blockedBySession[1].map(member=>member.memberId),[6]);
   assert.equal(production.useModerationPreviewStore.getState().block(1,target),false);
   assert.deepEqual(production.useModerationPreviewStore.getState().blockedBySession,{});
+});
+
+
+test('friend menu deletes or blocks without invoking report', () => {
+  let deleted=0,blocked=0;
+  const render=harness(Menu,{authorName:'친구',onDelete:()=>deleted++,onBlock:()=>blocked++});
+  let tree=render();
+  const open=()=>{find(tree,node=>node.props?.['aria-haspopup']==='menu').props.onClick();tree=render();};
+  open();
+  let items=all(tree).filter(node=>node.props?.role==='menuitem');
+  assert.equal(items.length,2);
+  assert.ok(all(items[0]).some(node=>[node.props?.children].flat().includes('삭제하기')));
+  items[0].props.onClick();tree=render();assert.equal(deleted,1);assert.equal(blocked,0);
+  open();items=all(tree).filter(node=>node.props?.role==='menuitem');
+  items[1].props.onClick();assert.equal(deleted,1);assert.equal(blocked,1);
+});
+
+test('unblock waits for confirmation; cancel preserves member and confirm updates list and toast', () => {
+  const member={memberId:2,nickname:'친구'};
+  const calls=[];
+  globalThis.__blockedState={blockedBySession:{1:[member]},unblock:(session,id)=>{
+    calls.push([session,id]);globalThis.__blockedState.blockedBySession[session]=[];
+  }};
+  const render=harness(Blocked,{});
+  let tree=render();
+  const dialog=()=>find(tree,node=>node.props?.confirmText==='해제');
+  const row=()=>find(tree,node=>node.props?.actionButton?.text==='차단 해제');
+  row().props.actionButton.onClick();tree=render();
+  assert.deepEqual(calls,[]);assert.ok(row());
+  assert.equal(dialog().props.question,'친구님의 차단을 해제할까요?');
+  dialog().props.onClose();tree=render();assert.equal(dialog(),undefined);assert.ok(row());
+  row().props.actionButton.onClick();tree=render();dialog().props.onConfirm();tree=render();
+  assert.deepEqual(calls,[[1,2]]);assert.equal(row(),undefined);
+  assert.ok(find(tree,node=>node.props?.children==='차단한 사용자가 없어요'));
+  assert.ok(find(tree,node=>node.props?.text==='차단을 해제했어요'));
+});
+
+test('friend preview block uses actual member ID and production refuses it', () => {
+  const member={id:42,nickname:'이름이 같아도 ID로 구분'};
+  assert.equal(preview.useModerationPreviewStore.getState().blockMember(3,member),true);
+  assert.equal(preview.useModerationPreviewStore.getState().blockMember(3,member),true);
+  assert.deepEqual(preview.useModerationPreviewStore.getState().blockedBySession[3].map(item=>item.memberId),[42]);
+  assert.equal(production.useModerationPreviewStore.getState().blockMember(3,member),false);
 });

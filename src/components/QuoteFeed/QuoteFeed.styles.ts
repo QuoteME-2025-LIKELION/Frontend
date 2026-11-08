@@ -25,9 +25,9 @@ export const ArchiveContainer = styled.div`
   color: ${theme.colors.white};
 `;
 
-export const ProfileContainer = styled.div<{ $hasActions?: boolean }>`
+export const ProfileContainer = styled.div`
   display: grid;
-  grid-template-columns: ${({ $hasActions }) => $hasActions ? "2.5rem minmax(0, 1fr) auto" : "2.5rem minmax(0, 1fr)"};
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
   justify-content: space-between;
   align-items: center;
   gap: 0.625rem;
@@ -66,28 +66,33 @@ export const Username = styled.div<{ $isInArchive?: boolean }>`
   width: 100%;
 `;
 
-export const IntroTimeBox = styled.div<{ $isInArchive?: boolean }>`
+export const Introduction = styled.div`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.28px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const ProfileActions = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  gap: 0.25rem;
+`;
 
-  div {
-    ${theme.fonts.pretendard}
-    color: ${({ $isInArchive }) =>
-      $isInArchive ? theme.colors.white : theme.colors.territory};
-    font-size: 0.6875rem;
-    font-weight: 500;
-    line-height: 120%;
-    letter-spacing: -0.28px;
-
-    &:first-of-type {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
+export const TimeAgo = styled.span`
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.territory};
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
 `;
 
 export const TextContainer = styled.div<{

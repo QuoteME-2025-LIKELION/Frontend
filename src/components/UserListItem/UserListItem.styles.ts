@@ -68,7 +68,7 @@ export const BtnBox = styled.div`
   justify-content: flex-end;
   width: auto;
 
-  button {
+  > button {
     min-width: 1.4375rem;
     ${theme.fonts.pretendard}
     font-size: 0.8125rem; /* 13px */

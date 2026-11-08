@@ -4,6 +4,6 @@ export interface ModerationTarget {
   introduction?: string;
   profileImage?: string;
 }
-export interface PreviewBlockedMember extends ModerationTarget {
+export interface PreviewBlockedMember extends Omit<ModerationTarget, "quoteId"> {
   memberId: number;
 }

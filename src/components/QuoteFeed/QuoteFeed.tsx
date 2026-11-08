@@ -7,7 +7,7 @@ import nudgeOutlineIcon from "@/assets/icons/quote-feed/nudge-outline.svg";
 import shareIcon from "@/assets/icons/quote-feed/share.svg";
 import userActiveIcon from "@/assets/icons/quote-feed/user-active.svg";
 import userDisabledIcon from "@/assets/icons/quote-feed/user-disabled.svg";
-import QuoteActionsMenu from "@/components/QuoteFeed/QuoteActionsMenu";
+import UserActionsMenu from "@/components/UserActionsMenu/UserActionsMenu";
 import theme from "@/styles/theme";
 import { formatTimeAgo } from "@/utils/date/formatTimeAgo";
 
@@ -163,7 +163,7 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
         ref={ref}
       >
         {!isInArchive && (
-          <S.ProfileContainer $hasActions={Boolean(onReport && onBlock)}>
+          <S.ProfileContainer>
             {profileImageUrl ? (
               <S.ProfileImg src={profileImageUrl} alt={`${authorName} 프로필 이미지`} />
             ) : (
@@ -171,14 +171,14 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             )}
             <S.ProfileInfo>
               <S.Username $isInArchive={isInArchive}>{authorName}</S.Username>
-              <S.IntroTimeBox $isInArchive={isInArchive}>
-                <div>{bio}</div>
-                <div>{formattedTimeAgo}</div>
-              </S.IntroTimeBox>
+              <S.Introduction>{bio}</S.Introduction>
             </S.ProfileInfo>
-            {onReport && onBlock && (
-              <QuoteActionsMenu authorName={authorName} onReport={onReport} onBlock={onBlock} />
-            )}
+            <S.ProfileActions>
+              <S.TimeAgo>{formattedTimeAgo}</S.TimeAgo>
+              {onReport && onBlock && (
+                <UserActionsMenu authorName={authorName} onReport={onReport} onBlock={onBlock} />
+              )}
+            </S.ProfileActions>
           </S.ProfileContainer>
         )}
         {isInArchive && (
