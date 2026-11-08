@@ -87,6 +87,6 @@ export const Actions = styled.div`
     font-size: 0.875rem;
     cursor: pointer;
   }
-  button[type="submit"] { color: ${theme.colors.primary}; }
+  button[type="submit"] { color: ${theme.colors.red}; }
   button:disabled { opacity: 0.45; cursor: default; }
 `;

@@ -78,24 +78,45 @@ test('dropdown opens, invokes report/block separately, and closes with Escape or
   assert.equal(trigger().props['aria-expanded'],false);
 });
 
-test('report requires a reason, supports draft multiple selection and drops stale other text when deselected', () => {
+test('report allows one reason, requires nonblank other text, and excludes AI by default', () => {
   let submitted,closed=0;
   const render=harness(Report,{authorName:'친구',onClose:()=>closed++,onSubmit:(...args)=>{submitted=args;}});
   let tree=render();
   const boxes=()=>all(tree).filter(node=>node.type==='input');
   const submit=()=>find(tree,node=>node.props?.type==='submit');
-  assert.equal(boxes().length,8);assert.equal(submit().props.disabled,true);
-  find(tree,node=>node.type==='form').props.onSubmit({preventDefault});assert.equal(submitted,undefined);
+  const send=()=>find(tree,node=>node.type==='form').props.onSubmit({preventDefault});
+  assert.equal(boxes().length,7);assert.equal(submit().props.disabled,true);
+  assert.equal(all(tree).some(node=>node.props?.children==='AI가 만든 문장이 이상해요'),false);
+  send();assert.equal(submitted,undefined);
   boxes()[3].props.onChange({target:{checked:true}});tree=render();
-  boxes()[7].props.onChange({target:{checked:true}});tree=render();
+  boxes()[6].props.onChange({target:{checked:true}});tree=render();
+  assert.equal(boxes()[3].props.checked,false);
+  assert.equal(boxes().filter(node=>node.props.checked).length,1);
+  assert.equal(submit().props.disabled,true);
+  find(tree,node=>node.type==='textarea').props.onChange({target:{value:'   '}});tree=render();
+  send();assert.equal(submitted,undefined);
+  assert.equal(submit().props.disabled,true);
   find(tree,node=>node.type==='textarea').props.onChange({target:{value:'  추가 사유  '}});tree=render();
+  assert.equal(submit().props.disabled,false);send();
+  assert.deepEqual(submitted,['other','추가 사유']);
+  boxes()[3].props.onChange({target:{checked:true}});tree=render();
+  assert.equal(find(tree,node=>node.type==='textarea'),undefined);send();
+  assert.deepEqual(submitted,['privacy','']);
+  boxes()[3].props.onChange({target:{checked:false}});tree=render();
+  assert.equal(submit().props.disabled,true);
+  find(tree,node=>node.props?.children==='취소').props.onClick();assert.equal(closed,1);
+  tree.props.onCancel({preventDefault});assert.equal(closed,2);
+});
+
+test('report exposes AI reason only for a confirmed AI quote', () => {
+  let submitted;
+  const render=harness(Report,{authorName:'친구',isAiGenerated:true,onClose(){},onSubmit:(...args)=>{submitted=args;}});
+  let tree=render();
+  const boxes=all(tree).filter(node=>node.type==='input');
+  assert.equal(boxes.length,8);
+  boxes[5].props.onChange({target:{checked:true}});tree=render();
   find(tree,node=>node.type==='form').props.onSubmit({preventDefault});
-  assert.deepEqual(submitted,[['privacy','other'],'추가 사유']);
-  boxes()[7].props.onChange({target:{checked:false}});tree=render();
-  assert.equal(find(tree,node=>node.type==='textarea'),undefined);
-  find(tree,node=>node.type==='form').props.onSubmit({preventDefault});
-  assert.deepEqual(submitted,[['privacy'],'']);
-  tree.props.onCancel({preventDefault});assert.equal(closed,1);
+  assert.deepEqual(submitted,['ai','']);
 });
 
 test('preview blocking uses fixture IDs, deduplicates and separates sessions; live mode cannot change blocks', () => {

@@ -8,18 +8,22 @@ import { REPORT_REASONS, type ReportReason } from "./reportReasons";
 
 interface Props {
   authorName: string;
+  isAiGenerated?: boolean;
   onClose: () => void;
-  onSubmit: (reasons: ReportReason[], details: string) => void;
+  onSubmit: (reason: ReportReason, details: string) => void;
 }
 
-export default function ReportDialog({ authorName, onClose, onSubmit }: Props) {
+export default function ReportDialog({ authorName, isAiGenerated = false, onClose, onSubmit }: Props) {
   const firstReasonRef = useRef<HTMLInputElement>(null);
   const ref = useModalDialog(true, { initialFocusRef: firstReasonRef, restoreFocusFallback: true });
   const titleId = useId();
   const detailsId = useId();
-  const [reasons, setReasons] = useState<ReportReason[]>([]);
+  const [reason, setReason] = useState<ReportReason | null>(null);
   const [details, setDetails] = useState("");
-  const hasOther = reasons.includes("other");
+  const visibleReasons = REPORT_REASONS.filter((item) => item.id !== "ai" || isAiGenerated);
+  const hasOther = reason === "other";
+  const canSubmit = reason !== null && visibleReasons.some((item) => item.id === reason)
+    && (!hasOther || details.trim().length > 0);
 
   return (
     <S.Overlay ref={ref} aria-labelledby={titleId} aria-modal="true"
@@ -27,25 +31,24 @@ export default function ReportDialog({ authorName, onClose, onSubmit }: Props) {
       onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <S.ReportPanel onSubmit={(event) => {
         event.preventDefault();
-        if (reasons.length) onSubmit(reasons, hasOther ? details.trim() : "");
+        if (canSubmit && reason !== null) onSubmit(reason, hasOther ? details.trim() : "");
       }}>
         <S.Title id={titleId}>신고사유</S.Title>
         <S.ReasonList>
           <legend>{authorName}님의 명언 신고 사유</legend>
-          {REPORT_REASONS.map((reason) => <S.Reason key={reason.id}>
-            <span>{reason.label}</span>
-            <input ref={reason.id === REPORT_REASONS[0].id ? firstReasonRef : undefined}
-              type="checkbox" checked={reasons.includes(reason.id)} onChange={(event) => {
-              setReasons((current) => event.target.checked
-                ? [...current, reason.id] : current.filter((value) => value !== reason.id));
+          {visibleReasons.map((item) => <S.Reason key={item.id}>
+            <span>{item.label}</span>
+            <input ref={item.id === visibleReasons[0].id ? firstReasonRef : undefined}
+              type="checkbox" checked={reason === item.id} onChange={(event) => {
+              setReason(event.target.checked ? item.id : null);
             }} />
           </S.Reason>)}
         </S.ReasonList>
-        {hasOther && <S.Details id={detailsId} aria-label="기타 신고 사유" placeholder="신고 사유를 작성해 주세요"
+        {hasOther && <S.Details id={detailsId} aria-label="기타 신고 사유" required placeholder="신고 사유를 작성해 주세요"
           value={details} maxLength={500} onChange={(event) => setDetails(event.target.value)} />}
         <S.Actions>
-          <button type="button" onClick={onClose}>돌아가기</button>
-          <button type="submit" disabled={reasons.length === 0}>신고하기</button>
+          <button type="button" onClick={onClose}>취소</button>
+          <button type="submit" disabled={!canSubmit}>신고하기</button>
         </S.Actions>
       </S.ReportPanel>
     </S.Overlay>
