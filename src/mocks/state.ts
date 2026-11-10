@@ -9,6 +9,7 @@ import {
 } from "@/data/mock/friends";
 import {
   mockGroups as mockGroupsSeed,
+  mockSentInvitationsByGroupId as mockSentInvitationsByGroupIdSeed,
   friendsListGroupMemberById as friendsListGroupMemberByIdSeed,
   searchableGroups as searchableGroupsSeed,
   mockSentJoinRequests as mockSentJoinRequestsSeed,
@@ -42,6 +43,10 @@ export const MOCK_PROFILE_IMAGE = structuredClone(MOCK_PROFILE_IMAGESeed);
 export const mockNotices = structuredClone(mockNoticesSeed);
 
 export const mockGroups = structuredClone(mockGroupsSeed);
+
+export const mockSentInvitationsByGroupId = structuredClone(
+  mockSentInvitationsByGroupIdSeed
+);
 
 export const mockMembersById = structuredClone(mockMembersByIdSeed);
 
@@ -164,4 +169,5 @@ export const mockState = {
   mockMyQuoteTags: structuredClone(mockMyQuoteTagsSeed) as QuoteTag[],
   mockMyQuoteIsBookmarked: structuredClone(mockMyQuoteIsBookmarkedSeed),
   nextSentJoinRequestId: structuredClone(nextSentJoinRequestIdSeed),
+  nextSentInvitationId: 500,
 };

@@ -51,6 +51,8 @@ export const groupApi = {
     api.post(`/api/groups/${groupId}/invite/${friendId}`),
   getSentInvitations: (groupId: number | string) =>
     api.get<GroupJoinRequest[]>(`/api/groups/${groupId}/invitations/sent`),
+  cancelInvitation: (groupId: number | string, requestId: number) =>
+    api.delete(`/api/groups/${groupId}/invitations/${requestId}`),
   getInvitations: () => api.get<GroupInvitation[]>("/api/groups/invitations"),
   acceptInvitation: (requestId: number) =>
     api.post(`/api/groups/invitations/${requestId}/accept`),

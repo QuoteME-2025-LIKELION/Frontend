@@ -8,7 +8,8 @@ export const groupQueryKeys = {
   all: ["groups"] as const,
   myGroups: () => [...groupQueryKeys.all, "my-groups"] as const,
   invitations: () => [...groupQueryKeys.all, "invitations"] as const,
-  sentJoinRequests: () => [...groupQueryKeys.all, "sent-join-requests"] as const,
+  sentJoinRequests: () =>
+    [...groupQueryKeys.all, "sent-join-requests"] as const,
   detail: (groupId: number | string) =>
     [...groupQueryKeys.all, "detail", String(groupId)] as const,
   joinRequests: (groupId: number | string) =>
@@ -31,11 +32,12 @@ export function useCancelGroupJoinRequestMutation() {
 
   return useMutation({
     mutationFn: (requestId: number) => groupApi.cancelJoinRequest(requestId),
-    onSuccess: () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: groupQueryKeys.all }),
-      queryClient.invalidateQueries({ queryKey: friendQueryKeys.all }),
-      queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all }),
-    ]),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: groupQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: friendQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all }),
+      ]),
   });
 }
 
@@ -59,13 +61,8 @@ export function useCreateGroupMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      name,
-      motto,
-    }: {
-      name: string;
-      motto: string;
-    }) => groupApi.createGroup({ name, motto }),
+    mutationFn: ({ name, motto }: { name: string; motto: string }) =>
+      groupApi.createGroup({ name, motto }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() });
     },
@@ -161,6 +158,28 @@ export function useGroupSentInvitationsQuery(
   });
 }
 
+/** 그룹장이 보낸 대기 초대 취소. 가입 신청 본인 취소와 별개다. */
+export function useCancelGroupInvitationMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      groupId,
+      requestId,
+    }: {
+      groupId: number | string;
+      requestId: number;
+    }) => groupApi.cancelInvitation(groupId, requestId),
+    onSuccess: (_, { groupId }) =>
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(groupId),
+        }),
+        queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all }),
+      ]),
+  });
+}
+
 /**
  * 그룹 멤버 제거 후 그룹 관련 캐시 갱신
  */
@@ -245,9 +264,13 @@ export function useRequestJoinGroupMutation() {
     mutationFn: (groupId: number | string) => groupApi.requestJoin(groupId),
     onSuccess: (_, groupId) => {
       return Promise.all([
-        queryClient.invalidateQueries({ queryKey: groupQueryKeys.detail(groupId) }),
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.detail(groupId),
+        }),
         queryClient.invalidateQueries({ queryKey: groupQueryKeys.myGroups() }),
-        queryClient.invalidateQueries({ queryKey: groupQueryKeys.sentJoinRequests() }),
+        queryClient.invalidateQueries({
+          queryKey: groupQueryKeys.sentJoinRequests(),
+        }),
       ]);
     },
   });
@@ -260,10 +283,8 @@ export function useAcceptGroupJoinRequestMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: {
-      groupId: number | string;
-      requestId: number;
-    }) => groupApi.acceptJoinRequest(variables.requestId),
+    mutationFn: (variables: { groupId: number | string; requestId: number }) =>
+      groupApi.acceptJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
       return Promise.all([
         queryClient.invalidateQueries({
@@ -284,10 +305,8 @@ export function useRejectGroupJoinRequestMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: {
-      groupId: number | string;
-      requestId: number;
-    }) => groupApi.rejectJoinRequest(variables.requestId),
+    mutationFn: (variables: { groupId: number | string; requestId: number }) =>
+      groupApi.rejectJoinRequest(variables.requestId),
     onSuccess: (_, variables) => {
       return queryClient.invalidateQueries({
         queryKey: groupQueryKeys.joinRequests(variables.groupId),

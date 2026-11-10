@@ -93,3 +93,41 @@ test('sent group list, cancellation by requestId, failure preservation and resen
     assert.equal((await query.queryFn()).length, 1);
   } finally { server.resetHandlers(); server.close(); qc.clear(); }
 });
+
+test('leader group invitation cancellation preserves failed rows, uses groupId/requestId and permits reinviting', async () => {
+  server.listen({ onUnhandledRequest: 'error' });
+  const qc = client();
+  const detailKey = ['groups', 'detail', '1'];
+  const sentKey = [...detailKey, 'sent-invitations'];
+  const joinsKey = [...detailKey, 'join-requests'];
+  try {
+    const sent = (await groupApi.getSentInvitations(1)).data;
+    const invitation = sent.find(item => item.requesterId === 6);
+    assert.ok(invitation);
+    assert.notEqual(invitation.requestId, invitation.requesterId);
+    qc.setQueryData(sentKey, sent);
+    qc.setQueryData(joinsKey, ['join-original']);
+    const mutation = new MutationObserver(qc, groupHooks.useCancelGroupInvitationMutation());
+    server.use(http.delete('http://localhost/api/groups/1/invitations/:requestId', () => HttpResponse.json({message:'temporary'}, {status:500})));
+    await assert.rejects(mutation.mutate({groupId:1, requestId:invitation.requestId}), error=>error.response?.status===500);
+    assert.deepEqual(qc.getQueryData(sentKey), sent);
+    assert.equal(qc.getQueryState(sentKey).isInvalidated, false);
+    server.resetHandlers();
+    assert.equal((await groupApi.getSentInvitations(1)).data.length, sent.length);
+    await assert.rejects(groupApi.cancelInvitation(2, invitation.requestId), error=>error.response?.status===403);
+    await assert.rejects(groupApi.cancelInvitation(999, invitation.requestId), error=>error.response?.status===404);
+    await assert.rejects(groupApi.cancelInvitation(1, invitation.requesterId), error=>error.response?.status===404);
+    await assert.rejects(groupApi.cancelInvitation(1, 5), error=>error.response?.status===404);
+    await mutation.mutate({groupId:1, requestId:invitation.requestId});
+    assert.equal((await groupApi.getSentInvitations(1)).data.some(item=>item.requestId===invitation.requestId), false);
+    assert.equal(qc.getQueryState(sentKey).isInvalidated, true);
+    assert.equal(qc.getQueryState(joinsKey).isInvalidated, true);
+    assert.equal(qc.getQueryState(['notifications','unread-count']).isInvalidated, true);
+    assert.equal(qc.getQueryState(['groups','detail','20']).isInvalidated, false);
+    await assert.rejects(groupApi.cancelInvitation(1, invitation.requestId), error=>error.response?.status===404);
+    await groupApi.inviteMember(1, invitation.requesterId);
+    const after = (await groupApi.getSentInvitations(1)).data;
+    assert.ok(after.some(item=>item.requesterId===6 && item.requestId!==invitation.requestId));
+    assert.ok((await groupApi.getJoinRequests(1)).data.some(item=>item.requestId===5));
+  } finally { server.resetHandlers(); server.close(); qc.clear(); }
+});

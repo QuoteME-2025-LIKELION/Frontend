@@ -2,6 +2,9 @@ import { http, HttpResponse } from "msw";
 
 import {
   mockGroups,
+  mockSentInvitationsByGroupId,
+  getMockMember,
+  mockFriendIds,
   searchableGroups,
   mockSentJoinRequests,
   mockGroupJoinRequestsByGroupId,
@@ -9,6 +12,22 @@ import {
   mockGroupInvitations,
   mockState,
 } from "../state";
+
+// MSW는 현재 로그인 회원(id=1)의 단일 계정 시나리오를 사용한다.
+function leaderGroup(groupId: number) {
+  const group = mockGroups.find((item) => item.id === groupId);
+  if (!group)
+    return HttpResponse.json(
+      { message: "그룹을 찾을 수 없습니다." },
+      { status: 404 }
+    );
+  if (
+    !group.members.some((member) => member.id === 1 && member.role === "LEADER")
+  ) {
+    return HttpResponse.json({ message: "권한이 없습니다." }, { status: 403 });
+  }
+  return group;
+}
 
 export const groupsHandlers = [
   // ==========================================
@@ -51,8 +70,52 @@ export const groupsHandlers = [
     };
     return HttpResponse.json({ motto: body.motto });
   }),
-  http.post("/api/groups/:groupId/invite/:friendId", () => {
+  http.post("/api/groups/:groupId/invite/:friendId", ({ params }) => {
+    const groupId = Number(params.groupId);
+    const group = leaderGroup(groupId);
+    if (group instanceof Response) return group;
+    const friendId = Number(params.friendId);
+    const friend = getMockMember(friendId);
+    if (!friend) return new HttpResponse(null, { status: 404 });
+    if (!mockFriendIds.includes(friendId))
+      return new HttpResponse(null, { status: 400 });
+    if (group.members.length >= 5)
+      return new HttpResponse(null, { status: 400 });
+    if (group.members.some((member) => member.id === friendId))
+      return new HttpResponse(null, { status: 400 });
+    const invitations = (mockSentInvitationsByGroupId[groupId] ??= []);
+    if (invitations.some((item) => item.requesterId === friendId))
+      return new HttpResponse(null, { status: 400 });
+    invitations.push({
+      requestId: mockState.nextSentInvitationId++,
+      requesterId: friend.id,
+      requesterNickname: friend.nickname,
+      requesterProfileImage: friend.profileImage,
+      requesterIntroduction: friend.introduction,
+    });
     return new HttpResponse(null, { status: 200 });
+  }),
+  http.get("/api/groups/:groupId/invitations/sent", ({ params }) => {
+    const groupId = Number(params.groupId);
+    const group = leaderGroup(groupId);
+    if (group instanceof Response) return group;
+    return HttpResponse.json(mockSentInvitationsByGroupId[groupId] ?? []);
+  }),
+  http.delete("/api/groups/:groupId/invitations/:requestId", ({ params }) => {
+    const groupId = Number(params.groupId);
+    const group = leaderGroup(groupId);
+    if (group instanceof Response) return group;
+    const invitations = mockSentInvitationsByGroupId[groupId] ?? [];
+    const index = invitations.findIndex(
+      (item) => item.requestId === Number(params.requestId)
+    );
+    if (index < 0) return new HttpResponse(null, { status: 404 });
+    invitations.splice(index, 1);
+    return HttpResponse.json({
+      resultCode: "200",
+      message: "그룹 초대를 취소했습니다.",
+      data: null,
+    });
   }),
   http.post("/api/groups/invitations/:requestId/accept", ({ params }) => {
     const invitation = mockGroupInvitations.find(

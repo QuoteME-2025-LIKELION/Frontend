@@ -1,4 +1,4 @@
-import type { GroupJoinRequestSent } from "@/api/groupApi";
+import type { GroupJoinRequest, GroupJoinRequestSent } from "@/api/groupApi";
 import type { MockGroupJoinRequest } from "@/types/mock.type";
 
 import { MOCK_PROFILE_IMAGE } from "./profile";
@@ -191,3 +191,16 @@ export const mockGroupInvitations = [
 ];
 
 export const nextSentJoinRequestId = 100;
+
+export const mockSentInvitationsByGroupId: Record<number, GroupJoinRequest[]> =
+  {
+    1: [
+      {
+        requestId: 201,
+        requesterId: 6,
+        requesterNickname: "조니님",
+        requesterIntroduction: "새 친구를 기다려요",
+        requesterProfileImage: MOCK_PROFILE_IMAGE,
+      },
+    ],
+  };
