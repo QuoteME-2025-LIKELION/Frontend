@@ -9,6 +9,7 @@ import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
   useFriendRequestsQuery,
   useFriendSearchQuery,
   useFriendsQuery,
@@ -59,6 +60,10 @@ export default function FriendGroupAdd() {
     name: string;
   } | null>(null);
   const rejectionLock = useRef(false);
+  const cancellationLock = useRef(false);
+  const [pendingCancellationId, setPendingCancellationId] = useState<
+    number | null
+  >(null);
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500);
   const [pendingFriendRequestId, setPendingFriendRequestId] = useState<
@@ -86,6 +91,7 @@ export default function FriendGroupAdd() {
     debouncedKeyword,
     Boolean(debouncedKeyword)
   );
+  const { mutateAsync: cancelFriendRequest } = useCancelFriendRequestMutation();
   const { mutateAsync: requestFriend } = useRequestFriendMutation();
   const { mutateAsync: acceptFriendRequest } = useAcceptFriendRequestMutation();
   const { mutateAsync: rejectFriendRequest } = useRejectFriendRequestMutation();
@@ -179,6 +185,25 @@ export default function FriendGroupAdd() {
     }
   }, [groupJoinTarget, requestJoinGroup]);
 
+  const handleCancelFriendRequest = useCallback(
+    async (receiverId: number) => {
+      if (cancellationLock.current) return;
+      cancellationLock.current = true;
+      setPendingCancellationId(receiverId);
+      try {
+        await cancelFriendRequest(receiverId);
+        setResponseToastMessage("친구 요청을 취소했어요");
+      } catch {
+        setErrorMessage("친구 요청 취소에 실패했어요. 다시 시도해 주세요.");
+        setShowErrorToast(true);
+      } finally {
+        cancellationLock.current = false;
+        setPendingCancellationId(null);
+      }
+    },
+    [cancelFriendRequest]
+  );
+
   const handleAcceptFriendRequest = useCallback(
     async (requestId: number) => {
       setPendingFriendRequestId(requestId);
@@ -224,10 +249,12 @@ export default function FriendGroupAdd() {
         setResponseToastMessage("그룹 초대를 수락했습니다.");
       } catch (err) {
         console.error("그룹 초대 수락 처리 중 오류:", err);
-        setErrorMessage(getGroupInvitationErrorMessage(
-          axios.isAxiosError(err) ? err.response?.status : undefined,
-          axios.isAxiosError(err) ? err.response?.data : undefined
-        ));
+        setErrorMessage(
+          getGroupInvitationErrorMessage(
+            axios.isAxiosError(err) ? err.response?.status : undefined,
+            axios.isAxiosError(err) ? err.response?.data : undefined
+          )
+        );
         setShowErrorToast(true);
       } finally {
         setPendingGroupInvitationId(null);
@@ -412,6 +439,8 @@ export default function FriendGroupAdd() {
               <FriendRequestSection
                 requests={friendRequests}
                 pendingRequestId={pendingFriendRequestId}
+                pendingCancellationId={pendingCancellationId}
+                onCancel={handleCancelFriendRequest}
                 onAccept={handleAcceptFriendRequest}
                 onReject={(requestId) => {
                   const request = friendRequests.find(
@@ -425,22 +454,24 @@ export default function FriendGroupAdd() {
                     });
                 }}
               />
-              <GroupInvitationSection
-                invitations={groupInvitations}
-                pendingInvitationId={pendingGroupInvitationId}
-                onAccept={handleAcceptGroupInvitation}
-                onReject={(requestId) => {
-                  const invitation = groupInvitations.find(
-                    (item) => item.requestId === requestId
-                  );
-                  if (invitation)
-                    setRejectionTarget({
-                      kind: "group",
-                      requestId,
-                      name: invitation.groupName,
-                    });
-                }}
-              />
+              {groupInvitations.length > 0 && (
+                <GroupInvitationSection
+                  invitations={groupInvitations}
+                  pendingInvitationId={pendingGroupInvitationId}
+                  onAccept={handleAcceptGroupInvitation}
+                  onReject={(requestId) => {
+                    const invitation = groupInvitations.find(
+                      (item) => item.requestId === requestId
+                    );
+                    if (invitation)
+                      setRejectionTarget({
+                        kind: "group",
+                        requestId,
+                        name: invitation.groupName,
+                      });
+                  }}
+                />
+              )}
             </>
           )}
         </S.Content>
