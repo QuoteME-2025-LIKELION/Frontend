@@ -9,7 +9,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useGroupQuery,
   useUpdateGroupMottoMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 
 import * as S from "./ChangeMessage.styles";

@@ -3,9 +3,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 import type { AiUsageResponse } from "@/api/quoteApi";
-import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/useQuoteQueries";
+import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/queries/useQuoteQueries";
 import theme from "@/styles/theme";
-import type { AiRequestState } from "@/utils/aiUsage";
+import type { AiRequestState } from "@/utils/quote/aiUsage";
 
 import * as S from "./RecommendList.styles";
 
@@ -90,7 +90,9 @@ export default function RecommendList({
           aria-label={
             aiRequestState === "unavailable"
               ? "AI 사용량 다시 확인"
-              : "AI 추천 다시 받기"
+              : aiRequestState === "exhausted"
+                ? "오늘 AI 추천 횟수 소진"
+                : "AI 추천 다시 받기"
           }
           disabled={
             isFetching ||
@@ -125,7 +127,7 @@ export default function RecommendList({
               strokeLinejoin="round"
             />
           </svg>
-          <S.UsageText>{usageText}</S.UsageText>
+          <S.UsageText aria-live="polite">{usageText}</S.UsageText>
         </S.RefreshButton>
         {isFetching && (
           <S.StatusText role="status">
@@ -134,6 +136,11 @@ export default function RecommendList({
         )}
         {isError && !isFetching && (
           <S.StatusText role="alert">{errorMessage}</S.StatusText>
+        )}
+        {summaryData && !isFetching && !isError && quotes.length === 0 && (
+          <S.StatusText role="status">
+            추천 결과가 없어요. 사용 횟수는 차감되지 않았으니 다시 시도해 주세요.
+          </S.StatusText>
         )}
         {quotes.map((q) => (
           <S.Commend

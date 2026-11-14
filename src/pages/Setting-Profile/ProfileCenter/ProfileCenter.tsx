@@ -13,7 +13,7 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 import {
   useSettingsProfileQuery,
   useUpdateSettingsProfileMutation,
-} from "@/hooks/useProfileQueries";
+} from "@/hooks/queries/useProfileQueries";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
 import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
 

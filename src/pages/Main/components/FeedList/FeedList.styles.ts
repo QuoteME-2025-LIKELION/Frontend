@@ -43,7 +43,7 @@ export const FilterButton = styled.button`
   gap: 0.25rem;
   ${theme.fonts.pretendard}
   color: ${theme.colors.black};
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 500;
   line-height: 140%;
   cursor: pointer;
@@ -74,7 +74,7 @@ export const FilterOption = styled.button<{ $active: boolean }>`
   color: ${({ $active }) =>
     $active ? theme.colors.black : theme.colors.territory};
   font-size: 0.875rem;
-  font-weight: ${({ $active }) => ($active ? 700 : 500)};
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
 
@@ -121,6 +121,7 @@ export const FilterCreateLink = styled(Link)`
   ${theme.fonts.pretendard}
   color: ${theme.colors.black};
   font-size: 0.875rem;
+  font-weight: 500;
 `;
 
 export const EmptyActionLink = styled(Link)`

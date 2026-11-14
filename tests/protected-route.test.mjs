@@ -12,7 +12,7 @@ const url = code => `data:text/javascript;base64,${Buffer.from(code).toString('b
 const modules = {
   'react-router-dom': url(`export const Navigate = ({to}) => globalThis.__sessionRouteReact.createElement('span', {'data-redirect': to}); export const Outlet = () => globalThis.__sessionRouteReact.createElement('span', {}, 'PROTECTED_HOME');`),
   '@/components/Spinner/Spinner': url(`export default () => globalThis.__sessionRouteReact.createElement('span', {}, 'CHECKING_SESSION');`),
-  '@/hooks/useProfileQueries': url('export const useMyProfileQuery = () => globalThis.__sessionRouteProfile;'),
+  '@/hooks/queries/useProfileQueries': url('export const useMyProfileQuery = () => globalThis.__sessionRouteProfile;'),
   '@/stores/useAuthStore': url('export default () => globalThis.__sessionRouteState;'),
 };
 const source = await readFile(new URL('../src/layouts/ProtectedRoute.tsx', import.meta.url), 'utf8');
@@ -21,10 +21,10 @@ let { outputText } = ts.transpileModule(source, {
 });
 outputText = outputText.replace(/from "([^"]+)"/g, (_, spec) => `from "${modules[spec] ?? import.meta.resolve(spec)}"`);
 const { default: ProtectedRoute } = await import(url(outputText));
-function render(state, profile) {
+function render(state, profile, props) {
   globalThis.__sessionRouteState = { isLoading: false, isAuthenticated: true, logout() {}, ...state };
   globalThis.__sessionRouteProfile = profile;
-  return renderToStaticMarkup(React.createElement(ProtectedRoute));
+  return renderToStaticMarkup(React.createElement(ProtectedRoute, props));
 }
 
 test('expired/revoked session redirects to first screen even if old profile data remains', () => {
@@ -49,4 +49,12 @@ test('profile failure or paused initial request returns to first screen without 
 test('initial verification waits; confirmed profile allows protected screen', () => {
   assert.ok(render({}, { isPending: true, fetchStatus: 'fetching' }).includes('CHECKING_SESSION'));
   assert.ok(render({}, { data: { id: 1, nickname: 'member' } }).includes('PROTECTED_HOME'));
+});
+
+
+test('incomplete members resume setup, completed members cannot reenter setup', () => {
+  assert.ok(render({}, { data: { profileCompleted: false } }).includes('data-redirect="/profile"'));
+  assert.ok(render({}, { data: { profileCompleted: false } }, { setup: true }).includes('PROTECTED_HOME'));
+  assert.ok(render({}, { data: { profileCompleted: true } }, { setup: true }).includes('data-redirect="/home"'));
+  assert.ok(render({}, { data: { profileCompleted: true } }).includes('PROTECTED_HOME'));
 });

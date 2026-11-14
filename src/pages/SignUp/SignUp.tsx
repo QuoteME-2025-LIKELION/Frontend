@@ -6,7 +6,7 @@ import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useSignUpMutation } from "@/hooks/useAuthQueries";
+import { useSignUpMutation } from "@/hooks/queries/useAuthQueries";
 import useAuthStore from "@/stores/useAuthStore";
 
 import * as S from "./SignUp.styles";

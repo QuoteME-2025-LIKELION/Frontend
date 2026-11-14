@@ -5,16 +5,16 @@ import tagCheckboxCheckedIcon from "@/assets/icons/quote-feed/tag-checkbox-check
 import tagCheckboxUncheckedIcon from "@/assets/icons/quote-feed/tag-checkbox-unchecked.svg";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useFriendsQuery } from "@/hooks/useFriendQueries";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+import { useFriendsQuery } from "@/hooks/queries/useFriendQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 import {
   useCreateQuoteMutation,
   useQuoteTagRequestsQuery,
   useSaveQuoteTagsMutation,
-} from "@/hooks/useQuoteQueries";
+} from "@/hooks/queries/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
-import { getQuoteInputError } from "@/utils/quoteInput";
-import { getTagCandidates, hasInvalidTagSelection } from "@/utils/quoteTags";
+import { getQuoteInputError } from "@/utils/quote/quoteInput";
+import { getTagCandidates, hasInvalidTagSelection } from "@/utils/quote/quoteTags";
 
 import * as S from "./NewQuote.styles";
 

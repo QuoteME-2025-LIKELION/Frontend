@@ -1,16 +1,18 @@
-import { useCallback, useMemo, useState } from "react";
+import axios from "axios";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { friendApi } from "@/api/friendApi";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import useDebounce from "@/hooks/useDebounce";
-import { useFriendsQuery } from "@/hooks/useFriendQueries";
+import { useFriendsQuery } from "@/hooks/queries/useFriendQueries";
 import {
   useCreateGroupMutation,
   useInviteGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import { countCodePoints } from "@/utils/codePoint";
 
@@ -193,8 +195,20 @@ export default function CreateGroup() {
       });
     } catch (err) {
       console.error("그룹 생성 또는 초대 오류:", err);
-      setErrorMessage("그룹 생성 또는 친구 초대에");
-      setErrorMessage3("실패했습니다.");
+      const isDuplicateGroupName =
+        createdGroupId === null &&
+        axios.isAxiosError<{ resultCode?: string; message?: string }>(err) &&
+        err.response?.status === 409 &&
+        (err.response.data?.resultCode === "409-1" ||
+          (err.response.data?.resultCode === "409" &&
+            typeof err.response.data.message === "string" &&
+            err.response.data.message.startsWith("409-1 - ")));
+      setErrorMessage(
+        isDuplicateGroupName
+          ? "이미 사용 중인 그룹 이름입니다."
+          : "그룹 생성 또는 친구 초대에"
+      );
+      setErrorMessage3(isDuplicateGroupName ? "" : "실패했습니다.");
       setShowErrorToast(true);
     }
   }, [
@@ -209,6 +223,36 @@ export default function CreateGroup() {
   ]);
 
   const [step, setStep] = useState(1);
+  const [isCheckingGroupName, setIsCheckingGroupName] = useState(false);
+  const [groupNameError, setGroupNameError] = useState("");
+  const groupNameCheckLock = useRef(false);
+
+  const handleCheckGroupName = async () => {
+    if (groupNameCheckLock.current) return;
+    const name = groupName.trim();
+    if (!name || countCodePoints(name) > 10) return;
+
+    groupNameCheckLock.current = true;
+    setIsCheckingGroupName(true);
+    setGroupNameError("");
+    try {
+      const { data } = await friendApi.searchFriendsAndGroups(name);
+      const isDuplicate = data.groups.some(
+        (group) => group.name?.trim().toLowerCase() === name.toLowerCase()
+      );
+      if (isDuplicate) {
+        setGroupNameError("이미 사용 중인 그룹 이름입니다.");
+        return;
+      }
+      setGroupName(name);
+      setStep(2);
+    } catch {
+      setGroupNameError("그룹 이름을 확인하지 못했어요. 다시 시도해 주세요.");
+    } finally {
+      groupNameCheckLock.current = false;
+      setIsCheckingGroupName(false);
+    }
+  };
 
   return (
     <>
@@ -279,7 +323,13 @@ export default function CreateGroup() {
             groupName={groupName}
             motto={motto}
             isSubmitted={isSubmitted}
-            onChangeGroupName={setGroupName}
+            isCheckingGroupName={isCheckingGroupName}
+            groupNameError={groupNameError}
+            onCheckGroupName={() => void handleCheckGroupName()}
+            onChangeGroupName={(value) => {
+              setGroupName(value);
+              setGroupNameError("");
+            }}
             onChangeMotto={setMotto}
             onMoveStep={setStep}
           />

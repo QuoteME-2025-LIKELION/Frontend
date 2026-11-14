@@ -108,8 +108,16 @@ export const TextArea = styled.textarea`
   ${theme.fonts.batang}
   text-align: center;
 
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  overscroll-behavior-y: contain;
+  border-radius: 0;
   z-index: 2;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);

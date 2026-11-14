@@ -1,5 +1,6 @@
+import UserActionsMenu from "@/components/UserActionsMenu/UserActionsMenu";
 import UserListItem from "@/components/UserListItem/UserListItem";
-import { useFriendRequestsQuery } from "@/hooks/useFriendQueries";
+import { useFriendRequestsQuery } from "@/hooks/queries/useFriendQueries";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "../FriendGroup.styles";
@@ -10,6 +11,7 @@ interface FriendListSectionProps {
   searchMembers: Friend[];
   friendIdSet: Set<number>;
   onDeleteFriend: (nickname: string, id: number) => void;
+  onBlockFriend?: (friend: Friend) => void;
   onAddFriend: (nickname: string, id: number) => void;
   hideExistingFriendAction?: boolean;
 }
@@ -23,6 +25,7 @@ export default function FriendListSection({
   searchMembers,
   friendIdSet,
   onDeleteFriend,
+  onBlockFriend,
   onAddFriend,
   hideExistingFriendAction = false,
 }: FriendListSectionProps) {
@@ -91,6 +94,11 @@ export default function FriendListSection({
                 key={user.id}
                 friend={user}
                 actionButton={actionButton}
+                actionMenu={isFriend && onBlockFriend && !hideExistingFriendAction ? (
+                  <UserActionsMenu authorName={user.nickname}
+                    onDelete={() => onDeleteFriend(user.nickname, user.id)}
+                    onBlock={() => onBlockFriend(user)} />
+                ) : undefined}
               />
             );
           })

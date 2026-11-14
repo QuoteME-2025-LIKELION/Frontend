@@ -72,8 +72,7 @@ export const BtnBox = styled.div`
     font-weight: 400;
     letter-spacing: -0.26px;
     text-align: center;
-    text-decoration-line: underline;
-    text-underline-position: from-font;
+    text-decoration-line: none;
 
     &:active {
       color: ${theme.colors.black};
@@ -169,6 +168,8 @@ export const AddGuideText = styled.div`
 
 export const RequestItem = styled(RequestItemBase)``;
 
+export const SentRequestItem = styled(RequestItemBase)``;
+
 export const RequestProfileImg = styled(RequestProfileImgBase)``;
 
 export const RequestDefaultProfileImg = styled(RequestDefaultProfileImgBase)``;
@@ -206,4 +207,30 @@ export const EmptyDescription = styled.div`
   font-size: 0.8125rem; /* 13px */
   font-weight: 400;
   letter-spacing: -0.26px;
+`;
+
+export const RequestTabs = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+export const RequestTab = styled.button`
+  ${theme.fonts.batang}
+  color: ${theme.colors.territory};
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+
+  &[aria-pressed="true"] {
+    color: ${theme.colors.black};
+  }
+`;
+
+export const RequestCancelActionBox = styled(RequestActionBoxBase)`
+  button:last-of-type,
+  button:last-of-type:disabled {
+    color: ${theme.colors.territory};
+  }
 `;

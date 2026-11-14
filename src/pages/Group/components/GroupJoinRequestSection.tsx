@@ -4,6 +4,7 @@ import * as S from "../Group.styles";
 
 interface GroupJoinRequestSectionProps {
   requests: GroupJoinRequest[];
+  showTitle?: boolean;
   pendingRequestId?: number | null;
   onAccept: (requestId: number) => void;
   onReject: (requestId: number) => void;
@@ -14,6 +15,7 @@ interface GroupJoinRequestSectionProps {
  */
 export default function GroupJoinRequestSection({
   requests,
+  showTitle = true,
   pendingRequestId = null,
   onAccept,
   onReject,
@@ -24,7 +26,11 @@ export default function GroupJoinRequestSection({
 
   return (
     <S.Section>
-      <S.Title role="heading" aria-level={2}>가입 요청</S.Title>
+      {showTitle && (
+        <S.Title role="heading" aria-level={2}>
+          가입 요청
+        </S.Title>
+      )}
       <S.RequestList>
         {requests.map((request) => {
           const isProcessing = pendingRequestId !== null;
@@ -43,7 +49,11 @@ export default function GroupJoinRequestSection({
                 <S.RequestUsername>
                   {request.requesterNickname}
                 </S.RequestUsername>
-                <S.RequestIntro>그룹 가입을 요청했어요.</S.RequestIntro>
+                {request.requesterIntroduction && (
+                  <S.RequestIntro>
+                    {request.requesterIntroduction}
+                  </S.RequestIntro>
+                )}
               </S.RequestUserBox>
               <S.RequestActionBox>
                 <button
@@ -52,7 +62,7 @@ export default function GroupJoinRequestSection({
                   aria-label={`${request.requesterNickname} 그룹 가입 요청 수락`}
                   onClick={() => onAccept(request.requestId)}
                 >
-                  수락
+                  승인
                 </button>
                 <button
                   type="button"

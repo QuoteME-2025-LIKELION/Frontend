@@ -5,6 +5,10 @@ import theme from "@/styles/theme";
 export const RequestItemBase = styled.div`
   width: 100%;
   border-bottom: 1px solid ${theme.colors["grey-100"]};
+
+  &:last-child {
+    border-bottom: none;
+  }
   display: grid;
   grid-template-columns: 2.8125rem 1fr auto;
   gap: 0.6875rem; /* 11px */
@@ -36,18 +40,19 @@ export const RequestUserBoxBase = styled.div`
 
   div {
     ${theme.fonts.pretendard}
-    font-size: 0.875rem; /* 14px */
     letter-spacing: -0.28px;
   }
 `;
 
 export const RequestUsernameBase = styled.div`
-  font-weight: 700;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
   color: ${theme.colors.black};
 `;
 
 export const RequestIntroBase = styled.div`
-  font-weight: 500;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
   color: ${theme.colors.territory};
 `;
 
@@ -62,8 +67,7 @@ export const RequestActionBoxBase = styled.div`
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;
     letter-spacing: -0.28px;
-    text-decoration-line: underline;
-    text-underline-position: from-font;
+    text-decoration-line: none;
     cursor: pointer;
 
     &:last-of-type {

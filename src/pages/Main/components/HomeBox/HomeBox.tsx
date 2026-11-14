@@ -6,14 +6,14 @@ import bookmarkFilledIcon from "@/assets/icons/archive/bookmark-filled.svg";
 import bookmarkOutlineIcon from "@/assets/icons/archive/bookmark-outline.svg";
 import shareIcon from "@/assets/icons/archive/share.svg";
 import userIcon from "@/assets/icons/archive/user.svg";
-import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
 import {
   useBookmarkQuoteMutation,
   useUnbookmarkQuoteMutation,
-} from "@/hooks/useQuoteQueries";
+} from "@/hooks/queries/useQuoteQueries";
+import { useQuoteImageDownload } from "@/hooks/share/useQuoteImageDownload";
 import type { MyQuote } from "@/types/feed.type";
-import { formatCustomDate } from "@/utils/formatCustomDate";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { formatCustomDate } from "@/utils/date/formatCustomDate";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import * as S from "./HomeBox.styles";
 

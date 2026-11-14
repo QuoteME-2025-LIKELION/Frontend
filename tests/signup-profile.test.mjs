@@ -10,79 +10,73 @@ async function loadModule(path, transform = source => source) {
   });
   return import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 }
-const { saveSignupProfile } = await loadModule('../src/utils/saveSignupProfile.ts');
+const { saveSignupProfile } = await loadModule('../src/hooks/queries/saveSignupProfile.ts');
 const payload = { nickname: '이름', introduction: '소개', birthYear: 1995 };
-function fixture(account, failure) {
+function fixture(failure) {
   const calls = [];
   const api = {
-    async getAccountProfile() { return { data: account }; },
-    async updateAccount(body) {
-      calls.push(['account', body]);
-      if (failure === 'account') throw new Error('account failed');
-      Object.assign(account, body);
+    async updateSettingsProfile(body) {
+      calls.push(['image', body]);
+      if (failure === 'image') throw new Error('image failed');
     },
     async setupProfile(body) {
-      calls.push(['profile', body]);
-      if (failure === 'profile') throw new Error('profile failed');
+      calls.push(['setup', body]);
+      if (failure === 'setup') throw new Error('setup failed');
+      return { data: { profileCompleted: true } };
     },
   };
-  return { api, calls, account };
+  return { api, calls };
 }
 
-test('preserves email and gender; birthYear goes only to account API', async () => {
-  const { api, calls } = fixture({ email: 'member@example.test', gender: 'FEMALE', birthYear: '2000' });
+test('setup sends birth year as JSON string without account read/write or image', async () => {
+  const { api, calls } = fixture();
   await saveSignupProfile(payload, api);
+  assert.deepEqual(calls, [['setup', { ...payload, birthYear: '1995' }]]);
+});
+
+test('optional image is uploaded before completing setup', async () => {
+  const image = new File(['image'], 'profile.png', { type: 'image/png' });
+  const { api, calls } = fixture();
+  await saveSignupProfile({ ...payload, image }, api);
   assert.deepEqual(calls, [
-    ['account', { email: 'member@example.test', gender: 'FEMALE', birthYear: '1995' }],
-    ['profile', { nickname: '이름', introduction: '소개' }],
+    ['image', { nickname: payload.nickname, introduction: payload.introduction, image }],
+    ['setup', { ...payload, birthYear: '1995' }],
   ]);
 });
 
-test('missing gender becomes ETC and existing ETC is preserved', async () => {
-  for (const gender of [null, undefined, 'ETC']) {
-    const { api, calls } = fixture({ email: 'member@example.test', gender });
-    await saveSignupProfile(payload, api);
-    assert.equal(calls[0][1].gender, 'ETC');
-  }
+test('image failure stops completion; setup failure is propagated and can be retried', async () => {
+  const image = new File(['image'], 'profile.png');
+  const failed = fixture('image');
+  await assert.rejects(saveSignupProfile({ ...payload, image }, failed.api));
+  assert.deepEqual(failed.calls.map(call => call[0]), ['image']);
+  const partial = fixture('setup');
+  await assert.rejects(saveSignupProfile({ ...payload, image }, partial.api));
+  assert.deepEqual(partial.calls.map(call => call[0]), ['image', 'setup']);
+  await saveSignupProfile({ ...payload, image }, fixture().api);
 });
 
-test('account failure stops profile upload; retry after profile failure skips already saved account', async () => {
-  const failedAccount = fixture({ email: 'member@example.test', gender: 'MALE' }, 'account');
-  await assert.rejects(saveSignupProfile(payload, failedAccount.api));
-  assert.equal(failedAccount.calls.length, 1);
-  const partial = fixture({ email: 'member@example.test', gender: 'MALE' }, 'profile');
-  await assert.rejects(saveSignupProfile(payload, partial.api));
-  assert.equal(partial.account.birthYear, '1995');
-  const retry = fixture(partial.account);
-  await saveSignupProfile(payload, retry.api);
-  assert.deepEqual(retry.calls.map(call => call[0]), ['profile']);
-});
-
-test('missing email or invalid year performs no writes', async () => {
-  const missing = fixture({ gender: 'MALE' });
-  await assert.rejects(saveSignupProfile(payload, missing.api));
-  assert.deepEqual(missing.calls, []);
+test('invalid birth years perform no writes', async () => {
   for (const birthYear of [1899, new Date().getFullYear() + 1, 1995.5, NaN]) {
-    const current = fixture({ email: 'member@example.test' });
-    await assert.rejects(saveSignupProfile({ ...payload, birthYear }, current.api));
-    assert.deepEqual(current.calls, []);
+    const { api, calls } = fixture();
+    await assert.rejects(saveSignupProfile({ ...payload, birthYear }, api));
+    assert.deepEqual(calls, []);
   }
 });
 
-test('actual profileApi uses separate account JSON and profile multipart contracts', async () => {
+test('actual transport separates multipart image and setup JSON contracts', async () => {
   const calls = [];
   globalThis.__signupProfileTransport = {
-    async get() { return { data: { email: 'member@example.test', gender: 'MALE' } }; },
-    async put(path, body) { calls.push([path, body]); return { data: {} }; },
+    async put(path, body) { calls.push([path, body]); return { data: { profileCompleted: true } }; },
   };
   const stub = `data:text/javascript;base64,${Buffer.from('export default globalThis.__signupProfileTransport;').toString('base64')}`;
   const { profileApi } = await loadModule('../src/api/profileApi.ts', source => source
     .replace('"@/api/api"', JSON.stringify(stub))
     .replaceAll('import.meta.env.VITE_API_URL', '"https://api.example.test"'));
-  await saveSignupProfile(payload, profileApi);
-  assert.equal(calls[0][0], '/api/profile/account');
-  assert.equal(calls[0][1].birthYear, '1995');
-  assert.equal(calls[1][0], '/api/profile');
-  assert.deepEqual(JSON.parse(await calls[1][1].get('data').text()), { nickname: '이름', introduction: '소개' });
+  const image = new File(['image'], 'profile.png', { type: 'image/png' });
+  await saveSignupProfile({ ...payload, image }, profileApi);
+  assert.equal(calls[0][0], '/api/profile');
+  assert.equal(calls[0][1].get('image').name, 'profile.png');
+  assert.deepEqual(JSON.parse(await calls[0][1].get('data').text()), { nickname: '이름', introduction: '소개' });
+  assert.deepEqual(calls[1], ['/api/profile/setup', { ...payload, birthYear: '1995' }]);
   delete globalThis.__signupProfileTransport;
 });

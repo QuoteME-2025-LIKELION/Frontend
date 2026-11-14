@@ -7,7 +7,7 @@ import Header from "@/components/Header/Header";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useLoginMutation } from "@/hooks/useAuthQueries";
+import { useLoginMutation } from "@/hooks/queries/useAuthQueries";
 import useAuthStore from "@/stores/useAuthStore";
 
 import * as S from "./Login.styles";

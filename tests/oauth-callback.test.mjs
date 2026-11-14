@@ -3,15 +3,15 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import ts from 'typescript';
 
-const source = await readFile(new URL('../src/utils/oauthCallback.ts', import.meta.url), 'utf8');
+const source = await readFile(new URL('../src/utils/auth/oauthCallback.ts', import.meta.url), 'utf8');
 const { outputText } = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 });
 const { resolveOAuthCallback, getOAuthFailureMessage } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 const resolve = query => resolveOAuthCallback(new URLSearchParams(query));
 
-test('only explicitly new members enter profile setup', () => {
-  assert.deepEqual(resolve('accessToken=test&isNewUser=true'), { path: '/profile', token: 'test' });
+test('login always enters profile verification regardless of isNewUser', () => {
+  assert.deepEqual(resolve('accessToken=test&isNewUser=true'), { path: '/home', token: 'test' });
   for (const flag of ['', '&isNewUser=false', '&isNewUser=TRUE']) {
     assert.deepEqual(resolve(`accessToken=test${flag}`), { path: '/home', token: 'test' });
   }

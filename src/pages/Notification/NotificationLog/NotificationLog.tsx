@@ -1,7 +1,7 @@
 import { useId } from "react";
 
 import type { Notification } from "@/types/notification.type";
-import { formatTimeAgo } from "@/utils/formatTimeAgo";
+import { formatTimeAgo } from "@/utils/date/formatTimeAgo";
 
 import * as S from "./NotificationLog.styles";
 

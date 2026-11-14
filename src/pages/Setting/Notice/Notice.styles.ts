@@ -99,6 +99,8 @@ export const NewsContent = styled.p`
   font-weight: 500;
   line-height: 1.55;
   letter-spacing: -0.28px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   word-break: keep-all;
 `;
 

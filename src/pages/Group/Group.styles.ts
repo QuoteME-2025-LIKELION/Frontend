@@ -230,7 +230,8 @@ export const InviteButton = styled.button<{ $isDisabled: boolean }>`
   justify-content: center;
   align-items: center;
   border-top: 0.5px solid
-    ${({ $isDisabled }) => ($isDisabled ? theme.colors["grey-100"] : theme.colors.primary)};
+    ${({ $isDisabled }) =>
+      $isDisabled ? theme.colors["grey-100"] : theme.colors.primary};
 
   ${theme.fonts.pretendard}
   color: ${({ $isDisabled }) =>
@@ -282,8 +283,32 @@ export const QuitBtn = styled.button<{
   font-weight: 500;
   letter-spacing: -0.28px;
   text-align: center;
-  border-top: ${({ $hasTopBorder }) =>
-    $hasTopBorder ? "0.5px solid" : 0};
+  border-top: ${({ $hasTopBorder }) => ($hasTopBorder ? "0.5px solid" : 0)};
   border-top-color: ${({ $isTopBorderDisabled }) =>
     $isTopBorderDisabled ? theme.colors["grey-100"] : theme.colors.primary};
+`;
+
+export const RequestTabs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+export const RequestTab = styled.button`
+  ${theme.fonts.batang}
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  color: ${theme.colors.territory};
+
+  &[aria-pressed="true"] {
+    color: ${theme.colors.black};
+  }
+`;
+
+export const RequestCancelActionBox = styled(RequestActionBoxBase)`
+  button:last-of-type,
+  button:last-of-type:disabled {
+    color: ${theme.colors.territory};
+  }
 `;

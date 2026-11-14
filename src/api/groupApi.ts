@@ -31,6 +31,13 @@ export interface GroupJoinRequest {
   createdAt?: string;
 }
 
+export interface GroupJoinRequestSent {
+  requestId: number;
+  groupId: number;
+  groupName: string;
+  requestedAt: string;
+}
+
 /**
  * 그룹 관련 API 함수 분리
  */
@@ -44,6 +51,8 @@ export const groupApi = {
     api.post(`/api/groups/${groupId}/invite/${friendId}`),
   getSentInvitations: (groupId: number | string) =>
     api.get<GroupJoinRequest[]>(`/api/groups/${groupId}/invitations/sent`),
+  cancelInvitation: (groupId: number | string, requestId: number) =>
+    api.delete(`/api/groups/${groupId}/invitations/${requestId}`),
   getInvitations: () => api.get<GroupInvitation[]>("/api/groups/invitations"),
   acceptInvitation: (requestId: number) =>
     api.post(`/api/groups/invitations/${requestId}/accept`),
@@ -51,6 +60,10 @@ export const groupApi = {
     api.post(`/api/groups/invitations/${requestId}/reject`),
   requestJoin: (groupId: number | string) =>
     api.post(`/api/groups/${groupId}/join-request`),
+  getSentJoinRequests: () =>
+    api.get<GroupJoinRequestSent[]>("/api/groups/join-requests/sent"),
+  cancelJoinRequest: (requestId: number) =>
+    api.delete(`/api/groups/join-requests/${requestId}`),
   getJoinRequests: (groupId: number | string) =>
     api.get<GroupJoinRequest[]>(`/api/groups/${groupId}/join-requests`),
   acceptJoinRequest: (requestId: number) =>

@@ -226,6 +226,13 @@ export const CopyMailText = styled.button`
   cursor: pointer;
 `;
 
+export const TermsButton = styled(ToggleInfoText.withComponent("button"))`
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+`;
+
 export const CopyToast = styled.div`
   position: absolute;
   left: 1.5rem;

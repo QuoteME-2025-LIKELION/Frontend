@@ -2,9 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import ToastModal from "@/components/ToastModal/ToastModal";
 import type { QuoteDraft } from "@/types/feed.type";
-import type { AiRequestState } from "@/utils/aiUsage";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
-import { getQuoteInputError } from "@/utils/quoteInput";
+import type { AiRequestState } from "@/utils/quote/aiUsage";
+import { getQuoteInputError } from "@/utils/quote/quoteInput";
+import { bindQuoteInputBoundary } from "@/utils/quote/quoteInputBoundary";
 
 import * as S from "./WriteBox.styles";
 
@@ -30,6 +31,12 @@ export default function WriteBox({
   onAI,
 }: WriteBoxProps) {
   const fieldId = useId();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const field = textAreaRef.current;
+    if (!field || isRecommendMode || isResultMode) return;
+    return bindQuoteInputBoundary(field, onChange, 50);
+  }, [onChange, isRecommendMode, isResultMode]);
   const countId = `${fieldId}-count`;
   const guideId = `${fieldId}-guide`;
   const infoId = `${fieldId}-info`;
@@ -127,6 +134,7 @@ export default function WriteBox({
         </S.Datebox>
         <S.WriteBox>
           <S.TextArea
+            ref={textAreaRef}
             aria-label="명언 내용"
             aria-describedby={
               !isRecommendMode && !isResultMode

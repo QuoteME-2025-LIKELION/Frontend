@@ -8,12 +8,14 @@ import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { useLogoutMutation } from "@/hooks/useAuthQueries";
-import useModalDialog from "@/hooks/useModalDialog";
+import { useLogoutMutation } from "@/hooks/queries/useAuthQueries";
 import {
   useAccountProfileQuery,
   useUpdateAccountMutation,
-} from "@/hooks/useProfileQueries";
+} from "@/hooks/queries/useProfileQueries";
+import useModalDialog from "@/hooks/ui/useModalDialog";
+import useAuthStore from "@/stores/useAuthStore";
+import { EMPTY_BLOCKED_MEMBERS, isModerationPreview, useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import { getPreferredScrollBehavior } from "@/utils/getPreferredScrollBehavior";
 
 import * as S from "./AccountSetting.styles";
@@ -60,6 +62,8 @@ function formatBirthYear(year: number | null) {
 export default function AccountSetting() {
   const navigate = useNavigate();
   const location = useLocation();
+  const session = useAuthStore((state) => state.sessionVersion);
+  const blockedMembers = useModerationPreviewStore((state) => state.blockedBySession[session] ?? EMPTY_BLOCKED_MEMBERS);
   const { mutateAsync: logout, isPending: isLoggingOut } = useLogoutMutation();
   const {
     data: accountProfile,
@@ -229,6 +233,15 @@ export default function AccountSetting() {
               >
                 <S.RowLabel>출생연도</S.RowLabel>
                 <S.RowValue>{formatBirthYear(currentBirthYear)}</S.RowValue>
+              </S.InfoRow>
+              <S.InfoRow type="button" onClick={() => navigate("/blocked-members")}>
+                <S.RowLabel>차단 목록</S.RowLabel>
+                <S.BlockedValue>
+                  {isModerationPreview && `${blockedMembers.length}명`}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </S.BlockedValue>
               </S.InfoRow>
             </S.InfoList>
             {isAccountProfileError && (

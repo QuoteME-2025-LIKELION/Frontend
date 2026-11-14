@@ -3,13 +3,15 @@ import UserListItem from "@/components/UserListItem/UserListItem";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 
-import GroupJoinRequestSection from "./GroupJoinRequestSection";
+import GroupRequestSection from "./GroupRequestSection";
 import * as S from "../Group.styles";
 
 interface GroupMainSectionProps {
   group?: Group;
   members: Friend[];
   joinRequests: GroupJoinRequest[];
+  sentInvitations: GroupJoinRequest[];
+  onCancelInvitation: (requestId: number) => void;
   pendingJoinRequestId?: number | null;
   isLeader: boolean;
   myMemberId?: number;
@@ -29,6 +31,8 @@ export default function GroupMainSection({
   group,
   members,
   joinRequests,
+  sentInvitations,
+  onCancelInvitation,
   pendingJoinRequestId,
   isLeader,
   myMemberId,
@@ -45,7 +49,9 @@ export default function GroupMainSection({
   return (
     <S.Main>
       <S.Section>
-        <S.Title role="heading" aria-level={2}>그룹 메시지</S.Title>
+        <S.Title role="heading" aria-level={2}>
+          그룹 메시지
+        </S.Title>
         <S.MessageBox
           type="button"
           aria-label={
@@ -65,7 +71,9 @@ export default function GroupMainSection({
         </S.MessageBox>
       </S.Section>
       <S.Section>
-        <S.Title role="heading" aria-level={2}>멤버</S.Title>
+        <S.Title role="heading" aria-level={2}>
+          멤버
+        </S.Title>
         {members.length > 0 ? (
           <S.MemberList>
             {members.map((friend) => (
@@ -93,7 +101,9 @@ export default function GroupMainSection({
         )}
       </S.Section>
       {isLeader && (
-        <GroupJoinRequestSection
+        <GroupRequestSection
+          invitations={sentInvitations}
+          onCancel={onCancelInvitation}
           requests={joinRequests}
           pendingRequestId={pendingJoinRequestId}
           onAccept={onAcceptJoinRequest}

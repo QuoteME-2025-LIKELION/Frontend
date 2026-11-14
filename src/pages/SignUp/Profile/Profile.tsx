@@ -6,9 +6,12 @@ import Button from "@/components/Button/Button";
 import DefaultProfileImage from "@/components/DefaultProfileImage/DefaultProfileImage";
 import Input from "@/components/Input/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { useSetupProfileMutation } from "@/hooks/useProfileQueries";
+import { useSetupProfileMutation } from "@/hooks/queries/useProfileQueries";
 import { codePointInputProps, countCodePoints } from "@/utils/codePoint";
-import { PROFILE_IMAGE_ACCEPT, validateProfileImage } from "@/utils/profileImage";
+import {
+  PROFILE_IMAGE_ACCEPT,
+  validateProfileImage,
+} from "@/utils/profileImage";
 
 import * as S from "./Profile.styles";
 
@@ -231,12 +234,12 @@ export default function Profile() {
 
               <S.TextBox>
                 <S.FieldLabel htmlFor="profile-birth-year">
-                  명언 카드에 표시할 <br />
+                  내 명언에 표시할 <br />
                   출생연도를 입력해 주세요.
                 </S.FieldLabel>
 
                 <S.exText id="profile-birth-year-help">
-                  출생연도는 계정 관리에서 수정할 수 있어요.
+                  태어난 연도를 네 자리로 입력해 주세요.
                 </S.exText>
               </S.TextBox>
 
@@ -302,9 +305,7 @@ export default function Profile() {
                     backgroundPosition: "center",
                   }}
                 >
-                  {!preview && (
-                    <DefaultProfileImage />
-                  )}
+                  {!preview && <DefaultProfileImage />}
                 </S.ImgPreview>
                 <input
                   id="profile-image"

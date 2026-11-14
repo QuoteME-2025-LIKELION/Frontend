@@ -47,6 +47,7 @@ export interface MyQuote {
  * @property {string} createDate: 명언 작성 날짜 (선택적)
  */
 export interface OtherQuote {
+  isAiGenerated?: boolean;
   id: number;
   quoteId?: number;
   content: string;

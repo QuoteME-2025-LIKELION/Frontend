@@ -1,4 +1,4 @@
-import { useOAuthCallbackFlow } from "@/hooks/useAuthQueries";
+import { useOAuthCallbackFlow } from "@/hooks/queries/useAuthQueries";
 
 export default function OAuthCallback() {
   useOAuthCallbackFlow();

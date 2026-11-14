@@ -1,0 +1,63 @@
+import type { MockNotification } from "@/types/mock.type";
+
+export const mockNotificationSettings = {
+  groupEnabled: true,
+  friendEnabled: true,
+  tagEnabled: true,
+  pokeEnabled: false,
+  likeEnabled: true,
+  quoteReminderEnabled: true,
+  quoteReminderTime: "10:00",
+  marketingEnabled: false,
+};
+
+export const mockNotifications: MockNotification[] = [
+  {
+    id: 1,
+    category: "GROUP",
+    type: "GROUP",
+    message: "무니니 그룹에서 초대가 왔습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:00:00",
+    createDate: "2025-11-07T10:00:00",
+    referenceId: 3,
+    targetId: 3,
+    senderName: "라라진",
+  },
+  {
+    id: 2,
+    category: "TAG",
+    type: "TAG_REQUEST",
+    message: "라라진님이 태그를 요청하였습니다.",
+    isRead: false,
+    createdAt: "2025-11-07T10:10:00",
+    createDate: "2025-11-03T19:02:00",
+    referenceId: 1,
+    targetId: 1,
+    senderName: "라라진",
+  },
+  {
+    id: 3,
+    category: "FRIEND",
+    type: "POKE",
+    message: "조니님이 콕 찔렀습니다.",
+    isRead: true,
+    createdAt: "2025-11-07T10:20:00",
+    createDate: "2025-11-07T10:20:00",
+    referenceId: 6,
+    targetId: 6,
+    senderName: "조니님",
+  },
+  {
+    id: 4,
+    category: null,
+    type: "QUOTE_REMINDER",
+    message: "오늘의 명언을 작성할 시간이에요!",
+    isRead: false,
+    createdAt: "2026-11-06T10:00:00",
+    createDate: "2026-11-06T10:00:00",
+    referenceId: null,
+    targetId: null,
+    senderName: null,
+  },
+];

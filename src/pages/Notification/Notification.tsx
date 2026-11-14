@@ -10,16 +10,16 @@ import {
   useMarkNotificationReadMutation,
   useNotificationsQuery,
   useUnreadNotificationCountQuery,
-} from "@/hooks/useNotificationsQuery";
-import { quoteQueryKeys } from "@/hooks/useQuoteQueries";
+} from "@/hooks/queries/useNotificationsQuery";
+import { quoteQueryKeys } from "@/hooks/queries/useQuoteQueries";
 import useNotificationStore from "@/stores/useNotificationStore";
 import type { Notification } from "@/types/notification.type";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 import {
   getNotificationFeedPath,
   getNotificationQuoteDate,
-} from "@/utils/getNotificationFeedPath";
-import { getWritingNotificationDestination } from "@/utils/getWritingNotificationDestination";
+} from "@/utils/notification/getNotificationFeedPath";
+import { getWritingNotificationDestination } from "@/utils/notification/getWritingNotificationDestination";
 
 import NotificationFilterTabs, {
   type NotificationFilter,

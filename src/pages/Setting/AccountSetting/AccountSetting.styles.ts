@@ -67,6 +67,14 @@ export const RowValue = styled.span`
   white-space: nowrap;
 `;
 
+export const BlockedValue = styled(RowValue)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  svg { flex-shrink: 0; }
+`;
+
 export const WarningMessage = styled.div`
   margin-top: 0.75rem;
   ${theme.fonts.pretendard}

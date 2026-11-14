@@ -6,16 +6,20 @@ import funnelIcon from "@/assets/icons/quote-feed/funnel.svg";
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import QuoteFeed from "@/components/QuoteFeed/QuoteFeed";
 import ToastModal from "@/components/ToastModal/ToastModal";
-import { usePokeFriendMutation } from "@/hooks/useFriendQueries";
-import { useQuoteImageDownload } from "@/hooks/useQuoteImageDownload";
+import { usePokeFriendMutation } from "@/hooks/queries/useFriendQueries";
 import {
   useBookmarkQuoteMutation,
   useMyQuoteTagRequestQuery,
   useRequestQuoteTagMutation,
   useUnbookmarkQuoteMutation,
-} from "@/hooks/useQuoteQueries";
+} from "@/hooks/queries/useQuoteQueries";
+import { useQuoteImageDownload } from "@/hooks/share/useQuoteImageDownload";
+import ReportDialog from "@/pages/Main/components/ReportDialog/ReportDialog";
+import useAuthStore from "@/stores/useAuthStore";
+import { isModerationPreview, useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import type { Group } from "@/types/group.type";
-import { formatDateToYYYYMMDD } from "@/utils/formatYYYYMMDD";
+import { type ModerationTarget } from "@/types/moderation.type";
+import { formatDateToYYYYMMDD } from "@/utils/date/formatYYYYMMDD";
 
 import * as S from "./FeedList.styles";
 
@@ -73,6 +77,12 @@ export default function FeedList({
   const { mutateAsync: pokeFriend } = usePokeFriendMutation();
 
   const [toastMessage, setToastMessage] = useState("");
+  const [moderation, setModeration] = useState<{
+    kind: "report" | "block";
+    target: ModerationTarget;
+  } | null>(null);
+  const sessionVersion = useAuthStore((state) => state.sessionVersion);
+  const blockPreview = useModerationPreviewStore((state) => state.block);
   const [tagRequestQuoteId, setTagRequestQuoteId] = useState<number | null>(
     null
   );
@@ -192,16 +202,19 @@ export default function FeedList({
   const handleShare = (authorNickname: string, index: number) => {
     const quote = quotes[index];
     if (!quote || quote.isSilenced) return;
-    onShare(() => downloadQuoteImage(
-      {
-        date: displayDate,
-        content: quote.content,
-        authorName: authorNickname,
-        authorBirthYear: quote.authorBirthYear,
-        taggedNames: quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames,
-      },
-      `QuoteMe-${displayDate}-${authorNickname}.png`
-    ));
+    onShare(() =>
+      downloadQuoteImage(
+        {
+          date: displayDate,
+          content: quote.content,
+          authorName: authorNickname,
+          authorBirthYear: quote.authorBirthYear,
+          taggedNames:
+            quote.tags?.map((tag) => tag.nickname) ?? quote.taggedNicknames,
+        },
+        `QuoteMe-${displayDate}-${authorNickname}.png`
+      )
+    );
   };
 
   const handlePoke = async (friendId: number) => {
@@ -262,6 +275,38 @@ export default function FeedList({
           confirmColor="primary"
           onClose={closeTagRequestConfirm}
           onConfirm={handleRequest}
+        />
+      )}
+      {moderation?.kind === "report" && (
+        <ReportDialog
+          authorName={moderation.target.nickname}
+          isAiGenerated={moderation.target.isAiGenerated === true}
+          onClose={() => setModeration(null)}
+          onSubmit={() => {
+            setModeration(null);
+            setToastMessage(
+              isModerationPreview
+                ? "신고가 접수됐어요"
+                : "신고 기능을 준비 중이에요."
+            );
+          }}
+        />
+      )}
+      {moderation?.kind === "block" && (
+        <ConfirmModal
+          question={`${moderation.target.nickname}님을 차단하시겠어요?`}
+          description="차단하면 친구 관계가 해제되며, 차단 목록은 계정 관리에서 확인할 수 있습니다"
+          cancelText="돌아가기"
+          confirmText="차단"
+          confirmColor="danger"
+          onClose={() => setModeration(null)}
+          onConfirm={() => {
+            const blocked = blockPreview(sessionVersion, moderation.target);
+            setModeration(null);
+            setToastMessage(
+              blocked ? "차단했어요." : "차단 기능을 준비 중이에요."
+            );
+          }}
         />
       )}
       <S.FilterBox
@@ -347,6 +392,7 @@ export default function FeedList({
             onTagRequestInfo={setToastMessage}
             onPoke={handlePoke}
             myMemberId={myMemberId}
+            onModerate={(kind, target) => setModeration({ kind, target })}
           />
         ))
       ) : !isLoading ? (
@@ -393,6 +439,7 @@ interface FeedListItemProps {
   onTagRequestInfo: (message: string) => void;
   onPoke: (friendId: number) => void;
   myMemberId?: number;
+  onModerate: (kind: "report" | "block", target: ModerationTarget) => void;
 }
 
 function FeedListItem({
@@ -405,8 +452,10 @@ function FeedListItem({
   onTagRequestInfo,
   onPoke,
   myMemberId,
+  onModerate,
 }: FeedListItemProps) {
-  const isAlreadyTagged = quote.myTagStatus === "TAGGED" ||
+  const isAlreadyTagged =
+    quote.myTagStatus === "TAGGED" ||
     Boolean(quote.tags?.some((tag) => tag.memberId === myMemberId));
   const canRequestTag =
     !quote.isSilenced && quote.quoteId !== undefined && !isAlreadyTagged;
@@ -443,7 +492,8 @@ function FeedListItem({
           canRequestTag &&
           !isTagRequestLoading &&
           !isTagRequestError &&
-          (tagRequest?.status === "NONE" || tagRequest?.status === "REJECTED") &&
+          (tagRequest?.status === "NONE" ||
+            tagRequest?.status === "REJECTED") &&
           quote.quoteId !== undefined
         ) {
           onRequest(quote.quoteId);
@@ -451,7 +501,10 @@ function FeedListItem({
       }}
       canRequestTag={canRequestTag}
       onTagRequestInfo={onTagRequestInfo}
-      tagRequestStatus={tagRequest?.status ?? (quote.myTagStatus === "REQUESTED" ? "PENDING" : "NONE")}
+      tagRequestStatus={
+        tagRequest?.status ??
+        (quote.myTagStatus === "REQUESTED" ? "PENDING" : "NONE")
+      }
       isTagRequestLoading={isTagRequestLoading}
       isTagRequestError={isTagRequestError}
       onPoke={() => {
@@ -462,6 +515,29 @@ function FeedListItem({
       isInArchive={false}
       isSilenced={quote.isSilenced}
       timeAgo={quote.timeAgo}
+      onReport={
+        !quote.isSilenced
+          ? () =>
+              onModerate("report", {
+                isAiGenerated: quote.isAiGenerated === true,
+                quoteId: quote.id,
+                nickname: quote.authorNickname,
+                introduction: quote.authorIntroduction,
+                profileImage: quote.authorProfileImage,
+              })
+          : undefined
+      }
+      onBlock={
+        !quote.isSilenced
+          ? () =>
+              onModerate("block", {
+                quoteId: quote.id,
+                nickname: quote.authorNickname,
+                introduction: quote.authorIntroduction,
+                profileImage: quote.authorProfileImage,
+              })
+          : undefined
+      }
     />
   );
 }

@@ -36,7 +36,7 @@ export const Btn = styled.button<{ $active: boolean }>`
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.32px;
 
   ${({ $active }) =>

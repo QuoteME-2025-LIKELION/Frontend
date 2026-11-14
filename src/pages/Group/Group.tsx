@@ -8,12 +8,14 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   useAcceptGroupJoinRequestMutation,
   useDeleteGroupMutation,
+  useCancelGroupInvitationMutation,
+  useGroupSentInvitationsQuery,
   useGroupJoinRequestsQuery,
   useGroupQuery,
   useRejectGroupJoinRequestMutation,
   useRemoveGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+} from "@/hooks/queries/useGroupQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 
 import GroupActionModals, {
   type GroupActionConfirm,
@@ -37,6 +39,11 @@ export default function Group() {
   const { data: joinRequests = [] } = useGroupJoinRequestsQuery(
     isLeader ? groupId : undefined
   );
+  const { data: sentInvitations = [] } = useGroupSentInvitationsQuery(
+    isLeader ? groupId : undefined
+  );
+  const { mutateAsync: cancelGroupInvitation } =
+    useCancelGroupInvitationMutation();
   const { mutateAsync: removeGroupMember } = useRemoveGroupMemberMutation();
   const { mutateAsync: deleteGroup } = useDeleteGroupMutation();
   const { mutateAsync: acceptGroupJoinRequest } =
@@ -69,7 +76,9 @@ export default function Group() {
   const [errorMessage, setErrorMessage] = useState("");
   const members = useMemo(() => groupData?.members ?? [], [groupData?.members]);
   const returnTo =
-    location.state?.returnTo === "/notification" ? "/notification" : "/friend-group";
+    location.state?.returnTo === "/notification"
+      ? "/notification"
+      : "/friend-group";
 
   useEffect(() => {
     // groupId 유효성 검사
@@ -109,6 +118,26 @@ export default function Group() {
       setShowErrorToast(true);
     }
   }, [deleteMemberTarget, groupId, removeGroupMember]);
+
+  const handleCancelInvitation = useCallback(
+    async (requestId: number) => {
+      if (!groupId || joinRequestInFlight.current) return;
+      joinRequestInFlight.current = true;
+      setPendingJoinRequestId(requestId);
+      try {
+        await cancelGroupInvitation({ groupId, requestId });
+        setJoinRequestToastMessage("그룹 초대를 취소했어요");
+        setShowJoinRequestToast(true);
+      } catch {
+        setErrorMessage("그룹 초대 취소에 실패했어요. 다시 시도해 주세요.");
+        setShowErrorToast(true);
+      } finally {
+        joinRequestInFlight.current = false;
+        setPendingJoinRequestId(null);
+      }
+    },
+    [groupId, cancelGroupInvitation]
+  );
 
   const handleAcceptJoinRequest = useCallback(
     async (requestId: number) => {
@@ -150,12 +179,7 @@ export default function Group() {
         setPendingJoinRequestId(null);
       }
     },
-    [
-      acceptGroupJoinRequest,
-      groupId,
-      joinRequests,
-      members.length,
-    ]
+    [acceptGroupJoinRequest, groupId, joinRequests, members.length]
   );
 
   const handleRejectJoinRequest = useCallback(
@@ -330,6 +354,8 @@ export default function Group() {
             group={groupData}
             members={members}
             joinRequests={joinRequests}
+            sentInvitations={sentInvitations}
+            onCancelInvitation={handleCancelInvitation}
             pendingJoinRequestId={pendingJoinRequestId}
             isLeader={isLeader}
             myMemberId={myProfile?.id}

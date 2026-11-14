@@ -9,6 +9,7 @@ export const Container = styled.div`
   width: 100%;
   max-width: 393px;
   height: 100vh;
+  height: 100dvh;
   background-color: ${theme.colors.secondary};
   overflow: hidden;
 `;
@@ -51,7 +52,7 @@ export const FriendList = styled.div`
   width: 100%;
 `;
 
-export const PendingList = styled(FriendList)`
+export const PendingSection = styled(FriendList)`
   gap: 0.9375rem; /* 15px */
 `;
 
@@ -66,4 +67,27 @@ export const EmptyBox = styled.div`
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   letter-spacing: -0.28px;
+`;
+
+export const Footer = styled.div`
+  width: 100%;
+  flex-shrink: 0;
+  padding: 1rem 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+`;
+
+export const LinkInviteButton = styled.button`
+  width: 100%;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  background-color: ${theme.colors.primary};
+  ${theme.fonts.pretendard}
+  color: ${theme.colors.white};
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.28px;
+
+  cursor: pointer;
 `;

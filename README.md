@@ -177,6 +177,8 @@ frontend/
 ├─ 📁 public/
 │  ├─ 📁 favicons/ (favicon 폴더)
 │  │
+│  ├─ 📁 images/ (공유 이미지 등 정적 이미지 관리)
+│  │
 │  └─ 📁 fonts/ (정적 경로에서 폰트 관리)
 │     └─ 📃 fonts.css (폰트 파일 import하는 css 파일 - index.html에 직접 import)
 │
@@ -184,13 +186,32 @@ frontend/
 │  ├─ 📁 api/
 │  │  └─ 📃 api.ts (axiosInstance 파일)
 │  │
+│  ├─ 📁 app/ (앱 초기화, Provider, 라우팅 관리)
+│  │  ├─ 📁 bootstrap/
+│  │  ├─ 📁 providers/
+│  │  ├─ 📁 router/
+│  │  └─ 📃 queryClient.ts
+│  │
+│  ├─ 📁 assets/ (아이콘 등 이미지 파일 관리)
+│  │
 │  ├─ 📁 components/ (재사용되는 컴포넌트 파일 모음 - 각 컴포넌트를 폴더로 관리)
 │  │
-│  ├─ 📁 data/ (더미 데이터 관리)  
+│  ├─ 📁 data/ (더미 데이터 관리)
+│  │  └─ 📁 mock/ (기능별 목 데이터 관리)
 │  │
-│  ├─ 📁 hooks/ (재사용되는 커스텀 훅 관리)  
+│  ├─ 📁 hooks/ (재사용되는 커스텀 훅 관리)
+│  │  ├─ 📁 archive/ (아카이브 화면 동작)
+│  │  ├─ 📁 queries/ (API 조회·변경 및 저장 처리)
+│  │  ├─ 📁 share/ (이미지 공유·다운로드)
+│  │  └─ 📁 ui/ (모달, 디바운스, 애니메이션)
 │  │
 │  ├─ 📁 layouts/ (기본 레이아웃, 보호된 경로 레이아웃 관리)            
+│  │
+│  ├─ 📁 mocks/ (MSW API 모킹 관리)
+│  │  ├─ 📁 handlers/ (기능별 요청 핸들러)
+│  │  ├─ 📃 browser.ts (브라우저 워커 설정)
+│  │  ├─ 📃 handlers.ts (핸들러 모음)
+│  │  └─ 📃 state.ts (목 데이터 변경 상태 관리)
 │  │
 │  ├─ 📁 pages/ (홈 화면 등 페이지 관리 - 각 페이지에서만 쓰이는 컴포넌트는 각 페이지 폴더 내부에서 관리)
 │  │
@@ -202,10 +223,17 @@ frontend/
 │  │
 │  ├─ 📁 types/ (전역에서 쓰이는 type 파일 관리)          
 │  │
-│  ├─ 📁 utils/ (유틸리티 함수 관리)          
+│  ├─ 📁 utils/ (유틸리티 함수 관리)
+│  │  ├─ 📁 auth/ (인증 관련 함수)
+│  │  ├─ 📁 date/ (날짜 관련 함수)
+│  │  ├─ 📁 notification/ (알림 이동 경로 처리)
+│  │  └─ 📁 quote/ (명언 입력·태그·공유 관련 함수)
 │  │
 │  ├─ 📃 App.tsx         
 │  └─ 📃 main.tsx          
+│
+├─ 📁 tests/ (테스트 파일 관리)
+│  └─ 📁 helpers/ (테스트 공통 함수)
 │
 ├─ 📃 .gitignore
 ├─ 📃 .prettierrc (prettier 설정 파일)

@@ -8,6 +8,10 @@ export const Container = styled.div<{
 }>`
   width: 100%;
   border-bottom: 1px solid ${theme.colors["grey-100"]};
+
+  &:last-child {
+    border-bottom: none;
+  }
   display: grid;
   grid-template-columns: 2.8125rem minmax(0, 1fr) auto;
   gap: 0.6875rem; /* 11px */
@@ -44,7 +48,6 @@ export const UserBox = styled.div`
 
   div {
     ${theme.fonts.pretendard}
-    font-size: 0.875rem; /* 14px */
     letter-spacing: -0.28px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -53,12 +56,14 @@ export const UserBox = styled.div`
 `;
 
 export const Username = styled.div`
-  font-weight: 700;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
   color: ${theme.colors.black};
 `;
 
 export const Intro = styled.div`
-  font-weight: 500;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
   color: ${theme.colors.territory};
 `;
 
@@ -68,15 +73,14 @@ export const BtnBox = styled.div`
   justify-content: flex-end;
   width: auto;
 
-  button {
+  > button {
     min-width: 1.4375rem;
     ${theme.fonts.pretendard}
     font-size: 0.8125rem; /* 13px */
     font-weight: 500;
     letter-spacing: -0.28px;
-    text-decoration-line: underline;
+    text-decoration-line: none;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-    text-underline-position: from-font;
 
     &:disabled {
       cursor: default;

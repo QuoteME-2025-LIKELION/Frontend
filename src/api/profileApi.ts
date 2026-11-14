@@ -34,6 +34,7 @@ export interface AccountProfileResponse {
 
 export interface MyProfileResponse {
   id: number;
+  profileCompleted: boolean;
   nickname: string;
   introduction?: string;
   profileImageUrl?: string;
@@ -72,8 +73,8 @@ function createProfileFormData({
  * 프로필 관련 API 함수 분리
  */
 export const profileApi = {
-  setupProfile: (payload: UpdateSettingsProfileRequest) =>
-    api.put("/api/profile", createProfileFormData(payload)),
+  setupProfile: (payload: { nickname: string; birthYear: string; introduction?: string }) =>
+    api.put<MyProfileResponse>("/api/profile/setup", payload),
   getMyProfile: (signal?: AbortSignal) =>
     api.get<MyProfileResponse>("/api/profile", { signal, timeout: 15_000 }),
   getOtherProfile: (memberId: number | string) =>

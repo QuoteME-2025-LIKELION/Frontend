@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
@@ -8,16 +8,14 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import ToastModal from "@/components/ToastModal/ToastModal";
 import UserListItem from "@/components/UserListItem/UserListItem";
-import useDebounce from "@/hooks/useDebounce";
+import { useFriendsQuery } from "@/hooks/queries/useFriendQueries";
 import {
-  useFriendSearchQuery,
-  useFriendsQuery,
-} from "@/hooks/useFriendQueries";
-import {
+  useCancelGroupInvitationMutation,
   useGroupQuery,
   useGroupSentInvitationsQuery,
   useInviteGroupMemberMutation,
-} from "@/hooks/useGroupQueries";
+} from "@/hooks/queries/useGroupQueries";
+import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "./Invite.styles";
@@ -39,57 +37,46 @@ export default function Invite() {
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce<string>(keyword, 500); // 디바운스 적용
   const [inviteTarget, setInviteTarget] = useState<InviteTarget | null>(null);
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showLinkInviteToast, setShowLinkInviteToast] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const actionLock = useRef(false);
   const [errorToastMessage, setErrorToastMessage] = useState("");
   const [showFullGroupToast, setShowFullGroupToast] = useState(false);
 
   const { data: groupData, error: groupError } = useGroupQuery(
     isValidGroupId ? groupId : undefined
   );
-  const { data: friends = EMPTY_FRIENDS } = useFriendsQuery(
-    Boolean(groupData) && !debouncedKeyword
-  );
-  const { data: searchResult } = useFriendSearchQuery(
-    debouncedKeyword,
-    Boolean(groupData) && Boolean(debouncedKeyword)
-  );
-  const { data: sentInvitations = [] } = useGroupSentInvitationsQuery(
-    isValidGroupId ? groupId : undefined
-  );
+  const {
+    data: friends = EMPTY_FRIENDS,
+    isPending: isFriendsPending,
+    isError: isFriendsError,
+  } = useFriendsQuery(Boolean(groupData));
+  const {
+    data: sentInvitations = [],
+    isPending: isInvitationsPending,
+    isError: isInvitationsError,
+  } = useGroupSentInvitationsQuery(isValidGroupId ? groupId : undefined);
   const { mutateAsync: inviteGroupMember } = useInviteGroupMemberMutation();
+  const { mutateAsync: cancelGroupInvitation } =
+    useCancelGroupInvitationMutation();
 
   const currentMembers = groupData?.members || EMPTY_FRIENDS;
-  const sentInvitationFriends = useMemo(
-    () =>
-      sentInvitations.map((invitation) => ({
-        id: invitation.requesterId,
-        nickname: invitation.requesterNickname,
-        profileImage: invitation.requesterProfileImage ?? undefined,
-        introduction: invitation.requesterIntroduction,
-      })),
-    [sentInvitations]
-  );
-  const friendsList = debouncedKeyword
-    ? searchResult?.members || EMPTY_FRIENDS
-    : friends;
+  const isListPending = isFriendsPending || isInvitationsPending;
+  const isListError = isFriendsError || isInvitationsError;
   const filteredFriends = useMemo(() => {
     const currentMemberIds = new Set(currentMembers.map((member) => member.id));
-    const pendingInviteIds = new Set([
-      ...sentInvitationFriends.map((friend) => friend.id),
-    ]);
-
-    return friendsList.filter(
-      (friend) =>
-        !currentMemberIds.has(friend.id) && !pendingInviteIds.has(friend.id)
+    const pendingInviteIds = new Set(
+      sentInvitations.map((invitation) => invitation.requesterId)
     );
-  }, [currentMembers, friendsList, sentInvitationFriends]);
-  const pendingInviteList = useMemo(() => {
-    const pendingMap = new Map<number, Friend>();
-
-    sentInvitationFriends.forEach((friend) => pendingMap.set(friend.id, friend));
-
-    return Array.from(pendingMap.values());
-  }, [sentInvitationFriends]);
+    const search = debouncedKeyword.trim().toLocaleLowerCase();
+    return friends.filter(
+      (friend) =>
+        !currentMemberIds.has(friend.id) &&
+        !pendingInviteIds.has(friend.id) &&
+        friend.nickname.toLocaleLowerCase().includes(search)
+    );
+  }, [currentMembers, friends, sentInvitations, debouncedKeyword]);
 
   // groupId 유효성 검사
   useEffect(() => {
@@ -110,11 +97,13 @@ export default function Invite() {
 
   const handleInviteFriend = useCallback(
     (friend: Friend) => {
+      if (actionLock.current || isListPending || isListError) return;
       setInviteTarget(friend);
     },
-    []
+    [isListPending, isListError]
   );
   const handleConfirmInvite = useCallback(async () => {
+    if (actionLock.current) return;
     if (!inviteTarget || !groupId) {
       console.error("초대할 친구 또는 그룹 ID가 유효하지 않습니다.");
       setErrorToastMessage("초대 정보를 확인할 수 없습니다.");
@@ -127,29 +116,54 @@ export default function Invite() {
       return;
     }
 
+    actionLock.current = true;
+    setIsProcessing(true);
     try {
       await inviteGroupMember({ groupId, friendId: inviteTarget.id });
       setInviteTarget(null);
-      setShowSuccessToast(true);
+      setSuccessMessage("초대 요청을 보냈어요");
     } catch (err) {
       console.error("그룹원 초대 오류:", err);
       setInviteTarget(null);
       setErrorToastMessage("초대 요청 전송에 실패했습니다.");
+    } finally {
+      actionLock.current = false;
+      setIsProcessing(false);
     }
   }, [currentMembers.length, groupId, inviteGroupMember, inviteTarget]);
 
+  const handleCancelInvitation = useCallback(
+    async (requestId: number) => {
+      if (!groupId || actionLock.current) return;
+      actionLock.current = true;
+      setIsProcessing(true);
+      try {
+        await cancelGroupInvitation({ groupId, requestId });
+        setSuccessMessage("그룹 초대를 취소했어요");
+      } catch {
+        setErrorToastMessage(
+          "그룹 초대 취소에 실패했어요. 다시 시도해 주세요."
+        );
+      } finally {
+        actionLock.current = false;
+        setIsProcessing(false);
+      }
+    },
+    [groupId, cancelGroupInvitation]
+  );
+
   return (
     <>
-      <PageTitle title="그룹 초대하기" />
+      <PageTitle title="멤버 초대하기" />
       <S.Container>
         {inviteTarget && (
           <ConfirmModal
             question=""
-            lines={[
-              `${inviteTarget.nickname}님을 그룹에`,
-              "초대하시겠어요?",
-            ]}
-            onClose={() => setInviteTarget(null)}
+            lines={[`${inviteTarget.nickname}님을 그룹에`, "초대할까요?"]}
+            onClose={() => {
+              if (!actionLock.current) setInviteTarget(null);
+            }}
+            confirmDisabled={isProcessing}
             onConfirm={handleConfirmInvite}
             showOverlay={false}
             cancelText="돌아가기"
@@ -158,11 +172,20 @@ export default function Invite() {
             variant="card"
           />
         )}
-        {showSuccessToast && (
+        {successMessage && (
           <ToastModal
-            text="초대 요청을 보냈습니다."
-            isVisible={showSuccessToast}
-            onClose={() => setShowSuccessToast(false)}
+            text={successMessage}
+            isVisible={Boolean(successMessage)}
+            onClose={() => setSuccessMessage("")}
+            showOverlay={false}
+            variant="snackbar"
+          />
+        )}
+        {showLinkInviteToast && (
+          <ToastModal
+            text="아직 구현되지 않은 기능이에요"
+            isVisible={showLinkInviteToast}
+            onClose={() => setShowLinkInviteToast(false)}
             showOverlay={false}
             variant="snackbar"
           />
@@ -171,7 +194,7 @@ export default function Invite() {
           <ToastModal
             isVisible={showFullGroupToast}
             text=""
-            redText="최대 인원(5명)에 도달하여 초대를 보낼 수 없어요."
+            redText="최대 인원 5명이 가득 차 더 이상 초대할 수 없어요"
             showOverlay={false}
             variant="snackbar"
             onClose={() => setShowFullGroupToast(false)}
@@ -197,49 +220,76 @@ export default function Invite() {
           <Search
             label="그룹에 초대할 친구 검색"
             placeholder="검색어를 입력해 주세요"
-            desc={
-              keyword && filteredFriends.length === 0
-                ? "검색 결과가 없습니다."
-                : undefined
-            }
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onClear={() => setKeyword("")}
           />
           <S.FriendList>
-            {filteredFriends.length > 0 ? (
-              filteredFriends.map((friend: Friend) => (
+            {isListPending ? (
+              <S.EmptyBox>목록을 불러오고 있어요</S.EmptyBox>
+            ) : isListError ? (
+              <S.EmptyBox>
+                목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+              </S.EmptyBox>
+            ) : filteredFriends.length > 0 ? (
+              filteredFriends.map((friend) => (
                 <UserListItem
                   key={friend.id}
                   friend={friend}
                   actionButton={{
                     type: "invite",
                     text: "초대",
+                    disabled: isProcessing,
                     onClick: () => handleInviteFriend(friend),
                   }}
                 />
               ))
             ) : (
-              <S.EmptyBox>초대할 수 있는 친구가 없습니다.</S.EmptyBox>
+              <S.EmptyBox>
+                {debouncedKeyword.trim()
+                  ? "검색 결과가 없습니다."
+                  : "초대할 수 있는 친구가 없습니다."}
+              </S.EmptyBox>
             )}
           </S.FriendList>
-          {pendingInviteList.length > 0 && (
-            <S.PendingList>
-              <S.Title>초대 대기</S.Title>
-              {pendingInviteList.map((friend) => (
-                <UserListItem
-                  key={friend.id}
-                  friend={friend}
-                  actionButton={{
-                    type: "invite",
-                    text: "요청됨",
-                    onClick: () => undefined,
-                  }}
-                />
-              ))}
-            </S.PendingList>
+          {sentInvitations.length > 0 && (
+            <S.PendingSection>
+              <S.Title role="heading" aria-level={2}>
+                초대 대기
+              </S.Title>
+              <S.FriendList>
+                {sentInvitations.map((invitation) => (
+                  <UserListItem
+                    key={invitation.requestId}
+                    friend={{
+                      id: invitation.requesterId,
+                      nickname: invitation.requesterNickname,
+                      profileImage:
+                        invitation.requesterProfileImage ?? undefined,
+                      introduction: invitation.requesterIntroduction,
+                    }}
+                    actionButton={{
+                      type: "invite",
+                      text: "취소",
+                      disabled: isProcessing,
+                      onClick: () => {
+                        void handleCancelInvitation(invitation.requestId);
+                      },
+                    }}
+                  />
+                ))}
+              </S.FriendList>
+            </S.PendingSection>
           )}
         </S.Content>
+        <S.Footer>
+          <S.LinkInviteButton
+            type="button"
+            onClick={() => setShowLinkInviteToast(true)}
+          >
+            링크로 초대하기
+          </S.LinkInviteButton>
+        </S.Footer>
       </S.Container>
     </>
   );

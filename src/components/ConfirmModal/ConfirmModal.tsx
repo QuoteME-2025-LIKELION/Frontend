@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 
-import useModalDialog from "@/hooks/useModalDialog";
+import useModalDialog from "@/hooks/ui/useModalDialog";
 
 import * as S from "./ConfirmModal.styles";
 

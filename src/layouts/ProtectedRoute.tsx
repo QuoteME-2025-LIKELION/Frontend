@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 import Spinner from "@/components/Spinner/Spinner";
-import { useMyProfileQuery } from "@/hooks/useProfileQueries";
+import { useMyProfileQuery } from "@/hooks/queries/useProfileQueries";
 import useAuthStore from "@/stores/useAuthStore";
 
 /** 서버 확인 실패 시 세션을 종료하고 첫 화면으로 돌아간다. */
-export default function ProtectedRoute() {
+export default function ProtectedRoute({ setup = false }: { setup?: boolean }) {
   const { isAuthenticated, isLoading, logout } = useAuthStore();
   const profile = useMyProfileQuery(true);
   const verificationFailed = profile.isError ||
@@ -19,5 +19,7 @@ export default function ProtectedRoute() {
   if (isLoading) return <Spinner />;
   if (!isAuthenticated || verificationFailed) return <Navigate to="/" replace />;
   if (profile.isPending) return <Spinner />;
+  if (profile.data?.profileCompleted === false && !setup) return <Navigate to="/profile" replace />;
+  if (profile.data?.profileCompleted === true && setup) return <Navigate to="/home" replace />;
   return <Outlet />;
 }

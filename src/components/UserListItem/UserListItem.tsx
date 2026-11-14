@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
+
 import type { Friend } from "@/types/friend.type";
 
 import * as S from "./UserListItem.styles";
 
 interface UserListItemProps {
   friend: Friend;
+  actionMenu?: ReactNode;
   isSelectable?: boolean; // true면 선택 가능 - 배경색 바뀔 수 있음
   isSelected?: boolean;
   onSelect?: () => void;
@@ -46,6 +49,7 @@ export default function UserListItem({
   isSelected = false,
   onSelect,
   actionButton,
+  actionMenu,
 }: UserListItemProps) {
   const { nickname, introduction, profileImage } = friend;
   const handleClick = isSelectable ? onSelect : undefined;
@@ -105,7 +109,7 @@ export default function UserListItem({
         <S.Username>{nickname}</S.Username>
         <S.Intro>{introduction}</S.Intro>
       </S.UserBox>
-      <S.BtnBox>{actionButtonElement}</S.BtnBox>
+      <S.BtnBox>{!isSelectable && actionMenu ? actionMenu : actionButtonElement}</S.BtnBox>
     </S.Container>
   );
 }
