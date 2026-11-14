@@ -61,7 +61,9 @@ export default function AppRoutes() {
         <Routes>
           {/* 인증 없이 접근 가능한 진입/인증 플로우 라우트 */}
           <Route path="/" element={<Start />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route element={<ProtectedRoute setup />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<Login />} />
           </Route>

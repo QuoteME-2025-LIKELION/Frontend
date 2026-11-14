@@ -10,8 +10,8 @@ const { outputText } = ts.transpileModule(source, {
 const { resolveOAuthCallback, getOAuthFailureMessage } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 const resolve = query => resolveOAuthCallback(new URLSearchParams(query));
 
-test('only explicitly new members enter profile setup', () => {
-  assert.deepEqual(resolve('accessToken=test&isNewUser=true'), { path: '/profile', token: 'test' });
+test('login always enters profile verification regardless of isNewUser', () => {
+  assert.deepEqual(resolve('accessToken=test&isNewUser=true'), { path: '/home', token: 'test' });
   for (const flag of ['', '&isNewUser=false', '&isNewUser=TRUE']) {
     assert.deepEqual(resolve(`accessToken=test${flag}`), { path: '/home', token: 'test' });
   }

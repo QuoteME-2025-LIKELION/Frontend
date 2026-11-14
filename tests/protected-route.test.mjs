@@ -21,10 +21,10 @@ let { outputText } = ts.transpileModule(source, {
 });
 outputText = outputText.replace(/from "([^"]+)"/g, (_, spec) => `from "${modules[spec] ?? import.meta.resolve(spec)}"`);
 const { default: ProtectedRoute } = await import(url(outputText));
-function render(state, profile) {
+function render(state, profile, props) {
   globalThis.__sessionRouteState = { isLoading: false, isAuthenticated: true, logout() {}, ...state };
   globalThis.__sessionRouteProfile = profile;
-  return renderToStaticMarkup(React.createElement(ProtectedRoute));
+  return renderToStaticMarkup(React.createElement(ProtectedRoute, props));
 }
 
 test('expired/revoked session redirects to first screen even if old profile data remains', () => {
@@ -49,4 +49,12 @@ test('profile failure or paused initial request returns to first screen without 
 test('initial verification waits; confirmed profile allows protected screen', () => {
   assert.ok(render({}, { isPending: true, fetchStatus: 'fetching' }).includes('CHECKING_SESSION'));
   assert.ok(render({}, { data: { id: 1, nickname: 'member' } }).includes('PROTECTED_HOME'));
+});
+
+
+test('incomplete members resume setup, completed members cannot reenter setup', () => {
+  assert.ok(render({}, { data: { profileCompleted: false } }).includes('data-redirect="/profile"'));
+  assert.ok(render({}, { data: { profileCompleted: false } }, { setup: true }).includes('PROTECTED_HOME'));
+  assert.ok(render({}, { data: { profileCompleted: true } }, { setup: true }).includes('data-redirect="/home"'));
+  assert.ok(render({}, { data: { profileCompleted: true } }).includes('PROTECTED_HOME'));
 });

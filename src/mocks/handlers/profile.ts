@@ -11,6 +11,7 @@ export const profileHandlers = [
   http.get("/api/profile", () => {
     return HttpResponse.json({
       id: 1,
+      profileCompleted: true,
       nickname: "손지수",
       email: "guest@quoteme.com",
       introduction: "긍정의 힘을 믿어요",
@@ -18,10 +19,15 @@ export const profileHandlers = [
       profileImage: MOCK_PROFILE_IMAGE,
     });
   }),
+  // 현재 목 세션은 게스트이며 setup은 서버 계약상 허용되지 않는다.
+  http.put("/api/profile/setup", () =>
+    HttpResponse.json({ message: "게스트는 프로필을 설정할 수 없습니다." }, { status: 403 })
+  ),
   http.put("/api/profile", async () => {
     // multipart/form-data 처리
     return HttpResponse.json({
       id: 1,
+      profileCompleted: true,
       nickname: "수정된닉네임",
       email: "guest@quoteme.com",
       introduction: "프로필이 수정되었습니다.",

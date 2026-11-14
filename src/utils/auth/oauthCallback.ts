@@ -22,5 +22,6 @@ export function resolveOAuthCallback(params: URLSearchParams) {
   }
   const token = params.get("accessToken");
   if (!token?.trim()) return { path: "/", message: getOAuthFailureMessage(null) };
-  return { path: params.get("isNewUser") === "true" ? "/profile" : "/home", token };
+  // 완료 상태는 보호 라우트의 GET /api/profile로 확인한다.
+  return { path: "/home", token };
 }

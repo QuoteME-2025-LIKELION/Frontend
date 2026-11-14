@@ -30,7 +30,8 @@ export function useMyProfileQuery(verifySession = false) {
     queryFn: async ({ signal }) => {
       const res = await profileApi.getMyProfile(signal);
       if (!res.data || !Number.isSafeInteger(res.data.id) || res.data.id <= 0 ||
-          typeof res.data.nickname !== "string") {
+          typeof res.data.nickname !== "string" ||
+          typeof res.data.profileCompleted !== "boolean") {
         throw new Error("Invalid profile response");
       }
       return res.data;
@@ -98,7 +99,7 @@ export function useSetupProfileMutation() {
     mutationFn: (payload: SetupProfileRequest) =>
       saveSignupProfile(payload, profileApi),
     retry: false,
-    // 두 저장 중 하나만 성공해도 실제 계정/프로필 상태를 다시 불러온다.
+    // 두 저장 중 하나만 성공해도 실제 프로필 상태를 다시 불러온다.
     onSettled: () => queryClient.invalidateQueries({ queryKey: profileQueryKeys.all }),
   });
 }
