@@ -130,7 +130,7 @@ export const TagButton = styled.button`
 
 export const TagMenu = styled.div`
   position: absolute;
-  top: 1.75rem;
+  top: calc(100% + 0.5rem);
   left: 0;
   width: 8.25rem;
   border-radius: 4px;
@@ -141,7 +141,7 @@ export const TagMenu = styled.div`
 `;
 
 export const TagName = styled.div`
-  min-height: 2.25rem;
+  min-height: 2.75rem;
   padding: 0 0.75rem;
   display: flex;
   align-items: center;
@@ -149,20 +149,20 @@ export const TagName = styled.div`
   border-bottom: 1px solid ${theme.colors["grey-100"]};
   ${theme.fonts.pretendard}
   color: ${theme.colors.territory};
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 500;
   text-align: center;
 `;
 
 export const TagEditButton = styled.button`
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   ${theme.fonts.pretendard}
   color: ${theme.colors.black};
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
 `;
