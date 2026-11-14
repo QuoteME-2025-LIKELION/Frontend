@@ -1,4 +1,5 @@
 export interface ModerationTarget {
+  isAiGenerated?: boolean;
   quoteId: number;
   nickname: string;
   introduction?: string;

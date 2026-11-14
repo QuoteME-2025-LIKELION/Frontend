@@ -280,6 +280,7 @@ export default function FeedList({
       {moderation?.kind === "report" && (
         <ReportDialog
           authorName={moderation.target.nickname}
+          isAiGenerated={moderation.target.isAiGenerated === true}
           onClose={() => setModeration(null)}
           onSubmit={() => {
             setModeration(null);
@@ -518,6 +519,7 @@ function FeedListItem({
         !quote.isSilenced
           ? () =>
               onModerate("report", {
+                isAiGenerated: quote.isAiGenerated === true,
                 quoteId: quote.id,
                 nickname: quote.authorNickname,
                 introduction: quote.authorIntroduction,

@@ -21,6 +21,7 @@ export interface GetQuotesResponse {
 }
 
 export interface QuoteFeedItem {
+  isAiGenerated?: boolean;
   id: number;
   authorNickname: string;
   authorIntroduction?: string;
