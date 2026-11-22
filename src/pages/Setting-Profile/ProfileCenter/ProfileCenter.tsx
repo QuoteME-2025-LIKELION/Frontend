@@ -269,19 +269,25 @@ export default function ProfileCenter() {
           </S.FieldMeta>
           <S.TextName id={introLabelId}>자기소개</S.TextName>
           {isEditing ? (
-            <S.Field>
-              <Input
-                aria-labelledby={introLabelId}
-                aria-invalid={isIntroTooLong}
-                disabled={updateSettingsProfile.isPending}
-                value={currentIntro}
-                {...codePointInputProps(setIntro, INTRO_MAX_LENGTH)}
-                placeholder="자기소개"
-                type="text"
-                name="intro"
-                required
-              />
-            </S.Field>
+            <>
+              <S.Field>
+                <Input
+                  aria-labelledby={introLabelId}
+                  aria-describedby={`${introLabelId}-count`}
+                  aria-invalid={isIntroTooLong}
+                  disabled={updateSettingsProfile.isPending}
+                  value={currentIntro}
+                  {...codePointInputProps(setIntro, INTRO_MAX_LENGTH)}
+                  placeholder="자기소개"
+                  type="text"
+                  name="intro"
+                  required
+                />
+              </S.Field>
+              <S.FieldMeta id={`${introLabelId}-count`}>
+                <span>{countCodePoints(currentIntro)}자/{INTRO_MAX_LENGTH}자</span>
+              </S.FieldMeta>
+            </>
           ) : (
             <S.InfoBox>{currentIntro}</S.InfoBox>
           )}

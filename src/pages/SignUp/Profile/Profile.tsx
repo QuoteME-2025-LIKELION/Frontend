@@ -30,7 +30,6 @@ export default function Profile() {
   const [submitError, setSubmitError] = useState("");
   const [touched, setTouched] = useState({
     nickname: false,
-    intro: false,
     birthYear: false,
   });
 
@@ -46,11 +45,9 @@ export default function Profile() {
     birthYearNumber <= CURRENT_YEAR;
   const isNextDisabled =
     (step === 1 && nickname.trim().length === 0) ||
-    (step === 2 && intro.trim().length === 0) ||
     (step === 3 && !isValidBirthYear);
 
   const nicknameError = touched.nickname && nickname.trim().length === 0;
-  const introError = touched.intro && intro.trim().length === 0;
   const birthYearError =
     (touched.birthYear || birthYear.length === 4) && !isValidBirthYear;
 
@@ -101,7 +98,7 @@ export default function Profile() {
     try {
       await setupProfile({
         nickname: nickname,
-        introduction: intro,
+        introduction: intro.trim() ? intro : "",
         birthYear: Number(birthYear),
         image: selectedFile,
       });
@@ -200,28 +197,18 @@ export default function Profile() {
                 <Input
                   id="profile-intro"
                   ref={stepInputRef}
-                  aria-describedby={`profile-step profile-intro-help profile-intro-limit${introError ? " profile-intro-error" : ""}`}
-                  aria-invalid={introError || undefined}
-                  onBlur={() =>
-                    setTouched((previous) => ({ ...previous, intro: true }))
-                  }
+                  aria-describedby="profile-step profile-intro-help profile-intro-limit"
                   value={intro}
                   {...codePointInputProps(setIntro, 20)}
                   placeholder="자기소개를 입력해주세요"
                   type="text"
                   name="intro"
-                  required
                 />
 
                 <S.VisuallyHidden id="profile-intro-limit">
                   공백을 포함해 최대 20자까지 입력할 수 있습니다.
                 </S.VisuallyHidden>
                 <S.FieldMeta>
-                  {introError && (
-                    <S.ErrorMessage id="profile-intro-error">
-                      자기소개를 입력해 주세요.
-                    </S.ErrorMessage>
-                  )}
                   <S.LimitText>{countCodePoints(intro)}/20자</S.LimitText>
                 </S.FieldMeta>
               </S.Field>
