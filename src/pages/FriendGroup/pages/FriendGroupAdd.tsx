@@ -29,6 +29,10 @@ import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 import { getGroupInvitationErrorMessage } from "@/utils/groupInvitationError";
+import {
+  getGroupJoinRequestErrorMessage,
+  GROUP_JOIN_REQUEST_PENDING_MESSAGE,
+} from "@/utils/groupJoinRequestError";
 
 import FriendListSection from "../components/FriendListSection";
 import FriendRequestSection from "../components/FriendRequestSection";
@@ -173,7 +177,7 @@ export default function FriendGroupAdd() {
   const handleJoinGroup = useCallback(
     (groupId: number) => {
       if (sentGroupRequests.some((request) => request.groupId === groupId)) {
-        setResponseToastMessage("이미 가입 요청 중인 그룹입니다.");
+        setResponseToastMessage(GROUP_JOIN_REQUEST_PENDING_MESSAGE);
         return;
       }
       const target = searchResultGroups.find((group) => group.id === groupId);
@@ -197,7 +201,7 @@ export default function FriendGroupAdd() {
     } catch (err) {
       console.error("그룹 가입 요청 처리 중 오류:", err);
       setGroupJoinTarget(null);
-      setErrorMessage("그룹 가입 요청에 실패했습니다.");
+      setErrorMessage(getGroupJoinRequestErrorMessage(err));
       setShowErrorToast(true);
     }
   }, [groupJoinTarget, requestJoinGroup]);

@@ -150,7 +150,7 @@ export const groupsHandlers = [
     if (!group) return new HttpResponse(null, { status: 404 });
     if (mockSentJoinRequests.some((item) => item.groupId === groupId)) {
       return HttpResponse.json(
-        { message: "이미 가입 승인 대기 중입니다." },
+        { resultCode: "400", message: "400-4 - 이미 가입 승인 대기 중입니다." },
         { status: 400 }
       );
     }
