@@ -10,7 +10,7 @@ const { outputText } = ts.transpileModule(source, {
 const { getGroupInvitationErrorMessage, GROUP_CAPACITY_MESSAGE } = await import(
   `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`
 );
-const fallback = '그룹 초대 수락에 실패했습니다.';
+const fallback = '그룹 초대 승인에 실패했습니다.';
 
 test('recognizes the user-verified server capacity response and hides code prefix', () => {
   assert.equal(getGroupInvitationErrorMessage(400, {

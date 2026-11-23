@@ -146,10 +146,10 @@ export default function GroupInvitationSection({
                     <button
                       type="button"
                       disabled={isPending}
-                      aria-label={`${invitation.groupName} 그룹 초대 수락`}
+                      aria-label={`${invitation.groupName} 그룹 초대 승인`}
                       onClick={() => onAccept(invitation.requestId)}
                     >
-                      수락
+                      승인
                     </button>
                     <button
                       type="button"

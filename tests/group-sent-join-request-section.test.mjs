@@ -66,7 +66,7 @@ test("group request tabs cancel by requestId and fall back to received invitatio
   };
   const find = (tree, label) =>
     nodes(tree).find((node) => node.props?.["aria-label"] === label);
-  assert.ok(find(Section(props), "받은 모임 그룹 초대 수락"));
+  assert.ok(find(Section(props), "받은 모임 그룹 초대 승인"));
   nodes(Section(props))
     .find((node) => node.props?.id === "group-requests-sent")
     .props.onClick();
@@ -79,7 +79,7 @@ test("group request tabs cancel by requestId and fall back to received invitatio
   find(Section(props), cancelLabel).props.onClick();
   assert.deepEqual(calls, [80]);
   assert.ok(
-    find(Section({ ...props, sentRequests: [] }), "받은 모임 그룹 초대 수락")
+    find(Section({ ...props, sentRequests: [] }), "받은 모임 그룹 초대 승인")
   );
   assert.equal(Section({ ...props, sentRequests: [], invitations: [] }), null);
   delete globalThis.__groupSentSelected;

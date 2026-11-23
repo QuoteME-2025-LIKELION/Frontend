@@ -281,9 +281,9 @@ export default function FriendGroupAdd() {
 
       try {
         await acceptGroupInvitation(requestId);
-        setResponseToastMessage("그룹 초대를 수락했습니다.");
+        setResponseToastMessage("그룹 초대를 승인했습니다.");
       } catch (err) {
-        console.error("그룹 초대 수락 처리 중 오류:", err);
+        console.error("그룹 초대 승인 처리 중 오류:", err);
         setErrorMessage(
           getGroupInvitationErrorMessage(
             axios.isAxiosError(err) ? err.response?.status : undefined,
@@ -499,6 +499,35 @@ export default function FriendGroupAdd() {
                 <br />
                 친구를 추가하거나 그룹에 가입해 보세요.
               </S.AddGuideText>
+              <GroupInvitationSection
+                invitations={groupInvitations}
+                sentRequests={sentGroupRequests}
+                cancelPending={groupCancellationPending}
+                onCancel={(requestId) => {
+                  const request = sentGroupRequests.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (request)
+                    setCancellationTarget({
+                      kind: "group",
+                      id: requestId,
+                      name: request.groupName,
+                    });
+                }}
+                pendingInvitationId={pendingGroupInvitationId}
+                onAccept={handleAcceptGroupInvitation}
+                onReject={(requestId) => {
+                  const invitation = groupInvitations.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (invitation)
+                    setRejectionTarget({
+                      kind: "group",
+                      requestId,
+                      name: invitation.groupName,
+                    });
+                }}
+              />
               <FriendRequestSection
                 requests={friendRequests}
                 pendingRequestId={pendingFriendRequestId}
@@ -526,35 +555,6 @@ export default function FriendGroupAdd() {
                       kind: "friend",
                       requestId,
                       name: request.senderNickname,
-                    });
-                }}
-              />
-              <GroupInvitationSection
-                invitations={groupInvitations}
-                sentRequests={sentGroupRequests}
-                cancelPending={groupCancellationPending}
-                onCancel={(requestId) => {
-                  const request = sentGroupRequests.find(
-                    (item) => item.requestId === requestId
-                  );
-                  if (request)
-                    setCancellationTarget({
-                      kind: "group",
-                      id: requestId,
-                      name: request.groupName,
-                    });
-                }}
-                pendingInvitationId={pendingGroupInvitationId}
-                onAccept={handleAcceptGroupInvitation}
-                onReject={(requestId) => {
-                  const invitation = groupInvitations.find(
-                    (item) => item.requestId === requestId
-                  );
-                  if (invitation)
-                    setRejectionTarget({
-                      kind: "group",
-                      requestId,
-                      name: invitation.groupName,
                     });
                 }}
               />
