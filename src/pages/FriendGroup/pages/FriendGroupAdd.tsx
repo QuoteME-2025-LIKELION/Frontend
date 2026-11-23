@@ -94,8 +94,7 @@ export default function FriendGroupAdd() {
   const { data: friends = [] } = useFriendsQuery();
   const { data: friendRequests = [] } = useFriendRequestsQuery(!keyword);
   const { data: groupInvitations = [] } = useGroupInvitationsQuery(!keyword);
-  const { data: sentGroupRequests = [] } =
-    useGroupSentJoinRequestsQuery(!keyword);
+  const { data: sentGroupRequests = [] } = useGroupSentJoinRequestsQuery();
   const {
     mutateAsync: cancelGroupJoinRequest,
     isPending: groupCancellationPending,
@@ -173,13 +172,17 @@ export default function FriendGroupAdd() {
 
   const handleJoinGroup = useCallback(
     (groupId: number) => {
+      if (sentGroupRequests.some((request) => request.groupId === groupId)) {
+        setResponseToastMessage("이미 가입 요청 중인 그룹입니다.");
+        return;
+      }
       const target = searchResultGroups.find((group) => group.id === groupId);
 
       if (target) {
         setGroupJoinTarget(target);
       }
     },
-    [searchResultGroups]
+    [searchResultGroups, sentGroupRequests]
   );
 
   const handleConfirmGroupJoin = useCallback(async () => {
@@ -192,9 +195,9 @@ export default function FriendGroupAdd() {
       setGroupJoinTarget(null);
       setShowGroupJoinRequestToast(true);
     } catch (err) {
-      console.error("그룹 참여 요청 처리 중 오류:", err);
+      console.error("그룹 가입 요청 처리 중 오류:", err);
       setGroupJoinTarget(null);
-      setErrorMessage("그룹 참여 요청에 실패했습니다.");
+      setErrorMessage("그룹 가입 요청에 실패했습니다.");
       setShowErrorToast(true);
     }
   }, [groupJoinTarget, requestJoinGroup]);
@@ -423,7 +426,7 @@ export default function FriendGroupAdd() {
         )}
         {showGroupJoinRequestToast && (
           <ToastModal
-            text="참여 요청을 보냈습니다."
+            text="가입 요청을 보냈습니다."
             isVisible={showGroupJoinRequestToast}
             onClose={() => setShowGroupJoinRequestToast(false)}
             showOverlay={false}
