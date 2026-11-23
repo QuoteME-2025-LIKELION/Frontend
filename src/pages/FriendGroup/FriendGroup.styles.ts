@@ -223,8 +223,15 @@ export const RequestTab = styled.button`
   font-weight: 700;
   letter-spacing: -0.32px;
 
-  &[aria-pressed="true"] {
+  &[aria-pressed="true"],
+  &[aria-selected="true"] {
     color: ${theme.colors.black};
+  }
+`;
+
+export const RequestTabPanel = styled(FriendList)`
+  &[hidden] {
+    display: none;
   }
 `;
 

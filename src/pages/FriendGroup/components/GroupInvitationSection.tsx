@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { type KeyboardEvent, useId, useState } from "react";
 
 import type { GroupInvitation, GroupJoinRequestSent } from "@/api/groupApi";
 
@@ -28,43 +28,79 @@ export default function GroupInvitationSection({
 }: GroupInvitationSectionProps) {
   const id = useId();
   const [showSent, setShowSent] = useState(false);
-  const isSent = sentRequests.length > 0 && (showSent || !invitations.length);
+  const hasReceived = invitations.length > 0;
+  const hasSent = sentRequests.length > 0;
+  const isSent = hasSent && (showSent || !hasReceived);
 
-  if (!sentRequests.length && !invitations.length) return null;
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (!hasReceived || !hasSent) return;
+
+    let nextSent: boolean;
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowRight":
+        nextSent = !isSent;
+        break;
+      case "Home":
+        nextSent = false;
+        break;
+      case "End":
+        nextSent = true;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    setShowSent(nextSent);
+    event.currentTarget.ownerDocument
+      .getElementById(`${id}-${nextSent ? "sent" : "received"}`)
+      ?.focus();
+  };
+
+  if (!hasReceived && !hasSent) return null;
 
   return (
     <S.Section>
-      <S.RequestTabs aria-label="그룹 요청 구분">
-        {invitations.length > 0 && (
+      <S.RequestTabs role="tablist" aria-label="그룹 요청 구분">
+        {hasReceived && (
           <S.RequestTab
             type="button"
             id={`${id}-received`}
-            aria-pressed={!isSent}
-            aria-controls={`${id}-list`}
+            role="tab"
+            onKeyDown={handleTabKeyDown}
+            aria-selected={!isSent}
+            tabIndex={isSent ? -1 : 0}
+            aria-controls={`${id}-received-panel`}
             onClick={() => setShowSent(false)}
           >
             받은 그룹 초대
           </S.RequestTab>
         )}
-        {sentRequests.length > 0 && (
+        {hasSent && (
           <S.RequestTab
             type="button"
             id={`${id}-sent`}
-            aria-pressed={isSent}
-            aria-controls={`${id}-list`}
+            role="tab"
+            onKeyDown={handleTabKeyDown}
+            aria-selected={isSent}
+            tabIndex={isSent ? 0 : -1}
+            aria-controls={`${id}-sent-panel`}
             onClick={() => setShowSent(true)}
           >
             보낸 그룹 요청
           </S.RequestTab>
         )}
       </S.RequestTabs>
-      <S.FriendList
-        id={`${id}-list`}
-        role="region"
-        aria-labelledby={`${id}-${isSent ? "sent" : "received"}`}
-      >
-        {isSent
-          ? sentRequests.map((request) => (
+      {hasSent && (
+        <S.RequestTabPanel
+          id={`${id}-sent-panel`}
+          role="tabpanel"
+          hidden={!isSent}
+          aria-labelledby={`${id}-sent`}
+        >
+          {isSent &&
+            sentRequests.map((request) => (
               <S.SentRequestItem key={request.requestId}>
                 <S.RequestDefaultProfileImg />
                 <S.RequestUserBox>
@@ -81,8 +117,18 @@ export default function GroupInvitationSection({
                   </button>
                 </S.RequestCancelActionBox>
               </S.SentRequestItem>
-            ))
-          : invitations.map((invitation) => {
+            ))}
+        </S.RequestTabPanel>
+      )}
+      {hasReceived && (
+        <S.RequestTabPanel
+          id={`${id}-received-panel`}
+          role="tabpanel"
+          hidden={isSent}
+          aria-labelledby={`${id}-received`}
+        >
+          {!isSent &&
+            invitations.map((invitation) => {
               const isPending = pendingInvitationId === invitation.requestId;
 
               return (
@@ -117,7 +163,8 @@ export default function GroupInvitationSection({
                 </S.RequestItem>
               );
             })}
-      </S.FriendList>
+        </S.RequestTabPanel>
+      )}
     </S.Section>
   );
 }
