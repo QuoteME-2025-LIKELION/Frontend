@@ -13,6 +13,7 @@ import {
   useRequestFriendMutation,
 } from "@/hooks/queries/useFriendQueries";
 import {
+  useGroupSentJoinRequestsQuery,
   useMyGroupsQuery,
   useRequestJoinGroupMutation,
 } from "@/hooks/queries/useGroupQueries";
@@ -22,6 +23,10 @@ import { useModerationPreviewStore } from "@/stores/useModerationPreviewStore";
 import theme from "@/styles/theme";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
+import {
+  getGroupJoinRequestErrorMessage,
+  GROUP_JOIN_REQUEST_PENDING_MESSAGE,
+} from "@/utils/groupJoinRequestError";
 
 import FriendGroupModals, {
   type FriendActionTarget,
@@ -86,6 +91,7 @@ export default function FriendGroup() {
     initialLocationState?.toastMessage ?? ""
   );
   const { data: friends = [] } = useFriendsQuery();
+  const { data: sentGroupRequests } = useGroupSentJoinRequestsQuery();
   const { data: groups = [] } = useMyGroupsQuery();
   const { data: searchResult } = useFriendSearchQuery(
     debouncedKeyword,
@@ -184,13 +190,17 @@ export default function FriendGroup() {
 
   const handleJoinGroup = useCallback(
     (groupId: number) => {
+      if (sentGroupRequests?.some((request) => request.groupId === groupId)) {
+        setRouteToastMessage(GROUP_JOIN_REQUEST_PENDING_MESSAGE);
+        return;
+      }
       const target = searchResultGroups.find((group) => group.id === groupId);
 
       if (target) {
         setGroupJoinTarget(target);
       }
     },
-    [searchResultGroups]
+    [searchResultGroups, sentGroupRequests]
   );
 
   const handleConfirmGroupJoin = useCallback(async () => {
@@ -204,9 +214,9 @@ export default function FriendGroup() {
       setGroupJoinTarget(null);
       setShowGroupJoinRequestToast(true);
     } catch (err) {
-      console.error("그룹 참여 요청 처리 중 오류:", err);
+      console.error("그룹 가입 요청 처리 중 오류:", err);
       setGroupJoinTarget(null);
-      setErrorMessage("그룹 참여 요청에 실패했습니다.");
+      setErrorMessage(getGroupJoinRequestErrorMessage(err));
       setShowErrorToast(true);
     }
   }, [groupJoinTarget, requestJoinGroup]);

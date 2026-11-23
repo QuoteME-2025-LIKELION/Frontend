@@ -18,7 +18,9 @@ import {
 } from "@/hooks/queries/useFriendQueries";
 import {
   useAcceptGroupInvitationMutation,
+  useCancelGroupJoinRequestMutation,
   useGroupInvitationsQuery,
+  useGroupSentJoinRequestsQuery,
   useMyGroupsQuery,
   useRejectGroupInvitationMutation,
   useRequestJoinGroupMutation,
@@ -27,6 +29,10 @@ import useDebounce from "@/hooks/ui/useDebounce";
 import type { Friend } from "@/types/friend.type";
 import type { Group } from "@/types/group.type";
 import { getGroupInvitationErrorMessage } from "@/utils/groupInvitationError";
+import {
+  getGroupJoinRequestErrorMessage,
+  GROUP_JOIN_REQUEST_PENDING_MESSAGE,
+} from "@/utils/groupJoinRequestError";
 
 import FriendListSection from "../components/FriendListSection";
 import FriendRequestSection from "../components/FriendRequestSection";
@@ -59,6 +65,11 @@ export default function FriendGroupAdd() {
     requestId: number;
     name: string;
   } | null>(null);
+  const [cancellationTarget, setCancellationTarget] = useState<{
+    kind: "friend" | "group";
+    id: number;
+    name: string;
+  } | null>(null);
   const rejectionLock = useRef(false);
   const cancellationLock = useRef(false);
   const [pendingCancellationId, setPendingCancellationId] = useState<
@@ -87,6 +98,12 @@ export default function FriendGroupAdd() {
   const { data: friends = [] } = useFriendsQuery();
   const { data: friendRequests = [] } = useFriendRequestsQuery(!keyword);
   const { data: groupInvitations = [] } = useGroupInvitationsQuery(!keyword);
+  const { data: sentGroupRequests = [] } = useGroupSentJoinRequestsQuery();
+  const {
+    mutateAsync: cancelGroupJoinRequest,
+    isPending: groupCancellationPending,
+  } = useCancelGroupJoinRequestMutation();
+  const groupCancellationLock = useRef(false);
   const { data: searchResult } = useFriendSearchQuery(
     debouncedKeyword,
     Boolean(debouncedKeyword)
@@ -159,13 +176,17 @@ export default function FriendGroupAdd() {
 
   const handleJoinGroup = useCallback(
     (groupId: number) => {
+      if (sentGroupRequests.some((request) => request.groupId === groupId)) {
+        setResponseToastMessage(GROUP_JOIN_REQUEST_PENDING_MESSAGE);
+        return;
+      }
       const target = searchResultGroups.find((group) => group.id === groupId);
 
       if (target) {
         setGroupJoinTarget(target);
       }
     },
-    [searchResultGroups]
+    [searchResultGroups, sentGroupRequests]
   );
 
   const handleConfirmGroupJoin = useCallback(async () => {
@@ -178,9 +199,9 @@ export default function FriendGroupAdd() {
       setGroupJoinTarget(null);
       setShowGroupJoinRequestToast(true);
     } catch (err) {
-      console.error("그룹 참여 요청 처리 중 오류:", err);
+      console.error("그룹 가입 요청 처리 중 오류:", err);
       setGroupJoinTarget(null);
-      setErrorMessage("그룹 참여 요청에 실패했습니다.");
+      setErrorMessage(getGroupJoinRequestErrorMessage(err));
       setShowErrorToast(true);
     }
   }, [groupJoinTarget, requestJoinGroup]);
@@ -203,6 +224,20 @@ export default function FriendGroupAdd() {
     },
     [cancelFriendRequest]
   );
+
+  const handleCancelGroupJoinRequest = async (requestId: number) => {
+    if (groupCancellationLock.current) return;
+    groupCancellationLock.current = true;
+    try {
+      await cancelGroupJoinRequest(requestId);
+      setResponseToastMessage("그룹 가입 신청을 취소했어요");
+    } catch {
+      setErrorMessage("그룹 가입 신청 취소에 실패했어요.");
+      setShowErrorToast(true);
+    } finally {
+      groupCancellationLock.current = false;
+    }
+  };
 
   const handleAcceptFriendRequest = useCallback(
     async (requestId: number) => {
@@ -299,6 +334,34 @@ export default function FriendGroupAdd() {
   return (
     <>
       <PageTitle title="친구 및 그룹 추가" />
+      {cancellationTarget && (
+        <ConfirmModal
+          question=""
+          lines={[
+            cancellationTarget.kind === "friend"
+              ? `${cancellationTarget.name}님에게 보낸`
+              : `${cancellationTarget.name} 그룹에 보낸`,
+            cancellationTarget.kind === "friend"
+              ? "친구 요청을 취소하시겠어요?"
+              : "가입 요청을 취소하시겠어요?",
+          ]}
+          cancelText="돌아가기"
+          confirmText="요청 취소"
+          confirmColor="danger"
+          confirmDisabled={
+            pendingCancellationId !== null || groupCancellationPending
+          }
+          onClose={() => setCancellationTarget(null)}
+          onConfirm={() => {
+            const { kind, id } = cancellationTarget;
+            setCancellationTarget(null);
+            void (kind === "friend"
+              ? handleCancelFriendRequest(id)
+              : handleCancelGroupJoinRequest(id));
+          }}
+          variant="card"
+        />
+      )}
       {rejectionTarget && (
         <ConfirmModal
           question=""
@@ -367,7 +430,7 @@ export default function FriendGroupAdd() {
         )}
         {showGroupJoinRequestToast && (
           <ToastModal
-            text="참여 요청을 보냈습니다."
+            text="가입 요청을 보냈습니다."
             isVisible={showGroupJoinRequestToast}
             onClose={() => setShowGroupJoinRequestToast(false)}
             showOverlay={false}
@@ -440,7 +503,19 @@ export default function FriendGroupAdd() {
                 requests={friendRequests}
                 pendingRequestId={pendingFriendRequestId}
                 pendingCancellationId={pendingCancellationId}
-                onCancel={handleCancelFriendRequest}
+                onCancel={(receiverId) => {
+                  const request = friendRequests.find(
+                    (item) =>
+                      item.direction === "SENT" &&
+                      item.receiverId === receiverId
+                  );
+                  if (request)
+                    setCancellationTarget({
+                      kind: "friend",
+                      id: receiverId,
+                      name: request.receiverNickname ?? "사용자",
+                    });
+                }}
                 onAccept={handleAcceptFriendRequest}
                 onReject={(requestId) => {
                   const request = friendRequests.find(
@@ -454,24 +529,35 @@ export default function FriendGroupAdd() {
                     });
                 }}
               />
-              {groupInvitations.length > 0 && (
-                <GroupInvitationSection
-                  invitations={groupInvitations}
-                  pendingInvitationId={pendingGroupInvitationId}
-                  onAccept={handleAcceptGroupInvitation}
-                  onReject={(requestId) => {
-                    const invitation = groupInvitations.find(
-                      (item) => item.requestId === requestId
-                    );
-                    if (invitation)
-                      setRejectionTarget({
-                        kind: "group",
-                        requestId,
-                        name: invitation.groupName,
-                      });
-                  }}
-                />
-              )}
+              <GroupInvitationSection
+                invitations={groupInvitations}
+                sentRequests={sentGroupRequests}
+                cancelPending={groupCancellationPending}
+                onCancel={(requestId) => {
+                  const request = sentGroupRequests.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (request)
+                    setCancellationTarget({
+                      kind: "group",
+                      id: requestId,
+                      name: request.groupName,
+                    });
+                }}
+                pendingInvitationId={pendingGroupInvitationId}
+                onAccept={handleAcceptGroupInvitation}
+                onReject={(requestId) => {
+                  const invitation = groupInvitations.find(
+                    (item) => item.requestId === requestId
+                  );
+                  if (invitation)
+                    setRejectionTarget({
+                      kind: "group",
+                      requestId,
+                      name: invitation.groupName,
+                    });
+                }}
+              />
             </>
           )}
         </S.Content>

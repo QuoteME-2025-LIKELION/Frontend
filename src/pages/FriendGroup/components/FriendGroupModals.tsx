@@ -117,7 +117,7 @@ export default function FriendGroupModals({
       )}
       {showGroupJoinRequestToast && (
         <ToastModal
-          text="참여 요청을 보냈습니다."
+          text="가입 요청을 보냈습니다."
           isVisible={showGroupJoinRequestToast}
           onClose={onCloseGroupJoinRequestToast}
           showOverlay={false}
