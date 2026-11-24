@@ -12,7 +12,6 @@ import * as S from "./WriteBox.styles";
 interface WriteBoxProps {
   value: string;
   aiRequestState: AiRequestState;
-  onRetryAiUsage: () => void;
   isRecommendMode?: boolean;
   isResultMode?: boolean;
   onChange: (value: string) => void;
@@ -23,7 +22,6 @@ interface WriteBoxProps {
 export default function WriteBox({
   value,
   aiRequestState,
-  onRetryAiUsage,
   isRecommendMode = false,
   isResultMode = false,
   onChange,
@@ -63,11 +61,10 @@ export default function WriteBox({
   const trimmedLength = countCodePoints(trimmedText);
   const canUseAi =
     trimmedLength > 0 &&
-    aiRequestState !== "loading" &&
-    aiRequestState !== "exhausted";
+    aiRequestState === "available";
   const aiButtonLabel = {
     loading: "사용량 확인 중",
-    unavailable: "사용량 다시 확인",
+    unavailable: "AI 추천 받기",
     exhausted: "오늘 추천 횟수 소진",
     available: "AI 추천 받기",
   }[aiRequestState];
@@ -77,10 +74,6 @@ export default function WriteBox({
     const error = getQuoteInputError(value, "ai");
     if (error) {
       setToastMessage(error);
-      return;
-    }
-    if (aiRequestState === "unavailable") {
-      onRetryAiUsage();
       return;
     }
 

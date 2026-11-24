@@ -184,11 +184,12 @@ export default function AccountSetting() {
     <>
       <PageTitle title="계정 관리" />
       <S.Container>
-        {toastMessage && (
+        {(toastMessage || isAccountProfileError) && (
           <ToastModal
             isVisible={Boolean(toastMessage)}
             onClose={() => setToastMessage("")}
             text={toastMessage}
+            errorMessage={isAccountProfileError ? "계정 정보를 불러오지 못했어요." : ""}
             showOverlay={false}
             variant="snackbar"
           />
@@ -244,11 +245,6 @@ export default function AccountSetting() {
                 </S.BlockedValue>
               </S.InfoRow>
             </S.InfoList>
-            {isAccountProfileError && (
-              <S.WarningMessage>
-                계정 정보를 불러오지 못했습니다.
-              </S.WarningMessage>
-            )}
           </S.Section>
 
           <S.Section>

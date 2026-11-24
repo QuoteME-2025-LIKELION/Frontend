@@ -24,7 +24,7 @@ const styles = names.map(name => `export const ${name} = props => {
 const modules = {
   'react-router-dom': url('export const useNavigate=()=>()=>{};'),
   '@/components/Search/Search': url('export default ()=>null;'),
-  '@/components/ToastModal/ToastModal': url('export default ()=>null;'),
+  '@/components/ToastModal/ToastModal': url('export default props=>props.errorMessage ? globalThis.__quoteFriendsReact.createElement("div", {role:"status"}, props.errorMessage) : null;'),
   '@/hooks/queries/useFriendQueries': url('export const useFriendsQuery=()=>globalThis.__quoteFriendsState;'),
   '@/hooks/queries/useProfileQueries': url('export const useMyProfileQuery=()=>({data:{id:1},isSuccess:true});'),
   '@/hooks/queries/useQuoteQueries': url(`export const useQuoteTagRequestsQuery=()=>globalThis.__quoteRequestsState;
@@ -47,16 +47,11 @@ function render(friends, mode = 'create', requests = {}, quote = {}) {
 }
 const submit = () => globalThis.__quoteFriendsButtons.find(button => ['게시하기', '수정하기'].includes(button.children));
 
-test('friend lookup failure is an error with retry, never an empty-friends message', async () => {
-  let retries = 0;
-  const html = render({ isError: true, refetch: async () => { retries++; } });
-  assert.match(html, /친구 목록을 불러오지 못했어요/);
-  assert.doesNotMatch(html, /태그할 수 있는 친구가 없어요/);
+test('friend lookup failure announces a toast without exposing a retry button or a false empty state', () => {
+  const html = render({ isError: true });
+  assert.match(html, /role="status">태그 정보를 불러오지 못했어요/);
+  assert.doesNotMatch(html, /태그할 수 있는 친구가 없어요|다시 불러오기|다시 시도/);
   assert.equal(submit().disabled, true);
-  const retry = globalThis.__quoteFriendsButtons.find(button => button.children === '다시 불러오기');
-  assert.equal(retry.disabled, false);
-  retry.onClick();
-  assert.equal(retries, 1);
 });
 
 test('loading does not look empty; successful empty refetch allows untagged publication', () => {

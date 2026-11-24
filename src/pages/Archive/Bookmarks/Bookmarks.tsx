@@ -17,7 +17,6 @@ export default function Bookmarks() {
     toastMessage,
     closeBookmarkToast,
     isBookmarkError,
-    retryBookmarks,
   } = useArchiveBookmarks(selectedMonthString);
   const downloadQuoteImage = useQuoteImageDownload();
   const {
@@ -26,7 +25,7 @@ export default function Bookmarks() {
     closeDateNavigationConfirm,
     confirmDateNavigation,
   } = useConfirmNavigationToDate();
-  const { data: bookmarkedFeeds = [], isSuccess } =
+  const { data: bookmarkedFeeds = [], isSuccess, isError } =
     useBookmarkedArchivesQuery(selectedMonthString);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
@@ -49,16 +48,9 @@ export default function Bookmarks() {
       <ToastModal
         isVisible={Boolean(toastMessage)}
         text={toastMessage}
+        errorMessage={isBookmarkError || isError ? "아카이브 정보를 불러오지 못했어요." : ""}
         onClose={closeBookmarkToast}
       />
-      {isBookmarkError && (
-        <S.StatusMessage role="status">
-          북마크 상태를 확인하지 못했습니다.
-          <S.RetryButton type="button" onClick={retryBookmarks}>
-            다시 확인
-          </S.RetryButton>
-        </S.StatusMessage>
-      )}
       {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"

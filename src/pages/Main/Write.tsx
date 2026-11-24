@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmModal from "@/components/ConfirmModal/ConfirmModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { useAiUsageQuery } from "@/hooks/queries/useQuoteQueries";
 import type { CreatedQuote } from "@/types/feed.type";
 import { getAiRequestState } from "@/utils/quote/aiUsage";
@@ -33,7 +34,6 @@ export default function Write() {
     data: aiUsage,
     isFetching: isAiUsageLoading,
     isError: isAiUsageError,
-    refetch: retryAiUsage,
   } = useAiUsageQuery();
   const aiRequestState = getAiRequestState(
     aiUsage,
@@ -73,6 +73,9 @@ export default function Write() {
             onConfirm={() => navigate(returnTo)}
           />
         )}
+        {activeStep === "write" && (
+          <ToastModal errorMessage={isAiUsageError ? "AI 사용량을 확인하지 못했어요." : ""} />
+        )}
         <XHeader showHomeButton={false} onClose={handleClose} />
 
         <S.ScrollContent ref={scrollContentRef} data-page-scroll="">
@@ -84,9 +87,6 @@ export default function Write() {
             }
             onChange={setDraftText}
             aiRequestState={aiRequestState}
-            onRetryAiUsage={() => {
-              void retryAiUsage();
-            }}
             isRecommendMode={activeStep === "recommend"}
             isResultMode={activeStep === "tag"}
             onComplete={(data) => {
@@ -110,9 +110,6 @@ export default function Write() {
               content={diaryText}
               aiUsage={aiUsage}
               aiRequestState={aiRequestState}
-              onRetryAiUsage={() => {
-                void retryAiUsage();
-              }}
               onBack={() => setActiveStep("write")}
               onSelectComplete={(aiText) => {
                 setQuoteSource("ai");

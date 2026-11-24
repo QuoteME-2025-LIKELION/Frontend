@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { NoticeSummary } from "@/api/noticeApi";
 import Header from "@/components/Header/Header";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { useNoticesQuery } from "@/hooks/queries/useNoticeQueries";
 
 import * as S from "./Notice.styles";
@@ -47,9 +48,7 @@ export default function Notice() {
         {isPending && (
           <S.Empty role="status">공지사항을 불러오는 중입니다.</S.Empty>
         )}
-        {isError && (
-          <S.Empty role="alert">공지사항을 불러오지 못했습니다.</S.Empty>
-        )}
+        <ToastModal errorMessage={isError ? "공지사항을 불러오지 못했어요." : ""} />
         {!isPending && !isError && (
           <>
             <S.TopSection>

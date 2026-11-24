@@ -16,7 +16,6 @@ export default function CalendarPage() {
     toastMessage,
     closeBookmarkToast,
     isBookmarkError,
-    retryBookmarks,
   } = useArchiveBookmarks();
   const downloadQuoteImage = useQuoteImageDownload();
   const {
@@ -28,7 +27,7 @@ export default function CalendarPage() {
 
   const { onShare, selectedDateString } =
     useOutletContext<ArchiveOutletContext>();
-  const { data: filteredFeeds = [], isSuccess } =
+  const { data: filteredFeeds = [], isSuccess, isError } =
     useArchivesByDateQuery(selectedDateString);
 
   const handleShare = (date: string, authorNickname: string, index: number) => {
@@ -51,16 +50,9 @@ export default function CalendarPage() {
       <ToastModal
         isVisible={Boolean(toastMessage)}
         text={toastMessage}
+        errorMessage={isBookmarkError || isError ? "아카이브 정보를 불러오지 못했어요." : ""}
         onClose={closeBookmarkToast}
       />
-      {isBookmarkError && (
-        <List.StatusMessage role="status">
-          북마크 상태를 확인하지 못했습니다.
-          <List.RetryButton type="button" onClick={retryBookmarks}>
-            다시 확인
-          </List.RetryButton>
-        </List.StatusMessage>
-      )}
       {isDateNavigationConfirmOpen && (
         <ConfirmModal
           question="해당 날짜로 이동할까요?"

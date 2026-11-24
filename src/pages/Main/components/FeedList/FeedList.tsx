@@ -251,17 +251,12 @@ export default function FeedList({
 
   return (
     <S.FeedList>
-      {toastMessage && (
-        <ToastModal
-          isVisible={Boolean(toastMessage)}
-          onClose={() => {
-            setToastMessage("");
-          }}
-          text={toastMessage}
-          showOverlay={false}
-          variant="snackbar"
-        />
-      )}
+      <ToastModal
+        isVisible={Boolean(toastMessage)}
+        text={toastMessage}
+        errorMessage={isFeedError ? "명언을 불러오지 못했어요." : ""}
+        onClose={() => setToastMessage("")}
+      />
       {tagRequestQuoteId !== null && (
         <ConfirmModal
           variant="card"
@@ -370,12 +365,7 @@ export default function FeedList({
           </S.FilterMenu>
         )}
       </S.FilterBox>
-      {isFeedError ? (
-        <S.NoFeedbox role="alert">
-          <S.NoFeedText>명언을 불러오지 못했어요.</S.NoFeedText>
-          <S.NoFeedSubText>잠시 후 다시 시도해 주세요.</S.NoFeedSubText>
-        </S.NoFeedbox>
-      ) : isLoading ? null : quotes.length > 0 ? (
+      {isFeedError || isLoading ? null : quotes.length > 0 ? (
         quotes.map((quote, index) => (
           <FeedListItem
             key={

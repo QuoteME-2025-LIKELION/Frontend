@@ -1,12 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as S from "./ToastModal.styles";
 
 interface ToastModalProps {
-  isVisible: boolean;
-  onClose: () => void;
+  isVisible?: boolean;
+  onClose?: () => void;
+  errorMessage?: string;
   showOverlay?: boolean;
-  text: string;
+  text?: string;
   redText?: string;
   text2?: string;
   text3?: string;
@@ -41,25 +42,31 @@ export default function ToastModal({
   onClose,
   showOverlay = false,
   text,
+  errorMessage = "",
   redText,
   text2,
   text3,
   isOnShare = false,
   variant = "snackbar",
 }: ToastModalProps) {
+  const [dismissedError, setDismissedError] = useState(false);
+  if (!errorMessage && dismissedError) setDismissedError(false);
+  const visible = isVisible || Boolean(errorMessage && !dismissedError);
+  const message = isVisible ? text : errorMessage;
+  const closeRef = useRef<() => void>(() => {});
   useEffect(() => {
-    if (isVisible && !isOnShare) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 1500); // 1.5초 후에 모달 닫기
+    closeRef.current = () => {
+      if (errorMessage) setDismissedError(true);
+      onClose?.();
+    };
+  }, [errorMessage, onClose]);
+  useEffect(() => {
+    if (!visible || isOnShare) return;
+    const timer = setTimeout(() => closeRef.current(), 1500);
+    return () => clearTimeout(timer);
+  }, [visible, message, isOnShare]);
 
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [isVisible, onClose, isOnShare]);
-
-  if (!isVisible) return null;
+  if (!visible) return null;
   return (
     <S.Overlay $showOverlay={showOverlay} data-toast-overlay="">
       <S.Container
@@ -69,7 +76,7 @@ export default function ToastModal({
         $variant={variant}
       >
         <div>
-          {text}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
+          {message}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
           {text2 && text2}
         </div>
         <div>{text3 && text3}</div>

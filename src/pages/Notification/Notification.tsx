@@ -37,7 +37,7 @@ export default function Notification() {
   const { setHasUnread } = useNotificationStore();
 
   // 알림 목록 조회와 읽음 처리 mutation을 React Query로 관리
-  const { data: notifications = [] } = useNotificationsQuery(
+  const { data: notifications = [], isError: isNotificationsError } = useNotificationsQuery(
     selectedFilter ?? undefined
   );
   const { data: unreadCount, isError: isUnreadCountError } =
@@ -154,15 +154,12 @@ export default function Notification() {
   return (
     <>
       <PageTitle title="알림" />
-      {navigationError && (
-        <ToastModal
-          text={navigationError}
-          isVisible={true}
-          onClose={() => setNavigationError("")}
-          showOverlay={false}
-          variant="snackbar"
-        />
-      )}
+      <ToastModal
+        text={navigationError}
+        isVisible={Boolean(navigationError)}
+        errorMessage={isNotificationsError || isUnreadCountError ? "알림을 불러오지 못했어요." : ""}
+        onClose={() => setNavigationError("")}
+      />
       <S.Container>
         <Header
           showBackBtn={false}

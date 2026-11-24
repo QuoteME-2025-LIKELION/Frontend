@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { Component } from "react";
 import type { ReactNode } from "react";
 
+import ToastModal from "@/components/ToastModal/ToastModal";
 import theme from "@/styles/theme";
 
 const ErrorScreen = styled.div`
@@ -53,14 +54,7 @@ export default class RouteErrorBoundary extends Component<
 
     return (
       <ErrorScreen>
-        <div role="alert">
-          <h1>화면을 불러오지 못했습니다.</h1>
-          <p>연결 상태를 확인한 뒤 다시 시도해 주세요.</p>
-        </div>
-        {/* React.lazy가 보관한 실패 결과도 초기화하도록 문서를 다시 불러온다. */}
-        <button type="button" onClick={() => window.location.reload()}>
-          다시 시도
-        </button>
+        <ToastModal errorMessage="화면을 불러오지 못했어요." />
         <a href="/">처음으로</a>
       </ErrorScreen>
     );

@@ -75,16 +75,6 @@ export const BlockedValue = styled(RowValue)`
   svg { flex-shrink: 0; }
 `;
 
-export const WarningMessage = styled.div`
-  margin-top: 0.75rem;
-  ${theme.fonts.pretendard}
-  color: ${theme.colors.red};
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.26px;
-`;
-
 export const LinkedList = styled.div`
   width: 100%;
 `;

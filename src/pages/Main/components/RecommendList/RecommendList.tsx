@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 import type { AiUsageResponse } from "@/api/quoteApi";
+import ToastModal from "@/components/ToastModal/ToastModal";
 import { quoteQueryKeys, useQuoteSummaryQuery } from "@/hooks/queries/useQuoteQueries";
 import theme from "@/styles/theme";
 import type { AiRequestState } from "@/utils/quote/aiUsage";
@@ -15,14 +16,12 @@ interface RecommendListProps {
   content: string;
   aiUsage?: AiUsageResponse;
   aiRequestState: AiRequestState;
-  onRetryAiUsage: () => void;
 }
 
 export default function RecommendList({
   content,
   aiUsage,
   aiRequestState,
-  onRetryAiUsage,
   onBack,
   onSelectComplete,
 }: RecommendListProps) {
@@ -87,24 +86,10 @@ export default function RecommendList({
       <S.ComendList>
         <S.RefreshButton
           type="button"
-          aria-label={
-            aiRequestState === "unavailable"
-              ? "AI 사용량 다시 확인"
-              : aiRequestState === "exhausted"
-                ? "오늘 AI 추천 횟수 소진"
-                : "AI 추천 다시 받기"
-          }
-          disabled={
-            isFetching ||
-            aiRequestState === "loading" ||
-            aiRequestState === "exhausted"
-          }
+          aria-label="AI 추천 다시 받기"
+          disabled={isFetching || aiRequestState !== "available" || isError}
           onClick={() => {
-            if (aiRequestState === "unavailable") {
-              onRetryAiUsage();
-              return;
-            }
-            if (aiRequestState !== "available" || isFetching) return;
+            if (aiRequestState !== "available" || isFetching || isError) return;
             setSelection(null);
             if (content) {
               void refetch();
@@ -134,9 +119,9 @@ export default function RecommendList({
             AI 추천을 불러오는 중입니다.
           </S.StatusText>
         )}
-        {isError && !isFetching && (
-          <S.StatusText role="alert">{errorMessage}</S.StatusText>
-        )}
+        <ToastModal errorMessage={
+          isError && !isFetching ? errorMessage : aiRequestState === "unavailable" ? "AI 사용량을 확인하지 못했어요." : ""
+        } />
         {summaryData && !isFetching && !isError && quotes.length === 0 && (
           <S.StatusText role="status">
             추천 결과가 없어요. 사용 횟수는 차감되지 않았으니 다시 시도해 주세요.

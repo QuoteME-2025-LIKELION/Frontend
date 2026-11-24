@@ -104,8 +104,5 @@ export function useArchiveBookmarks(month?: string) {
     toastMessage,
     closeBookmarkToast: () => setToastMessage(""),
     isBookmarkError: bookmarks.isError,
-    retryBookmarks: () => {
-      void bookmarks.refetch();
-    },
   };
 }

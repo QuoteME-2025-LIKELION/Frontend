@@ -200,10 +200,11 @@ export default function Invite() {
             onClose={() => setShowFullGroupToast(false)}
           />
         )}
-        {errorToastMessage && (
+        {(errorToastMessage || isListError) && (
           <ToastModal
             isVisible={Boolean(errorToastMessage)}
             text={errorToastMessage}
+            errorMessage={isListError ? "목록을 불러오지 못했어요." : ""}
             showOverlay={false}
             variant="snackbar"
             onClose={() => setErrorToastMessage("")}
@@ -227,11 +228,7 @@ export default function Invite() {
           <S.FriendList>
             {isListPending ? (
               <S.EmptyBox>목록을 불러오고 있어요</S.EmptyBox>
-            ) : isListError ? (
-              <S.EmptyBox>
-                목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
-              </S.EmptyBox>
-            ) : filteredFriends.length > 0 ? (
+            ) : isListError ? null : filteredFriends.length > 0 ? (
               filteredFriends.map((friend) => (
                 <UserListItem
                   key={friend.id}

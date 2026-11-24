@@ -112,7 +112,6 @@ export const EmptyDescription = styled.div`
   text-align: center;
 `;
 
-export const RetryButton = EmptyDescription.withComponent("button");
 
 export const SelectedList = styled.div<{ $isEmpty: boolean }>`
   width: calc(100% + 3rem);

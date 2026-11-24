@@ -33,7 +33,7 @@ export default function ProfileCenter() {
   const showXBtn = fromPath === "/home";
   const showBackBtn = !showXBtn;
 
-  const { data } = useSettingsProfileQuery();
+  const { data, isError } = useSettingsProfileQuery();
   const updateSettingsProfile = useUpdateSettingsProfileMutation();
   const savingRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -171,9 +171,10 @@ export default function ProfileCenter() {
       <PageTitle title="프로필 관리" />
       <S.Container aria-busy={updateSettingsProfile.isPending}>
         {updateSettingsProfile.isPending && <Spinner />}
-        {toastMessage && (
+        {(toastMessage || isError) && (
           <ToastModal
             text={toastMessage}
+            errorMessage={isError ? "프로필을 불러오지 못했어요." : ""}
             isVisible={Boolean(toastMessage)}
             onClose={() => setToastMessage("")}
             showOverlay={false}
