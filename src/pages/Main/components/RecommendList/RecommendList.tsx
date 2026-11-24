@@ -80,9 +80,9 @@ export default function RecommendList({
         <S.RefreshButton
           type="button"
           aria-label="AI 추천 다시 받기"
-          disabled={isFetching || aiRequestState !== "available" || isError}
+          disabled={isFetching || aiRequestState !== "available"}
           onClick={() => {
-            if (aiRequestState !== "available" || isFetching || isError) return;
+            if (aiRequestState !== "available" || isFetching) return;
             setSelection(null);
             if (content) {
               void refetch();
@@ -112,9 +112,16 @@ export default function RecommendList({
             AI 추천을 불러오는 중입니다.
           </S.StatusText>
         )}
-        <ToastModal errorMessage={
-          isError && !isFetching ? errorMessage : aiRequestState === "unavailable" ? "AI 사용량을 확인하지 못했어요." : ""
-        } />
+        {isError && !isFetching && (
+          <S.StatusText role="alert">{errorMessage}</S.StatusText>
+        )}
+        <ToastModal
+          errorMessage={
+            !isError && aiRequestState === "unavailable"
+              ? "AI 사용량을 확인하지 못했어요."
+              : ""
+          }
+        />
         {summaryData && !isFetching && !isError && quotes.length === 0 && (
           <S.StatusText role="status">
             추천 결과가 없어요. 사용 횟수는 차감되지 않았으니 다시 시도해 주세요.
