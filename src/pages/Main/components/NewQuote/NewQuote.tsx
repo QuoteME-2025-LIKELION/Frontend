@@ -94,24 +94,24 @@ export default function NewQuote({
       }
     }
     if (!areFriendsReady || !isProfileReady || !myProfile) {
-      setErrorMessage("친구와 내 정보를 불러온 뒤 다시 시도해 주세요.");
+      setErrorMessage("친구 또는 내 정보를 불러오지 못했어요.");
       setShowErrorToast(true);
       return;
     }
     if (mode === "fix" && !areRequestsReady) {
-      setErrorMessage("태그 요청을 불러온 뒤 다시 시도해 주세요.");
+      setErrorMessage("태그 요청을 불러오지 못했어요.");
       setShowErrorToast(true);
       return;
     }
     // 요청자는 수락 API를 통해 처리하므로 일반 태그 추가 검증에서 분리한다.
     const directIds = mode === "fix" ? selectedIds.filter((id) => !requesterIds.has(id)) : selectedIds;
     if (selectedIds.includes(myProfile.id) || hasInvalidTagSelection(directIds, friends, mode === "fix" ? quote.tags ?? [] : [], myProfile.id)) {
-      setErrorMessage("새 태그는 친구만 선택할 수 있어요. 선택한 회원을 다시 확인해 주세요.");
+      setErrorMessage("새 태그는 친구만 선택할 수 있어요.");
       setShowErrorToast(true);
       return;
     }
     if (mode === "fix" && !Array.isArray(quote.tags)) {
-      setErrorMessage("태그 정보를 불러오지 못했어요. 새로고침 후 다시 시도해 주세요.");
+      setErrorMessage("태그 정보를 불러오지 못했어요.");
       setShowErrorToast(true);
       return;
     }
@@ -143,7 +143,7 @@ export default function NewQuote({
 
         navigate("/home");
       } catch {
-        setErrorMessage("저장을 완료하지 못했어요. 일부 요청은 수락됐을 수 있으니 목록을 확인하고 다시 시도해 주세요.");
+        setErrorMessage("태그 저장이 완료되지 않았어요.");
         setShowErrorToast(true);
       }
     }

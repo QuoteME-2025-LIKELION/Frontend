@@ -8,7 +8,7 @@ export function hasQuoteText(value: string): boolean {
 }
 
 export const QUOTE_TEXT_REQUIRED_MESSAGE =
-  "초성·숫자·특수문자·이모지만으로는 작성할 수 없어요. 글자를 함께 입력해 주세요.";
+  "초성·숫자·특수문자·이모지만으로는 작성할 수 없어요.";
 
 export function getQuoteInputError(value: string, mode: "quote" | "ai"): string | null {
   const text = value.trim();

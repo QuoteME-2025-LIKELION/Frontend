@@ -129,7 +129,7 @@ export default function Group() {
         setJoinRequestToastMessage("그룹 초대를 취소했어요");
         setShowJoinRequestToast(true);
       } catch {
-        setErrorMessage("그룹 초대 취소에 실패했어요. 다시 시도해 주세요.");
+        setErrorMessage("그룹 초대 취소에 실패했어요.");
         setShowErrorToast(true);
       } finally {
         joinRequestInFlight.current = false;

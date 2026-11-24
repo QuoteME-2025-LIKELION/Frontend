@@ -17,7 +17,7 @@ export function validateProfileImage(file: Pick<File, "name" | "type" | "size">)
     ? ALLOWED_MIME_TYPES.has(file.type.toLowerCase())
     : /\.(jpe?g|png|webp|gif|heic)$/i.test(file.name);
 
-  if (!isAllowed) return "이미지는 JPEG, PNG, WebP, GIF, HEIC 형식만 선택할 수 있어요.";
-  if (file.size > MAX_PROFILE_IMAGE_BYTES) return "이미지는 5MB 이하로 선택해 주세요.";
+  if (!isAllowed) return "지원하지 않는 이미지 형식이에요.";
+  if (file.size > MAX_PROFILE_IMAGE_BYTES) return "이미지는 최대 5MB예요.";
   return null;
 }

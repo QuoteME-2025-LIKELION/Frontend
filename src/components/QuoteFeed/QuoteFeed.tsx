@@ -134,13 +134,13 @@ const QuoteFeed = forwardRef<HTMLDivElement, QuoteFeedProps>(
             REJECTED: "태그 다시 요청하기",
           }[tagRequestStatus] ?? "태그 재요청 불가";
     const tagRequestMessage = isTagRequestError
-      ? "태그 요청 상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요."
+      ? "태그 요청을 확인하지 못했어요."
       : isTagRequestLoading
-        ? "태그 요청 상태를 확인 중이에요. 잠시만 기다려 주세요."
+        ? "태그 요청을 확인 중이에요."
         : {
             NONE: "태그를 요청할 수 있어요.",
             PENDING: "이미 태그를 요청했어요. 수락을 기다려 주세요.",
-            ACCEPTED: "태그 요청이 이미 수락된 명언에는 다시 요청할 수 없어요.",
+            ACCEPTED: "이미 수락된 태그 요청이에요.",
             REJECTED: "태그를 다시 요청할 수 있어요.",
           }[tagRequestStatus] ?? "이 명언에는 태그를 다시 요청할 수 없어요.";
 

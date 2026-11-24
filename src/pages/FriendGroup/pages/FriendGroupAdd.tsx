@@ -215,7 +215,7 @@ export default function FriendGroupAdd() {
         await cancelFriendRequest(receiverId);
         setResponseToastMessage("친구 요청을 취소했어요");
       } catch {
-        setErrorMessage("친구 요청 취소에 실패했어요. 다시 시도해 주세요.");
+        setErrorMessage("친구 요청 취소에 실패했어요.");
         setShowErrorToast(true);
       } finally {
         cancellationLock.current = false;

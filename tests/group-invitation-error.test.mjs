@@ -16,8 +16,8 @@ test('recognizes the user-verified server capacity response and hides code prefi
   assert.equal(getGroupInvitationErrorMessage(400, {
     resultCode: '400', message: '400-1 - 최대 인원 5명이 가득 차 들어갈 수 없어요', statusCode: 400,
   }), GROUP_CAPACITY_MESSAGE);
-  assert.equal(getGroupInvitationErrorMessage(400, { message: GROUP_CAPACITY_MESSAGE }), GROUP_CAPACITY_MESSAGE);
-  assert.equal(getGroupInvitationErrorMessage(400, { msg: GROUP_CAPACITY_MESSAGE }), GROUP_CAPACITY_MESSAGE);
+  assert.equal(getGroupInvitationErrorMessage(400, { message: "최대 인원 5명이 가득 차 들어갈 수 없어요" }), GROUP_CAPACITY_MESSAGE);
+  assert.equal(getGroupInvitationErrorMessage(400, { msg: "최대 인원 5명이 가득 차 들어갈 수 없어요" }), GROUP_CAPACITY_MESSAGE);
 });
 
 test('other 400 or 400-1 errors do not become capacity errors', () => {
@@ -29,6 +29,6 @@ test('other 400 or 400-1 errors do not become capacity errors', () => {
 
 test('network errors, permissions and 500 remain generic even with a matching message', () => {
   for (const status of [undefined, 401, 403, 404, 409, 500]) {
-    assert.equal(getGroupInvitationErrorMessage(status, { message: GROUP_CAPACITY_MESSAGE }), fallback);
+    assert.equal(getGroupInvitationErrorMessage(status, { message: "최대 인원 5명이 가득 차 들어갈 수 없어요" }), fallback);
   }
 });

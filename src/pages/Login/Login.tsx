@@ -24,10 +24,7 @@ export default function Login() {
 
   const [showToast, setShowToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState({
-    text: "",
-    text3: "",
-  });
+  const [errorMessage, setErrorMessage] = useState("");
 
   /**
    * - 로그인 버튼 클릭 시 실행될 로직의 예시입니다.
@@ -39,10 +36,7 @@ export default function Login() {
    */
   const handleLogin = async () => {
     if (!isValidEmail(email) || pwd.length === 0 || pwd.length < 8) {
-      setErrorMessage({
-        text: "이메일 또는 비밀번호를",
-        text3: "올바르게 입력해 주세요.",
-      });
+      setErrorMessage("이메일과 비밀번호를 확인해 주세요.");
       setShowErrorToast(true);
       return;
     }
@@ -60,10 +54,7 @@ export default function Login() {
       }
     } catch (err) {
       console.error("로그인 실패:", err);
-      setErrorMessage({
-        text: "로그인에 실패했습니다.",
-        text3: "입력값을 확인해 주세요.",
-      });
+      setErrorMessage("로그인에 실패했습니다.");
       setShowErrorToast(true);
     }
   };
@@ -89,8 +80,7 @@ export default function Login() {
           <ToastModal
             isVisible={showErrorToast}
             onClose={() => setShowErrorToast(false)}
-            text={errorMessage.text}
-            text3={errorMessage.text3}
+            text={errorMessage}
           />
         )}
         <Header

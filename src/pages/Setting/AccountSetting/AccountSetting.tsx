@@ -119,7 +119,7 @@ export default function AccountSetting() {
 
     if (isAccountProfilePending || !accountProfile) {
       resetDrafts();
-      setToastMessage("계정 정보를 불러온 뒤 다시 시도해 주세요.");
+      setToastMessage("계정 정보를 불러오지 못했어요.");
       return;
     }
 
@@ -176,7 +176,7 @@ export default function AccountSetting() {
       navigate("/", { replace: true });
     } catch {
       setShowLogoutConfirm(false);
-      setToastMessage("로그아웃에 실패했습니다. 다시 시도해 주세요.");
+      setToastMessage("로그아웃에 실패했습니다.");
     }
   };
 

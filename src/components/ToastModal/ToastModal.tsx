@@ -9,8 +9,6 @@ interface ToastModalProps {
   showOverlay?: boolean;
   text?: string;
   redText?: string;
-  text2?: string;
-  text3?: string;
   isOnShare?: boolean;
   variant?: "default" | "snackbar";
 }
@@ -24,16 +22,12 @@ interface ToastModalProps {
  * @param props.showOverlay - 모달 뒤에 오버레이를 표시할지 여부 (기본값 false)
  * @param props.text - 모달에 표시될 텍스트 (빨간색이 아닌 부분)
  * @param props.redText - 모달에 표시될 빨간색 텍스트 (선택 사항)
- * @param props.text2 - 빨간색 텍스트 옆으로 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
- * @param props.text3 - 다음 줄에 올 텍스트 (빨간색이 아닌 부분, 선택 사항)
  * @param props.isOnShare - 공유 시 표시 여부 (기본값 false)
  * @example
  * <ToastModal
  *  isVisible={showToast}
  *  text="그룹원이"
  *  redText="5인을 초과"
- *  text2="하여"
- *  text3="초대가 불가능합니다."
  *  showOverlay={false}
  * />
  */
@@ -44,8 +38,6 @@ export default function ToastModal({
   text,
   errorMessage = "",
   redText,
-  text2,
-  text3,
   isOnShare = false,
   variant = "snackbar",
 }: ToastModalProps) {
@@ -76,10 +68,8 @@ export default function ToastModal({
         $variant={variant}
       >
         <div>
-          {message}&nbsp;{redText && <S.RedText>{redText}</S.RedText>}
-          {text2 && text2}
+          {message}{redText && <S.RedText>{redText}</S.RedText>}
         </div>
-        <div>{text3 && text3}</div>
       </S.Container>
     </S.Overlay>
   );

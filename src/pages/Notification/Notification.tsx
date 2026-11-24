@@ -119,7 +119,7 @@ export default function Notification() {
             navigate(destination.path, { state: destination.state });
           } catch {
             setNavigationError(
-              "오늘의 명언을 확인하지 못했어요. 알림을 다시 눌러 주세요."
+              "오늘의 명언을 확인하지 못했어요."
             );
           }
           break;

@@ -142,7 +142,7 @@ export default function Invite() {
         setSuccessMessage("그룹 초대를 취소했어요");
       } catch {
         setErrorToastMessage(
-          "그룹 초대 취소에 실패했어요. 다시 시도해 주세요."
+          "그룹 초대 취소에 실패했어요."
         );
       } finally {
         actionLock.current = false;
@@ -194,7 +194,7 @@ export default function Invite() {
           <ToastModal
             isVisible={showFullGroupToast}
             text=""
-            redText="최대 인원 5명이 가득 차 더 이상 초대할 수 없어요"
+            redText="최대 인원 5명이 찼어요."
             showOverlay={false}
             variant="snackbar"
             onClose={() => setShowFullGroupToast(false)}

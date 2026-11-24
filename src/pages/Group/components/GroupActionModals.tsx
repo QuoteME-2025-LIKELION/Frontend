@@ -116,7 +116,7 @@ export default function GroupActionModals({
       {showFullGroupToast && (
         <ToastModal
           text=""
-          redText="정원이 가득 차 더이상 멤버를 추가할 수 없습니다."
+          redText="그룹 정원이 가득 찼어요."
           isVisible={showFullGroupToast}
           onClose={onCloseFullGroupToast}
           showOverlay={false}

@@ -45,7 +45,6 @@ export default function CreateGroup() {
 
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [errorMessage3, setErrorMessage3] = useState("");
 
   const friendList = useMemo(
     () =>
@@ -70,8 +69,7 @@ export default function CreateGroup() {
     }
 
     if (pendingInvites.length >= 4) {
-      setErrorMessage("친구는 최대 4명까지");
-      setErrorMessage3("초대할 수 있습니다.");
+      setErrorMessage("친구는 최대 4명까지 초대할 수 있어요.");
       setShowErrorToast(true);
       setInviteTarget(null);
       return;
@@ -103,7 +101,6 @@ export default function CreateGroup() {
 
   const validateCreateGroup = useCallback(() => {
     setIsSubmitted(true); // 그룹 생성 버튼 클릭을 기록
-    setErrorMessage3("");
 
     if (groupName.trim().length === 0) {
       setErrorMessage("그룹명을 입력해주세요.");
@@ -112,22 +109,19 @@ export default function CreateGroup() {
     }
 
     if (countCodePoints(groupName) > 10) {
-      setErrorMessage("그룹명은 10자 이내로");
-      setErrorMessage3("입력해 주세요.");
+      setErrorMessage("그룹명은 최대 10자예요.");
       setShowErrorToast(true);
       return false;
     }
 
     if (countCodePoints(motto) > 20) {
-      setErrorMessage("메시지는 20자 이내로");
-      setErrorMessage3("입력해 주세요.");
+      setErrorMessage("메시지는 최대 20자예요.");
       setShowErrorToast(true);
       return false;
     }
 
     if (pendingInvites.length > 4) {
-      setErrorMessage("친구는 최대 4명까지");
-      setErrorMessage3("초대할 수 있습니다.");
+      setErrorMessage("친구는 최대 4명까지 초대할 수 있어요.");
       setShowErrorToast(true);
       return false;
     }
@@ -184,7 +178,6 @@ export default function CreateGroup() {
         if (failedInvites.length > 0) {
           setPendingInvites(failedInvites);
           setErrorMessage("일부 친구 초대에 실패했습니다.");
-          setErrorMessage3("다시 시도해 주세요.");
           setShowErrorToast(true);
           return;
         }
@@ -206,9 +199,8 @@ export default function CreateGroup() {
       setErrorMessage(
         isDuplicateGroupName
           ? "이미 사용 중인 그룹 이름입니다."
-          : "그룹 생성 또는 친구 초대에"
+          : "그룹 생성에 실패했어요."
       );
-      setErrorMessage3(isDuplicateGroupName ? "" : "실패했습니다.");
       setShowErrorToast(true);
     }
   }, [
@@ -304,10 +296,8 @@ export default function CreateGroup() {
         <CreateGroupToasts
           showErrorToast={showErrorToast}
           errorMessage={errorMessage}
-          errorMessage3={errorMessage3}
           onCloseErrorToast={() => {
             setShowErrorToast(false);
-            setErrorMessage3("");
           }}
         />
         <Header

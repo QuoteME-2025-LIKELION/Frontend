@@ -3,7 +3,6 @@ import ToastModal from "@/components/ToastModal/ToastModal";
 interface CreateGroupToastsProps {
   showErrorToast: boolean;
   errorMessage: string;
-  errorMessage3: string;
   onCloseErrorToast: () => void;
 }
 
@@ -13,7 +12,6 @@ interface CreateGroupToastsProps {
 export default function CreateGroupToasts({
   showErrorToast,
   errorMessage,
-  errorMessage3,
   onCloseErrorToast,
 }: CreateGroupToastsProps) {
   return (
@@ -25,7 +23,6 @@ export default function CreateGroupToasts({
           text={errorMessage}
           showOverlay={false}
           variant="snackbar"
-          {...(errorMessage3 && { text3: errorMessage3 })}
         />
       )}
     </>

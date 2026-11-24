@@ -109,7 +109,7 @@ export default function Profile() {
       setSubmitError(
         axios.isAxiosError(error) && error.response?.status === 413
           ? "이미지는 5MB 이하로 선택해 주세요."
-          : "프로필 설정을 완료하지 못했어요. 일부 정보가 저장됐을 수 있으니 다시 시도해 주세요."
+          : "프로필 설정이 완료되지 않았어요."
       );
     } finally {
       submittingRef.current = false;
